@@ -3,7 +3,7 @@
 namespaces/packages
 profiler/tempdirs
 gap/src/machine_endian.h
-build*
+/build*
 
 # Linux
 *.o

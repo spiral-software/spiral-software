@@ -1,0 +1,58 @@
+isa := SSE_4x32f;
+v := isa.v;
+n := 2*v^2;
+
+opts := SIMDGlobals.getOpts(isa, rec(svct:=true, oddSizes:=false, splitL:=false));
+t := TMDCT(n).withTags(opts.tags);
+#t := TPrm(J(n)).withTags(opts.tags);
+
+rt := RandomRuleTree(t, opts);
+s := SPLRuleTree(rt);
+
+MatSPL(t) = MatSPL(s);
+
+s := SumsRuleTree(rt, opts);
+c := CodeRuleTree(rt, opts);
+PrintCode("sub", c, opts);
+
+
+P := 8;
+m := J(P) * DirectSum(Tensor(Mat([[1, -1]]), I(P/2)),Tensor(Mat([[-1, -1]]), I(P/2))) * DirectSum(J(P/2), I(P/2), I(P/2), J(P/2));
+pm(m);
+
+
+
+
+,
+                                    TTensorI(I(1), n/2, AVec, AVec).withTags(tags)
+
+
+
+P:=8;
+o := O(P/2);
+pi := I(P/2);
+mi := -I(P/2);
+mj := -J(P); 
+mm := HStack(VStack(o, pi), mj, VStack(mi, o));
+pm(mm);
+
+
+red := Tensor(Mat([[1,1,1]]), I(P));
+ds := DirectSum(VStack(o, pi), mj, VStack(mi, o));
+
+
+
+
+
+vj := SumsRuleTree(RandomRuleTree(TCompose([TTensorI(-I(1), n, AVec, AVec), TPrm(J(n))]).withTags(tags), opts), opts);
+
+mm := HStack(VStack(o, pi), vj, VStack(mi, o));
+pm(mm);
+
+
+
+LocalConfig.bench.SSE().4x32f.1d.imdct(32).runAll();
+LocalConfig.bench.SSE().4x32f.1d.dct4().runAll();
+
+
+LocalConfig.bench.SSE().2x64f.1d.imdct(8).runAll();

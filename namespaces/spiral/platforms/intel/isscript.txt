@@ -1,0 +1,27 @@
+ImportAll(paradigms.smp);
+
+# problem size
+N := 4096;
+
+# nomber of processors/cores
+numThreads := 2;
+
+# use OpenMP or pthreads/winthreads
+useOpenMP := false;
+
+# build the oprions, nonterminal, and DPBench
+opts := LocalConfig.getOpts(
+    rec(dataType := T_Real(32), globalUnrolling := 512, useNewSettingsForICC := true), 
+    When(useOpenMP, 
+        rec(numproc := numThreads, api := "OpenMP"), 
+        rec(numproc := numThreads, api := SMPGlobals.threads())), 
+    rec(svct := true, splitL := false, oddSizes := false, stdTTensor := true, tsplPFA := false)
+);
+t := TRC(DFT(N)).withTags(opts.tags);
+dpbench := Global.libgen.DPBench.build(t, opts, rec(matrixVerify := false ));
+
+# get a random implementation
+dpbench.runRandomAll();
+
+# get the best implementation
+dpbench.runAll();

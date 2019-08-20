@@ -1,0 +1,818 @@
+# -*- Mode: shell-script -*-
+CVSID("$Id: imf.grp 1673 2005-05-29 09:15:59Z uyvorone $");
+#############################################################################
+##
+#A  imf.grp                     GAP group library              Volkmar Felsch
+##
+##
+#Y  Copyright (C) 2018-2019, Carnegie Mellon University
+#Y  All rights reserved.  See LICENSE for details.
+#Y  
+#Y  This work is based on GAP version 3, with some files from version 4.  GAP is
+#Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
+##
+##  This  file  contains  the  library  functions  for  the  GAP  library  of
+##  irreducible maximal finite integral matrix groups.
+##
+##
+
+
+#############################################################################
+##
+#F  InfoImf1( <arg> ) . . . . . . . . . . . . . . . . . . package information
+#F  InfoImf2( <arg> ) . . . . . . . . . . . . . . . package debug information
+##
+if not IsBound( InfoImf1 )  then InfoImf1 := Ignore;  fi;
+if not IsBound( InfoImf2 )  then InfoImf2 := Ignore;  fi;
+
+
+#############################################################################
+##
+#F  BaseShortVectors( <orbit> ) . . . . . . . . . . . . . . . . . . . . . . .
+##
+##  'BaseShortVectors'  expects as argument an  orbit of short vectors  under
+##  some  imf  matrix  group  of  dimension  dim,  say.  This  orbit  can  be
+##  considered  as  a set of generatos  of a  dim-dimensional  Q-vectorspace.
+##  'BaseShortVectors' determines a subset B, say, of <orbit> which is a base
+##  of that vectorspace, and it returns a list of two lists containing
+##
+##  - a list of the position numbers with respect to <orbit> of the  elements
+##    of the base B and
+##  - the base change matrix B^-1.
+##
+##  Both will be needed by the function 'ImfPermutationToMatrix'.
+##
+BaseShortVectors := function ( orbit )
+
+    local base, count, dim, i, j, nums, vector;
+
+    dim := Length( orbit[1] );
+    base := 0 * [ 1 .. dim ];
+    nums := 0 * [ 1 .. dim ];
+    count := 0;
+    i := 0;
+
+    while count < dim do
+        i := i + 1;
+        vector := orbit[i];
+        j := 0;
+        while j < dim do
+            j := j + 1;
+            if vector[j] <> 0 then
+                if nums[j] <> 0 then
+                    vector := vector - vector[j] * base[j];
+                else
+                    base[j] := vector / vector[j];
+                    nums[j] := i;
+                    count := count + 1;
+                    j := dim;
+                fi;
+            fi;
+        od;
+    od;
+
+    base := List( nums, i -> orbit[i] );
+    return [ nums, base^-1 ];
+end;
+
+
+#############################################################################
+##
+#F  DisplayImfInvariants( <dim>, <q> )  . . . . . . . . . . . . . . . . . . .
+#F  DisplayImfInvariants( <dim>, <q>, <z> ) . . . . . . . . . . . . . . . . .
+##
+##  'DisplayImfInvariants'  displays some Z-class invariants of the specified
+##  classes  of  irreducible maximal finite  integral matrix groups  in  some
+##  easily readable format.
+##
+##  The default value of z is 1. If any of the arguments is zero, the routine
+##  loops over all legal values of the respective parameter.
+##
+DisplayImfInvariants := function ( arg )
+
+    local dim, dims, hyphens, linelength, q, qq, z;
+
+    # load the imf main list if it is not yet available.
+    if not IsBound( IMFList ) then
+        IMFLoad( 0 );
+    fi;
+
+    # get the arguments.
+    dim := arg[1];
+    q := arg[2];
+    if Length( arg ) > 2 then
+        z := arg[3];
+    else
+        z := 1;
+    fi;
+
+    # get the range of dimensions to be handled.
+    if dim = 0 then
+        dims := [ 1 .. IMFRec.maximalDimension ];
+    else
+        # check the given dimension for being in range.
+        if dim < 0 or IMFRec.maximalDimension < dim then
+            Error( "dimension out of range" );
+        fi;
+        dims := [ dim ];
+    fi;
+
+    # loop over all dimensions in that range.
+    for dim in dims do
+
+        # handle the cases q = 0 and q > 0 differently.
+        if q = 0 then
+
+            linelength := Minimum( SizeScreen()[1], 76 );
+            hyphens := Concatenation( List( [ 1 .. linelength - 5 ],
+                i -> "-" ) );
+
+            # loop over the Q-classes of dimension dim.
+            for qq in [ 1 .. IMFRec.numberQClasses[dim] ] do
+
+                # print a line of separators.
+                Print( "#I ", hyphens, "\n" );
+
+                # check the Z-class number for being in range.
+                if z < 0 or Length( IMFRec.bNumbers[dim][qq] ) < z then
+                    Error( "Z-class number out of range" );
+                fi;
+
+                # display the specified Z-classes in the Q-class.
+                DisplayImfReps( dim, qq, z );
+            od;
+
+            # print a line of separators.
+            Print( "#I ", hyphens, "\n" );
+
+        else
+
+            # check the given Q-class number for being in range.
+            if q < 1 or IMFRec.numberQClasses[dim] < q then
+                Error( "Q-class number out of range" );
+            fi;
+
+            # check the Z-class number for being in range.
+            if z < 0 or Length( IMFRec.bNumbers[dim][q] ) < z then
+                Error( "Z-class number out of range" );
+            fi;
+
+            # display the specified Z-classes in the Q-class.
+            DisplayImfReps( dim, q, z );
+
+        fi;
+    od;
+
+end;
+
+
+#############################################################################
+##
+#F  DisplayImfReps( <dim>, <q>, <z> ) . . . . . . . . . . . . . . . . . . . .
+##
+##  'DisplayImfReps'  is a subroutine of the  'DisplayImfInvariants' command.
+##  It displays  some  Z-class invariants  of the  zth Z-classes  in the  qth
+##  Q-class  of the  irreducible  maximal finite  integral matrix  groups  of
+##  dimension dim.
+##
+##  If an argument  z = 0  has been specified,  then all classes in the given
+##  Q-class will be displayed,  otherwise just the  zth Z-class is displayed.
+##
+##  This subroutine is considered to be an internal one.  Hence the arguments
+##  are not checked for being in range.  Moreover, it is assumed that the imf
+##  main list IMFList has already been loaded.
+##
+DisplayImfReps := function ( dim, q, z )
+
+    local bound, degree, degs, eldivs, i, leng, mult, n, norm, qmax, size,
+          solvable, type, znums;
+
+    # get the position numbers of the groups to be handled.
+    znums := IMFRec.bNumbers[dim][q];
+    if z = 0 then
+        z := 1;
+        bound := Length( znums );
+    else
+        bound := z;
+    fi;
+
+    # loop over the classes to be displayed.
+    while z <= bound do
+
+        n := znums[z];
+        type := IMFList[dim].isomorphismType[n];
+        size := IMFList[dim].size[n];
+        solvable := IMFList[dim].isSolvable[n];
+        eldivs := IMFList[dim].elementaryDivisors[n];
+        degs := Copy( IMFList[dim].degrees[n] );
+        norm := IMFList[dim].minimalNorm[n];
+
+        # print a class number.
+        if IMFRec.repsAreZReps[dim] then
+            Print( "#I Z-class ", dim, ".", q, ".", z );
+        else
+            Print( "#I Q-class ", dim, ".", q );
+        fi;
+
+        # print solvability and group size.
+        if solvable then
+            Print( ":  Solvable, size = " );
+        else
+            Print( ":  Size = " );
+        fi;
+        PrintFactorsInt( size );
+        Print( "\n" );
+
+        # print the isomorphism type.
+        Print( "#I   isomorphism type = " );
+        Print( type, "\n" );
+
+        # print the elementary divisors.
+        Print( "#I   elementary divisors = " );
+        Print( eldivs[1] );
+        if eldivs[2] > 1 then
+            Print( "^", eldivs[2] );
+        fi;
+        leng := Length( eldivs );
+        i := 3;
+        while i < leng do
+            Print( "*", eldivs[i] );
+            if eldivs[i+1] > 1 then
+                Print( "^", eldivs[i+1] );
+            fi;
+            i := i + 2;
+        od;
+        Print( "\n" );
+
+        # print the orbit size.
+        Print( "#I   orbit size = " );
+        if IsInt( degs ) then
+            Print( degs );
+            leng := 1;
+        else
+            leng := Length( degs );
+            i := 0;
+            while i < leng do
+                i := i + 1;
+                degree := degs[i];
+                mult := 1;
+                while i < leng and degs[i+1] = degree do
+                    mult := mult + 1;
+                    i := i + 1;
+                od;
+                if mult > 1 then  Print( mult, "*" );  fi;
+                Print( degree );
+                if i < leng then  Print( " + " );  fi;
+            od;
+        fi;
+
+        # print the minimal norm.
+        Print( ", minimal norm = ", norm, "\n" );
+
+        # print a message if the group is not imf in Q.
+        qmax := IMFRec.maximalQClasses[dim][q];
+        if qmax <> q then
+            Print( "#I   not maximal finite in GL(", dim,
+                ",Q), rational imf class is ", dim, ".", qmax, "\n" );
+        fi;
+
+        z := z + 1;
+    od;
+
+end;
+
+
+#############################################################################
+##
+#F  ImfInvariants( <dim>, <q> ) . . . . . . . . . . . . . . . . . . . . . . .
+#F  ImfInvariants( <dim>, <q>, <z> )  . . . . . . . . . . . . . . . . . . . .
+##
+##  'ImfInvariants' returns a record of Z-class invariants of the zth Z-class
+##  in the  qth Q-class of  irreducible maximal finite integral matrix groups
+##  of dimension dim. The default value of z is 1.
+##
+##  Assume that  G  is a representative group of the specified Z-class.  Then
+##  the resulting record contains the following components:
+##
+##  size                     group size of G,
+##  isSolvable               true, if G is solvable,
+##  isomorphismType          isomorphism type of G,
+##  elementaryDivisors       elementary divisors of G,
+##  minimalNorm              norm of the short vectors associated to G,
+##  sizesOrbitsShortVectors  a list  of the  sizes  of the  orbits  of  short
+##                           vectors associated to G,
+##  maximalQClass            Q-class  number  of  coresponding  rational  imf
+##                           class (only if it is different from q).
+##
+##  If a value z > 1 has been specified  for a dimension for which no Z-class
+##  representatives are available,  the function will display  an appropriate
+##  message and return the value 'false'.
+##
+ImfInvariants := function ( arg )
+
+    local dim, eldivs, flat, i, infrec, j, leng, n, q, qmax, sizes;
+
+    # check the arguments and get the position number of the class to be
+    # handled.
+    n := ImfPositionNumber( arg );
+    dim := arg[1];
+    q := arg[2];
+
+    # get the size of the orbits of short vectors.
+    sizes := IMFList[dim].degrees[n];
+    if IsInt( sizes ) then
+        sizes := [ sizes ];
+    fi;
+
+    # get the elementary divisors.
+    flat := IMFList[dim].elementaryDivisors[n];
+    leng := Length( flat );
+    eldivs := [ ];
+    i := 1;
+    while i < leng do
+        for j in [ 1 .. flat[i+1] ] do
+            Add( eldivs, flat[i] );
+        od;
+        i := i + 2;
+    od;
+
+    # get the Q-class number of the corresponding rational imf class.
+    qmax := IMFRec.maximalQClasses[dim][q];
+
+    # create the information record and return it.
+    infrec := rec(
+        size := IMFList[dim].size[n],
+        isSolvable := IMFList[dim].isSolvable[n],
+        isomorphismType := IMFList[dim].isomorphismType[n],
+        elementaryDivisors := eldivs,
+        minimalNorm := IMFList[dim].minimalNorm[n],
+        sizesOrbitsShortVectors := sizes );
+    if qmax <> q then
+        infrec.maximalQClass := qmax;
+    fi;
+
+    return infrec;
+end;
+
+
+#############################################################################
+##
+#F  IMFLoad( <dim> ) . . . . . . . . load a secondary file of the imf library
+##
+##  'IMFLoad' loads the imf main list and,  if dim > 0,  the list of matrices
+##  containing  the  Gram  matrices  and  the  lists  of  generators  for the
+##  irreducible maximal finite  integral matrix groups  of  dimension  <dim>.
+##  Nothing is done if the required lists have already been loaded.
+##
+##  'IMFLoad'  finds the files in the directory specified by 'GRPNAME'.  This
+##  variable is set in the init file 'LIBNAME/\"init.g\"'.
+##
+##  The given dimension is not checked to be in range.
+##
+IMFLoad := function ( dim )
+
+    local d, maxdim, name;
+
+    # initialize the imf main list if it is not yet available.
+    if not IsBound( IMFList ) then
+        name := "imf0";
+        InfoImf2( "#I  loading secondary file ", name, "\n");
+        if not ReadPath( GRPNAME, name, ".grp", "ReadImf" )  then
+            Error("cannot load secondary file ", name);
+        fi;
+    fi;
+
+    # check whether we actually need to load a matrix file.
+    if dim > 0 and not IsBound( IMFList[dim].matrices ) then
+
+        # load the file.
+        if dim < 10 then
+            name := "imf1to9";
+        else
+            name := ConcatenationString( "imf", String( dim ) );
+        fi;
+        InfoImf2( "#I  loading secondary file ", name, "\n");
+        if not ReadPath( GRPNAME, name, ".grp", "ReadImf" )  then
+            Error("cannot load secondary file ", name);
+        fi;
+    fi;
+
+    return;
+end;
+
+
+#############################################################################
+##
+#F  ImfMatGroup( <dim>, <q> ) . . . . . . . . . . . . . . . . . . . . . . . .
+#F  ImfMatGroup( <dim>, <q>, <z> )  . . . . . . . . . . . . . . . . . . . . .
+##
+##  'ImfMatGroup'  returns the  representative of the  zth Z-class in the qth
+##  Q-class of the  irreducible  maximal  finite  integral  matrix groups  of
+##  dimension dim. The default value of z is 1.
+##
+##  If a value z > 1 has been specified  for a dimension for which no Z-class
+##  representatives are available,  the function will display  an appropriate
+##  message and return the value 'false'.
+##
+ImfMatGroup := function ( arg )
+
+    local degrees, dim, form, gens, i, ImfMatGroupOps, j, M, mats, n, name,
+          q, qmax, reps, z;
+
+    # check the arguments and get the position number of the class to be
+    # handled.
+    n := ImfPositionNumber( arg );
+
+    # get dimension, Q-class number, and Z-class number.
+    dim := arg[1];
+    q := arg[2];
+    z := arg[3];
+
+    # load the appropriate imf matrix file if it is not yet available.
+    if not IsBound( IMFList[dim].matrices ) then
+        IMFLoad( dim );
+    fi;
+
+    # construct the matrix group.
+    mats := Copy( IMFList[dim].matrices[n] );
+    gens := mats[2];
+    M := Group( gens, gens[1] * gens[1]^-1 );
+
+    # construct the group name.
+    if IMFRec.repsAreZReps[dim] then
+        name := ConcatenationString( "ImfMatGroup(", String( dim ), ",",
+            String( q ), ",", String( z ), ")" );
+    else
+        name := ConcatenationString( "ImfMatGroup(", String( dim ), ",",
+            String( q ), ")" );
+    fi;
+
+    # get the associated Gram matrix.
+    form := mats[1];
+    for i in [ 1 .. dim - 1 ] do
+        for j in [ i + 1 .. dim ] do
+            form[i][j] := form[j][i];
+        od;
+    od;
+
+    # get the representatives and sizes of the orbits of short vectors.
+    reps := Copy( IMFList[dim].orbitReps[n] );
+    degrees := Copy( IMFList[dim].degrees[n] );
+    if IsInt( degrees ) then
+        degrees := [ degrees ];
+        reps := [ reps ];
+    fi;
+
+    # get the Q-class number of the corresponding rational imf class.
+    qmax := IMFRec.maximalQClasses[dim][q];
+
+    # define some approriate group records.
+    M.isImf := true;
+    M.name := name;
+    M.size := IMFList[dim].size[n];
+    M.isomorphismType := IMFList[dim].isomorphismType[n];
+    M.isSolvable := IMFList[dim].isSolvable[n];
+    M.elementaryDivisors := ElementaryDivisorsMat( form );
+    M.form := form;
+    M.minimalNorm := IMFList[dim].minimalNorm[n];
+    M.repsOrbitsShortVectors := reps;
+    M.sizesOrbitsShortVectors := degrees;
+    if qmax <> q then
+        M.maximalQClass := qmax;
+    fi;
+
+    # define a suitable PermGroup function.
+    ImfMatGroupOps := OperationsRecord( "ImfMatGroupOps", MatGroupOps );
+    ImfMatGroupOps.PermGroup := function ( G )
+        return PermGroupImfGroup( G );
+    end;
+    M.operations := ImfMatGroupOps;
+
+    return M;
+end;
+
+
+#############################################################################
+##
+#F  ImfMatrixToPermutation( <hom>, <mat> )  . . . . . . . . . . . . . . . . .
+##
+##  'ImfMatrixToPermutation'  expects that  <hom>  is the  isomorphism from a
+##  permutation   group    G    which   has   been   constructed    via   the
+##  'PermGroupImfGroup'  function   from  some   irreducible  maximal  finite
+##  integral matrix group  M  to that matrix group  M,  and that <mat>  is an
+##  element of M. It returns the preimage of <mat> under <hom>.
+##
+ImfMatrixToPermutation := function ( hom, mat )
+
+    local M, orbit, P, vec;
+
+    # check the given homomorphism for being an imf isomorphism.
+    M := hom.range;
+    if IsMatGroup( M ) then 
+        P := hom.source;
+    else
+        M := hom.source;
+        if not IsMatGroup( M ) or not IsBound( M.isImf ) then
+            Error( "<hom> is not a valid imf homomorphism" );
+        fi;
+        P := hom.range;
+    fi;
+
+    # compute the preimage permutation of the given integral matrix.
+    orbit := P.orbitShortVectors;
+    return
+       PermList( List( orbit, vec -> PositionSorted( orbit, vec * mat ) ) );
+end;
+
+
+#############################################################################
+##
+#F  ImfNumberQClasses( <dim> )  . . . . . . . . . . . . . . . . . . . . . . .
+##
+##  'ImfNumberQClasses'   returns  the  number  of   available  Q-classes  of
+##  irreducible maximal finite subgroups of dimension dim,  i. e., the number
+##  of Q-classes of irreducible maximal finite subgroups of GL(dim,Z), if dim
+##  is at most 11  or  a prime,  or  the number of  Q-classes of  irreducible
+##  maximal finite subgroups of GL(dim,Q), else.
+##
+ImfNumberQClasses := function ( dim )
+
+    # load the imf main list if it is not yet available.
+    if not IsBound( IMFList ) then
+        IMFLoad( 0 );
+    fi;
+
+    # check the given dimension for being in range.
+    if dim < 0 or IMFRec.maximalDimension < dim then
+        Error( "dimension out of range" );
+    fi;
+
+    return IMFRec.numberQClasses[dim];
+end;
+
+
+#############################################################################
+##
+#F  ImfNumberQQClasses( <dim> ) . . . . . . . . . . . . . . . . . . . . . . .
+##
+##  'ImfNumberQQClasses'  returns  the  number of  Q-classes  of  irreducible
+##  maximal finite subgroups of GL(dim,Q).
+##
+ImfNumberQQClasses := function ( dim )
+
+    # load the imf main list if it is not yet available.
+    if not IsBound( IMFList ) then
+        IMFLoad( 0 );
+    fi;
+
+    # check the given dimension for being in range.
+    if dim < 0 or IMFRec.maximalDimension < dim then
+        Error( "dimension out of range" );
+    fi;
+
+    return IMFRec.numberQQClasses[dim];
+end;
+
+
+#############################################################################
+##
+#F  ImfNumberZClasses( <dim>, <q> ) . . . . . . . . . . . . . . . . . . . . .
+##
+##  'ImfNumberZClasses' returns the number of available class representatives
+##  in the  qth  Q-class of irreducible maximal finite integral matrix groups
+##  of dimension dim,  i. e., the number of Z-classes in that Q-class, if dim
+##  is at most 11 or a prime, or just the value 1, else.
+##
+ImfNumberZClasses := function ( dim, q )
+
+    local num;
+
+    # load the imf main list if it is not yet available.
+    if not IsBound( IMFList ) then
+        IMFLoad( 0 );
+    fi;
+
+    # check the dimension for being in range.
+    if dim < 1 or IMFRec.maximalDimension < dim then
+        Error( "dimension out of range" );
+    fi;
+
+    # check the Q-class number for being in range.
+    if q < 1 or IMFRec.numberQClasses[dim] < q then
+        Error( "Q-class number out of range" );
+    fi;
+
+    # return the number of class representatives in the given Q-class.
+    return Length( IMFRec.bNumbers[dim][q] );
+
+end;
+
+
+#############################################################################
+##
+#F  ImfPermutationToMatrix( <hom>, <perm> ) . . . . . . . . . . . . . . . . .
+##
+##  'ImfPermutationToMatrix'  expects that  <hom>  is the  isomorphism from a
+##  permutation   group    G    which   has   been   constructed    via   the
+##  'PermGroupImfGroup'  function   from  some   irreducible  maximal  finite
+##  integral matrix group  M  to that matrix group  M,  and that <perm> is an
+##  element of G. It returns the image of <perm> under <hom>.
+##
+ImfPermutationToMatrix := function ( hom, perm )
+
+    local G, n;
+
+    # check the given group for being an imf permutation group.
+    G := hom.source;
+    if not IsPermGroup( G ) then
+        G := hom.range;
+        if not IsPermGroup( G ) or not IsBound( G.isImf ) then
+            Error( "<hom> is not a valid imf homomorphism" );
+        fi;
+    fi;
+
+    # compute the integral matrix which corresponds to the given permutation.
+    return G.baseChangeMatrix *
+        List( G.baseVectorPositions, n -> G.orbitShortVectors[n^perm] );
+end;
+
+
+#############################################################################
+##
+#F  ImfPositionNumber( [ <dim>, <q> ] ) . . . . . . . . . . . . . . . . . . .
+#F  ImfPositionNumber( [ <dim>, <q>, <z> ] )  . . . . . . . . . . . . . . . .
+##
+##  'ImfPositionNumber'  loads the imf main list  if it is not yet available. 
+##  Then it checks the given arguments and returns the position number of the
+##  specified  Z-class representative  within the list of all representatives
+##  of dimension dim  which is still  in the  original order  as submitted to
+##  us by LehrstuhL B. The default value of z is 1.
+##
+ImfPositionNumber := function ( args )
+
+    local dim, n, q, z, znums;
+
+    # load the imf main list if it is not yet available.
+    if not IsBound( IMFList ) then
+        IMFLoad( 0 );
+    fi;
+
+    # check the dimension for being in range.
+    dim := args[1];
+    if dim < 1 or IMFRec.maximalDimension < dim then
+        Error( "dimension out of range" );
+    fi;
+
+    # check the Q-class number for being in range.
+    q := args[2];
+    if q < 1 or IMFRec.numberQClasses[dim] < q then
+        Error( "Q-class number out of range" );
+    fi;
+    znums := IMFRec.bNumbers[dim][q];
+
+    # get the Z-class number and check it for being in range.
+    if Length( args ) = 2 then
+        z := 1;
+        args[3] := 1;
+    else
+        z := args[3];
+        if z < 1 or Length( znums ) < z then
+            Error( "Z-class number out of range" );
+        fi;
+    fi;
+
+    # return the position number of the class to be handled.
+    return znums[z];
+
+end;
+
+
+#############################################################################
+##
+#F  OrbitShortVectors( <gens>, <rep> )  . . . . . . . . . . . . . . . . . . .
+##
+##  'OrbitShortVectors'  is a subroutine of the  'PermGroupImfGroup' command.
+##  It returns  the orbit of the  short vector  <rep>  under the matrix group
+##  generators given in list <gens>.
+##
+OrbitShortVectors := function ( gens, rep )
+
+    local generator, images, new, nextvec, null, orbit, vector;
+
+    orbit := [ ];
+    null := 0 * rep;
+    if rep > null then
+        images := [ Copy( rep ) ];
+    else
+        images := [ -rep ];
+    fi;
+    while images <> [ ] do
+        Append( orbit, images );
+        new := [ ];
+        for generator in gens do
+            for vector in images do
+                nextvec := vector * generator;
+                if nextvec > null then
+                    Add( new, nextvec );
+                else
+                    Add( new, -nextvec );
+                fi;
+            od;
+        od;
+        new := Set( new );
+        SubtractSet( new, orbit );
+        images := new;
+    od;
+
+    Append( orbit, -orbit );
+    return Set( orbit );
+end;
+
+
+#############################################################################
+##
+#F  PermGroupImfGroup( <M> )  . . . . . . . . . . . . . . . . . . . . . . . .
+#F  PermGroupImfGroup( <M>, <n> ) . . . . . . . . . . . . . . . . . . . . . .
+##
+##  'PermGroupImfGroup'  returns the permutation group  induced by the action
+##  of the given  irreducible maximal finite integral matrix group  M  on its
+##  nth orbit on the set of short vectors. The default value of n is 1.
+##
+PermGroupImfGroup := function ( arg )
+
+    local base, degrees, id, M, n, orbit, P, perms, reps, vec;
+
+    # check the given group for being an imf matrix group.
+    M := arg[1];
+    if not IsMatGroup( M ) or not IsBound( M.isImf ) then
+        Error( "the given group is not an imf matrix group" );
+    fi;
+
+    # check the given orbit number for being in range.
+    degrees := M.sizesOrbitsShortVectors;
+    reps := M.repsOrbitsShortVectors;
+    if Length( arg ) = 1 then
+        n := 1;
+    else
+        n := arg[2];
+        if not n in [ 1 .. Length( reps ) ] then
+            Error( "orbit number out of range" );
+        fi;
+    fi;
+
+    # compute the specified orbit of short vectors.
+    orbit := OrbitShortVectors( M.generators, reps[n] );
+
+    # check the orbit size.
+    if Length( orbit ) <> degrees[n] then
+        Error( "inconsistent orbit size" );
+    fi;
+
+    # construct the associated permutation group.
+    perms := List( M.generators, g -> PermList(
+        List( orbit, vec -> PositionSorted( orbit, vec * g ) ) ) );
+    id := perms[1]^0;
+    P := Group( perms, id );
+
+    # define some appropriate group records.
+    P.isImf := true;
+    if n = 1 then
+        P.name := ConcatenationString( "PermGroup(", M.name, ")" );
+    else
+        P.name := ConcatenationString( "PermGroupImfGroup(", M.name, ",",
+            String( n ), ")" );
+    fi;
+    P.size := M.size;
+    if IsBound( M.isomorphismType ) then
+        P.isomorphismType := M.isomorphismType;
+    fi;
+    P.degree := degrees[n];
+    P.matGroup := M;
+
+    # compute the information which will be needed to reconvert permutations
+    # to matrices.
+    base := BaseShortVectors( orbit );
+    P.orbitShortVectors := orbit;
+    P.baseVectorPositions := base[1];
+    P.baseChangeMatrix := base[2];
+
+    # construct the associated isomorphism from M to P.
+    P.bijection := GroupHomomorphismByFunction(
+        P,
+        M,
+        function ( perm )
+            return P.baseChangeMatrix
+                 * List( P.baseVectorPositions,
+                         i -> P.orbitShortVectors[i^perm] );
+	end,
+        function ( mat )
+	    return PermList(
+                List( P.orbitShortVectors,
+                      v -> PositionSorted( P.orbitShortVectors, v*mat ) ) );
+	end );
+
+    return P;
+end;
+
+
+

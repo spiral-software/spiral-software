@@ -1,0 +1,25 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "AVX-Emulator", "AVX-Emulator.icproj", "{B106C1F9-764F-40D6-9E6A-4190FD4D4717}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{B106C1F9-764F-40D6-9E6A-4190FD4D4717}.Debug.ActiveCfg = Debug|Win32
+		{B106C1F9-764F-40D6-9E6A-4190FD4D4717}.Debug.Build.0 = Debug|Win32
+		{B106C1F9-764F-40D6-9E6A-4190FD4D4717}.Release.ActiveCfg = Release|Win32
+		{B106C1F9-764F-40D6-9E6A-4190FD4D4717}.Release.Build.0 = Release|Win32
+		{8079A4BF-34F8-4294-B45D-F2E7573E1919}.Release.Build.0 = Release|Win32
+		{8079A4BF-34F8-4294-B45D-F2E7573E1919}.Release.ActiveCfg = Release|Win32
+		{8079A4BF-34F8-4294-B45D-F2E7573E1919}.Debug.Build.0 = Debug|Win32
+		{8079A4BF-34F8-4294-B45D-F2E7573E1919}.Debug.ActiveCfg = Debug|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

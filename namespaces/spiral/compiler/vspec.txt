@@ -1,0 +1,18 @@
+Here we spec out the vector memory locations.
+
+nth
+----
+vref_v    TPtr(t) -> TVect(t, v)
+uvref_v   TPtr(t) -> TVect(t, v)
+-----
+sv_v(vref_v(..), mask)  TVect(t, v) -> TVect(t, v)
+
+vpack_v_g(...)    TVect(t, g) x v/g -> TVect(t, v)
+
+velem -- ?
+
+
+Constructs:   vref / uvref
+	      sv
+	      vpack
+              velem

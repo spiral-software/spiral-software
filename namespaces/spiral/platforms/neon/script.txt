@@ -1,0 +1,28 @@
+
+Import(platforms.neon);
+
+# YSV: I'm not sure why this was needed. 
+# Original comment: Hack until it's an option:
+BinSplit._splitDisabled := [nth];
+
+# This runs a simple benchmark on the host x86 machine, using
+# the instruction count backend. It requires the ARM cross-compiler 
+# to be installed, which must be configured in 
+# spiral/spiral/backend/arm_icount/Makefile
+#
+d:=benchNEON().4x32f.1d.dft_ic.medium();
+d.getOpts().profile := default_profiles.arm_icount;
+d.matrixVerify := false;
+d.runAll();
+
+# Alternatively, we can set up Spiral on the development board.
+# It would run quite slow, but should work.
+# Then the board's own ARM compiler can be used.
+#
+opts := benchNEON().full.1d.dft_ic.small.real().getOpts();
+t := TL(32, 8, 1, 1).withTags([AVecReg(NEON)]);
+rt := RandomRuleTree(t,opts);
+s := SumsRuleTree(rt, opts);
+c := CodeSums(s, opts);
+PrintCode("hh",c,opts);
+VerifyMatrixRuleTree(rt, opts);

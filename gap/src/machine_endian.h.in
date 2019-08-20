@@ -1,0 +1,13 @@
+#ifndef _ENDIAN_H
+# error "Never use <machine_endian.h> directly; include <endian.h> instead."
+#endif
+
+#ifdef WIN32
+/* WIN32 usually runs on i386, which is little-endian. 
+   To support other WIN32 platforms, if they exist, this
+   file needs to be patched accordingly */
+#define __BYTE_ORDER __LITTLE_ENDIAN
+
+#else
+#define __BYTE_ORDER __@ENDIANNESS@
+#endif

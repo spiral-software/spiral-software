@@ -1,0 +1,16 @@
+which svnversion >/dev/null 2>/dev/null
+
+if [ $? -eq 0 ]; then
+   SVNVER=`svnversion -n $1 2>/dev/null`
+   echo "LocalConfig.svninfo.version:= \"`echo $SVNVER | sed 's-:-\/-' | sed 's/M//'`\";"
+   if [ `echo $SVNVER | grep 'M' | wc -l` -ne 0 ]; then MOD="true"; else MOD="false"; fi
+   echo "LocalConfig.svninfo.modified:= $MOD;"
+   if [ `echo $SVNVER | grep ':' | wc -l` -ne 0 ]; then MIX="true"; else MIX="false"; fi
+   echo "LocalConfig.svninfo.mixed:= $MIX;"
+   echo "LocalConfig.svninfo.isInit := true;"
+else
+   echo "LocalConfig.svninfo.version:=\"SVN not available\";";
+   echo "LocalConfig.svninfo.modified:=\"SVN not available\";";
+   echo "LocalConfig.svninfo.mixed:=\"SVN not available\";";
+   echo "LocalConfig.svninfo.isInit := false;"
+fi;

@@ -1,0 +1,56 @@
+
+##############################
+
+ImportAll(paradigms.vector);
+isa := SSE_4x32f;
+opts := SIMDGlobals.getOpts(isa);
+v := isa.v;
+N := 2*v^2;
+t := TDHT(N).withTags(opts.tags);
+rt := RandomRuleTree(t, opts);
+s := SPLRuleTree(rt);
+InfinityNormMat(MatSPL(t) - MatSPL(s));
+
+
+P := Tensor(I(N/(2*v)), L(2*v,v));
+Q := Tensor(I(N/(2*v)), L(2*v,2));
+
+s0 := _DHTtoRDFT(N);
+ss := Q * s0 * P;
+vss := VBlkInt(ss, v);
+MatSPL(s0)  =MatSPL(vss);
+
+VisualizeMat(MatSPL(ss), "");
+
+vecVisualizeMat(MatSPL(ss), "", v, "|");
+
+f0 := List([1..v], i->V(1));
+f1 := Concat([V(0)], List([2..v], i->V(1)));
+f2 := Concat([V(1)], List([2..v], i->V(-1)));
+fblk := VBlk([[f0,f1],[f1,f2]], v).setSymmetric();
+fdiag := VTensor(Tensor(I(N/(2*v)-1), F(2)), v);
+ff := DirectSum(fblk, fdiag);
+vecVisualizeMat(MatSPL(ff), "", v, "|");
+
+
+
+#---------------
+ImportAll(paradigms.vector);
+isa := SSE_4x32f;
+opts := SIMDGlobals.getOpts(isa);
+v := isa.v;
+N := 2*v^2;
+
+m := Mat([[1,0],[0,-1]]);
+d1 := Diag(diagDirsum(fConst(2,1), fConst(N-2, 1/2)));
+dv1 := DirectSum(VTensor(I(1), v), VBlk([[Concat([V(-1)], List([2..v], i->V(1)))]], v), VTensor(I(N/v-2), v));
+P1 := VPrm_x_I(L(N/v, N/(2*v)), v);
+Q1 := VPrm_x_I(L(N/v, 2), v);
+jv1 := P1*DirectSum(VO1dsJ(N/2, v), VScale(VO1dsJ(N/2, v), -1, v))*Q1;
+mv1 := _VSUM([dv1,jv1], v);
+
+
+vecVisualizeMat(MatSPL(mv1), "", v, "|");
+
+
+vecVisualizeMat(MatSPL(ff * mv1), "", v, "|");

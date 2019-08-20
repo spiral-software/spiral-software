@@ -1,0 +1,17 @@
+
+b:=LocalConfig.bench.AVX().4x64f.wht([16]);
+b.runAll();
+
+
+ImportAll(platforms.avx);
+
+isa := AVX_4x64f;
+
+v := isa.v;
+opts := SIMDGlobals.getOpts(isa, rec(svct := true, splitL := false, oddSizes := false));
+tags := opts.tags;
+t := TL(8, 2, 1, 1).withTags([AVecReg(AVX_4x64f)])
+
+rt := RandomRuleTree(t, opts);
+
+

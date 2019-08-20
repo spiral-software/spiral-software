@@ -1,0 +1,39 @@
+# Correct unparser/codegen pairs:
+# (defined in libgen/recvector.gi, bad place!!)
+
+# Class(VecRecCodegen, RecCodegen, VectorCodegen);
+# Class(OpenMP_SSEUnparser, paradigms.smp.OpenMP_UnparseMixin, platforms.sse.SSEUnparser);
+# Class(SMP_SSEUnparser,    paradigms.smp.SMP_UnparseMixin,    platforms.sse.SSEUnparser);
+#
+
+# General comment:
+#
+# Unrolling the SMP loop will cause error, thus I set unrolling to 8
+# to show small an example with DFT(16)
+
+
+#
+# OpenMP example
+#
+opts:=InitVecLibgen(SSE_2x64f, false, true, false);
+opts.globalUnrolling := 8;   
+
+t:=TRC(DFT(16)).withTags([AParSMP(2, threadId()), AVecReg(SSE_2x64f)]);
+c:=CodeRuleTree(t, opts);
+PrintCode("sub1", c, opts);
+
+
+#
+# pthreads example
+#
+opts:=InitVecLibgen(SSE_2x64f, false, false, false);
+opts.globalUnrolling := 8;   
+tid := var("tid", TInt);   # this will be passed by the timer to the generated function
+t:=TRC(DFT(16)).withTags([AParSMP(2, tid), AVecReg(SSE_2x64f)]);
+c:=CodeRuleTree(t, opts);
+PrintCode("sub1", c, opts);
+
+Unbind(opts.profile);
+opts.language := "c.gcc.threads";
+CMeasure(c, opts);
+

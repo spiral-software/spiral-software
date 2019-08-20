@@ -1,0 +1,21 @@
+compileClassesPkg(spiral.spl);
+compileClassesPkg(spiral.code);
+compileClassesPkg(spiral.sigma);
+compileClassesPkg(spiral.paradigms.vector);
+compileClassesPkg(spiral.paradigms.common);
+compileClassesPkg(spiral.paradigms.smp);
+compileClassesPkg(autolib);
+compileClassesPkg(spiral.libgen);
+
+compileClassesPkg(spiral.compiler);
+compileClassesPkg(spiral.formgen);
+
+compileClassesPkg(spiral.platforms.sse);
+compileClassesPkg(spiral.transforms);
+
+compileClassesPkg(spiral.rewrite);
+compileClassesPkg(spiral.sym);
+compileClassesPkg(spiral.search);
+
+
+spiral.util.COMPILE_INSTANCES := true;

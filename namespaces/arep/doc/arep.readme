@@ -1,0 +1,716 @@
+             ___   ___   ___  ___   
+            |   | |   | |    |   |   Version 1.2, 9 August 2000
+            |___| |___| |___ |___|   
+            |   | |  \  |    |       by Sebastian Egner  
+            |   | |   \ |___ |          Markus Pueschel  
+            
+           Abstract REPresentations
+
+  "A package for constructive representation theory of finite groups"
+
+  16.03.98, v1.0
+  15.08.99, v1.1
+  09.08.00, v1.2
+
+  Changes vs. 1.1
+  - Some minor bugs removed
+  - included more signal transforms
+
+  Changes vs. 1.0:
+  - New functions:
+      RandomMonRep
+      RotationAMat
+      FindSparseInvertible
+      FindRandomInvertible
+      PrintAMatToTex
+      PrintAMatToTexHeader
+      AppendAMatToTex
+      PrintAMatToTexEnd
+  - Extended specifications
+      kbsDecompositionARep
+      MatrixDecompositionByPermPermSymmetry
+      MatrixDecompositionByMonMonSymmetry
+  - Other improvements
+      DecompositionMonRep is faster
+      KernelARep takes care of inductions
+
+AREP home page: http://avalon.ira.uka.de/home/pueschel/arep/arep.html
+
+** Remember: "grep #F <file>.g" prints documentation on <file>.g! **
+
+Addresses
+  E-mail: sebastian.egner@philips.com
+          pueschel@ece.cmu.edu
+  WWW   : http://avalon.ira.uka.de/home/pueschel/arep/arep.html
+          http://avalon.ira.uka.de/home/egner/index.html
+          http://www.ece.cmu.edu/~pueschel
+
+References: (ordered anitchronologically)
+  preprints can be obtained on 
+  http://avalon.ira.uka.de/home/pueschel/work.html)
+
+  [1] : S. Egner and M. Pueschel, "Fast Discrete Signal Transforms 
+        and Monomial Representations of Finite Groups", submitted 
+        for publication
+  [2] : S. Egner and M. Pueschel, "Automatic Generation of Fast 
+        Discrete Signal Transforms", submitted for publication
+  [3] : S. Egner, J. Johnson, D. Padua, M. Pueschel, and J. Xiong, 
+        "Automatic Derivation and Implementation of Signal Processing 
+        Algorithms ", submitted for publication
+  [4] : M. Pueschel, "Decomposing Monomial Representations of Solvable Groups",
+        submitted for publication
+  [5] : M. Pueschel, S. Egner, and Th. Beth, "AREP", to appear in the 
+        New Reference Book on Computer Algebra, Eds. J.Grabmeier, E.Kaltofen, 
+        V.Weispfenning, Springer 2000  
+  [6] : M. Pueschel, "Constructive Representation Theory and Fast Discrete
+        Signal Transforms", PhD thesis 1998, University of Karlsruhe
+        Germany, available at the home page of the author in
+        German and English
+  [7] : S. Egner, "Zerlegungstheorie linearer Transformationen mit Symmetrie",
+        PhD thesis 1997, University of Karlsruhe
+        Germany (available online as document 1998/100 at
+        http://www.ubka.uni-karlsruhe.de/vvv/index.html or
+        via the home page of the author)
+  [8] : T. Minkwitz, "Algorithmensynthese fuer lineare Systeme mit Symmetrie",
+        PhD thesis 1993, University of Karlsruhe,
+        Germany, available via the author (torsten.minkwitz@telekom.de)
+
+Topics
+  Automatic derivation of fast signal transforms: [1], [2], [3], [6], [7], [8]
+  Finding symmetry: [1], [7]
+  Decomposing monomial representations: [4], [8]
+  About AREP: [5], or http://avalon.ira.uka.de/home/pueschel/arep/arep.html
+
+The package AREP was developed to create data structures and 
+functions for the efficient calculation with group representations
+with special attention to permutation and monomial representations. 
+The idea is to calculate with representations up to equality not 
+only up to equivalence as it is usually done in representation theory.
+Furthermore we wanted to be able to create highly structured 
+representations in GAP as you do it on a piece of paper by 
+writing e.g.
+
+  R = (R1 innerTensorProduct R2) induction G,
+
+where R1, R2 are representations and G is a group. The representation 
+R constructed this way should be kept this way; it should not be 
+evaluated until you ask for it. 
+In this sense we have implemented an infrastructure for representations.
+The more advanced part is given by functions which allow to transform 
+a given representation. These functions are mostly decompositions in 
+a certain sense. E.g. it is well known that every transitive monomial 
+representation of a group G is equivalent to an induction of a 
+onedimensional representation of a subgroup H <= G. But how do 
+you choose the subgroup, the transversal and the conjugation to obtain 
+equality? This problem is solved by the function
+
+  TransitiveToInductionMonRep   (in lib/arepfcts.g)
+
+which transforms a given transitive monomial rep R into the form
+
+  R = (L induction_By_T G)^D,
+
+where L is a onedimensional rep of a subgroup. A more sophisticated
+function for constructively decomposing a given representation
+is the function 
+
+  DecompositionMonRep  (in lib/arepfcts.g)
+
+which decomposes a monomial rep R into a conjugated direct sum 
+of irreducibles of the form
+
+  R = (R1 directSum R2 ... Rk)^A
+
+where Ri, i = 1..k are irreducible and the (inverted) decomposition 
+matrix A is explicitly given, even in a highly structured form!
+
+A striking application of constructive representation theory 
+is the decomposition of matrices with symmetry. This technique 
+allows to explain and generate a lot of classical fast signal 
+transforms. 
+The original idea is due to Minkwitz (cf. [1]) and was further 
+developed by the authors.
+
+Abstractly, a symmetry of a given matrix M is given by a pair (R1, R2) 
+of representations of the same group G, such that
+
+  R1(g) * M = M * R2(g) for all g in G.
+
+If R1 and R2 both are permutation representations we call 
+the symmetry Perm-Perm-Symmetry. Mon-Mon-Symmetry is defined
+analogous. Functions to determine the symmetry of a given matrix 
+can be found in lib/symmetry.g.
+If a matrix possesses symmetry of the types above, it can be 
+decomposed into a product of sparse matrices (see [2], [3]). 
+Functions implementing this idea can be found in algogen.g 
+allowing to generate wellknown fast signal 
+transforms such as Cooley-Tukey-FFT, Rader-FFT, 
+Fast Cosine Transforms, and others in an automatic way.
+
+
+In order for you to get a better impression of what
+AREP can do and can not do we have prepared some
+examples for you (see: Documentation and Examples).
+These examples are ordered according to the library files.
+
+Every GAP file in the library lib/ contains a short documentation
+including the specification of all important functions. This 
+documentation can be accessed by extracting all lines beginning
+with: #F.
+For example, on a UNIX system
+
+  cd lib/
+  grep #F complex.g
+
+tells you about the functions in 'complex.g'. 
+We recommend to extract these documentations before you
+proceed with the examples below.
+
+ 
+==========================
+Documentation and Examples 
+==========================
+
+AREP contains the following files and directories:
+
+init.g - File to provide all function names of the 
+         AREP package for autoloading.
+
+doc - Documentation
+===================
+
+README   - This file
+INSTALL  - A short (and complete) installation guide
+
+bin - Executables
+=================
+
+leonin   - prepares input for desauto
+leonout  - prepares output of desauto for GAP input
+desauto  - J. Leon's program for partition based backtracking
+
+src - C programs
+================
+
+Makefile  - creates leonin and leonout from .c-files
+leonin.c  - source code for bin/leonin
+leonout.c - source code for bin/leonout
+leon/     - J. Leon's partition based backtracking
+            (the same as shipped with the GUAVA package)
+
+lib - GAP files
+===============
+
+This directory contains all GAP files that implement
+the package AREP.
+
+The library is informally divided into four categories
+according to the purposes of the contained programs:
+  1. Constructive Representation Theory
+  2. Symmetry of Matrices 
+  3. Matrix Decomposition
+  4. General Tools
+
+The remaining part of this README file contains a
+practical introduction to the features provided by
+the AREP package. In particular, examples are given 
+for you to run. If you have not already installed
+the AREP package you should refer to the installation
+guide doc/INSTALL and install AREP now. 
+
+** Remember: "grep #F <file>.g" prints documentation on <file>.g! **
+
+
+1. Constructive Representation Theory
+-------------------------------------
+
+The higher functions for constructive representation theory
+(e.g. decomposing monomial representations) are based on [1].
+
+mon.g - datastructures to represent and calculate efficiently
+        with monomial matrices.
+
+Examples:
+
+gap> Mon((1,2), [1,-1]);    # a monomial matrix represented
+Mon(                        # as permutation times diagonal
+  (1,2),
+  [ 1, -1 ]
+)
+gap> Mon([1,-1],(1,2));     # exchanging the diagonal and the 
+Mon(                        # permutation yields another matrix
+  (1,2),
+  [ -1, 1 ]
+)
+gap> Mon((1,2), [Z(2), Z(2)]);  # every characteristik is allowed
+Mon( (1,2), 2, GF(2) )
+gap> DirectSumMon(last, last);  # constructors are available
+Mon( (1,2)(3,4), 4, GF(2) )
+gap> DeterminantMon(last);      # determinant, trace etc. are available
+Z(2)^0
+gap> Group(last2);              # Mon's are GroupElements
+Group( Mon( (1,2)(3,4), 4, GF(2) ) )
+
+amat.g - a termalgebra to construct and calculate with structured 
+         matrices. An AMat is a recursive datastructure representing
+         a matrix. An AMat is realized as a GAP-Record with 
+         mandatory and optional fields.
+
+Examples:
+
+gap> A1 := AMatPerm((1,2,3,4), 4);                # atomic constructors:
+AMatPerm((1,2,3,4), 4)                            # an atomic AMat can be 
+gap> A2 := AMatMon( Mon((1,3,2), [1,1,-1,-1]) );  # defined by a permutation,
+AMatMon( Mon(                                     # a Mon or a matrix
+  (1,3,2),
+  [ 1, 1, -1, -1 ]
+) )
+gap> A3 := AMatMat([[1,2],[3,4]]);
+AMatMat(
+  [ [ 1, 2 ], [ 3, 4 ] ]
+)
+gap> RecFields(A2);            # the fields defining A2
+[ "isAMat", "operations", "type", "dimensions", "char", "element" ]
+gap> A1*A2;                    # higher constructors as Product, 
+AMatPerm((1,2,3,4), 4) *       # TensorProductAMat, DirectSumAMat,
+AMatMon( Mon(                  # etc. yield higher structured AMat's 
+  (1,3,2),                     # and are NOT evaluated
+  [ 1, 1, -1, -1 ]
+) )
+gap> TensorProductAMat(last, A3);
+TensorProductAMat(
+  AMatPerm((1,2,3,4), 4) *
+  AMatMon( Mon(
+    (1,3,2),
+    [ 1, 1, -1, -1 ]
+  ) ),
+  AMatMat(
+    [ [ 1, 2 ], [ 3, 4 ] ]
+  )
+)
+gap> SimplifyAMat(last);       # an AMat can be simplified according
+TensorProductAMat(             # to some rules, e.g. adjacent monomial
+  AMatMon( Mon(                # matrices are multiplied together
+    (3,4),
+    [ 1, 1, -1, -1 ]
+  ) ),
+  AMatMat(
+    [ [ 1, 2 ], [ 3, 4 ] ]
+  )
+)
+gap> InverseAMat(last);        # Inversion of an AMat is easy to compute
+TensorProductAMat(             # by usage of mathematical rules
+  AMatMon( Mon(
+    (3,4),
+    [ 1, 1, -1, -1 ]
+  ) ),
+  AMatMat(
+    [ [ -2, 1 ], [ 3/2, -1/2 ] ],
+    "invertible"
+  )
+)
+gap> TraceAMat(last);          # Trace, Determinant etc. use mathematical
+-5                             # rules for evaluation
+
+arep.g     - a term algebra to construct and calculate with 
+             structured representations. The idea is the same
+             as with AMat's. An ARep is a recursive datastructure
+             representing a group representation and is realized
+             as a GAP-Record.
+arepfcts.g - higher functions for the calculation with areps
+
+Examples:
+
+gap> H := Group((1,2,3,4), (2,4));  # the group D8
+Group( (1,2,3,4), (2,4) )
+gap> H := GroupWithGenerators(H);   # sets the field H.theGenerators
+Group( (1,2,3,4), (2,4) )           # note, that Group has the freedom
+                                    # of e.g. removing identity elements
+                                    # from the given list of generators
+
+gap> H.theGenerators;               # generators we can rely on for
+[ (1,2,3,4), (2,4) ]                # the definition of a representation
+gap> R := ARepByImages(H, [ [[E(4),0], [0,E(4)^-1]], [[0,1], [1,0]] ]);
+ARepByImages(                                   # An ARep can be constructed  
+  GroupWithGenerators( [ (1,2,3,4), (2,4) ] ),  # by the images on 
+  [ [ [ E(4), 0 ], [ 0, -E(4) ] ],              # .theGenerators
+    [ [ 0, 1 ], [ 1, 0 ] ]
+  ],
+  "hom"
+)
+gap> R := MonARepARep(R);           # R converted to an ARep of type "mon"
+ARepByImages(
+  GroupWithGenerators( [ (1,2,3,4), (2,4) ] ),
+  [ Mon( [ E(4), -E(4) ] ),
+    Mon( (1,2), 2 )
+  ],
+  "hom"
+)
+gap> IsIrreducibleARep(R);          # R is irreducible
+true
+gap> CharacterARep(R);              # the character of R
+Character( Group( (1,2,3,4), (2,4) ), [ 2, 0, 0, 0, -2 ] )
+gap> G := Group((1,2,3,4), (1,2));  # a supergroup of H   
+Group( (1,2,3,4), (1,2) )
+gap> G := GroupWithGenerators(G);
+Group( (1,2,3,4), (1,2) )
+gap> R1 := InductionARep(R, G);     # the induction of R to G
+InductionARep(                      # the transversal is chosen by GAP
+  ARepByImages(                     # in this case and printed for
+    GroupWithGenerators( [ (1,2,3,4), (2,4) ] ),   # uniqueness
+    [ [ [ E(4), 0 ], [ 0, -E(4) ] ],      # Note, that the induction is NOT 
+      [ [ 0, 1 ], [ 1, 0 ] ]              # evaluated, only constructed
+    ],
+    "hom"
+  ),
+  GroupWithGenerators( [ (1,2,3,4), (1,2) ] ),
+  [ (), (3,4), (2,4,3) ]
+)
+gap> IsMonRep(R1);               # of course the induction is monomial, too
+true
+gap> R1 := MonARepARep(R1);      # R1 as a "mon"-ARep, now the induction
+ARepByImages(                    # is evaluated
+  GroupWithGenerators( [ (1,2,3,4), (1,2) ] ),
+  [ Mon(
+      (3,5,4,6),
+      [ E(4), -E(4), E(4), -E(4), -1, -1 ]
+    ),
+    Mon(
+      (1,4)(2,3)(5,6),
+      [ E(4), -E(4), E(4), -E(4), -1, -1 ]
+    )
+  ],
+  "hom"
+)
+gap> R2 := RegularARep(G);          # the regular representation of G
+RegularARep( GroupWithGenerators( [ (1,2,3,4), (1,2) ] ) )
+gap> R2 := PermARepARep(R2);        # converted to a "perm"-ARep
+ARepByImages(
+  GroupWithGenerators( [ (1,2,3,4), (1,2) ] ),
+  [ ( 1,10,17,19)( 2, 9,18,20)( 3,12,14,21)( 4,11,13,22)( 5, 7,16,23)
+( 6, 8,15,24),
+    ( 1, 7)( 2, 8)( 3, 9)( 4,10)( 5,11)( 6,12)(13,15)(14,16)(17,18)(19,21)
+(20,22)(23,24)
+  ],
+  24, # degree
+  "hom"
+)
+gap> R3 := R2 ^ AMatPerm((1,2), 24); # for conjugation use AMat's (cf. amat.g)
+ConjugateARep(
+  ARepByImages(
+    GroupWithGenerators( [ (1,2,3,4), (1,2) ] ),
+    [ ( 1,10,17,19)( 2, 9,18,20)( 3,12,14,21)( 4,11,13,22)( 5, 7,16,23)
+( 6, 8,15,24),
+      ( 1, 7)( 2, 8)( 3, 9)( 4,10)( 5,11)( 6,12)(13,15)(14,16)(17,18)(19,21)
+(20,22)(23,24)
+    ],
+    24, # degree
+    "hom"
+  ),
+  AMatPerm((1,2), 24)
+)
+gap> R4 := DecompositionMonRep(R3);;    # decompose R3 into a conjugated
+                                        # (by a structured AMat) direct
+                                        # sum of irreducibles - we avoid
+                                        # the lengthy output
+gap> R3 = R4;     # from a mathematical point of view they are equal
+true
+gap> List(R4.rep.summands, r -> r.degree);  # the degrees of the irreducibles
+[ 1, 1, 2, 2, 3, 3, 3, 3, 3, 3 ]
+gap> R4.conjugation.element;    # the structured AMat decomposing 
+                                # R3 into irreducibles
+AMatPerm(( 1,17, 4, 6,13,11,18,22,23,15,21, 7,20, 5, 8, 9,10,24)( 2,12)
+( 3,19,16), 24) *
+TensorProductAMat(
+  IdentityPermAMat(2),
+  AMatPerm(( 2, 6, 7, 5, 9, 3,11, 8,10,12, 4), 12) *
+  TensorProductAMat(
+    IdentityPermAMat(3),
+    AMatPerm((2,3), 4) *
+    TensorProductAMat(
+      DFTAMat(2),
+      DFTAMat(2)
+    ) *
+    AMatPerm((2,4), 4)
+  ) *
+  AMatPerm(( 2, 4, 8, 9, 3,12, 7,10, 6, 5), 12) *
+  DirectSumAMat(
+    DFTAMat(3),
+    IdentityPermAMat(9)
+  ) *
+  AMatPerm(( 2, 3), 12)
+) *
+AMatMon( Mon(
+  ( 2,21,17,12,10, 8, 6, 4)( 3,24,20,15,23,18,14,22,19,16,13,11, 9, 7, 5),
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, 1, 1, 1, 1 
+ ]
+) ) *
+DirectSumAMat(
+  TensorProductAMat(
+    DFTAMat(2),
+    IdentityPermAMat(10)
+  ),
+  IdentityPermAMat(4)
+) *
+AMatPerm(( 2,16,11)( 3,17,12, 7,21)( 4,18,13, 8,22)( 5,19,14, 9,23)
+( 6,20,15,10,24), 24)
+
+
+2. Symmetry of Matrices
+-----------------------
+
+For details on the concept and determination of symmetry refer 
+to [2].
+
+Abstract, a symmetry of a given matrix M is given by a pair (R1, R2) 
+of representations of the same group G, such that
+  R1(g) * M = M * R2(g) for all g in G.
+If R1 and R2 both are permutation representations we call 
+the symmetry Perm-Perm-Symmetry. Mon-Mon-Symmetry is defined
+analogous.
+The motivation for this definition lies e.g. in the automatic generation 
+of fast signal transforms and is explained in [1], [2], [3].
+See algogen.g below for fast signal transforms.
+
+symmetry.g - determines symmetry of matrices as a pair of areps.
+
+Examples:
+
+gap> M := [[1,2], [2,1]];
+[ [ 1, 2 ], [ 2, 1 ] ]
+gap> Rs := PermPermSymmetry(M);                  # determines the
+#I read file "symmetry.g" from directory "./lib" # Perm-Perm-Symmetry
+#I PermPermSym( <2x2-matrix> ) called
+#I   remapping values into [1..2]
+#I   homogeneous partition is 2x2
+#I   known subgroup is trivial
+#I   group to search is S2xS2
+#I   starting backtrack search
+#I   completed stabilizer level 0
+#I   backtrack search finished
+[ ARepByImages(
+      GroupWithGenerators( [ g ] ),
+      [ (1,2)
+      ],
+      2, # degree
+      "hom"
+    ), ARepByImages(
+      GroupWithGenerators( [ g ] ),
+      [ (1,2)
+      ],
+      2, # degree
+      "hom"
+    ) ]
+gap> Rs[1]^AMatMat(M) = Rs[2];      # means Rs[1]*M = M*Rs[2],
+true                                # the equation above
+
+# For larger matrices it is faster to use the
+# C-program 'desauto' by J. Leon, which can be
+# found in the GAP share package GUAVA. We have
+# prepared an interface to use 'desauto' from
+# the AREP package (and if it is properly installed):
+
+gap> UseLeon := true;;  # tell PermPermSym to use Leon's program
+gap> PermPermSym( DFT(11) );
+
+
+gap> M := DFT(2);                   # the Discrete Fourier Transform
+[ [ 1, 1 ], [ 1, -1 ] ]             # on two points (cf. transf.g below)
+
+gap> Rs := MonMonSymmetry(M);       # determines the Mon-Mon-Symmetry
+#I MonMonSym( <2x2-matrix>, <cycOrder=2> ) called
+#I PermPermSym( <4x4-matrix> ) called
+#I   remapping values into [1..2]
+#I   homogeneous partition is 4x4
+#I   known subgroup is trivial
+#I   group to search is S4xS4
+#I   starting backtrack search
+#I   completed stabilizer level 2
+#I   completed stabilizer level 1
+#I   completed stabilizer level 0
+#I   backtrack search finished
+[ ARepByImages(
+      GroupWithGenerators( [ g1, g2, g3 ] ),
+      [ Mon(
+          (1,2),
+          [ -1, -1 ]
+        ),
+        Mon( [ -1, 1 ] ),
+        Mon( [ 1, -1 ] )
+      ],
+      "hom"
+    ), ARepByImages(
+      GroupWithGenerators( [ g1, g2, g3 ] ),
+      [ Mon( [ -1, 1 ] ),
+        Mon(
+          (1,2),
+          [ -1, -1 ]
+        ),
+        Mon( (1,2), 2 )
+      ],
+      "hom"
+    ) ]
+gap> Rs[1]^AMatMat(M) = Rs[2];   # testing the equation above
+true
+gap> Rs := PermIrredSymmetry(M); # another symmetry type
+#I considering 2 many 1-subsets of [1..2]
+[ [ NaturalARep( G1, 2 ), ConjugateARep(
+          DirectSumARep(
+            TrivialMatARep( G1 ),
+            ARepByImages(
+              G1,
+              [ [ [ -1 ] ]
+              ],
+              "hom"
+            )
+          ),
+          IdentityPermAMat(2)
+        ) ] ]
+# This shows that DFT_2 decomposes the regular representation
+# of the cyclic group of order 2 into irreducibles
+
+permperm.g 
+monmon.g   
+permmat.g  
+permblk.g  - low level functions for the computation of 
+             the symmetry of a given matrix. See symmetry.g above
+
+3. Matrix Decomposition
+-----------------------
+
+The decomposition of matrices with symmetry is a striking application
+for the determination of symmetry and constructive representation theory
+(see above). The origin of this idea can be found in [1] and was 
+further developed in [2], [3].
+In particular a lot of fast signal transforms can be derived 
+automatically in this way.
+
+transf.g  - matrices representing various discrete signal transforms
+            on arbitrary many points.
+algogen.g - decomposition of matrices with symmetry of the types
+            mentioned above. One possible application is the automatic
+            generation of fast signal transforms.
+
+
+Examples:
+
+gap> DiscreteFourierTransform(5);     # the DFT on 5 points
+[ [ 1, 1, 1, 1, 1 ], [ 1, E(5), E(5)^2, E(5)^3, E(5)^4 ], 
+  [ 1, E(5)^2, E(5)^4, E(5), E(5)^3 ], [ 1, E(5)^3, E(5), E(5)^4, E(5)^2 ], 
+  [ 1, E(5)^4, E(5)^3, E(5)^2, E(5) ] ]
+gap> DFT(5);                          # a shortcut, yields the same
+[ [ 1, 1, 1, 1, 1 ], [ 1, E(5), E(5)^2, E(5)^3, E(5)^4 ], 
+  [ 1, E(5)^2, E(5)^4, E(5), E(5)^3 ], [ 1, E(5)^3, E(5), E(5)^4, E(5)^2 ], 
+  [ 1, E(5)^4, E(5)^3, E(5)^2, E(5) ] ]
+gap> DCT_IV(4);        # the Discrete Cosine Transform Type IV on 4 points
+[ [ 1/4*E(32)^3+1/4*E(32)^5-1/4*E(32)^11-1/4*E(32)^13, 
+      1/4*E(32)+1/4*E(32)^7-1/4*E(32)^9-1/4*E(32)^15, 
+      1/4*E(32)-1/4*E(32)^7+1/4*E(32)^9-1/4*E(32)^15, 
+      1/4*E(32)^3-1/4*E(32)^5+1/4*E(32)^11-1/4*E(32)^13 ], 
+  [ 1/4*E(32)+1/4*E(32)^7-1/4*E(32)^9-1/4*E(32)^15, 
+      -1/4*E(32)^3+1/4*E(32)^5-1/4*E(32)^11+1/4*E(32)^13, 
+      -1/4*E(32)^3-1/4*E(32)^5+1/4*E(32)^11+1/4*E(32)^13, 
+      -1/4*E(32)+1/4*E(32)^7-1/4*E(32)^9+1/4*E(32)^15 ], 
+  [ 1/4*E(32)-1/4*E(32)^7+1/4*E(32)^9-1/4*E(32)^15, 
+      -1/4*E(32)^3-1/4*E(32)^5+1/4*E(32)^11+1/4*E(32)^13, 
+      1/4*E(32)^3-1/4*E(32)^5+1/4*E(32)^11-1/4*E(32)^13, 
+      1/4*E(32)+1/4*E(32)^7-1/4*E(32)^9-1/4*E(32)^15 ], 
+  [ 1/4*E(32)^3-1/4*E(32)^5+1/4*E(32)^11-1/4*E(32)^13, 
+      -1/4*E(32)+1/4*E(32)^7-1/4*E(32)^9+1/4*E(32)^15, 
+      1/4*E(32)+1/4*E(32)^7-1/4*E(32)^9-1/4*E(32)^15, 
+      -1/4*E(32)^3-1/4*E(32)^5+1/4*E(32)^11+1/4*E(32)^13 ] ]
+gap> M := DFT(4);
+[ [ 1, 1, 1, 1 ], [ 1, E(4), -1, -E(4) ], [ 1, -1, 1, -1 ], 
+  [ 1, -E(4), -1, E(4) ] ]
+gap> MatrixDecompositionByPermIrredSymmetry(M);   # discovering the
+#I CALCULATING THE PERMIRRED SYMMETRY             # Cooley-Tukey-FFT
+#I considering 4 many 1-subsets of [1..4]
+#I considering 6 many 2-subsets of [1..4]
+#I CHOOSING SYMMETRY
+#I DECOMPOSING THE SYMMETRY
+#I cyclic prime power: 2^2
+#I SPECIALIZING
+TensorProductAMat(                  # this AMat represents the Cooley-Tukey 
+  DFTAMat(2),                       # decomposition of the DFT(4)
+  IdentityPermAMat(2)
+) *
+DiagonalAMat([ 1, 1, 1, E(4) ]) *
+TensorProductAMat(
+  IdentityPermAMat(2),
+  DFTAMat(2)
+) *
+AMatPerm((2,3), 4)
+gap> last = AMatMat(M);             # testing the result
+true
+gap> M := DFT(3);
+[ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ]
+gap> MatrixDecompositionByPermPermSymmetry(M);   # discovering the
+#I CALCULATING THE PERMPERM SYMMETRY             # Rader-FFT
+#I PermPermSym( <3x3-matrix> ) called
+#I   remapping values into [1..3]
+#I   homogeneous partition is (1+2)x(1+2)
+#I   remapping values into [1..5]
+#I   homogeneous partition is (1+2)x(1+2)
+#I   known subgroup is trivial
+#I   group to search is S2xS2
+#I   starting backtrack search
+#I   completed stabilizer level 0
+#I   backtrack search finished
+#I DECOMPOSING THE REPS
+#I orbit decomposition: 3 -> 1 + 2 (degrees)
+#I irreducible
+#I prime degree: 2
+#I SPECIALIZING
+DirectSumAMat(                     # this AMat represents the Rader
+  IdentityPermAMat(1),             # decomposition of a DFT on
+  DFTAMat(2)                       # p points, p prime
+) *
+AMatPerm((1,2,3), 3) *
+DirectSumAMat(
+  DiagonalAMat([ E(3)-E(3)^2 ]),
+  AMatMat(
+    [ [ 1, 2 ], [ 1, -1 ] ]
+  )
+) *
+AMatPerm((1,3,2), 3) *
+DirectSumAMat(
+  IdentityPermAMat(1),
+  DiagonalAMat([ 1/2, 1/2 ]) *
+  DFTAMat(2)
+)
+
+# For a further example try the following and obtain a fast 
+# algorithm for the Discrete Cosine Transform, Type IV, on 8 points.
+gap> MatrixDecompositionByMonMonSymmetry(DCT_IV(8));
+
+
+4. General Tools
+----------------
+
+tools.g - miscellaneous tools for computation with
+          permutations, matrices and partitions
+
+Examples: 
+
+# the tensor (or kronecker) product of two matrices
+gap> TensorProductMat([[1,0], [0,1]], [[1,2],[3,4]]);
+[ [ 1, 2, 0, 0 ], [ 3, 4, 0, 0 ], [ 0, 0, 1, 2 ], [ 0, 0, 3, 4 ] ]
+
+# permuting rows and columns of a matrix
+gap> PermutedMat((2,3), last, (1,4));
+[ [ 0, 2, 0, 1 ], [ 2, 0, 1, 0 ], [ 0, 4, 0, 3 ], [ 4, 0, 3, 0 ] ]
+
+# the blockstructure discovers the original blocks
+gap> BlockStructureMat(last);
+[ [ [ 1, 3 ], [ 2, 4 ] ], [ [ 2, 4 ], [ 1, 3 ] ] ]
+
+complex.g - exact complex arithmetics via cyclotomics
+
+Examples:
+
+gap> Sqrt(2);                # the square root of 2 represneted
+E(8)-E(8)^3                  # by cyclotomics
+
+gap> SinPi(1/5);             # sin(Pi/5) represented
+-1/2*E(20)^13+1/2*E(20)^17   # by cyclotomics
+

@@ -1,0 +1,30 @@
+
+Import(platforms.macro);
+
+
+opts := benchMACRO().2xf.1d.dft_ic.medium().getOpts();
+t := TRC(DFT(16)).withTags([AVecReg(MACRO_2xf)]);
+rt := RandomRuleTree(t, opts);
+s := SumsRuleTree(rt, opts);
+c := CodeSums(s, opts);
+CMeasure(c, opts);
+
+opts := benchMACRO().4xf.1d.dft_ic.medium().getOpts();
+t := TRC(DFT(32)).withTags([AVecReg(MACRO_4xf)]);
+rt := RandomRuleTree(t, opts);
+s := SumsRuleTree(rt, opts);
+c := CodeSums(s, opts);
+CMeasure(c, opts);
+
+opts := benchMACRO().8xf.1d.dft_ic.medium().getOpts();
+t := TRC(DFT(64)).withTags([AVecReg(MACRO_8xf)]);
+rt := RandomRuleTree(t, opts);
+s := SumsRuleTree(rt, opts);
+c := CodeSums(s, opts);
+CMeasure(c, opts);
+
+
+VerifyMatrixRuleTree(rt, opts);
+
+
+

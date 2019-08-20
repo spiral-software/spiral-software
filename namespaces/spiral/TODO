@@ -1,0 +1,21 @@
+scoping breaks with let() inside functions (let vs local)
+
+assignment to variables inside packages gets wrong namespace 
+some vars could be global (we didn't know that) and assignment is made
+to a Global var
+
+- Do not search for different rotated PRDFTs, DFTs (search space doubles at least)
+
+- Limit rule applicability for larger sizes,
+  Implement a more general approach for common rule limits, like transform size
+
+- Load(id) inside functions gives warnings
+
+-----
+
+- rlambda, clean implementation
+- svct rules for GT
+- test svct/libgen
+
+- fPrecompute
+- mincost libgen

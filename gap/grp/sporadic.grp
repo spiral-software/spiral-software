@@ -1,0 +1,84 @@
+# -*- Mode: shell-script -*-
+CVSID("$Id: sporadic.grp 1673 2005-05-29 09:15:59Z uyvorone $");
+#############################################################################
+##
+#A  sporadic.grp                GAP group library            Martin Schoenert
+##
+##
+#Y  Copyright (C) 2018-2019, Carnegie Mellon University
+#Y  All rights reserved.  See LICENSE for details.
+#Y  
+#Y  This work is based on GAP version 3, with some files from version 4.  GAP is
+#Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
+##
+##  This file  contains permutation  representations for  Mathieu's  sporadic
+##  simple groups.  They are taken from D.  Gorenstein, Finite simple groups.
+##
+#I  Revision 3.1  1995/12/15  10:37:11  mschoene
+#I  initial revision under RCS
+#I
+##
+
+
+#############################################################################
+##
+#F  MathieuGroup( <d> ) . . . . . . . . . . . . . Mathieu group of degree <d>
+##
+MathieuGroup := function( arg )
+    if Length(arg) = 1  then
+        return PermutationsOps.MathieuGroup(Permutations,arg[1]);
+    elif Length(arg) = 2  then
+        if not IsBound(arg[1].operations.MathieuGroup)  then
+	    Error( "cannot construct the mathieu group for this domain" );
+        else
+	    return arg[1].operations.MathieuGroup(arg[1],arg[2]);
+	fi;
+    else
+        Error( "usage: MathieuGroup( <degree> )" );
+    fi;
+end;
+
+PermutationsOps.MathieuGroup := function ( domain, d )
+
+    # degree 11, base 1 2 3 4, indices 11 10 9 8
+    if d = 11  then
+        return Group(
+            (1,2,3,4,5,6,7,8,9,10,11),
+            (3,7,11,8)(4,10,5,6) );
+
+    # degree 12, base 1 2 3 4 5, indices 12 11 10 9 8
+    elif d = 12  then
+        return Group(
+            (1,2,3,4,5,6,7,8,9,10,11),
+            (3,7,11,8)(4,10,5,6),
+            (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) );
+
+    # degree 22, base 1 2 3 4 5, indices 22 21 20 16 3
+    elif d = 22  then
+        return Group(
+            (1,2,3,4,5,6,7,8,9,10,11)(12,13,14,15,16,17,18,19,20,21,22),
+            (1,4,5,9,3)(2,8,10,7,6)(12,15,16,20,14)(13,19,21,18,17),
+            (1,21)(2,10,8,6)(3,13,4,17)(5,19,9,18)(11,22)(12,14,16,20) );
+
+    # degree 23, base 1 2 3 4 5 6, indices 23 22 21 20 16 3
+    elif d = 23  then
+        return Group(
+            (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23),
+            (3,17,10,7,9)(4,13,14,19,5)(8,18,11,12,23)(15,20,22,21,16) );
+
+    # degree 24, base 1 2 3 4 5 6 7, indices 24 23 22 21 20 16 3
+    elif d = 24  then
+        return Group(
+            (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23),
+            (3,17,10,7,9)(4,13,14,19,5)(8,18,11,12,23)(15,20,22,21,16),
+            (1,24)(2,23)(3,12)(4,16)(5,18)(6,10)(7,20)(8,14)(9,21)(11,17)
+            (13,22)(19,15) );
+
+    # error
+    else
+        Error("degree <d> must be 11, 12, 22, 23, or 24" );
+    fi;
+end;
+
+
+

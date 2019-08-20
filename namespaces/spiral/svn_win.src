@@ -1,0 +1,4 @@
+LocalConfig.svninfo.version:= $WCREV$;
+LocalConfig.svninfo.modified:= $WCMODS?true:false$;
+LocalConfig.svninfo.mixed:= $WCMIXED?true:false$;
+LocalConfig.svninfo.isInit := true;

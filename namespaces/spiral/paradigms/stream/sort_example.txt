@@ -1,0 +1,15 @@
+opts := InitStreamHw();
+opts.breakdownRules; # shows which rules are turned on.  this is set in hacks.gi
+
+# to turn on just one rule: 
+# opts.breakdownRules.Sort := [Sort_Stream];
+# or
+# opts.breakdownRules.Sort := [Sort_Stream_Iter];
+
+
+t := Sort(8).withTags([AStream(2)]);
+r := RandomRuleTree(t, opts);
+s := SumsRuleTreeStrategy(r, SumStreamStrategy, opts);
+s2 :=  ApplyStrategy(s, StreamStrategy, UntilDone, opts);
+s3 := s2.createCode(); 
+HDLGen(s3, 1, 0, 16, 0, 0, "sort");

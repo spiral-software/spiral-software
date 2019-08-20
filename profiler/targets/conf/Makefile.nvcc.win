@@ -1,0 +1,29 @@
+# setup some defaults.
+RM      = del /f /q
+LIB	= lib
+
+export CC	=	nvcc.exe
+
+SET PATH = C:\CUDA\bin\;%PATH%
+
+override CFLAGS  = -O2 -DWIN32
+
+CONFDIR ?= .
+
+.PHONY: all
+all: $(CONFDIR)/libconf.lib
+
+SRC = exceptions.c misc.c vector.c xmalloc.c sys.c vector_def.c
+
+OBJ := $(addprefix $(join $(CONFDIR), /),$(SRC:.c=.obj))
+
+$(CONFDIR)/libconf.lib: $(OBJ)
+	$(LIB) /OUT:$@ $(subst /,\,$^)
+	
+$(CONFDIR)/%.obj: %.c
+	$(CC) $(CFLAGS) -c $< /Fo$@ >nul
+# $(subst /,\,$@) >nul
+
+.PHONY: clean
+clean:
+	-$(RM) $(subst /,\,$(OBJ)) $(subst /,\,$(CONFDIR))\libconf.*

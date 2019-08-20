@@ -1,0 +1,21 @@
+#!@SH@
+SPIRAL="@spiraldir@"
+INSTALL_PFX="@prefix@"
+GAP_DIR=$SPIRAL/gap
+GAP_MEM=256m
+
+# make sure spiral_config is on the path
+PATH=$SPIRAL/sys_conf/:$PATH
+
+#== Validate configuration
+spiral_config -check || exit 1
+
+#== Create temporary directory
+mkdir -p `spiral_config -val tmp_dir`
+
+#== Regenerate list of transforms in formgen/transforms/init.g
+# List of transforms is no longer automatically created on each startup
+# since it prevented spiral from being installed globally
+
+#== start SPIRAL
+exec "$INSTALL_PFX/bin/gap" -m $GAP_MEM -l "$GAP_DIR/lib/" -h "$GAP_DIR/doc/" -x 625 $*

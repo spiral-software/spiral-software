@@ -1,0 +1,7 @@
+X - real X-shaped matrix
+X = I, if skew alpha = 1/4
+
+PSkewDFT3 = DFT * CX
+PSkewDFT3 = DFT3 * X
+
+rDFT = PRDFT3 * X

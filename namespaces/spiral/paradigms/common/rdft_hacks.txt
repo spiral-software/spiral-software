@@ -1,0 +1,181 @@
+#--------------------------
+b := LocalConfig.bench.SSE().4x32f.rdft();
+b.runAll();
+
+#--------------------------
+b := doSimdSymDFT("rdft", [32], SSE_4x32f, rec(verify := true));
+b.runAll();
+
+#--------------------------
+# Linux
+b := doSimdSymDFT(TRDFT, 32*[1..12], SSE_4x32f, rec(verify :=true, mode:=() -> spiral.backend.default_profiles.linux_x86_icc));
+b.runAll();
+
+
+#--------------------------
+n := 32*[1..12];
+t := TRDFT;
+isa := "f32re";
+opts := SpiralDefaults;
+opts.globalUnrolling := 10000;
+
+opts.benchTransforms := List(n, t);
+dpr  := rec(verbosity := 0, timeBaseCases:=true);
+dpbench := spiral.libgen.DPBench(rec((Concat("rdft_", isa)) := opts), dpr);
+dpbench.matrixVerify := true;
+dpbench.runAll();
+
+#--------------------------
+ImportAll(paradigms.vector);
+n:=4;
+isa := SSE_4x32f;
+l := codeSimdDct("rdft", [2*n*isa.v^2], isa);
+
+t := l.t;
+opts := l.opts;
+rt := l.rt;
+s := l.s;
+c :=l.c;
+cm := CMatrix(c, opts);
+
+InfinityNormMat(MatSPL(t) - MatSPL(s));
+InfinityNormMat(MatSPL(t) - cm);
+CMeasure(c, opts);
+
+#----------------------------
+ImportAll(paradigms.vector);
+isa := SSE_2x64f;
+N := 8;
+opts := SIMDGlobals.getOpts(isa, rec(globalUnrolling := 1024));
+v := isa.v;
+
+t := TConjEven(N).withTags([AVecReg(isa)]);
+VisualizeMat(MatSPL(t), "");
+rt := RandomRuleTree(t, opts);
+
+s := SumsRuleTree(rt, opts);
+ss := s.child(1).child(2).child(1);
+
+VisualizeMat(MatSPL(ss), "");
+
+c := CodeSums(ss, opts);
+cm := CMatrix(c, opts);
+VisualizeMat(cm, "");
+
+m := MatSPL(ss) - cm;
+InfinityNormMat(m);
+
+#============================
+N := 16;
+t := TRDFT(N);
+rt := RandomRuleTree(t, SpiralDefaults);
+s := SPLRuleTree(rt);
+InfinityNormMat(MatSPL(t) - MatSPL(s));
+
+#--------------------------
+ImportAll(paradigms.vector);
+N := 32;
+isa := SSE_4x32f;
+opts := SIMDGlobals.getOpts(isa);
+v := isa.v;
+
+d:=VRCLR(Diag(diagDirsum(fConst(1,1), fCompose(dOmega(N, 1), dLin(N/2-1, 1, N*3/4+1, TInt)))), v);
+
+SumsRuleTree(d, opts);
+
+s := VBlkInt(d, v);
+vecVisualizeMat(MatSPL(s), "", v, "|");
+
+vecVisualizeMat(MatSPL(d), "", v, "|");
+
+
+
+#------------------------------------
+ImportAll(paradigms.vector);
+
+N := 32;
+v := 4;
+
+C1 := Tensor(I(N/(2*v)), L(2*v,v));
+C2 := Tensor(I(N/(2*v)), L(2*v,2));
+
+m := Mat([[1,0],[0,-1]]);
+m1 := DirectSum(J(2), SUM(I(N-2), Tensor(J((N-2)/2), -m)));
+
+mv := C2*(m1)*C1;
+mm := VBlkInt(mv, v);
+
+vecVisualizeMat(MatSPL(mm), "", v, "|");
+vecVisualizeMat(MatSPL(mv), "", v, "|");
+
+
+
+jv1 := C2*DirectSum(O(2), Tensor(J((N-2)/2), m))*C1;
+vecVisualizeMat(MatSPL(jv1), "", v, "|");
+
+
+
+e0 := Concat([V(0)], List([2..v], i->V(1)));
+e1 := Concat([V(1)], List([2..v], i->V(0)));
+blk := VBlk([[e0,e1],[e1,e0]], v).setSymmetric();
+dv1 := DirectSum(blk, VTensor(I(N/v-2), v));
+vecVisualizeMat(MatSPL(dv1), "", v, "|");
+
+
+P1 := VPrm_x_I(L(N/v, N/(2*v)), v);
+P2 := VPrm_x_I(L(N/v, 2), v);
+
+jv2 := P1*DirectSum(-VO1dsJ(N/2, v), VO1dsJ(N/2, v))*P2;
+
+
+mv2 := SUM(dv1,jv2);
+mm2 := VBlkInt(mv2, v);
+vecVisualizeMat(MatSPL(mm2), "", v, "|");
+
+
+
+
+
+
+
+
+#----------------------------------------
+
+
+
+
+d:=RC(Diag(diagDirsum(fConst(1,1), fCompose(dOmega(N, 1), dLin(N/2-1, 1, N*3/4+1, TInt)))));
+vecVisualizeMat(MatSPL(C2*d*C1), "", v, "|");
+
+
+N := 32;
+v := 4;
+
+C1 := Tensor(I(N/(2*v)), L(2*v,v)) * Tensor(L(N/v, N/(2*v)), I(v));
+C2 := Tensor(L(N/v, 2), I(v)) * Tensor(I(N/(2*v)), L(2*v,2));
+
+m := Mat([[1,0],[0,-1]]);
+m2 := DirectSum(O(2), Tensor(J((N-2)/2), m));
+mm := C2*(m2)*C1;
+
+vecVisualizeMat(MatSPL(mm), "", v, "|");
+
+
+mj:=MatSPL(DirectSum(O(1),J(15)));
+vecVisualizeMat(mj, "", v, "|");
+
+
+#------------------------------
+opts := SIMDGlobals.getOpts(SSE_2x64f);
+ImportAll(paradigms.vector);
+N:=8;
+v:=2;
+s:=VO1dsJ(N, v);
+vecVisualizeMat(MatSPL(s), "", v, "|");
+c := CodeSums(s, opts);
+PrintCode("", c, opts);
+m := CMatrix(c, opts);
+pm(Mat(m));
+
+
+

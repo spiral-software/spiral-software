@@ -1,0 +1,2 @@
+#!/bin/sh
+xdvi -s 8 @spiraldir@/gap/doc/manual.dvi &

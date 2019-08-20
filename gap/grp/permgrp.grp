@@ -1,0 +1,713 @@
+# -*- Mode: shell-script -*-
+CVSID("$Id: permgrp.grp 1673 2005-05-29 09:15:59Z uyvorone $");
+#############################################################################
+##
+#A  permgrp.grp                 GAP group library            Martin Schoenert
+##
+##
+#Y  Copyright (C) 2018-2019, Carnegie Mellon University
+#Y  All rights reserved.  See LICENSE for details.
+#Y  
+#Y  This work is based on GAP version 3, with some files from version 4.  GAP is
+#Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
+##
+##  This file contains the definitions of of the basic permutation groups.
+##
+##
+
+
+#############################################################################
+##
+#F  PermGroupLib(<type>,<arg>)  . . . . . . . . . .  make a permutation group
+##
+PermGroupLib := function ( arg )
+    if   arg[1] = "CyclicGroup"             then
+        return CyclicPermGroup( arg[2] );
+    elif arg[1] = "AbelianGroup"            then
+        return AbelianPermGroup( arg[2] );
+    elif arg[1] = "ElementaryAbelianGroup"  then
+        return ElementaryAbelianPermGroup( arg[2] );
+    elif arg[1] = "DihedralGroup"           then
+        return DihedralPermGroup( arg[2] );
+    elif arg[1] = "PolyhedralGroup"         then
+        return PolyhedralPermGroup( arg[2], arg[3] );
+    elif arg[1] = "AlternatingGroup"        then
+        return AlternatingPermGroup( arg[2] );
+    elif arg[1] = "SymmetricGroup"          then
+        return SymmetricPermGroup( arg[2] );
+    elif arg[1] = "GeneralLinearGroup"      then
+        return GeneralLinearPermGroup( arg[2], arg[3] );
+    elif arg[1] = "SpecialLinearGroup"      then
+        return SpecialLinearPermGroup( arg[2], arg[3] );
+    elif arg[1] = "SymplecticGroup"         then
+        return SymplecticPermGroup( arg[2], arg[3] );
+    elif arg[1] = "GeneralUnitaryGroup"     then
+        return GeneralUnitaryPermGroup( arg[2], arg[3] );
+    elif arg[1] = "SpecialUnitaryGroup"     then
+        return SpecialUnitaryPermGroup( arg[2], arg[3] );
+    else
+        Error("<type> must be ",
+              "\"CyclicGroup\", ",
+              "\"AbelianGroup\", ",
+              "\"ElementaryAbelianGroup\", ",
+              "\"DihedralGroup\", ",
+              "\"PolyhedralGroup\", ",
+              "\"AlternatingGroup\", ",
+              "\"SymmetricGroup\", ",
+              "\"GeneralLinearGroup\", ",
+              "\"SpecialLinearGroup\", ",
+              "\"SymplecticGroup\", ",
+              "\"GeneralUnitaryGroup\", or ",
+              "\"SpecialUnitaryGroup\"");
+    fi;
+end;
+
+
+#############################################################################
+##
+#F  CyclicPermGroup( <n> )  . . . . . . . . . . . .  cyclic permutation group
+##
+CyclicPermGroup := function ( n )
+    local   C, g;
+    g := PermList( Concatenation( [2..n], [1] ) );
+    C := Group( g );
+    C.size := n;
+    return C;
+end;
+
+
+#############################################################################
+##
+#F  AbelianPermGroup( <ords> )  . . . . . . . . . . abelian permutation group
+##
+AbelianPermGroup := function ( ords )
+    return DirectProduct( List( ords, n -> CyclicPermGroup( n ) ) );
+end;
+
+
+#############################################################################
+##
+#F  ElementaryAbelianPermGroup( <n> ) .  elementary abelian permutation group
+##
+ElementaryAbelianPermGroup := function ( n )
+    local   facs,       # factors of <n>
+            C;          # cyclic group of prime order
+
+    facs := Factors( n );
+    C := CyclicPermGroup( facs[ 1 ] );
+    return DirectProduct( List( facs, n -> C ) );
+end;
+
+
+#############################################################################
+##
+#F  DihedralPermGroup( <n> )  . . . . . . . . . .  dihedral permutation group
+##
+DihedralPermGroup := function ( n )
+    local   D, g, h;
+    if n = 2  then
+        D := Group((1,2));
+    elif n = 4  then
+        g := (1,2);
+        h := (3,4);
+        D := Group( g, h );
+    else
+        g := PermList( Concatenation( [2..n/2], [1] ) );
+        h := PermList( Concatenation( [1], Reversed( [2..n/2] ) ) );
+        D := Group( g, h );
+    fi;
+    return D;
+end;
+
+
+#############################################################################
+##
+#F  PolyhedralPermGroup( <n> )  . . . . . . . .  polyhedral permutation group
+##
+PolyhedralPermGroup := function ( p, q )
+    local   P, g, h, r;
+    g := PermList( Concatenation( [2..q], [1] ) );
+    r := 2;
+    while r < q  and (GcdInt(r-1,q) <> 1  or PowerMod(r,p,q) <> 1)  do
+        r := r + 1;
+    od;
+    if r = q  then
+        Error("a <p>-th root of unity mod every factor of <q> must exist");
+    fi;
+    h := PermList( List( [1..q], i -> (i-1)*r mod q + 1 ) );
+    P := Group( g, h );
+    return P;
+end;
+
+
+#############################################################################
+##
+#F  AlternatingPermGroup( <n> ) . . . . . . . . alternating permutation group
+##
+AlternatingPermGroup := function ( n )
+    local   A;          # alternating group on <n> points, result
+
+    # make the group generated by (1,2,n), (2,3,n), .., (n-2,n-1,n)
+    A := Group( List( [1..n-2], i -> (i,i+1,n) ), () );
+    A.degree := n;
+
+    # give it the correct operations record
+    A.operations := AlternatingPermGroupOps;
+
+    # return the alternating group
+    return A;
+end;
+
+AlternatingPermGroupOps := OperationsRecord( "AlternatingPermGroupOps",
+                                             PermGroupOps );
+
+AlternatingPermGroupOps.\in := function ( g, G )
+    return     IsPerm( g )
+           and (g = ()
+             or LargestMovedPointPerm( g ) <= G.degree
+                and SignPerm( g ) = 1);
+end;
+
+AlternatingPermGroupOps.Random := function ( G )
+    local   rnd,        # random permutation, result
+            sgn,        # sign of the permutation so far
+            tmp,        # temporary variable for swapping
+            i,  k;      # loop variables
+
+    # use Floyd\'s algorithm
+    rnd := [ 1 .. G.degree ];
+    sgn := 1;
+    for i  in [ 1 .. G.degree-2 ]  do
+        k := RandomList( [ i .. G.degree ] );
+        tmp := rnd[i];
+        rnd[i] := rnd[k];
+        rnd[k] := tmp;
+        if i <> k  then
+            sgn := -sgn;
+        fi;
+    od;
+
+    # make the permutation even
+    if sgn = -1  then
+        tmp := rnd[G.degree-1];
+        rnd[G.degree-1] := rnd[G.degree];
+        rnd[G.degree] := tmp;
+    fi;
+
+    # return the permutation
+    return PermList( rnd );
+end;
+
+AlternatingPermGroupOps.MakeStabChain := function ( G, base )
+    local   new,        # extended base
+            sgs,        # strong generating system of <G> w.r.t. <base>
+            last,       # last point of the base
+            i;          # loop variable
+
+    # remove duplicates and extend the base with points not alread present
+    new := [];
+    for i  in base  do
+        if not i in new and i <= G.degree  then Add( new, i );  fi;
+    od;
+    for i  in [ 1 .. G.degree ]  do
+        if not i in new                    then Add( new, i );  fi;
+    od;
+
+    # take the last point
+    last := new[ Length(new) ];
+
+    # make the strong generating set
+    sgs := List( [1..Length(new)-2], i -> ( new[i], new[i+1], last ) );
+
+    # make the stabilizer chain
+    MakeStabChainStrongGenerators( G, new, sgs );
+end;
+
+AlternatingPermGroupOps.Size := function( G )
+    if G.degree < 2  then
+        return 1;
+    else
+        return Factorial( G.degree ) / 2;
+    fi;
+end;
+
+AlternatingPermGroupOps.RepresentativeOperation := function ( G, d, e, opr )
+    local   rep,        # representative, result
+            cyclesd,    # cycles of the permutation <d>
+            cyclese,    # cycles of the permutation <e>
+            i;          # loop variable
+
+    # standard operation on integers
+    if      opr = OnPoints
+        and IsInt( d )  and d <= G.degree
+        and IsInt( e )  and e <= G.degree
+    then
+        if d = e  then
+            rep := ();
+        elif G.degree < 3  then
+            rep := false;
+        else
+            if d <> 1  and e <> 1  then
+                rep := (1,d,e);
+            elif d <> 2  and e <> 2  then
+                rep := (2,d,e);
+            else
+                rep := (3,d,e);
+            fi;
+        fi;
+
+    # delegate other cases
+    else
+        rep := PermGroupOps.RepresentativeOperation( G, d, e, opr );
+    fi;
+
+    # return the representative
+    return rep;
+end;
+
+AlternatingPermGroupOps.SylowSubgroup := function ( G, p )
+    local   S,          # <p>-Sylow subgroup of <G>, result
+            sgs,        # strong generating set of <G>
+            q,          # power of <p>
+            i;          # loop variable
+
+    # make the strong generating set
+    sgs := [];
+    for i  in [3..G.degree]  do
+        q := p;
+        if p = 2  and i mod 2 = 0  then
+            Add( sgs, (1,2)(i-1,i) );
+            q := q * p;
+        fi;
+        while i mod q = 0  do
+            Add( sgs, PermList( Concatenation(
+                        [1..i-q], [i-q+1+q/p..i], [i-q+1..i-q+q/p] ) ) );
+            q := q * p;
+        od;
+    od;
+
+    # make the Sylow subgroup
+    S := Subgroup( Parent( G ), sgs );
+
+    # add the stabilizer chain
+    MakeStabChainStrongGenerators( S, Reversed([1..G.degree]), sgs );
+
+    # return the Sylow subgroup
+    return S;
+end;
+
+AlternatingPermGroupOps.ConjugacyClasses := function ( G )
+    local   classes,    # conjugacy classes of <G>, result
+            prt,        # partition of <G>
+            sum,        # partial sum of the entries in <prt>
+            rep,        # representative of a conjugacy class of <G>
+            i;          # loop variable
+
+    # loop over the partitions
+    classes := [];
+    for prt  in Partitions( G.degree )  do
+
+        # only take those partitions that lie in the alternating group
+        if Number( prt, i -> i mod 2 = 0 ) mod 2 = 0  then
+
+            # compute the representative of the conjugacy class
+            rep := [2..G.degree];
+            sum := 1;
+            for i  in prt  do
+                rep[sum+i-1] := sum;
+                sum := sum + i;
+            od;
+            rep := PermList( rep );
+
+            # add the new class to the list of classes
+            Add( classes, ConjugacyClass( G, rep ) );
+
+            # some classes split in the alternating group
+            if      ForAll( prt, i -> i mod 2 = 1 )
+                and Length( prt ) = Length( Set( prt ) )
+            then
+                Add( classes, ConjugacyClass(G,rep^(G.degree-1,G.degree)) );
+            fi;
+
+        fi;
+
+    od;
+
+    # return the classes
+    return classes;
+end;
+
+
+#############################################################################
+##
+#F  SymmetricPermGroup( <n> ) . . . . . . . . . . symmetric permutation group
+##
+SymmetricPermGroup := function ( n )
+    local   G;          # symmetric group on <n> points, result
+
+    # if <n> is 0 or 1 return the trivial group
+    if n < 2  then
+    	G := Group( () );
+
+    # make the group generated by (1,n), (2,n), .., (n-1,n)
+    else
+        G := Group( List( [1..n-1], i -> (i,n) ), () );
+        G.degree := n;
+
+        # give it the correct operations record
+        G.operations := SymmetricPermGroupOps;
+    fi;
+
+    # return the symmetric group
+    return G;
+end;
+
+SymmetricPermGroupOps := OperationsRecord( "SymmetricPermGroupOps",
+                                           PermGroupOps );
+
+SymmetricPermGroupOps.\in := function ( g, G )
+    return     IsPerm( g )
+           and (g = () or LargestMovedPointPerm( g ) <= G.degree);
+end;
+
+SymmetricPermGroupOps.Random := function ( G )
+    local   rnd,        # random permutation, result
+            tmp,        # temporary variable for swapping
+            i,  k;      # loop variables
+
+    # use Floyd\'s algorithm
+    rnd := [ 1 .. G.degree ];
+    for i  in [ 1 .. G.degree-1 ]  do
+        k := RandomList( [ i .. G.degree ] );
+        tmp := rnd[i];
+        rnd[i] := rnd[k];
+        rnd[k] := tmp;
+    od;
+
+    # return the permutation
+    return PermList( rnd );
+end;
+
+SymmetricPermGroupOps.MakeStabChain := function ( G, base )
+    local   sgs,        # strong generating system of <G> w.r.t. <base>
+            last;       # last point of the base
+
+    # remove all unwanted points from the base
+    base := Filtered( base, i -> i <= G.degree );
+
+    # extend the base with those points not already in the base
+    base := Concatenation( base, Difference( [1..G.degree], base ) );
+
+    # take the last point
+    last := base[ Length(base) ];
+
+    # make the strong generating set
+    sgs := List( [1..Length(base)-1], i -> ( base[i], last ) );
+
+    # make the stabilizer chain
+    MakeStabChainStrongGenerators( G, base, sgs );
+end;
+
+SymmetricPermGroupOps.Size := function( G )
+    return Factorial( G.degree );
+end;
+
+SymmetricPermGroupOps.Centralizer := function ( G, g )
+    local   C,          # centralizer of <g> in <G>, result
+            sgs,        # strong generating set of <C>
+            gen,        # one generator in <sgs>
+            cycles,     # cycles of <g>
+            cycle,      # one cycle from <cycles>
+            lasts,      # '<lasts>[<l>]' is the last cycle of length <l>
+            last,       # one cycle from <lasts>
+            i;          # loop variable
+
+    # handle special case
+    if IsPerm( g )  and g in G  then
+
+        # start with the empty strong generating system
+        sgs := [];
+
+        # compute the cycles and find for each length the last one
+        cycles := Cycles( g, [1..G.degree] );
+        lasts := [];
+        for cycle  in cycles  do
+            lasts[Length(cycle)] := cycle;
+        od;
+
+        # loop over the cycles
+        for cycle  in cycles  do
+
+            # add that cycle itself to the strong generators
+            if Length( cycle ) <> 1  then
+                gen := [1..G.degree];
+                for i  in [1..Length(cycle)-1]  do
+                    gen[cycle[i]] := cycle[i+1];
+                od;
+                gen[cycle[Length(cycle)]] := cycle[1];
+                gen := PermList( gen );
+                Add( sgs, gen );
+            fi;
+
+            # and this cycle can be mapped to the last cycle of this length
+            if cycle <> lasts[ Length(cycle) ]  then
+                last := lasts[ Length(cycle) ];
+                gen := [1..G.degree];
+                for i  in [1..Length(cycle)]  do
+                    gen[cycle[i]] := last[i];
+                    gen[last[i]] := cycle[i];
+                od;
+                gen := PermList( gen );
+                Add( sgs, gen );
+            fi;
+
+        od;
+
+        # make the centralizer
+        C := Subgroup( Parent( G ), sgs );
+
+        # make the stabilizer chain
+        MakeStabChainStrongGenerators( C, [1..G.degree], sgs );
+
+    # delegate general case
+    else
+        C := PermGroupOps.Centralizer( G, g );
+    fi;
+
+    # return the centralizer
+    return C;
+end;
+
+SymmetricPermGroupOps.RepresentativeOperation := function ( G, d, e, opr )
+    local   rep,        # representative, result
+            cyclesd,    # cycles of the permutation <d>
+            cyclese,    # cycles of the permutation <e>
+            i;          # loop variable
+
+    # standard operation on integers
+    if      opr = OnPoints
+        and IsInt( d )  and d <= G.degree
+        and IsInt( e )  and e <= G.degree
+    then
+        if d = e  then
+            rep := ();
+        else
+            rep := (d,e);
+        fi;
+
+    # operation on tuples of integers
+    elif    (opr = OnPairs or opr = OnTuples or opr = OnSets)
+        and ForAll( d, IsInt )  and Maximum( d ) <= G.degree
+        and ForAll( e, IsInt )  and Maximum( e ) <= G.degree
+    then
+        rep := MappingPermListList( d, e );
+
+    # operation by conjugation
+    elif    opr = OnPoints
+        and IsPerm( d )  and d in G
+        and IsPerm( e )  and e in G
+    then
+        cyclesd := Cycles( d, [1..G.degree] );
+        Sort( cyclesd, function(x,y) return Length(x) < Length(y); end );
+        cyclese := Cycles( e, [1..G.degree] );
+        Sort( cyclese, function(x,y) return Length(x) < Length(y); end );
+        if List( cyclesd, Length ) <> List( cyclese, Length )  then
+            return false;
+        fi;
+        rep := MappingPermListList( Concatenation( cyclesd ),
+                                    Concatenation( cyclese ) );
+
+    # delegate other cases
+    else
+        rep := PermGroupOps.RepresentativeOperation( G, d, e, opr );
+    fi;
+
+    # return the representative
+    return rep;
+end;
+
+SymmetricPermGroupOps.SylowSubgroup := function ( G, p )
+    local   S,          # <p>-Sylow subgroup of <G>, result
+            sgs,        # strong generating set of <G>
+            q,          # power of <p>
+            i;          # loop variable
+
+    # make the strong generating set
+    sgs := [];
+    for i  in [1..G.degree]  do
+        q := p;
+        while i mod q = 0  do
+            Add( sgs, PermList( Concatenation(
+                        [1..i-q], [i-q+1+q/p..i], [i-q+1..i-q+q/p] ) ) );
+            q := q * p;
+        od;
+    od;
+
+    # make the Sylow subgroup
+    S := Subgroup( Parent( G ), sgs );
+
+    # add the stabilizer chain
+    MakeStabChainStrongGenerators( S, Reversed([1..G.degree]), sgs );
+
+    # return the Sylow subgroup
+    return S;
+end;
+
+SymmetricPermGroupOps.ConjugacyClasses := function ( G )
+    local   classes,    # conjugacy classes of <G>, result
+            prt,        # partition of <G>
+            sum,        # partial sum of the entries in <prt>
+            rep,        # representative of a conjugacy class of <G>
+            i;          # loop variable
+
+    # loop over the partitions
+    classes := [];
+    for prt  in Partitions( G.degree )  do
+
+        # compute the representative of the conjugacy class
+        rep := [2..G.degree];
+        sum := 1;
+        for i  in prt  do
+            rep[sum+i-1] := sum;
+            sum := sum + i;
+        od;
+        rep := PermList( rep );
+
+        # add the new class to the list of classes
+        Add( classes, ConjugacyClass( G, rep ) );
+
+    od;
+
+    # return the classes
+    return classes;
+end;
+
+SymmetricPermGroupOps.FpGroup := function ( G )
+    local   F,          # finitely presented group, result
+	    imgs,
+	    hom,	# bijection
+            i, k;       # loop variables
+
+    # create the finitely presented group with <G>.degree-1 generators
+    F := FreeGroup( G.degree-1, ConcatenationString("S_",String(G.degree)) );
+
+    # add the relations according to the Coxeter presentation $a-b-c-...-d$
+    F.relators := [];
+    for i  in [1..G.degree-1]  do
+        Add( F.relators, F.generators[i]^2 );
+    od;
+    for i  in [1..G.degree-2]  do
+        Add( F.relators, (F.generators[i] * F.generators[i+1])^3 );
+        for k  in [i+2..G.degree-1]  do
+            Add( F.relators, (F.generators[i] * F.generators[k])^2 );
+        od;
+    od;
+
+    # add some useful information
+    F.isFinite := true;
+    F.size     := Size( G );
+
+    # compute the bijection
+    imgs:=[];
+    for i in [2..G.degree] do
+      Add(imgs,(i-1,i));
+    od;
+
+    hom:=GroupHomomorphismByImages(F,G,F.generators,imgs);
+    hom.isMapping:=true;
+    F.bijection:=hom;
+
+    # return the finitely presented group
+    return F;
+end;
+
+#############################################################################
+##
+#F  GeneralLinearPermGroup( <n>, <q> ) . . . general linear permutation group
+##
+GeneralLinearPermGroup := function( n, q )
+
+    local matgrp,   # the desired group as matrix group
+          space,    # natural vector space 'matgrp' acts on
+          vectors;  # set of nonzero vectors in 'space'
+
+    matgrp:= GeneralLinearMatGroup( n, q );
+    space:= GF(q)^n;
+    vectors:= Elements( space );
+    RemoveSet( vectors, Zero( space ) );
+
+    return Operation( matgrp, vectors );
+    end;
+
+#############################################################################
+##
+#F  SpecialLinearPermGroup( <n>, <q> ) . . . special linear permutation group
+##
+SpecialLinearPermGroup := function( n, q )
+
+    local matgrp,   # the desired group as matrix group
+          space,    # natural vector space 'matgrp' acts on
+          vectors;  # set of nonzero vectors in 'space'
+
+    matgrp:= SpecialLinearMatGroup( n, q );
+    space:= GF(q)^n;
+    vectors:= Elements( space );
+    RemoveSet( vectors, Zero( space ) );
+
+    return Operation( matgrp, vectors );
+    end;
+
+#############################################################################
+##
+#F  SymplecticPermGroup( <n>, <q> ) . . . . . .  symplectic permutation group
+##
+SymplecticPermGroup := function( n, q )
+
+    local matgrp,   # the desired group as matrix group
+          space,    # natural vector space 'matgrp' acts on
+          vectors;  # set of nonzero vectors in 'space'
+
+    matgrp:= SymplecticMatGroup( n, q );
+    space:= GF(q)^n;
+    vectors:= Elements( space );
+    RemoveSet( vectors, Zero( space ) );
+
+    return Operation( matgrp, vectors );
+    end;
+
+#############################################################################
+##
+#F  GeneralUnitaryPermGroup( <n>, <q> ) . . general unitary permutation group
+##
+GeneralUnitaryPermGroup := function( n, q )
+
+    local matgrp,   # the desired group as matrix group
+          v,        # first standard basis vector
+          vectors;  # set of nonzero vectors in 'space'
+
+    matgrp:= GeneralUnitaryMatGroup( n, q );
+    v:= Zero( matgrp.field ) * [ 1 .. n ];
+    v[1]:= One( matgrp.field );
+    vectors:= Orbit( matgrp, v );
+
+    return Operation( matgrp, vectors );
+    end;
+
+#############################################################################
+##
+#F  SpecialUnitaryPermGroup( <n>, <q> ) . . special unitary permutation group
+##
+SpecialUnitaryPermGroup := function( n, q )
+
+    local matgrp,   # the desired group as matrix group
+          v,        # first standard basis vector
+          vectors;  # set of nonzero vectors in 'space'
+
+    matgrp:= SpecialUnitaryMatGroup( n, q );
+    v:= Zero( matgrp.field ) * [ 1 .. n ];
+    v[1]:= One( matgrp.field );
+    vectors:= Orbit( matgrp, v );
+
+    return Operation( matgrp, vectors );
+    end;
+

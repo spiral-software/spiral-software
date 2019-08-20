@@ -1,0 +1,95 @@
+Installation instructions for AREP
+==================================
+
+Sebastian Egner, Markus P"uschel, 16. Mar 1998
+
+** Remember: "grep #F <file>.g" prints documentation on <file>.g! **
+
+AREP is a GAP share package which should be
+installed in $GAP/pkg/arep where $GAP is the
+home directory of your installation of GAP.
+
+Once you have installed AREP, you can remove 
+the package completely by deleting all files
+below and including the directory $GAP/pkg/arep.
+
+To install AREP to your installation of GAP
+do the following steps in order:
+
+1. Copy all AREP files into $GAP/pkg/arep.
+
+At this point AREP you should already be able
+to use all functions of AREP:
+
+2. Try AREP (without J. Leon's programs):
+
+     gap> RequirePackage("arep");
+     gap> MatrixDecompositionByPermPermSymmetry( DFT(5) );
+     ..output..
+     gap> MatAMat(last) = DFT(5);
+     true
+
+The remaining steps of installation are
+optional. They have to be taken if you
+want to use J. Leon's implementation in C 
+of the Perm-Perm-symmetry search, which can
+be substantially faster for large problems.
+If you want to install the C-programs you
+have to have a C-compiler called 'cc'.
+Do the following steps:
+
+3. Compile the two AREP-specific C-programs for 
+   the GAP/C-interface driving 'desauto':
+     cd $GAP/pkg/arep/src
+     make
+   and copy the executables into $GAP/pkg/arep/bin.
+   The executables have to be named 'leonin' and
+   'leonout'. If you want multiplatform support
+   you have to write shell-scripts 'leonin' and
+   'leonout' that call the correct executable for 
+   the current platform (architecture).
+
+4. Compile J. Leon's C-program 'desauto':
+     cd $GAP/pkg/arep/src/leon/src
+     make
+   and copy 'desauto' into $GAP/pkg/arep/bin.
+   Again, if you want multiplatform support you
+   have to create a shell-script 'desauto' which
+   invokes the correct executable and passes the
+   command line arguments.
+
+   Note that $GAP/pkg/arep/src/leon is *identical* to
+   $GAP/pkg/guava/src/leon -- both contain the programs
+   written by J. Leon on partition based backtracking.
+   If you have installed the GAP share package GUAVA 
+   already you can simply copy 'desauto' from 
+   $GAP/pkg/guava/bin into $GAP/pkg/arep/bin.
+
+5. Now try it 
+     gap> RequirePackage("arep");
+     gap> UseLeon := true;; 
+     gap> InfoPermSym1 := Print;;
+     gap> PermPermSymmetry( DFT(11) );
+     #I PermPermSymLeon( <11x11-matrix> ) called
+     ..and more output indicating that Leon's program ran
+
+   Note that the files 
+     leontmp  
+     leontmp.in 
+     leontmp.raw   and 
+     leontmp.grp  
+   are temporary files being created in the current 
+   directory when 'desauto' is run. These files are 
+   used by the GAP/C-interface to the program 'desauto'. 
+   They can be removed at any time without harm.
+   
+   Warning! If you invoke Leon's implementation and
+   you do not have the permissions to create files
+   in the directory you are working in at the moment
+   then the following error message will be issued:
+
+     Error, PrintTo: can not open the file for writing at
+     PrintTo( "leontmp.raw", "LIBRARY leontmp;\n", "\" a (", k, "x", n, 
+     ..and more output of minor importance
+
+

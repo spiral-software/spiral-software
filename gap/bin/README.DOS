@@ -1,0 +1,204 @@
+GAP for DOS
+===========
+
+    This sections contain information about GAP that is  specific to the port
+    of GAP for IBM PC compatibles under DOS or Windows (simply called GAP for
+    DOS below).
+
+    To run GAP for DOS you need an IBM  PC compatible.  The processor must be
+    compatible with an  Intel 80386, GAP will  not run on  a  IBM PC with  an
+    Intel 80286 processor.  The  computer must have at  least 4 MByte of main
+    memory and  a harddisk.  The  operating  system must be  Microsoft MS-DOS
+    version  5.0 or later  or Digital Research  DR-DOS  version 6.0 or later,
+    together with Microsoft Windows  3.1 or later  (earlier versions or other
+    compatible operating systems may work, but this has not been tested).
+
+    The section "Copyright  of  GAP for  DOS" describes  the copyright as  it
+    applies to the  executable  version  that  we distribute.   The   section
+    "Installation of GAP for DOS" describes how  you install GAP for DOS, and
+    the section  "Features of GAP for DOS"  describes the special features of
+    GAP for DOS.
+
+    This  document does  not contain an   example, an  overview,  the general
+    copyright terms, a description how to get GAP from the  'ftp' servers, or
+    a reference to the GAP  forum.  Those  topics are treated in the 'README'
+    file that comes with GAP.
+
+
+Copyright of GAP for DOS
+========================
+
+    In addition to  the general copyright for  GAP set forth  in 'README' the
+    following terms apply to GAP for DOS.
+
+    The   system  dependent   part  for    GAP  for  DOS     was written   by
+    Steve Linton. He assignes the copyright to the Lehrstuhl D fuer
+    Mathematik.  Many thanks to Steve Linton for his work.
+
+    The executable  of GAP for  DOS that we  distribute  was compiled with DJ
+    Delorie's port of the  Free Software Foundation's  GNU C compiler version
+    2.7.2.   The  compiler  can   be    obtained by   anonymous  'ftp'   from
+    'grape.ecs.clarkson.edu' where it  is in the directory 'pub/msdos/djgpp'.
+    Many thanks to  the  Free Software Foundation   and DJ Delorie for   this
+    amazing piece of work.
+
+    The GNU C compiler is
+
+        Copyright (C) 1989, 1991 Free Software Foundation, Inc.
+                           675 Mass Ave, Cambridge, MA 02139, USA
+
+    under the  terms  of the GNU General Public License (GPL).  Note that the
+    GNU  GPL  states  that the  mere act  of compiling  does not  affect  the
+    copyright status of GAP.
+
+    The modifications  to the compiler to make   it operating under  DOS, the
+    functions  from the standard library 'libpc.a',  the modifications of the
+    functions from the  standard library 'libc.a' to  make them operate under
+    DOS, and the DOS extender 'go32' (which is prepended to 'gapdjg.exe') are
+
+        Copyright (C) 1991 DJ Delorie,
+                           24 Kirsten Ave, Rochester NH 03867-2954, USA
+
+    also under  the terms of the GNU GPL.  The terms of  the GPL require that
+    we make the source code for 'libpc.a' available.  They can be obtained by
+    writing to Steve Linton (however, it may be  easier for you to 'ftp' them
+    from  'grape.ecs.clarkson.edu'  yourself).   They  also require that  GAP
+    falls under the GPL too, i.e., is distributed freely,  which it basically
+    does anyhow.
+
+    The functions in 'libc.a' that GAP for the 386 uses are
+
+        Copyright (c) 1988 Regents of the University of California.
+
+    under the following terms
+
+        All rights reserved.
+
+        Redistribution and  use  in  source and  binary  forms  are permitted
+        provided  that  the  above copyright notice  and  this  paragraph are
+        duplicated in  all such forms and that any documentation, advertising
+        materials, and other  materials related to such  distribution and use
+        acknowledge  that the  software  was  developed  by the University of
+        California, Berkeley.  The  name of the University may not be used to
+        endorse  or  promote  products  derived  from this  software  without
+        specific prior written permission.
+
+        THIS SOFTWARE  IS  PROVIDED ``AS  IS''  AND  WITHOUT  ANY EXPRESS  OR
+        IMPLIED  WARRANTIES,  INCLUDING,  WITHOUT  LIMITATION,  THE   IMPLIED
+        WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+
+Installation of GAP for DOS
+===========================
+
+    Installation of GAP for DOS is  fairly easy.  As already mentioned above,
+    GAP must  be installed on a  harddisk, because it is too  large to be run
+    from floppy disks.
+
+    First go to a directory where  you  want to install    GAP,  e.g., 'c:\'.
+    GAP  will  be  installed in a subdirectory 'gap3r4p4\' of this directory.
+    You can later move   GAP  to another  location, for example you can first
+    install it in 'd:\tmp\' and once it works move it to 'c:\'.
+
+    Get the GAP distribution onto your IBM PC.  One usual way would be to get
+    the distribution with 'ftp' onto some UNIX workstation and to download it
+    from there onto  your IBM PC,  for example with  'kermit'.  Remember that
+    the distribution consists of binary files and that you must transmit them
+    in binary mode.   Another  possibility is that you   got a set  of floppy
+    disks.
+
+    If you get the   distribution via 'ftp',  you  must get the  distribution
+    'gappc344.zoo', the zoo archive extractor 'unzoo.exe', which is in the
+    subdirectory 'bin/dos' and   the   executable  'gapdjg.zoo', which is in
+    the same subdirectory.  You
+    may have to   get the latter  2 files  from 'samson.math.rwth-aachen.de',
+    because some 'ftp' servers  may not keep  it.  We recommend that  you use
+    'unzoo' even if  you already have  'zoo' on your system,  because 'unzoo'
+    automatically translates text files to the appropriate local format.
+
+    If you got  the  distribution via 'ftp'  unpack  the  executable and  the
+    distribution with the following commands
+
+        unzoo -x -o gappc344.zoo
+        unzoo -x -o gapdjg.zoo
+
+    Move the executable gapdjg.exe into the gap3r4p4/bin subdirectory.
+
+    Instead of using the executable that we provide in 'gapdjg.zoo' you can
+    compile   GAP  yourself if you have the DJGPP compiler installed.   To do
+    this  change into  the source directory  'gap3r4p4\src' and compile   GAP
+    with the commands
+
+        chdir gap3r4p4\src
+        make ibm-i386-dos-djgpp
+        copy gapdjg.exe ..\bin
+        chdir ..\..
+
+    Change into the directory 'gap3r4p4\bin\' and  edit the script 'gap.bat',
+    which starts   GAP,  according  to the instructions in  this  file.  Then
+    copy  this  script to a  directory in your  search path, e.g., 'c:\bin\',
+    with the commands
+
+        chdir gap3r4p4\bin
+        edit gap.bat
+        rem edit the script 'gap.bat'
+        copy gap.bat c:\bin\gap.bat
+        chdir ..\..
+
+    When you later move   GAP  to another  location  you must only  edit this
+    script.
+
+    An alternative possibility  is  to compile a   version of {\GAP} for  use
+    under MS-DOS, on a UNIX system, using a *cross-compiler*. Cross-compiling
+    versions  of   'gcc' can be  found  on  some FTP    archives, or compiled
+    according to    the  instructions   supplied   with  the  'gcc'    source
+    distribution.
+
+    GAP must sometimes open  more than 8  files at once.  DOS disallows this,
+    unless you add  the following line to the  file 'config.sys' on your boot
+    drive.  You must then reboot for this change to take effect.
+
+        files=32
+
+    Try something in GAP, e.g., the following exercises GAP quite a bit
+
+        gap> m11 := Group((1,2,3,4,5,6,7,8,9,10,11),(3,7,11,8)(4,10,5,6));;
+        gap> Number( ConjugacyClasses( m11 ) );
+
+    The result should be 10.
+
+    Especially try the command  line editing  and history facilities, because
+    the are probably the most  machine dependent feature  of {\GAP}.  Enter a
+    few commands   and then make  sure  that  <ctr>-'P' redisplays   the last
+    command, that  <ctr>-'E'  moves the cursor  to the end  of the line, that
+    <ctr>-'B' moves the cursor back one character, and that <ctr>-'D' deletes
+    single characters.  So after entering the above three commands typing\\
+    <ctr>-'P' <ctr>-'P' <ctr>-'E' <ctr>-'B'
+    <ctr>-'B' <ctr>-'B' <ctr>-'B' <ctr>-'D' '1'\\
+    should give the following line.
+
+    |    gap> Factors( 7921 );
+	[ 89, 89 ] |
+
+    Thats  all, finally you  are  done.  We  hope  that you  will enjoy using
+    GAP.  If you have problems, do not hesitate to contact us.
+
+
+Features of GAP for DOS
+=======================
+
+    Note that GAP for DOS will use up to 128  MByte of extended memory (using
+    XMS, VDISK memory allocation  strategies) or up to  128 MByte of expanded
+    memory (using VCPI programs, such as QEMM and 386MAX) and up to 128 MByte
+    of disk space for swapping.
+
+    If you hit  <ctr>-'C'  the DOS extender  ('go32')  catches it and  aborts
+    GAP  immediately.  The keys <ctr>-'Z' and <alt>-'C' can be  used  instead
+    to interrupt   GAP.
+
+    The arrow keys <left>, <right>, <up>, <down>, <home>, <end>, and <delete>
+    can be used for command line editing with their intuitive meaning.
+
+    Pathnames may  be  given   inside   GAP   using  either  slash  ('/')  or
+    backslash ('\') as a separator (though '\'  must be escaped in strings of
+    course).

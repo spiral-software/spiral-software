@@ -1,0 +1,1990 @@
+# -*- Mode: shell-script -*-
+CVSID("$Id: perf07.grp 1673 2005-05-29 09:15:59Z uyvorone $");
+#############################################################################
+##
+#A  perf07.grp                  GAP group library              Volkmar Felsch
+##
+##
+#Y  Copyright (C) 2018-2019, Carnegie Mellon University
+#Y  All rights reserved.  See LICENSE for details.
+#Y  
+#Y  This work is based on GAP version 3, with some files from version 4.  GAP is
+#Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
+##
+##  This file contains the functions to construct the perfect groups of  size
+##  92160 .. 174960.
+##
+##
+
+PERFFun[114] := [
+function() # perfect group 92160.1
+local G,H,a,b,c,s,t,u,v,S,T,U,V;
+G:=FreeGroup("a","b","c","s","t","u","v","S","T","U","V");
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;S:=G.8;T:=G.9;U:=G.10;V:=G.11;
+G:=G/[
+ a^2,
+ b^3,
+ c^3,
+ (b*c)^4,
+ (b*c^-1)^5,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ s^2,
+ t^2,
+ u^2,
+ v^2,
+ S^2,
+ T^2,
+ U^2,
+ V^2,
+ s^-1*t^-1*s*t,
+ s^-1*u^-1*s*u,
+ s^-1*v^-1*s*v,
+ t^-1*u^-1*t*u,
+ t^-1*v^-1*t*v,
+ u^-1*v^-1*u*v,
+ S^-1*T^-1*S*T,
+ S^-1*U^-1*S*U,
+ S^-1*V^-1*S*V,
+ T^-1*U^-1*T*U,
+ T^-1*V^-1*T*V,
+ U^-1*V^-1*U*V,
+ s^-1*S^-1*s*S,
+ s^-1*T^-1*s*T,
+ s^-1*U^-1*s*U,
+ s^-1*V^-1*s*V,
+ t^-1*S^-1*t*S,
+ t^-1*T^-1*t*T,
+ t^-1*U^-1*t*U,
+ t^-1*V^-1*t*V,
+ u^-1*S^-1*u*S,
+ u^-1*T^-1*u*T,
+ u^-1*U^-1*u*U,
+ u^-1*V^-1*u*V,
+ v^-1*S^-1*v*S,
+ v^-1*T^-1*v*T,
+ v^-1*U^-1*v*U,
+ v^-1*V^-1*v*V,
+ a^-1*s*a*u^-1,
+ a^-1*t*a*v^-1,
+ a^-1*u*a*s^-1,
+ a^-1*v*a*t^-1,
+ a^-1*S*a*U^-1,
+ a^-1*T*a*V^-1,
+ a^-1*U*a*S^-1,
+ a^-1*V*a*T^-1,
+ b^-1*s*b*(t*v)^-1,
+ b^-1*t*b*(s*t*u*v)^-1,
+ b^-1*u*b*(u*v)^-1,
+ b^-1*v*b*u^-1,
+ b^-1*S*b*(T*V)^-1,
+ b^-1*T*b*(S*T*U*V)^-1,
+ b^-1*U*b*(U*V)^-1,
+ b^-1*V*b*U^-1,
+ c^-1*s*c*(t*u)^-1,
+ c^-1*t*c*t^-1,
+ c^-1*u*c*(s*u)^-1,
+ c^-1*v*c*(s*t*u*v)^-1,
+ c^-1*S*c*(T*U)^-1,
+ c^-1*T*c*T^-1,
+ c^-1*U*c*(S*U)^-1,
+ c^-1*V*c*(S*T*U*V)^-1];
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;S:=G.8;T:=G.9;U:=G.10;V:=G.11;
+H:=[
+ Subgroup(G,[b,c,S]),
+ Subgroup(G,[b,c,s])];
+H[1].index:=16;
+H[2].index:=16;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 92160.2
+local G,H,a,b,c,s,t,u,v,w,x,y,z;
+G:=FreeGroup("a","b","c","s","t","u","v","w","x","y","z");
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;w:=G.8;x:=G.9;y:=G.10;z:=G.11;
+G:=G/[
+ a^2,
+ b^3,
+ c^3,
+ (b*c)^4,
+ (b*c^-1)^5,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ s^2,
+ t^2,
+ u^2,
+ v^2,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ s^-1*t^-1*s*t,
+ s^-1*u^-1*s*u,
+ s^-1*v^-1*s*v,
+ t^-1*u^-1*t*u,
+ t^-1*v^-1*t*v,
+ u^-1*v^-1*u*v,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ s^-1*w^-1*s*w,
+ s^-1*x^-1*s*x,
+ s^-1*y^-1*s*y,
+ s^-1*z^-1*s*z,
+ t^-1*w^-1*t*w,
+ t^-1*x^-1*t*x,
+ t^-1*y^-1*t*y,
+ t^-1*z^-1*t*z,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ a^-1*s*a*u^-1,
+ a^-1*t*a*v^-1,
+ a^-1*u*a*s^-1,
+ a^-1*v*a*t^-1,
+ a^-1*w*a*y^-1,
+ a^-1*x*a*z^-1,
+ a^-1*y*a*w^-1,
+ a^-1*z*a*x^-1,
+ b^-1*s*b*(t*v)^-1,
+ b^-1*t*b*(s*t*u*v)^-1,
+ b^-1*u*b*(u*v)^-1,
+ b^-1*v*b*u^-1,
+ b^-1*w*b*(x*y)^-1,
+ b^-1*x*b*x^-1,
+ b^-1*y*b*(w*y)^-1,
+ b^-1*z*b*(w*x*y*z)^-1,
+ c^-1*s*c*(t*u)^-1,
+ c^-1*t*c*t^-1,
+ c^-1*u*c*(s*u)^-1,
+ c^-1*v*c*(s*t*u*v)^-1,
+ c^-1*w*c*(x*z)^-1,
+ c^-1*x*c*(w*x*y*z)^-1,
+ c^-1*y*c*(y*z)^-1,
+ c^-1*z*c*y^-1];
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;w:=G.8;x:=G.9;y:=G.10;z:=G.11;
+H:=[
+ Subgroup(G,[b,c,s]),
+ Subgroup(G,[b,c,w])];
+H[1].index:=16;
+H[2].index:=16;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[115] := [
+function() # perfect group 95040.1
+local G,H,a,b;
+G:=FreeGroup("a","b");
+a:=G.1;b:=G.2;
+G:=G/[
+ a^2,
+ b^3,
+ (a*b)^11,
+ (a^-1*b^-1*a*b)^6,
+ (a*b*a*b*a*b^-1)^6,
+ (a*b*a*b*a*b^-1*a*b^-1)^5];
+a:=G.1;b:=G.2;
+H:=[
+ Subgroup(G,[a,b*a*b^-1*a*(b^-1*a*b*a)^2])];
+H[1].index:=12;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[117] := [
+function() # perfect group 100920.1
+local G,H,a,b,y,z;
+G:=FreeGroup("a","b","y","z");
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;
+G:=G/[
+ a^4,
+ b^3,
+ (a*b)^5,
+ a^2*b^-1*a^2*b,
+ y^29,
+ z^29,
+ y^-1*z^-1*y*z,
+ a^-1*y*a*z^-1,
+ a^-1*z*a*y,
+ b^-1*y*b*(y^14*z^4)^-1,
+ b^-1*z*b*(y^-2*z^14)^-1];
+G.auxiliaryGens:=[0,0,2,2,2,2];
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;
+H:=[
+ Subgroup(G,[a,b])];
+H[1].index:=841;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[118] := [
+function() # perfect group 102660.1
+local G,H,a,b,c;
+G:=FreeGroup("a","b","c");
+a:=G.1;b:=G.2;c:=G.3;
+G:=G/[
+ c^29,
+ c*b^4*c^-1*b^-1,
+ b^59,
+ a^2,
+ c*a*c*a^-1,
+ (b*a)^3];
+a:=G.1;b:=G.2;c:=G.3;
+H:=[
+ Subgroup(G,[b,c])];
+H[1].index:=60;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[119] := [
+function() # perfect group 103776.1
+local G,H,a,b,c;
+G:=FreeGroup("a","b","c");
+a:=G.1;b:=G.2;c:=G.3;
+G:=G/[
+ c^23*a^2,
+ c*b^-22*c^-1*b^-1,
+ b^47,
+ a^4,
+ a^2*b^-1*a^2*b,
+ a^2*c^-1*a^2*c,
+ c*a*c*a^-1,
+ (b*a)^3];
+G.auxiliaryGens:=[0,2,2,2];
+a:=G.1;b:=G.2;c:=G.3;
+H:=[
+ Subgroup(G,[b,c^2])];
+H[1].index:=96;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[122] := [
+function() # perfect group 113460.1
+local G,H,a,b,c;
+G:=FreeGroup("a","b","c");
+a:=G.1;b:=G.2;c:=G.3;
+G:=G/[
+ c^30,
+ c*b^4*c^-1*b^-1,
+ b^61,
+ a^2,
+ c*a*c*a^-1,
+ (b*a)^3,
+ c^-4*(b*c)^3*c*a*b^2*a*c*b^2*a];
+a:=G.1;b:=G.2;c:=G.3;
+H:=[
+ Subgroup(G,[b,c])];
+H[1].index:=62;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[124] := [
+function() # perfect group 115248.1
+local G,H,a,b,x,y,z;
+G:=FreeGroup("a","b","x","y","z");
+a:=G.1;b:=G.2;x:=G.3;y:=G.4;z:=G.5;
+G:=G/[
+ a^4,
+ b^3,
+ (a*b)^7,
+ (a^-1*b^-1*a*b)^4*a^2,
+ a^2*b*a^2*b^-1,
+ x^7,
+ y^7,
+ z^7,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*x*a*z^-1,
+ a^-1*y*a*y,
+ a^-1*z*a*x^-1,
+ b^-1*x*b*z^-1,
+ b^-1*y*b*(y^-1*z^-1)^-1,
+ b^-1*z*b*(x*y^2*z)^-1];
+a:=G.1;b:=G.2;x:=G.3;y:=G.4;z:=G.5;
+H:=[
+ Subgroup(G,[a*b,b*a*b^-1*a*b^-1*a*b*a*b^-1,x]),
+ Subgroup(G,[a*b,b*a*b^-1*a*b^-1*a*b*a*b^-1,a^2,y])];
+H[1].index:=16;
+H[2].index:=56;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 115248.2
+local G,H,a,b,x,y,z;
+G:=FreeGroup("a","b","x","y","z");
+a:=G.1;b:=G.2;x:=G.3;y:=G.4;z:=G.5;
+G:=G/[
+ a^4,
+ b^3,
+ (a*b)^7*z^-1,
+ (a^-1*b^-1*a*b)^4*a^2,
+ a^2*b*a^2*b^-1,
+ x^7,
+ y^7,
+ z^7,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*x*a*z^-1,
+ a^-1*y*a*y,
+ a^-1*z*a*x^-1,
+ b^-1*x*b*z^-1,
+ b^-1*y*b*(y^-1*z^-1)^-1,
+ b^-1*z*b*(x*y^2*z)^-1];
+a:=G.1;b:=G.2;x:=G.3;y:=G.4;z:=G.5;
+H:=[
+ Subgroup(G,[a*b,b*a*b^-1*a*b^-1*a*b*a*b^-1,x]),
+ Subgroup(G,[a*b*x^2,b*a*b^-1*a*b^-1*a*b*a*b^-1,a^2,y])];
+H[1].index:=16;
+H[2].index:=56;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 115248.3
+local G,H,a,b,y,z,d;
+G:=FreeGroup("a","b","y","z","d");
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;d:=G.5;
+G:=G/[
+ a^4,
+ b^3,
+ (a*b)^7,
+ a^2*b^-1*a^2*b,
+ (a^-1*b^-1*a*b)^4*a^2,
+ d^7,
+ a^-1*d*a*d^-1,
+ b^-1*d*b*d^-1,
+ y^-1*d*y*d^-1,
+ z^-1*d*z*d^-1,
+ y^7,
+ z^7,
+ y^-1*z^-1*y*z*d^-1,
+ a^-1*y*a*(z^-1*d^-2)^-1,
+ a^-1*z*a*(y*d^2)^-1,
+ b^-1*y*b*(z*d^-2)^-1,
+ b^-1*z*b*(y^-1*z^-1*d)^-1];
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;d:=G.5;
+H:=[
+ Subgroup(G,[a,b])];
+H[1].index:=343;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 115248.4 = 115248.3s
+local G,H,a,b,D,y,z,d;
+G:=FreeGroup("a","b","D","y","z","d");
+a:=G.1;b:=G.2;D:=G.3;y:=G.4;z:=G.5;d:=G.6;
+G:=G/[
+ a^2*D^-1,
+ b^3,
+ (a*b)^7,
+ (a^-1*b^-1*a*b)^4*D^-1,
+ D^2,
+ D^-1*b^-1*D*b,
+ d^7,
+ a^-1*d*a*d^-1,
+ b^-1*d*b*d^-1,
+ y^-1*d*y*d^-1,
+ z^-1*d*z*d^-1,
+ y^7,
+ z^7,
+ y^-1*z^-1*y*z*d^-1,
+ a^-1*y*a*(z^-1*d^-2)^-1,
+ a^-1*z*a*(y*d^2)^-1,
+ b^-1*y*b*(z*d^-2)^-1,
+ b^-1*z*b*(y^-1*z^-1*d)^-1];
+a:=G.1;b:=G.2;D:=G.3;y:=G.4;z:=G.5;d:=G.6;
+H:=[
+ Subgroup(G,[a,b])];
+H[1].index:=343;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[125] := [
+function() # perfect group 115320.1
+local G,H,a,b,y,z;
+G:=FreeGroup("a","b","y","z");
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;
+G:=G/[
+ a^4,
+ b^3,
+ (a*b)^5,
+ a^2*b^-1*a^2*b,
+ y^31,
+ z^31,
+ y^-1*z^-1*y*z,
+ a^-1*y*a*z^-1,
+ a^-1*z*a*y,
+ b^-1*y*b*(y^-1*z^15)^-1,
+ b^-1*z*b*y^-2];
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;
+H:=[
+ Subgroup(G,[a*b,a^2,y])];
+H[1].index:=372;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[126] := [
+function() # perfect group 116480.1
+local G,H,a,b,d,e;
+G:=FreeGroup("a","b","d","e");
+a:=G.1;b:=G.2;d:=G.3;e:=G.4;
+G:=G/[
+ a^2,
+ b^4,
+ (a*b)^5,
+ (a^-1*b^-1*a*b)^7*(d*e)^-1,
+ (a*b^2)^13,
+ a*b^-1*a*b^2*a*b^2*(a*b^-1*a*b*a*b^2)^2*a*b^2*a*b*(a*b^2)^4*e^-1,
+ d^2,
+ e^2,
+ d^-1*e^-1*d*e,
+ a^-1*d*a*d^-1,
+ a^-1*e*a*e^-1,
+ b^-1*d*b*d^-1,
+ b^-1*e*b*e^-1];
+G.auxiliaryGens:=[[1,2]];
+a:=G.1;b:=G.2;d:=G.3;e:=G.4;
+H:=[
+ Subgroup(G,[a*b^2,(a*b*a*b^2)^2*a*b^2*a*b^-1*(a*b^2*a*b*a*b^2)^2])];
+H[1].index:=2240;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[127] := [
+function() # perfect group 117600.1
+local G,H,a,b,c;
+G:=FreeGroup("a","b","c");
+a:=G.1;b:=G.2;c:=G.3;
+G:=G/[
+ c^24*a^2,
+ b^7,
+ c^-8*b^2*c^8*b^-1,
+ c*b^3*c*b^2*c^-2*b^-3,
+ a^4,
+ a^2*b^-1*a^2*b,
+ a^2*c^-1*a^2*c,
+ c*a*c*a^-1,
+ (b*a)^3,
+ c^2*b*c*b^2*a*b*a*c*a*b^2*a*b^-1*c^-3*b^-1*a];
+G.auxiliaryGens:=[0,2,2,0,2,2];
+a:=G.1;b:=G.2;c:=G.3;
+H:=[
+ Subgroup(G,[b,c^-1*b*c,c^16])];
+H[1].index:=800;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[129] := [
+function() # perfect group 120960.1
+local G,H,a,b,w,x,y,z;
+G:=FreeGroup("a","b","w","x","y","z");
+a:=G.1;b:=G.2;w:=G.3;x:=G.4;y:=G.5;z:=G.6;
+G:=G/[
+ a^6,
+ b^4,
+ (a*b)^7,
+ (a*b)^2*a*b^2*(a*b*a*b^-1)^2*(a*b)^2*(a*b^-1)^2*a*b*a*b^-1*a^2,
+ a^2*b*a^-2*b^-1,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ w*x*w*x,
+ w*y*w*y,
+ w*z*w*z,
+ x*y*x*y,
+ x*z*x*z,
+ y*z*y*z,
+ a^-1*w*a*y^-1,
+ a^-1*x*a*z^-1,
+ a^-1*y*a*w^-1,
+ a^-1*z*a*x^-1,
+ b^-1*w*b*(w*x*y*z)^-1,
+ b^-1*x*b*y^-1,
+ b^-1*y*b*(w*x)^-1,
+ b^-1*z*b*(w*z)^-1];
+a:=G.1;b:=G.2;w:=G.3;x:=G.4;y:=G.5;z:=G.6;
+H:=[
+ Subgroup(G,[a^3,(b^-1*a)^2*(b*a)^2*b^2*a*b*a,w]),
+ Subgroup(G,[a,b])];
+H[1].index:=45;
+H[2].index:=16;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 120960.2
+local G,H,a,b,d,e;
+G:=FreeGroup("a","b","d","e");
+a:=G.1;b:=G.2;d:=G.3;e:=G.4;
+G:=G/[
+ a^2,
+ b^4,
+ (a*b)^7*e*d^-1,
+ (a^-1*b^-1*a*b)^5,
+ (a*b^2)^5*e^-1,
+ (a*b*a*b*a*b^3)^5,
+ (a*b*a*b*a*b^2*a*b^-1)^5*d^-2,
+ d^3,
+ a^-1*d*a*d^-1,
+ b^-1*d*b*d^-1,
+ e^2,
+ a^-1*e*a*e^-1,
+ b^-1*e*b*e^-1];
+a:=G.1;b:=G.2;d:=G.3;e:=G.4;
+H:=[
+ Subgroup(G,[a*b*a,b^2*a*b^-1*a*b*a*b^2*a*b*d]),
+ Subgroup(G,[a*e,b*a*b*a*b^-1*a*b^2])];
+H[1].index:=63;
+H[2].index:=112;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[130] := [
+function() # perfect group 122472.1
+local G,H,a,b,u,v,w,x,y,z;
+G:=FreeGroup("a","b","u","v","w","x","y","z");
+a:=G.1;b:=G.2;u:=G.3;v:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+G:=G/[
+ a^2,
+ b^3,
+ (a*b)^7,
+ (a^-1*b^-1*a*b)^4,
+ u^3,
+ v^3,
+ w^3,
+ x^3,
+ y^3,
+ z^3,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*u*a*(x*y^-1*z^-1)^-1,
+ a^-1*v*a*(w*x^-1*y^-1)^-1,
+ a^-1*w*a*(u*w^-1*x*y^-1*z^-1)^-1,
+ a^-1*x*a*(v*w*x*y^-1)^-1,
+ a^-1*y*a*(u*v*w*z^-1)^-1,
+ a^-1*z*a*(u*x*y^-1*z)^-1,
+ b^-1*u*b*(v*w^-1*x^-1)^-1,
+ b^-1*v*b*(u*v^-1*w^-1)^-1,
+ b^-1*w*b*(u^-1*v*w^-1*x^-1*z^-1)^-1,
+ b^-1*x*b*(u*v*w^-1*y^-1*z)^-1,
+ b^-1*y*b*(u*x^-1*y)^-1,
+ b^-1*z*b*(v*w^-1*x*z)^-1];
+a:=G.1;b:=G.2;u:=G.3;v:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+H:=[
+ Subgroup(G,[a,b^-1*a*b,z])];
+H[1].index:=63;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 122472.2
+local G,H,a,b,u,v,w,x,y,z;
+G:=FreeGroup("a","b","u","v","w","x","y","z");
+a:=G.1;b:=G.2;u:=G.3;v:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+G:=G/[
+ a^2,
+ b^3,
+ (a*b)^7,
+ (a^-1*b^-1*a*b)^4,
+ u^3,
+ v^3,
+ w^3,
+ x^3,
+ y^3,
+ z^3,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*u*a*w^-1,
+ a^-1*v*a*v^-1,
+ a^-1*w*a*u^-1,
+ a^-1*x*a*z^-1,
+ a^-1*y*a*y^-1,
+ a^-1*z*a*x^-1,
+ b^-1*u*b*v^-1,
+ b^-1*v*b*(u^-1*v^-1*w^-1*x^-1*y^-1*z^-1)^-1,
+ b^-1*w*b*x^-1,
+ b^-1*x*b*y^-1,
+ b^-1*y*b*w^-1,
+ b^-1*z*b*z^-1];
+a:=G.1;b:=G.2;u:=G.3;v:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+H:=[
+ Subgroup(G,[b,a*b^-1*a*b*a,x*y^-1*z])];
+H[1].index:=21;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[132] := [
+function() # perfect group 126000.1
+local G,H,a,b;
+G:=FreeGroup("a","b");
+a:=G.1;b:=G.2;
+G:=G/[
+ a^2,
+ b^4,
+ (a*b)^10,
+ (a*b*a*b^2)^7,
+ a*b^-1*a*b^-1*a*b*a*b^-2*a*b*a*b^-1*a*b^-1*
+ a*b*a*b*a*b^-1*a*b*b*a*b^-1*a*b*a*b,
+ (a*b^-1*a*b^-1*a*b*a*b*a*b)^2*b*a*b^-1*a*b^-1*a*b*a*b*a*b^-1];
+G.auxiliaryGens:=[[1,2],0,2];
+a:=G.1;b:=G.2;
+H:=[
+ Subgroup(G,[b,a*b*a*b^-1*a])];
+H[1].index:=50;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[133] := [
+function() # perfect group 129024.1
+local G,H,a,b,c,u,v,w,x,y,z,d,e;
+G:=FreeGroup("a","b","c","u","v","w","x","y","z","d","e");
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;d:=G.10;e:=G.11;
+G:=G/[
+ a^2,
+ b^3,
+ (a*b)^7,
+ b^-1*(a*b)^3*c^-1,
+ c*b^-1*c*b*a^-1*b^-1*c^-1*b*c^-1*a,
+ u^2,
+ v^2,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ d^2,
+ e^2,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ u^-1*d^-1*u*d,
+ u^-1*e^-1*u*e,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ v^-1*d^-1*v*d,
+ v^-1*e^-1*v*e,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ w^-1*d^-1*w*d,
+ w^-1*e^-1*w*e,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ x^-1*d^-1*x*d,
+ x^-1*e^-1*x*e,
+ y^-1*z^-1*y*z,
+ y^-1*d^-1*y*d,
+ y^-1*e^-1*y*e,
+ z^-1*d^-1*z*d,
+ z^-1*e^-1*z*e,
+ d^-1*e^-1*d*e,
+ a^-1*u*a*(u*x)^-1,
+ a^-1*v*a*(v*y)^-1,
+ a^-1*w*a*(w*z)^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*y^-1,
+ a^-1*z*a*z^-1,
+ a^-1*d*a*d^-1,
+ a^-1*e*a*e^-1,
+ b^-1*u*b*(x*y*d)^-1,
+ b^-1*v*b*(y*z*e)^-1,
+ b^-1*w*b*(x*y*z)^-1,
+ b^-1*x*b*(v*w*x)^-1,
+ b^-1*y*b*(u*v*w*y)^-1,
+ b^-1*z*b*(u*w*z)^-1,
+ b^-1*d*b*d^-1,
+ b^-1*e*b*e^-1,
+ c^-1*u*c*(v*d)^-1,
+ c^-1*v*c*(w*d)^-1,
+ c^-1*w*c*(u*v*e)^-1,
+ c^-1*x*c*(x*z*d)^-1,
+ c^-1*y*c*(x*e)^-1,
+ c^-1*z*c*y^-1,
+ c^-1*d*c*d^-1,
+ c^-1*e*c*e^-1];
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;d:=G.10;e:=G.11;
+H:=[
+ Subgroup(G,[b^-1*c,u*d,e]),
+ Subgroup(G,[b^-1*c,u*e,d])];
+H[1].index:=112;
+H[2].index:=112;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 129024.2
+local G,H,a,b,c,u,v,w,x,y,z,f;
+G:=FreeGroup("a","b","c","u","v","w","x","y","z","f");
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;f:=G.10;
+G:=G/[
+ a^2*f,
+ b^3,
+ (a*b)^7,
+ b^-1*(a*b)^3*c^-1,
+ b^-1*c^-1*b*c^-1*a^-1*c*b^-1*c*b*a*(y*z*f^2)^-1,
+ f^4,
+ u^2,
+ v^2*f^2,
+ w^2,
+ x^2*f^2,
+ y^2,
+ z^2*f^2,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x*f^2,
+ u^-1*y^-1*u*y*f^2,
+ u^-1*z^-1*u*z,
+ u^-1*f^-1*u*f,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x*f^2,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ v^-1*f^-1*v*f,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z*f^2,
+ w^-1*f^-1*w*f,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ x^-1*f^-1*x*f,
+ y^-1*z^-1*y*z,
+ y^-1*f^-1*y*f,
+ z^-1*f^-1*z*f,
+ a^-1*u*a*(u*x)^-1,
+ a^-1*v*a*(v*y*f^2)^-1,
+ a^-1*w*a*(w*z)^-1,
+ a^-1*x*a*(x*f^2)^-1,
+ a^-1*y*a*y^-1,
+ a^-1*z*a*(z*f^2)^-1,
+ a^-1*f*a*f^-1,
+ b^-1*u*b*(x*y*f^-1)^-1,
+ b^-1*v*b*(y*z*f^2)^-1,
+ b^-1*w*b*(x*y*z*f^2)^-1,
+ b^-1*x*b*(v*w*x)^-1,
+ b^-1*y*b*(u*v*w*y*f^2)^-1,
+ b^-1*z*b*(u*w*z*f^-1)^-1,
+ b^-1*f*b*f^-1,
+ c^-1*u*c*(v*f^-1)^-1,
+ c^-1*v*c*(w*f^-1)^-1,
+ c^-1*w*c*(u*v*f)^-1,
+ c^-1*x*c*(x*z*f)^-1,
+ c^-1*y*c*(x*f)^-1,
+ c^-1*z*c*(y*f^-1)^-1,
+ c^-1*f*c*f^-1];
+G.auxiliaryGens:=[[1,2],[11,11,11]];
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;f:=G.10;
+H:=[
+ Subgroup(G,[b^-1*c*f^2])];
+H[1].index:=14336;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 129024.3
+local G,H,a,b,c,u,v,w,x,y,z,d,f;
+G:=FreeGroup("a","b","c","u","v","w","x","y","z","d","f");
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;d:=G.10;f:=G.11;
+G:=G/[
+ a^2*f,
+ b^3,
+ (a*b)^7,
+ b^-1*(a*b)^3*c^-1,
+ b^-1*c^-1*b*c^-1*a^-1*c*b^-1*c*b*a*(y*z*d)^-1,
+ d^2,
+ f^2,
+ u^2,
+ v^2,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ u^-1*d^-1*u*d,
+ u^-1*f^-1*u*f,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ v^-1*d^-1*v*d,
+ v^-1*f^-1*v*f,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ w^-1*d^-1*w*d,
+ w^-1*f^-1*w*f,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ x^-1*d^-1*x*d,
+ x^-1*f^-1*x*f,
+ y^-1*z^-1*y*z,
+ y^-1*d^-1*y*d,
+ y^-1*f^-1*y*f,
+ z^-1*d^-1*z*d,
+ z^-1*f^-1*z*f,
+ a^-1*u*a*(u*x)^-1,
+ a^-1*v*a*(v*y)^-1,
+ a^-1*w*a*(w*z)^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*y^-1,
+ a^-1*z*a*z^-1,
+ a^-1*d*a*d^-1,
+ a^-1*f*a*f^-1,
+ b^-1*u*b*(x*y*f^-1)^-1,
+ b^-1*v*b*(y*z)^-1,
+ b^-1*w*b*(x*y*z*d)^-1,
+ b^-1*x*b*(v*w*x)^-1,
+ b^-1*y*b*(u*v*w*y*d)^-1,
+ b^-1*z*b*(u*w*z*f^-1)^-1,
+ b^-1*d*b*d^-1,
+ b^-1*f*b*f^-1,
+ c^-1*u*c*(v*d*f^-1)^-1,
+ c^-1*v*c*(w*d*f^-1)^-1,
+ c^-1*w*c*(u*v*f)^-1,
+ c^-1*x*c*(x*z*d*f)^-1,
+ c^-1*y*c*(x*d*f)^-1,
+ c^-1*z*c*(y*f^-1)^-1,
+ c^-1*d*c*d^-1,
+ c^-1*f*c*f^-1];
+G.auxiliaryGens:=[[1,2]];
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;d:=G.10;f:=G.11;
+H:=[
+ Subgroup(G,[b^-1*c,u*f,d]),
+ Subgroup(G,[b^-1*c*d,u*d,f])];
+H[1].index:=112;
+H[2].index:=112;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 129024.4
+local G,H,a,b,c,u,v,w,x,y,z,d,e;
+G:=FreeGroup("a","b","c","u","v","w","x","y","z","d","e");
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;d:=G.10;e:=G.11;
+G:=G/[
+ a^2,
+ b^3,
+ (a*b)^7,
+ b^-1*(a*b)^3*c^-1,
+ b^-1*c^-1*b*c^-1*a^-1*c*b^-1*c*b*a*(y*z*d)^-1,
+ d^2,
+ e^2,
+ u^2,
+ v^2,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ u^-1*d^-1*u*d,
+ u^-1*e^-1*u*e,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ v^-1*d^-1*v*d,
+ v^-1*e^-1*v*e,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ w^-1*d^-1*w*d,
+ w^-1*e^-1*w*e,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ x^-1*d^-1*x*d,
+ x^-1*e^-1*x*e,
+ y^-1*z^-1*y*z,
+ y^-1*d^-1*y*d,
+ y^-1*e^-1*y*e,
+ z^-1*d^-1*z*d,
+ z^-1*e^-1*z*e,
+ a^-1*u*a*(u*x)^-1,
+ a^-1*v*a*(v*y)^-1,
+ a^-1*w*a*(w*z)^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*y^-1,
+ a^-1*z*a*z^-1,
+ a^-1*d*a*d^-1,
+ a^-1*e*a*e^-1,
+ b^-1*u*b*(x*y)^-1,
+ b^-1*v*b*(y*z*e)^-1,
+ b^-1*w*b*(x*y*z*d*e)^-1,
+ b^-1*x*b*(v*w*x*e)^-1,
+ b^-1*y*b*(u*v*w*y*d*e)^-1,
+ b^-1*z*b*(u*w*z*e)^-1,
+ b^-1*d*b*d^-1,
+ b^-1*e*b*e^-1,
+ c^-1*u*c*(v*d)^-1,
+ c^-1*v*c*(w*d*e)^-1,
+ c^-1*w*c*(u*v)^-1,
+ c^-1*x*c*(x*z*d)^-1,
+ c^-1*y*c*(x*d*e)^-1,
+ c^-1*z*c*y^-1,
+ c^-1*d*c*d^-1,
+ c^-1*e*c*e^-1];
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;d:=G.10;e:=G.11;
+H:=[
+ Subgroup(G,[b^-1*c*d,u*d,e]),
+ Subgroup(G,[b^-1*c*e,u*e,d])];
+H[1].index:=112;
+H[2].index:=112;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 129024.5
+local G,H,a,b,c,u,v,w,x,y,z,d,e;
+G:=FreeGroup("a","b","c","u","v","w","x","y","z","d","e");
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;d:=G.10;e:=G.11;
+G:=G/[
+ a^2*e^-1,
+ b^3,
+ (a*b)^7,
+ b^-1*(a*b)^3*c^-1,
+ b^-1*c^-1*b*c^-1*a^-1*c*b^-1*c*b*a*(y*z*d)^-1,
+ d^2,
+ e^2,
+ u^2,
+ v^2,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ u^-1*d^-1*u*d,
+ u^-1*e^-1*u*e,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ v^-1*d^-1*v*d,
+ v^-1*e^-1*v*e,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ w^-1*d^-1*w*d,
+ w^-1*e^-1*w*e,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ x^-1*d^-1*x*d,
+ x^-1*e^-1*x*e,
+ y^-1*z^-1*y*z,
+ y^-1*d^-1*y*d,
+ y^-1*e^-1*y*e,
+ z^-1*d^-1*z*d,
+ z^-1*e^-1*z*e,
+ a^-1*u*a*(u*x)^-1,
+ a^-1*v*a*(v*y)^-1,
+ a^-1*w*a*(w*z)^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*y^-1,
+ a^-1*z*a*z^-1,
+ a^-1*d*a*d^-1,
+ a^-1*e*a*e^-1,
+ b^-1*u*b*(x*y*e)^-1,
+ b^-1*v*b*(y*z*e)^-1,
+ b^-1*w*b*(x*y*z*d*e)^-1,
+ b^-1*x*b*(v*w*x*e)^-1,
+ b^-1*y*b*(u*v*w*y*d*e)^-1,
+ b^-1*z*b*(u*w*z)^-1,
+ b^-1*d*b*d^-1,
+ b^-1*e*b*e^-1,
+ c^-1*u*c*(v*d*e)^-1,
+ c^-1*v*c*(w*d)^-1,
+ c^-1*w*c*(u*v*e)^-1,
+ c^-1*x*c*(x*z*d*e)^-1,
+ c^-1*y*c*(x*d)^-1,
+ c^-1*z*c*(y*e)^-1,
+ c^-1*d*c*d^-1,
+ c^-1*e*c*e^-1];
+G.auxiliaryGens:=[[1,2]];
+a:=G.1;b:=G.2;c:=G.3;u:=G.4;v:=G.5;w:=G.6;x:=G.7;y:=G.8;z:=G.9;d:=G.10;e:=G.11;
+H:=[
+ Subgroup(G,[b^-1*c*d,u*d,e]),
+ Subgroup(G,[b^-1*c*e,u,d])];
+H[1].index:=112;
+H[2].index:=112;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 129024.6
+local G,H,a,b,c,s,t,u,v,w,x,y,z;
+G:=FreeGroup("a","b","c","s","t","u","v","w","x","y","z");
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;w:=G.8;x:=G.9;y:=G.10;z:=G.11;
+G:=G/[
+ a^2,
+ b^3,
+ (a*b)^7,
+ b^-1*(a*b)^3*c^-1,
+ b^-1*c^-1*b*c^-1*a^-1*c*b^-1*c*b*a,
+ s^2,
+ t^2,
+ u^2,
+ v^2,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ s^-1*t^-1*s*t,
+ s^-1*u^-1*s*u,
+ s^-1*v^-1*s*v,
+ s^-1*w^-1*s*w,
+ s^-1*x^-1*s*x,
+ s^-1*y^-1*s*y,
+ s^-1*z^-1*s*z,
+ t^-1*u^-1*t*u,
+ t^-1*v^-1*t*v,
+ t^-1*w^-1*t*w,
+ t^-1*x^-1*t*x,
+ t^-1*y^-1*t*y,
+ t^-1*z^-1*t*z,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*s*a*s^-1,
+ a^-1*t*a*v^-1,
+ a^-1*u*a*y^-1,
+ a^-1*v*a*t^-1,
+ a^-1*w*a*x^-1,
+ a^-1*x*a*w^-1,
+ a^-1*y*a*u^-1,
+ a^-1*z*a*(s*t*u*v*w*x*y*z)^-1,
+ b^-1*s*b*u^-1,
+ b^-1*t*b*s^-1,
+ b^-1*u*b*t^-1,
+ b^-1*v*b*x^-1,
+ b^-1*w*b*v^-1,
+ b^-1*x*b*w^-1,
+ b^-1*y*b*z^-1,
+ b^-1*z*b*(s*t*u*v*w*x*y*z)^-1,
+ c^-1*s*c*s^-1,
+ c^-1*t*c*t^-1,
+ c^-1*u*c*y^-1,
+ c^-1*v*c*w^-1,
+ c^-1*w*c*u^-1,
+ c^-1*x*c*z^-1,
+ c^-1*y*c*(s*t*u*v*w*x*y*z)^-1,
+ c^-1*z*c*v^-1];
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;w:=G.8;x:=G.9;y:=G.10;z:=G.11;
+H:=[
+ Subgroup(G,[a,c,t*z])];
+H[1].index:=18;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[137] := [
+"leer",
+function() # perfect group 138240.2
+local G,H,a,b,c,d,u,v,w,x,y,z;
+G:=FreeGroup("a","b","c","d","u","v","w","x","y","z");
+a:=G.1;b:=G.2;c:=G.3;d:=G.4;u:=G.5;v:=G.6;w:=G.7;x:=G.8;y:=G.9;z:=G.10;
+G:=G/[
+ a^6*d^-1,
+ b^3,
+ c^3,
+ (b*c)^4*d^-1,
+ (b*c^-1)^5,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ d^2,
+ d^-1*b^-1*d*b,
+ d^-1*c^-1*d*c,
+ u^2,
+ v^2,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*u*a*(v*x)^-1,
+ a^-1*v*a*(u*v*w*x)^-1,
+ a^-1*w*a*x^-1,
+ a^-1*x*a*(w*x)^-1,
+ a^-1*y*a*(x*z)^-1,
+ a^-1*z*a*(w*x*y*z)^-1,
+ b^-1*u*b*u^-1,
+ b^-1*v*b*v^-1,
+ b^-1*w*b*(u*x)^-1,
+ b^-1*x*b*(v*w*x)^-1,
+ b^-1*y*b*(u*y*z)^-1,
+ b^-1*z*b*(v*y)^-1,
+ c^-1*u*c*w^-1,
+ c^-1*v*c*x^-1,
+ c^-1*w*c*(y*z)^-1,
+ c^-1*x*c*y^-1,
+ c^-1*y*c*v^-1,
+ c^-1*z*c*(u*v)^-1];
+a:=G.1;b:=G.2;c:=G.3;d:=G.4;u:=G.5;v:=G.6;w:=G.7;x:=G.8;y:=G.9;z:=G.10;
+H:=[
+ Subgroup(G,[b,c]),
+ Subgroup(G,[c*b*a*d,b,u])];
+H[1].index:=64;
+H[2].index:=80;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[138] := [
+function() # perfect group 144060.1
+local G,H,a,b,w,x,y,z;
+G:=FreeGroup("a","b","w","x","y","z");
+a:=G.1;b:=G.2;w:=G.3;x:=G.4;y:=G.5;z:=G.6;
+G:=G/[
+ a^2,
+ b^3,
+ (a*b)^5,
+ w^7,
+ x^7,
+ y^7,
+ z^7,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*w*a*z^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*w*x*y*z,
+ a^-1*z*a*w^-1,
+ b^-1*w*b*x^-1,
+ b^-1*x*b*y^-1,
+ b^-1*y*b*w^-1,
+ b^-1*z*b*z^-1];
+a:=G.1;b:=G.2;w:=G.3;x:=G.4;y:=G.5;z:=G.6;
+H:=[
+ Subgroup(G,[b,a*b*a*b^-1*a,w*x^-1])];
+H[1].index:=35;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[140] := [
+function() # perfect group 148824.1
+local G,H,a,b,c;
+G:=FreeGroup("a","b","c");
+a:=G.1;b:=G.2;c:=G.3;
+G:=G/[
+ c^26*a^2,
+ c*b^4*c^-1*b^-1,
+ b^53,
+ a^4,
+ a^2*b^-1*a^2*b,
+ a^2*c^-1*a^2*c,
+ c*a*c*a^-1,
+ (b*a)^3,
+ c^-3*b*c*b*c^2*a*b^2*a*c*b^2*a];
+a:=G.1;b:=G.2;c:=G.3;
+H:=[
+ Subgroup(G,[b,c^4])];
+H[1].index:=216;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[141] := [
+function() # perfect group 150348.1
+local G,H,a,b,c;
+G:=FreeGroup("a","b","c");
+a:=G.1;b:=G.2;c:=G.3;
+G:=G/[
+ c^33,
+ c*b^4*c^-1*b^-1,
+ b^67,
+ a^2,
+ c*a*c*a^-1,
+ (b*a)^3];
+a:=G.1;b:=G.2;c:=G.3;
+H:=[
+ Subgroup(G,[b,c])];
+H[1].index:=68;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[143] := [
+function() # perfect group 151632.1
+local G,H,a,b,x,y,z;
+G:=FreeGroup("a","b","x","y","z");
+a:=G.1;b:=G.2;x:=G.3;y:=G.4;z:=G.5;
+G:=G/[
+ a^2,
+ b^3,
+ (a*b)^13,
+ (a^-1*b^-1*a*b)^4,
+ (a*b)^4*a*b^-1*(a*b)^4*a*b^-1*(a*b)^2*(a*b^-1)^2*
+ a*b*(a*b^-1)^2*(a*b)^2*a*b^-1,
+ x^3,
+ y^3,
+ z^3,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*x*a*(x*z)^-1,
+ a^-1*y*a*y,
+ a^-1*z*a*z,
+ b^-1*x*b*x*y,
+ b^-1*y*b*x^-1,
+ b^-1*z*b*(x*y*z)^-1];
+a:=G.1;b:=G.2;x:=G.3;y:=G.4;z:=G.5;
+H:=[
+ Subgroup(G,[a,b])];
+H[1].index:=27;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[144] := [
+function() # perfect group 155520.1
+local G,H,a,b,d,w,x,y,z,s,t,u,v;
+G:=FreeGroup("a","b","d","w","x","y","z","s","t","u","v");
+a:=G.1;b:=G.2;d:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;s:=G.8;t:=G.9;u:=G.10;v:=G.11;
+G:=G/[
+ a^2*d^-1,
+ b^3,
+ (a*b)^5,
+ d^2,
+ a^-1*d^-1*a*d,
+ b^-1*d^-1*b*d,
+ d^-1*w^-1*d*w,
+ d^-1*x^-1*d*x,
+ d^-1*y^-1*d*y,
+ d^-1*z^-1*d*z,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ (w*x)^2*d,
+ (w*y)^2*d,
+ (w*z)^2*d,
+ (x*y)^2*d,
+ (x*z)^2*d,
+ (y*z)^2*d,
+ a^-1*w*a*z^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*(w*x*y*z)^-1,
+ a^-1*z*a*w^-1,
+ b^-1*w*b*x^-1,
+ b^-1*x*b*y^-1,
+ b^-1*y*b*w^-1,
+ b^-1*z*b*z^-1,
+ s^3,
+ t^3,
+ u^3,
+ v^3,
+ s^-1*t^-1*s*t,
+ s^-1*u^-1*s*u,
+ s^-1*v^-1*s*v,
+ t^-1*u^-1*t*u,
+ t^-1*v^-1*t*v,
+ u^-1*v^-1*u*v,
+ a^-1*s*a*(s*t*u*v)^-1,
+ a^-1*t*a*(s^-1*t*u*v^-1)^-1,
+ a^-1*u*a*(s^-1*u^-1*v)^-1,
+ a^-1*v*a*(t*u^-1*v^-1)^-1,
+ b^-1*s*b*(s^-1*t^-1*u*v^-1)^-1,
+ b^-1*t*b*(s^-1*v^-1)^-1,
+ b^-1*u*b*(s*t^-1*u^-1*v^-1)^-1,
+ b^-1*v*b*(t^-1*u^-1)^-1,
+ d^-1*s*d*s,
+ d^-1*t*d*t,
+ d^-1*u*d*u,
+ d^-1*v*d*v,
+ w^-1*s*w*s^-1,
+ w^-1*t*w*(s^-1*t*v)^-1,
+ w^-1*u*w*(s*t*u^-1*v^-1)^-1,
+ w^-1*v*w*(s^-1*v^-1)^-1,
+ x^-1*s*x*(s*t*u*v^-1)^-1,
+ x^-1*t*x*t^-1,
+ x^-1*u*x*(s^-1*v^-1)^-1,
+ x^-1*v*x*(s^-1*t^-1*u*v)^-1,
+ y^-1*s*y*(s*v^-1)^-1,
+ y^-1*t*y*(t*u*v^-1)^-1,
+ y^-1*u*y*u,
+ y^-1*v*y*v,
+ z^-1*s*z*(s*t^-1*u^-1*v^-1)^-1,
+ z^-1*t*z*(s*u*v)^-1,
+ z^-1*u*z*(t*u^-1*v)^-1,
+ z^-1*v*z*(s^-1*t*u^-1)^-1];
+a:=G.1;b:=G.2;d:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;s:=G.8;t:=G.9;u:=G.10;v:=G.11;
+H:=[
+ Subgroup(G,[a,b,w])];
+H[1].index:=81;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[146] := [
+function() # perfect group 159720.1
+local G,H,a,b,x,y,z;
+G:=FreeGroup("a","b","x","y","z");
+a:=G.1;b:=G.2;x:=G.3;y:=G.4;z:=G.5;
+G:=G/[
+ a^4,
+ b^3,
+ (a*b)^5,
+ a^2*b^-1*a^2*b,
+ x^11,
+ y^11,
+ z^11,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*x*a*z^-1,
+ a^-1*y*a*y,
+ a^-1*z*a*x^-1,
+ b^-1*x*b*(x*y^-5*z^-2)^-1,
+ b^-1*y*b*(x^-4*y^-1)^-1,
+ b^-1*z*b*x^-5];
+a:=G.1;b:=G.2;x:=G.3;y:=G.4;z:=G.5;
+H:=[
+ Subgroup(G,[a*b,z]),
+ Subgroup(G,[a*b,b*a*b*a*b^-1*a*b^-1,y*z^5])];
+H[1].index:=24;
+H[2].index:=66;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 159720.2
+local G,H,a,b,y,z,d;
+G:=FreeGroup("a","b","y","z","d");
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;d:=G.5;
+G:=G/[
+ a^4,
+ b^3,
+ (a*b)^5,
+ a^2*b^-1*a^2*b,
+ d^11,
+ d^-1*y^-1*d*y,
+ d^-1*z^-1*d*z,
+ y^11,
+ z^11,
+ y^-1*z^-1*y*z*d^-1,
+ a^-1*y*a*z^-1,
+ a^-1*z*a*y,
+ a^-1*d*a*d^-1,
+ b^-1*y*b*(y^-1*z^-3*d^4)^-1,
+ b^-1*z*b*y^-4];
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;d:=G.5;
+H:=[
+ Subgroup(G,[a,b])];
+H[1].index:=1331;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 159720.3
+local G,H,a,b,y,z;
+G:=FreeGroup("a","b","y","z");
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;
+G:=G/[
+ a^4,
+ b^3,
+ (a*b)^11,
+ a^2*b^-1*a^2*b,
+ (a*b*a*b*a*b*a*b*a*b^-1*a*b^-1*a*b^-1*a*b^-1*a*b^-1)^2*a^2,
+ y^11,
+ z^11,
+ y^-1*z^-1*y*z,
+ a^-1*y*a*z,
+ a^-1*z*a*y^-1,
+ b^-1*y*b*z^-1,
+ b^-1*z*b*(y^-1*z^-1)^-1];
+a:=G.1;b:=G.2;y:=G.3;z:=G.4;
+H:=[
+ Subgroup(G,[a,b])];
+H[1].index:=121;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[147] := [
+function() # perfect group 160380.1
+local G,H,a,b,v,w,x,y,z;
+G:=FreeGroup("a","b","v","w","x","y","z");
+a:=G.1;b:=G.2;v:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;
+G:=G/[
+ a^2,
+ b^3,
+ (a*b)^11,
+ (a*b)^4*(a*b^-1)^5*(a*b)^4*(a*b^-1)^5,
+ v^3,
+ w^3,
+ x^3,
+ y^3,
+ z^3,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*v*a*v^-1,
+ a^-1*w*a*w^-1,
+ a^-1*x*a*(v^2*x^2*y)^-1,
+ a^-1*y*a*y^-1,
+ a^-1*z*a*(w*y*z^2)^-1,
+ b^-1*v*b*w^-1,
+ b^-1*w*b*x^-1,
+ b^-1*x*b*v^-1,
+ b^-1*y*b*(y^2*z)^-1,
+ b^-1*z*b*y^-2];
+a:=G.1;b:=G.2;v:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;
+H:=[
+ Subgroup(G,[b,a*b*a*b^-1*a,y*z])];
+H[1].index:=33;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[148] := [
+function() # perfect group 161280.1
+local G,H,a,b,u,v,w,x,y,z;
+G:=FreeGroup("a","b","u","v","w","x","y","z");
+a:=G.1;b:=G.2;u:=G.3;v:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+G:=G/[
+ a^2,
+ b^4,
+ (a*b)^7,
+ (a*b)^2*a*b^2*(a*b*a*b^-1)^2*(a*b)^2*(a*b^-1)^2*a*b*a*b^-1,
+ u^2,
+ v^2,
+ w^2,
+ x^2,
+ y^2,
+ z^2,
+ u^-1*v^-1*u*v,
+ u^-1*w^-1*u*w,
+ u^-1*x^-1*u*x,
+ u^-1*y^-1*u*y,
+ u^-1*z^-1*u*z,
+ v^-1*w^-1*v*w,
+ v^-1*x^-1*v*x,
+ v^-1*y^-1*v*y,
+ v^-1*z^-1*v*z,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*u*a*u^-1,
+ a^-1*v*a*v^-1,
+ a^-1*w*a*y^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*w^-1,
+ a^-1*z*a*(u*v*w*x*y*z)^-1,
+ b^-1*u*b*w^-1,
+ b^-1*v*b*z^-1,
+ b^-1*w*b*v^-1,
+ b^-1*x*b*y^-1,
+ b^-1*y*b*x^-1,
+ b^-1*z*b*u^-1];
+a:=G.1;b:=G.2;u:=G.3;v:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+H:=[
+ Subgroup(G,[a,b^2*a*b^-1*(a*b*a*b*b)^2*(a*b)^2,b*(a*b^-1)^2*a*b^2*(a*b)^2,y*z])];
+H[1].index:=14;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 161280.2
+local G,H,a,b,e,f;
+G:=FreeGroup("a","b","e","f");
+a:=G.1;b:=G.2;e:=G.3;f:=G.4;
+G:=G/[
+ a^2,
+ b^4*f^-2,
+ (a*b)^7*e,
+ (a*b^2)^5*(e*f)^-1,
+ (a^-1*b^-1*a*b)^5*f^-2,
+ (a*b*a*b*a*b^3)^5*f,
+ (a*b*a*b*a*b^2*a*b^-1)^5,
+ e^2,
+ f^4,
+ e^-1*f^-1*e*f,
+ a^-1*e*a*e^-1,
+ a^-1*f*a*f^-1,
+ b^-1*e*b*e^-1,
+ b^-1*f*b*f^-1];
+a:=G.1;b:=G.2;e:=G.3;f:=G.4;
+H:=[
+ Subgroup(G,[a,b*a*b*a*b^-1*a*b^2*f^-1]),
+ Subgroup(G,[a*e^2,b^-1*a*b^-1*a*b*a*b^2])];
+H[1].index:=224;
+H[2].index:=112;
+G.subgroups:=H;
+return G;
+end ];
+PERFFun[151] := [
+function() # perfect group 174960.1
+local G,H,a,b,c,d,w,x,y,z;
+G:=FreeGroup("a","b","c","d","w","x","y","z");
+a:=G.1;b:=G.2;c:=G.3;d:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+G:=G/[
+ a^4*d,
+ b^3,
+ c^3*(w*x*y^-1)^-1,
+ (b*c)^4*(a^2*d^-1)^-1,
+ (b*c^-1)^5,
+ a^2*d^-1*b*(a^2*d^-1)^-1*b^-1,
+ a^2*d^-1*c*(a^2*d^-1)^-1*c^-1,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ d^3,
+ w^3,
+ x^3,
+ y^3,
+ z^3,
+ d^-1*w^-1*d*w,
+ d^-1*x^-1*d*x,
+ d^-1*y^-1*d*y,
+ d^-1*z^-1*d*z,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*d*a*d^-1,
+ a^-1*w*a*z^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*(w^-1*x^-1*y^-1*z^-1)^-1,
+ a^-1*z*a*w^-1,
+ b^-1*d*b*(d*w*y^-1*z)^-1,
+ b^-1*w*b*x^-1,
+ b^-1*x*b*y^-1,
+ b^-1*y*b*w^-1,
+ b^-1*z*b*z^-1,
+ c^-1*d*c*(d*x^-1*z^-1)^-1,
+ c^-1*w*c*(w^-1*x*y^-1*z^-1)^-1,
+ c^-1*x*c*(x^-1*z)^-1,
+ c^-1*y*c*(w*x^-1)^-1,
+ c^-1*z*c*x];
+a:=G.1;b:=G.2;c:=G.3;d:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+H:=[
+ Subgroup(G,[c*b*a^-1,b,w]),
+ Subgroup(G,[b,c*a*b*c,d*y^-1*z])];
+H[1].index:=80;
+H[2].index:=30;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 174960.2
+local G,H,a,b,c,d,w,x,y,z;
+G:=FreeGroup("a","b","c","d","w","x","y","z");
+a:=G.1;b:=G.2;c:=G.3;d:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+G:=G/[
+ a^4*d,
+ b^3*(w*x*y*z^-1)^-1,
+ c^3*(w*y^-1*z^-1)^-1,
+ (b*c)^4*(a^2*d^-1)^-1,
+ (b*c^-1)^5,
+ a^2*d^-1*b*(a^2*d^-1)^-1*b^-1,
+ a^2*d^-1*c*(a^2*d^-1)^-1*c^-1,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ d^3,
+ w^3,
+ x^3,
+ y^3,
+ z^3,
+ d^-1*w^-1*d*w,
+ d^-1*x^-1*d*x,
+ d^-1*y^-1*d*y,
+ d^-1*z^-1*d*z,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*d*a*d^-1,
+ a^-1*w*a*z^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*(w^-1*x^-1*y^-1*z^-1)^-1,
+ a^-1*z*a*w^-1,
+ b^-1*d*b*(d*w*x^-1*z)^-1,
+ b^-1*w*b*x^-1,
+ b^-1*x*b*y^-1,
+ b^-1*y*b*w^-1,
+ b^-1*z*b*z^-1,
+ c^-1*d*c*(d*x)^-1,
+ c^-1*w*c*(w^-1*x*y^-1*z^-1)^-1,
+ c^-1*x*c*(x^-1*z)^-1,
+ c^-1*y*c*(w*x^-1)^-1,
+ c^-1*z*c*x];
+a:=G.1;b:=G.2;c:=G.3;d:=G.4;w:=G.5;x:=G.6;y:=G.7;z:=G.8;
+H:=[
+ Subgroup(G,[c*b*a^-1,b,w]),
+ Subgroup(G,[b*w^-1,c*a*b*c])];
+H[1].index:=80;
+H[2].index:=30;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 174960.3
+local G,H,a,b,c,w,x,y,z,f;
+G:=FreeGroup("a","b","c","w","x","y","z","f");
+a:=G.1;b:=G.2;c:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;f:=G.8;
+G:=G/[
+ a^4,
+ b^3,
+ c^3,
+ (b*c)^4*a^2,
+ (b*c^-1)^5,
+ a^2*b*a^2*b^-1,
+ a^2*c*a^2*c^-1,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ w^3,
+ x^3,
+ y^3,
+ z^3,
+ f^3,
+ w^-1*f^-1*w*f,
+ x^-1*f^-1*x*f,
+ y^-1*f^-1*y*f,
+ z^-1*f^-1*z*f,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*w*a*z^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*(w^-1*x^-1*y^-1*z^-1)^-1,
+ a^-1*z*a*w^-1,
+ a^-1*f*a*f^-1,
+ b^-1*w*b*x^-1,
+ b^-1*x*b*y^-1,
+ b^-1*y*b*w^-1,
+ b^-1*z*b*z^-1,
+ b^-1*f*b*f^-1,
+ c^-1*w*c*(w^-1*x*y^-1*z^-1*f)^-1,
+ c^-1*x*c*(x^-1*z*f)^-1,
+ c^-1*y*c*(w*x^-1*f)^-1,
+ c^-1*z*c*(x^-1*f^-1)^-1,
+ c^-1*f*c*f^-1];
+a:=G.1;b:=G.2;c:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;f:=G.8;
+H:=[
+ Subgroup(G,[c*b*a^-1,b,w]),
+ Subgroup(G,[a,b,w])];
+H[1].index:=80;
+H[2].index:=18;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 174960.4
+local G,H,a,b,c,w,x,y,z,e;
+G:=FreeGroup("a","b","c","w","x","y","z","e");
+a:=G.1;b:=G.2;c:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;e:=G.8;
+G:=G/[
+ a^4,
+ b^3,
+ c^3,
+ (b*c)^4*a^2,
+ (b*c^-1)^5,
+ a^2*b*a^2*b^-1,
+ a^2*c*a^2*c^-1,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ w^3,
+ x^3,
+ y^3,
+ z^3,
+ e^3,
+ w^-1*e^-1*w*e,
+ x^-1*e^-1*x*e,
+ y^-1*e^-1*y*e,
+ z^-1*e^-1*z*e,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*w*a*z^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*(w^-1*x^-1*y^-1*z^-1)^-1,
+ a^-1*z*a*w^-1,
+ a^-1*e*a*e^-1,
+ b^-1*w*b*x^-1,
+ b^-1*x*b*(y*e^-1)^-1,
+ b^-1*y*b*(w*e)^-1,
+ b^-1*z*b*(z*e)^-1,
+ b^-1*e*b*e^-1,
+ c^-1*w*c*(w^-1*x*y^-1*z^-1*e^-1)^-1,
+ c^-1*x*c*(x^-1*z*e^-1)^-1,
+ c^-1*y*c*(w*x^-1*e^-1)^-1,
+ c^-1*z*c*(x^-1*e)^-1,
+ c^-1*e*c*e^-1];
+a:=G.1;b:=G.2;c:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;e:=G.8;
+H:=[
+ Subgroup(G,[c*b*a^-1,b,w]),
+ Subgroup(G,[a*b,b*a*b*a*b^-1*a*b^-1,w*e])];
+H[1].index:=80;
+H[2].index:=108;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 174960.5
+local G,H,a,b,c,w,x,y,z,d;
+G:=FreeGroup("a","b","c","w","x","y","z","d");
+a:=G.1;b:=G.2;c:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;d:=G.8;
+G:=G/[
+ a^4*d,
+ b^3,
+ c^3,
+ (b*c)^4*(a^2*d^-1)^-1,
+ (b*c^-1)^5,
+ a^2*d^-1*b*(a^2*d^-1)^-1*b^-1,
+ a^2*d^-1*c*(a^2*d^-1)^-1*c^-1,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ d^3,
+ b^-1*d*b*d^-1,
+ c^-1*d*c*d^-1,
+ w^3,
+ x^3,
+ y^3,
+ z^3,
+ w^-1*d^-1*w*d,
+ x^-1*d^-1*x*d,
+ y^-1*d^-1*y*d,
+ z^-1*d^-1*z*d,
+ w^-1*x^-1*w*x,
+ w^-1*y^-1*w*y,
+ w^-1*z^-1*w*z,
+ x^-1*y^-1*x*y,
+ x^-1*z^-1*x*z,
+ y^-1*z^-1*y*z,
+ a^-1*w*a*z^-1,
+ a^-1*x*a*x^-1,
+ a^-1*y*a*(w^-1*x^-1*y^-1*z^-1)^-1,
+ a^-1*z*a*w^-1,
+ b^-1*w*b*x^-1,
+ b^-1*x*b*y^-1,
+ b^-1*y*b*w^-1,
+ b^-1*z*b*z^-1,
+ c^-1*w*c*(w^-1*x*y^-1*z^-1)^-1,
+ c^-1*x*c*(x^-1*z)^-1,
+ c^-1*y*c*(w*x^-1)^-1,
+ c^-1*z*c*(x^-1)^-1];
+a:=G.1;b:=G.2;c:=G.3;w:=G.4;x:=G.5;y:=G.6;z:=G.7;d:=G.8;
+H:=[
+ Subgroup(G,[c*b*a^-1,b,w]),
+ Subgroup(G,[a*d,c*d,w]),
+ Subgroup(G,[b,c*a*b*c,z])];
+H[1].index:=80;
+H[2].index:=18;
+H[3].index:=30;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 174960.6
+local G,H,a,b,c,d,s,t,u,v;
+G:=FreeGroup("a","b","c","d","s","t","u","v");
+a:=G.1;b:=G.2;c:=G.3;d:=G.4;s:=G.5;t:=G.6;u:=G.7;v:=G.8;
+G:=G/[
+ a^4*d,
+ b^3,
+ c^3,
+ (b*c)^4*a^-2*d,
+ (b*c^-1)^5,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ a^-2*b^-1*a^2*b,
+ a^-2*c^-1*a^2*c,
+ d^3,
+ b^-1*d^-1*b*d,
+ c^-1*d^-1*c*d,
+ s^3,
+ t^3,
+ u^3,
+ v^3,
+ s^-1*d^-1*s*d,
+ t^-1*d^-1*t*d,
+ u^-1*d^-1*u*d,
+ v^-1*d^-1*v*d,
+ s^-1*t^-1*s*t,
+ s^-1*u^-1*s*u,
+ s^-1*v^-1*s*v,
+ t^-1*u^-1*t*u,
+ t^-1*v^-1*t*v,
+ u^-1*v^-1*u*v,
+ a^-1*s*a*u^-1,
+ a^-1*t*a*v^-1,
+ a^-1*u*a*s,
+ a^-1*v*a*t,
+ b^-1*s*b*(s*v^-1)^-1,
+ b^-1*t*b*(t*u^-1*v)^-1,
+ b^-1*u*b*u^-1,
+ b^-1*v*b*v^-1,
+ c^-1*s*c*(s^-1*t*u^-1*v)^-1,
+ c^-1*t*c*(s*t*u*v)^-1,
+ c^-1*u*c*(s^-1*v^-1)^-1,
+ c^-1*v*c*(t^-1*u^-1*v)^-1];
+a:=G.1;b:=G.2;c:=G.3;d:=G.4;s:=G.5;t:=G.6;u:=G.7;v:=G.8;
+H:=[
+ Subgroup(G,[a*d,c*d,s]),
+ Subgroup(G,[a,b,c])];
+H[1].index:=18;
+H[2].index:=81;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 174960.7
+local G,H,a,b,c,s,t,u,v,d;
+G:=FreeGroup("a","b","c","s","t","u","v","d");
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;d:=G.8;
+G:=G/[
+ a^4*d,
+ b^3,
+ c^3,
+ (b*c)^4*a^-2*d,
+ (b*c^-1)^5,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ a^-2*b^-1*a^2*b,
+ a^-2*c^-1*a^2*c,
+ s^3,
+ t^3,
+ u^3,
+ v^3,
+ d^3,
+ d^-1*s^-1*d*s,
+ d^-1*t^-1*d*t,
+ d^-1*u^-1*d*u,
+ d^-1*v^-1*d*v,
+ s^-1*t^-1*s*t,
+ s^-1*u^-1*s*u,
+ s^-1*v^-1*s*v*d,
+ t^-1*u^-1*t*u*d,
+ t^-1*v^-1*t*v*d^-1,
+ u^-1*v^-1*u*v,
+ a^-1*s*a*(u*d)^-1,
+ a^-1*t*a*(v*d^-1)^-1,
+ a^-1*u*a*s,
+ a^-1*v*a*t,
+ a^-1*d*a*d^-1,
+ b^-1*s*b*(s*v^-1)^-1,
+ b^-1*t*b*(t*u^-1*v*d)^-1,
+ b^-1*u*b*u^-1,
+ b^-1*v*b*v^-1,
+ b^-1*d*b*d^-1,
+ c^-1*s*c*(s^-1*t*u^-1*v*d^-1)^-1,
+ c^-1*t*c*(s*t*u*v)^-1,
+ c^-1*u*c*(s^-1*v^-1*d)^-1,
+ c^-1*v*c*(t^-1*u^-1*v)^-1,
+ c^-1*d*c*d^-1];
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;d:=G.8;
+H:=[
+ Subgroup(G,[a*d,b*d^-1])];
+H[1].index:=1458;
+G.subgroups:=H;
+return G;
+end,
+function() # perfect group 174960.8
+local G,H,a,b,c,s,t,u,v,e;
+G:=FreeGroup("a","b","c","s","t","u","v","e");
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;e:=G.8;
+G:=G/[
+ a^4,
+ b^3,
+ c^3,
+ (b*c)^4*a^-2,
+ (b*c^-1)^5,
+ a^-1*b^-1*c*b*c*b^-1*c*b*c^-1,
+ a^-2*b^-1*a^2*b,
+ a^-2*c^-1*a^2*c,
+ s^3,
+ t^3,
+ u^3,
+ v^3,
+ e^3,
+ e^-1*s^-1*e*s,
+ e^-1*t^-1*e*t,
+ e^-1*u^-1*e*u,
+ e^-1*v^-1*e*v,
+ s^-1*t^-1*s*t,
+ s^-1*u^-1*s*u*e^-1,
+ s^-1*v^-1*s*v,
+ t^-1*u^-1*t*u,
+ t^-1*v^-1*t*v*e^-1,
+ u^-1*v^-1*u*v,
+ a^-1*s*a*u^-1,
+ a^-1*t*a*v^-1,
+ a^-1*u*a*(s^-1*e)^-1,
+ a^-1*v*a*(t^-1*e)^-1,
+ a^-1*e*a*e^-1,
+ b^-1*s*b*(s*v^-1*e^-1)^-1,
+ b^-1*t*b*(t*u^-1*v*e)^-1,
+ b^-1*u*b*u^-1,
+ b^-1*v*b*v^-1,
+ b^-1*e*b*e^-1,
+ c^-1*s*c*(s^-1*t*u^-1*v*e)^-1,
+ c^-1*t*c*(s*t*u*v*e^-1)^-1,
+ c^-1*u*c*(s^-1*v^-1)^-1,
+ c^-1*v*c*(t^-1*u^-1*v)^-1,
+ c^-1*e*c*e^-1];
+a:=G.1;b:=G.2;c:=G.3;s:=G.4;t:=G.5;u:=G.6;v:=G.7;e:=G.8;
+H:=[
+ Subgroup(G,[a,b,c])];
+H[1].index:=243;
+G.subgroups:=H;
+return G;
+end ];

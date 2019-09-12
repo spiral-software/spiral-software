@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: monmon.g 3324 2006-08-25 15:17:15Z pueschel $");
 # Determination of Mon-Mon-Symmetry,
 # MP, SE, 01.11.97 - , GAPv3.4
 # SE, 16.01.01: check for L M = M R added; better reporting

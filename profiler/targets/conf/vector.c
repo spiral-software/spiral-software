@@ -1,4 +1,8 @@
-/* $Id: vector.c 8438 2009-06-02 14:02:14Z yvoronen $ */
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 /**************************************************************************
 *  vector.c								  *
 *									  *

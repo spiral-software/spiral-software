@@ -137,25 +137,15 @@ function(arg)
     ClearCommentBuffer();
 end);
 
-CVSID := function(cvs_id)
-    CurrentFile().id := cvs_id;
-end;
-
-CVSID("$Id: init.g 9220 2009-12-25 18:21:18Z vlad $");
+##  CVSID := function(cvs_id)
+##      CurrentFile().id := cvs_id;
+##  end;
 
 VERLIB := "v3r4p4 1997/04/18";
 
 PATH_SEP := config_val_t_strval_get(config_demand_val("path_sep"));
 
-if not IsBound( VERSRC ) then  VERSRC := "unknown";  fi;
-if not IsBound( VERSYS ) then  VERSYS := "unknown";  fi;
-
-VERSION := [];
-Append( VERSION,   "lib: " );  Append( VERSION, VERLIB );
-Append( VERSION, ", src: " );  Append( VERSION, VERSRC );
-Append( VERSION, ", sys: " );  Append( VERSION, VERSYS );
-
-Global.SpiralVersion := "8.1.0b1";
+Global.SpiralVersion := Version();
 
 PrintBannerSpiral := function()
     Print("\n");

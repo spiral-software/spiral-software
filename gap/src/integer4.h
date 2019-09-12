@@ -13,10 +13,6 @@
 **
 **  This file declares the functions handling arbitrary size integers.
 */
-#ifdef  INCLUDE_DECLARATION_PART
-const char * GAP4_Revision_integer_h =
-   "@(#)Id: integer.h,v 4.10 2002/04/15 10:03:50 sal Exp";
-#endif
 
 
 /****************************************************************************

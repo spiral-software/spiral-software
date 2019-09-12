@@ -1,0 +1,27 @@
+##
+## SPIRAL License
+##
+## Copyright (c) 2018, Carnegie Mellon University
+## All rights reserved.
+## 
+## See LICENSE file for full information
+##
+
+cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
+
+include ("${SPIRAL_SOURCE_DIR}/config/CMakeIncludes/TestDefines.cmake")
+
+##  Define the X86-SIMD example tests...
+set (TESTS_ALL_TESTS
+	FFT-with-SIMD
+	3D-FFT-AVX
+)
+
+##  call function my_add_test_target() to add a target for each test
+foreach (test ${TESTS_ALL_TESTS})
+    my_add_test_target(${test} "X86-SIMD")
+endforeach()
+
+set_tests_properties (${TESTS_ALL_TESTS} PROPERTIES LABELS "X86-SIMD")
+
+enable_testing()

@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: save.g 2031 2005-10-27 17:56:54Z yvoronen $");
 
 GlobalPackage(spiral.util);
 

@@ -1,40 +1,12 @@
 /****************************************************************************
 **
-*W  system4.c                    GAP source                      Frank Celler
-*W                                                         & Martin Schoenert
-*W                                                         & Dave Bayer (MAC)
-*W                                                  & Harald Boegeholz (OS/2)
-*W                                                         & Paul Doyle (VMS)
-*W                                                  & Burkhard Hoefling (MAC)
-*W                                                    & Steve Linton (MS/DOS)
-**
-**
 *Y  Copyright (C) 2018-2019, Carnegie Mellon University
 *Y  All rights reserved.  See LICENSE for details.
 *Y  
 *Y  This work is based on GAP version 3, with some files from version 4.  GAP is
 *Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
 **
-**  The  files   "system.c" and  "sysfiles.c"  contains all  operating system
-**  dependent  functions.  This file contains  all system dependent functions
-**  except file and stream operations, which are implemented in "sysfiles.c".
-**  The following labels determine which operating system is actually used.
-**
-**  Under UNIX autoconf  is used to check  various features of  the operating
-**  system and the compiler.  Should you have problem compiling GAP check the
-**  file "bin/CPU-VENDOR-OS/config.h" after you have done a
-**
-**     ./configure ; make config
-**
-**  in the root directory.  And then do a
-**
-**     make compile
-**
-**  to compile and link GAP.
 */
-
-const char * GAP4_Revision_system_c =
-   "@(#)Id: system.c,v 4.96 2002/05/04 13:45:53 gap Exp";
 
 #ifndef SYS_STDIO_H                     /* standard input/output functions */
 # include <stdio.h>
@@ -60,28 +32,6 @@ const char * GAP4_Revision_system_c =
 #  include      <stdlib.h>
 # endif
 # define SYS_STDLIB_H
-#endif
-
-
-#ifdef __MWERKS__
-# if !SYS_MAC_MWC /* BH:__MWERKS__ is also true for  SYS_MAC_MWC */
-#  define SYS_IS_MAC_MPW             1
-#  define SYS_HAS_CALLOC_PROTO       1
-# endif
-#endif
-
-#if SYS_MAC_MWC
-# include "macdefs.h"
-# include "macpaths.h"
-# include "macte.h"
-# include "macedit.h"
-# include "maccon.h"
-# include "macpaths.h"
-# include "macintr.h"
-#endif
-
-#if SYS_DARWIN
-#define task_self mach_task_self
 #endif
 
 
@@ -196,22 +146,10 @@ Int SyStorMin = SY_STOR_MIN;
 **
 **  'syStackSpace' is the amount of stackspace that GAP gets.
 **
-**  Under TOS and on the  Mac special actions must  be  taken to ensure  that
+**  On the  Mac special actions must  be  taken to ensure  that
 **  enough space is available.
 */
-#if SYS_TOS_GCC2
-# define __NO_INLINE__
-int _stksize = 64 * 1024;   /* GNU C, amount of stack space    */
-static UInt syStackSpace = 64 * 1024;
-#endif
 
-#if SYS_MAC_MPW || SYS_MAC_MWC 
-static UInt syStackSpace = NUM_TO_UINT(2) * NUM_TO_UINT(1024) * NUM_TO_UINT(1024);
-#endif
-
-#if SYS_MAC_MWC	
-char * SyMinStack = (char*) NUM_TO_INT(-1);
-#endif
 
 /****************************************************************************
 **
@@ -227,10 +165,6 @@ char * SyMinStack = (char*) NUM_TO_INT(-1);
 **  'SyMsgsBags' is the function that is used by Gasman to  display  messages
 **  during garbage collections.
 */
-#if SYS_MAC_MWC
-UInt syLastFreeWorkspace = 0;  
-	/* amout of free workspace during last collection */
-#endif
 
 void SyMsgsBags (
     UInt                full,
@@ -254,11 +188,6 @@ void SyMsgsBags (
     }
     nr = copynr;
 
-#if SYS_MAC_MWC
- 	if (phase == 5)
- 		syLastFreeWorkspace = nr; /* save for status message in about box */
-#endif
-
     /* ordinary full garbage collection messages                           */
     if ( 1 <= SyMsgsFlagBags && full ) {
         if ( phase == 0 ) { SyFputs( "#G  FULL ", 3 );                     }
@@ -280,21 +209,6 @@ void SyMsgsBags (
         if ( phase == 5 ) { SyFputs( str, 3 );  SyFputs( "/",         3 ); }
         if ( phase == 6 ) { SyFputs( str, 3 );  SyFputs( "kb free\n", 3 ); }
     }
-#if !SYS_MAC_MWC
-    /* package (window) mode full garbage collection messages              */
-    if ( phase != 0 ) {
-        if ( 3 <= phase ) nr *= 1024;
-        cmd[0] = '@';
-        cmd[1] = ( full ? '0' : ' ' ) + phase;
-        cmd[2] = '\0';
-        i = 0;
-        for ( ; 0 < nr; nr /=10 )
-            str[i++] = '0' + (nr % 10);
-        str[i++] = '+';
-        str[i++] = '\0';
-        syWinPut( 1, cmd, str );
-    }
-#endif
 }
 
 
@@ -462,9 +376,9 @@ UInt * * * SyAllocBags (
 
 /****************************************************************************
 **
-*f  SyAllocBags( <size>, <need> ) . . . . . . . BSD/USG/OS2 EMX/MSDOS/TOS/VMS
+*f  SyAllocBags( <size>, <need> ) . . . . . . . BSD/USG
 **
-**  For UNIX,  OS/2, MS-DOS, TOS,  and VMS, 'SyAllocBags' calls 'sbrk', which
+**  For UNIX, MS-DOS, 'SyAllocBags' calls 'sbrk', which
 **  will work on most systems.
 **
 **  Note that   it may  happen that  another   function   has  called  'sbrk'
@@ -474,7 +388,7 @@ UInt * * * SyAllocBags (
 **  was 0 or aborts GAP if <need> was 1.  'SyAllocBags' will refuse to extend
 **  the workspace beyond 'SyStorMax' or to reduce it below 'SyStorMin'.
 */
-#if SYS_BSD||SYS_USG||SYS_OS2_EMX||SYS_MSDOS_DJGPP||SYS_TOS_GCC2||SYS_VMS||HAVE_SBRK
+#if SYS_BSD||SYS_USG||HAVE_SBRK
 
 UInt * * * syWorkspace = 0;
 UInt       syWorksize;
@@ -597,193 +511,6 @@ UInt * * * SyAllocBags (
 
 /****************************************************************************
 **
-*f  SyAllocBags( <size>, <need> ) . . . . . . . . . . . . . . . . . . .  MACH
-**
-**  Under MACH virtual memory managment functions are used instead of 'sbrk'.
-*/
-#if SYS_MACH || HAVE_VM_ALLOCATE
-
-#include <mach/mach.h>
-
-vm_address_t syBase  = 0;
-Int          sySize  = 0;
-
-UInt * * * SyAllocBags (
-    Int                 size,
-    UInt                need )
-{
-    UInt * * *          ret;
-    vm_address_t        adr;
-
-    /* check that we stay within our bounds                                */
-    if ( 0 < size && SyStorMax < sySize + size )
-        ret = (UInt***) -1;
-    else if ( size < 0 && sySize + size < SyStorMin )
-        ret = (UInt***) -1;
-
-    size = size*1024;
-    /* check that <size> is divisible by <vm_page_size>                    */
-    if ( size % vm_page_size != 0 ) {
-        fputs( "gap: memory block size is not a multiple of vm_page_size",
-               stderr );
-        SyExit(1);
-    }
-
-    /* check that we don't try to shrink uninialized memory                */
-    else if ( size <= 0 && syBase == 0 ) {
-        fputs( "gap: trying to shrink uninialized vm memory\n", stderr );
-        SyExit(1);
-    }
-
-    /* allocate memory anywhere on first call                              */
-    else if ( 0 < size && syBase == 0 ) {
-        if ( vm_allocate(task_self(),&syBase,size,TRUE) == KERN_SUCCESS ) {
-            sySize = size;
-            ret = (UInt***) syBase;
-        }
-        else
-            ret = (UInt***) -1;
-    }
-
-    /* don't shrink memory but mark it as deactivated                      */
-    else if ( size < 0 ) {
-        adr = (vm_address_t)( (char*) syBase + (sySize+size) );
-        if ( vm_deallocate(task_self(),adr,-size) == KERN_SUCCESS ) {
-            ret = (UInt***)( (char*) syBase + sySize );
-            sySize += size;
-        }
-        else
-            ret = (UInt***) -1;
-    }
-
-    /* get more memory from system                                         */
-    else {
-        adr = (vm_address_t)( (char*) syBase + sySize );
-        if ( vm_allocate(task_self(),&adr,size,FALSE) == KERN_SUCCESS ) {
-            ret = (UInt***) ( (char*) syBase + sySize );
-            sySize += size;
-        }
-        else
-            ret = (UInt***) -1;
-    }
-
-    /* test if the allocation failed                                       */
-    if ( ret == (UInt***)-1 && need ) {
-        fputs("gap: cannot extend the workspace any more\n",stderr);
-        SyExit(1);
-    }
-
-    /* otherwise return the result (which could be 0 to indicate failure)  */
-    if ( ret == (UInt***)-1 )
-        return 0;
-    else
-        return ret;
-
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  SyAllocBags( <size>, <need> ) . . . . . . . . . . . . . . . . . . MAC MPW
-**
-**  For the MAC under MPW we currently use 'calloc'.  This  does not allow to
-**  extend the arena, but this is a problem of the memory manager anyhow.
-*/
-#if SYS_MAC_MPW
-#error "You can't compile GAP on this platform. It should be fixed. "
-
-/* this stuff is obsolete and should be converted to SyAllocBags */
-
-#ifndef SYS_HAS_CALLOC_PROTO
-extern  char *          calloc ( int, int );
-#endif
-char * syWorkspace;
-
-char * SyGetmem ( size )
-    long                size;
-{
-  size = size*1024;
-    /* get the memory                                                      */
-    /*N 1993/05/29 martin try to make it possible to extend the arena      */
-    if ( syWorkspace == 0 ) {
-        syWorkspace = calloc( (int)size/4, 4 );
-        syWorkspace = (char*)(((long)syWorkspace + 3) & ~3);
-        return syWorkspace;
-    }
-    else {
-        return (char*)-1;
-    }
-}
-
-#endif
-
-
-
-/****************************************************************************
-**
-*f  SyAllocBags( <size>, <need> ) . . . . . . . . . . . . . . . . . . MAC MWC
-**
-**  For Mac under CodeWarrior, we use 'NewPtr to allocate as much memory
-**  as possible at startup, then hand it on to GAP as required.
-*/
-#if SYS_MAC_MWC
-
-UInt * * * 		syWorkspace;
-long       		syWorksize = 0;  /* currently allocated amount in KB*/
-long			SyStorLimit;     /* maximum allocable amount in KB*/
-
-UInt * * * SyAllocBags (
-    Int                 size,
-    UInt                need )
-{
-	UInt*** ret;
-	long *p;
-	unsigned long count;
-	
-    if ( (0 < size && (syWorksize + size <= SyStorMax || 
-    				   (need && syWorksize + size <= SyStorLimit)))
-      || (size < 0 && SyStorMin <= syWorksize + size) ) {
-      
-		ret = (UInt***)((char*)syWorkspace + (syWorksize << NUM_TO_UINT(10)) );
-        syWorksize += size;
-		syLastFreeWorkspace += size;
-		
-       /* set the overrun flag if we became larger than SyStorMax */
-       if ( syWorksize > SyStorMax && size > 0)  {
-	 		SyStorOverrun = -1;
-			SyStorMax=syWorksize+1; /* new maximum */
-       }
-		/* clear memory, 256 bytes at a time */
- 		p = (long *) ret;
-		if (size > 0) {
-			count = size * (1024UL / sizeof(*p) / 64);
-			while (count--) {
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-			}
-		}
-        return ret;
-    }
-    else 
- 	   if ( need ) {
-	        syEchos("gap: cannot extend the workspace any more\n",3);
-	        SyExit( 1 );
-	    } 
-	return (UInt***) 0;
-}
-#endif
-
-
-/****************************************************************************
-**
 *F  SyAbortBags( <msg> )  . . . . . . . . . abort GAP in case of an emergency
 **
 **  'SyAbortBags' is the function called by Gasman in case of an emergency.
@@ -826,31 +553,6 @@ extern void   free ( char * );
 # endif
 #endif
 
-
-#if SYS_TOS_GCC2
-# ifndef SYS_BASEPAGE_H                 /* definition of basepage          */
-#  include      <basepage.h>
-#  define SYS_BASEPAGE_H
-# endif
-#endif
-
-
-#if SYS_MAC_MPW || SYS_MAC_MWC
-# ifndef SYS_HAS_TOOL
-#  ifndef SYS_MEMORY_H                  /* Memory stuff:                   */
-#   include     <Memory.h>              /* 'GetApplLimit', 'SetApplLimit', */
-#   define SYS_MEMORY_H                 /* 'MaxApplZone', 'StackSpace',    */
-#  endif                                /* 'MaxMem'                        */
-# endif
-#endif
-
-
-#if SYS_MAC_MWC
-# include <gestalt.h>
-# include <folders.h>
-#endif
-
-
 static UInt ParseMemory( Char * s)
 {
   UInt size;
@@ -878,50 +580,10 @@ void InitSystem4 (
     Int                 argc,
     Char *              argv [] )
 {
-#if SYS_MAC_MWC
-    char				first;  /* dummy for checking stack ptr */
-    Int                 pre = 0;        /* amount to reserve for shared libs */
-#else
     Int                 pre = 100*1024; /* amount to pre'malloc'ate        */
-#endif
     Char *              ptr;            /* pointer to the pre'malloc'ated  */
     Char *              ptr1;           /* more pre'malloc'ated  */
     UInt                i;              /* loop variable                   */
-#if SYS_MAC_MWC
-    Size		mem;
-    OSErr 		err;
-    char				last;  /* dummy for checking stack ptr */
-#endif
-
-#if SYS_MAC_MPW
-# ifndef SYS_HAS_TOOL
-    /* Increase the amount of stack space available to GAP.                */
-    /* Following "Inside Macintosh - Memory" 1992, pages 1-42.             */
-    /* For use with MPW 'SIOW.o' *after* changing instruction word         */
-    /* at 3F94 from 'A063' (call to '_MaxApplZone') to '4E71' (NOP).       */
-    /* 'fix_SIOW.c' is the source for an MPW tool, which does this safely. */
-    /* Otherwise bungee-jumping the stack will lead to fatal head injuries.*/
-    /*                                              Dave Bayer, 1994/07/14 */
-    SetApplLimit( GetApplLimit() - (syStackSpace - StackSpace() + 1024) );
-    MaxApplZone();
-    if ( StackSpace() < syStackSpace ) {
-        FPUTS_TO_STDERR("gap4: cannot get enough stack space.\n");
-        SyExit( 1 );
-    }
-# endif
-#endif
-
-#if SYS_MAC_MWC	
-# if !TARGET_API_MAC_CARBON && !powerc 
-    SyMinStack = GetApplLimit() - (syStackSpace - StackSpace()) + 1024;
-    SetApplLimit( SyMinStack );
-    /* compute the least possible value for the stack pointer */
-    SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 8192;
-# else /* we need more reserve stack for the PPC, apparently */
-    SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 65536;
-# endif
-    MaxApplZone();
-#endif
 
     /* scan the command line for options                                   */
     while ( argc > 1 && argv[1][0] == '-' ) {
@@ -932,13 +594,6 @@ void InitSystem4 (
         }
 
         switch ( argv[1][1] ) {
-#if SYS_MAC_MWC
-        /* '-W <memory>', change the value of 'gMaxLogSize'                */
-	ONE_ARG('W');
-	    gMaxLogSize = ParseMemory(argv[2]);
-            ++argv; --argc; break;
-#endif
-
         /* '-a <memory>', set amount to pre'm*a*lloc'ate                   */
 	ONE_ARG('a');
 	    pre = ParseMemory( argv[2] );
@@ -987,70 +642,6 @@ void InitSystem4 (
     /* fix max if it is lower than min                                     */
     if ( SyStorMax < SyStorMin )
         SyStorMax = SyStorMin;
-
-#if SYS_MAC_MWC
-    /* find out how much memory we can now allocate in the zone            */
-    if (gPrintBufferSize < NUM_TO_UINT(32)*NUM_TO_UINT(1024))
-	gEditorScratch = NUM_TO_UINT(32)*NUM_TO_UINT(1024);
-    else 
-	gEditorScratch = gPrintBufferSize;
-			
-    SyStorLimit = MaxMem( &mem );
-    SyStorLimit -= gEditorScratch + gMaxLogSize + pre;  
-    /* make SyStorLimit divisible by the minimum allocatable unit */
-
-#if GAPVER == 4
-    SyStorLimit /= NUM_TO_UINT(1024);
-    SyStorLimit -= SyStorLimit % NUM_TO_UINT(512);
-#elif GAPVER == 3
-    SyStorLimit -= SyStorLimit % 1024;
-#endif
-
-    /* try to set SyStorMax so that the user gets a warning before memory is too low */
-    if (SyStorMax > SyStorLimit)
-	SyStorMax = SyStorLimit - NUM_TO_UINT(512);
-    
-    if ( SyStorMin <= 0 ) 
-	SyStorMin = SyStorMax;
-
-    syWorkspace = (UInt***) NewPtr (SyStorLimit*NUM_TO_UINT(1024));  /* allocate all we can get */
-
-    if ( SyStorMax < SyStorMin || !syWorkspace) {
-	SyFputs("gap4: please use the 'Get Info' command in the Finder 'File' menu\n",  3 );  
-	SyFputs("      to increase the minimum amount of memory and the preferred amount of memory\n", 3);
-	SyFputs("      as described in the documentation of GAP for MacOS.\n", 3 );
-	SyExit( 1 );
-    }
-#else
-    /* premalloc stuff                                                     */
-    // ptr = (Char *)malloc( pre );
-    // ptr1 = (Char *)malloc(4);
-    // if ( ptr != 0 )  free( ptr );
-#endif
-
-#if SYS_TOS_GCC2
-    /* for TOS we compute the amount of allocatable memory                 */
-    if ( SyStorMin <= 0 ) {
-        SyStorMin = (UInt)_base->p_hitpa - (UInt)_base->p_lowtpa
-                   - _base->p_tlen - _base->p_dlen - _base->p_blen
-                   - _stksize - pre - 8192 + SyStorMin;
-    }
-#endif
-
-#if SYS_MAC_MPW
-# ifndef SYS_HAS_TOOL
-    /* find out how much memory we can now allocate in the zone            */
-    if ( SyStorMin <= 0 ) {
-        SyStorMin = MaxMem( &i ) - SyStorMin - 384*1024;
-        if ( SyStorMin < 1024*1024 ) {
-            FPUTS_TO_STDERR("gap4: please use the 'Get Info' command in the Finder 'Desk' menu\n");
-            FPUTS_TO_STDERR("      to set the minimum amount of memory to at least 2560 KByte,\n");
-            FPUTS_TO_STDERR("      and the preferred amount of memory to 5632 KByte or more.\n");
-            SyExit( 1 );
-        }
-    }
-# endif
-#endif
     /* now we start                                                        */
     return;
 

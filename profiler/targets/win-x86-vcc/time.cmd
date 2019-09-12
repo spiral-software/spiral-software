@@ -1,4 +1,8 @@
 @echo off
+
+REM  Copyright (c) 2018-2019, Carnegie Mellon University
+REM  See LICENSE for details
+
 rem call "%VS160COMNTOOLS%\VsDevCmd.bat"
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat" > nul
 

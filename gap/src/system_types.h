@@ -2,16 +2,6 @@
 #ifndef _SYSTEM_TYPES_H
 #define _SYSTEM_TYPES_H
 
-#ifdef CONFIG_H
-
-#include "config.h"
-
-/* check if we are on a 64 bit machine                                     */
-#if SIZEOF_VOID_P == 8
-# define SYS_IS_64_BIT          1
-#endif
-
-#endif // CONFIG_H
 
 /****************************************************************************
 **

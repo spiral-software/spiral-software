@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: string.g 5072 2007-09-17 05:34:47Z dbakshee $");
 
 GlobalPackage(gap.string);
 

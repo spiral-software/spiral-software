@@ -1,6 +1,5 @@
 
 # -*- Mode: shell-script -*-
-CVSID("$Id: util.g 10141 2011-05-11 23:04:49Z vlad $");
 GlobalPackage(spiral.util);
 
 Declare(IntString);

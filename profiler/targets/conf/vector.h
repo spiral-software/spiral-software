@@ -1,4 +1,8 @@
-/* $Id: vector.h 8438 2009-06-02 14:02:14Z yvoronen $ */
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 #ifndef VECTOR_H_INCLUDED
 #define VECTOR_H_INCLUDED
 

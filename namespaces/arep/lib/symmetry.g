@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: symmetry.g 3321 2006-08-24 14:47:31Z pueschel $");
 # Determination of Symmetry as a Pair of Representations
 # MP, 12.12.97, GAPv3.4
 

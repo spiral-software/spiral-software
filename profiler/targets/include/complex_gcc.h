@@ -1,10 +1,8 @@
-/***************************************************************
- *
- * Copyright (c) 2014, SpiralGen, Inc.
- * All rights reserved.
- *
- ******************************************************************/
-
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 #include <complex.h>
 #include <math.h>
 

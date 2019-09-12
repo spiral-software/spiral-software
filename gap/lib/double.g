@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: double.g 6554 2008-06-25 18:55:22Z yvoronen $");
 
 #############################################################################
 #V  Doubles  . . . . . . . . . . . . . . . . domain of floating-poiny numbers

@@ -21,7 +21,6 @@
 #include        "gstring.h"
 #include        "idents.h"
 #include        "plist.h"
-#include        "spiral_cmath.h"
 #include        "record.h"
 #include        "tables.h"
 #include        "args.h"

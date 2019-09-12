@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: matgrp.grp 1673 2005-05-29 09:15:59Z uyvorone $");
 #############################################################################
 ##
 #A  matgrp.grp                  GAP group library             Werner Nickel &

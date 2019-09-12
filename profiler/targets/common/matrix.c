@@ -1,4 +1,7 @@
-/* $Id: compute_matrix.c 9515 2010-04-13 18:17:52Z yvoronen $ */
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
 /***************************************************************************
  * SPL Matrix                                                              *
  *                                                                         *

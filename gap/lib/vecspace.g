@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: vecspace.g 1667 2005-05-29 08:03:20Z uyvorone $");
 
 #############################################################################
 ##
@@ -13,17 +12,6 @@ CVSID("$Id: vecspace.g 1667 2005-05-29 08:03:20Z uyvorone $");
 #Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
 ##
 ##  This file contains all polymorph functions for vector spaces.
-##
-##  $Log$
-##  Revision 1.2  2005/05/29 08:03:20  uyvorone
-##  Added CVSID everywhere
-##
-##  Revision 1.1.1.1  2001/06/18 16:13:06  vorik
-##
-##
-##  Revision 1.1.1.1  1996/12/11 12:37:58  werner
-##  Preparing 3.4.4 for release
-##
 ##
 
 
@@ -1011,10 +999,8 @@ end;
 #E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
 ##
 ##  Local Variables:
-##  mode:               outline
 ##  outline-regexp:     "#F\\|#V\\|#E"
-##  fill-column:        73
+##  fill-column:        78
 ##  fill-prefix:        "##  "
-##  eval:               (hide-body)
 ##  End:
 ##

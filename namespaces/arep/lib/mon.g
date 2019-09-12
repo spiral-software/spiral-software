@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: mon.g 1674 2005-05-29 09:16:40Z uyvorone $");
 # Monomial Matrices, 
 # SE, 30.-31.01.97, GAPv3.4
 

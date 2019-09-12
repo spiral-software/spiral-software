@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: package.g 4273 2007-04-05 17:19:32Z yvoronen $");
 
 PkgCVS := pkg -> List(Filtered(FileManager.files, x->x.pkg=pkg), x->x.id);
 

@@ -1,4 +1,8 @@
-
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 #ifndef __MACRO_FV4_H__
 #define __MACRO_FV4_H__
 

@@ -12,7 +12,7 @@
 *Y  This work is based on GAP version 3, with some files from version 4.  GAP is
 *Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
 **
-**  This file declares all the operating system dependent functions.
+**  This file declares operating system dependent functions.
 **
 */
 
@@ -37,18 +37,6 @@
 **
 **      char *          SyFgets ();
 */
-
-/****************************************************************************
-**
-*V  SyFlags . . . . . . . . . . . . . . . . . . . . flags used when compiling
-**
-**  'SyFlags' is the name of the target for which GAP was compiled.
-**
-**  It is '[bsd|mach|usg|os2|msdos|tos|vms|mac] [gcc|emx|djgpp|mpw] [ansi]'.
-**
-**  It is used in 'InitGap' for the 'VERSYS' variable.
-*/
-extern  char            SyFlags [];
 
 
 /****************************************************************************
@@ -169,22 +157,6 @@ extern	Int		SyMemMgrTrace;
 **  Put in this package because the command line processing takes place here.
 */
 extern  Int            SyMemory;
-
-/****************************************************************************
-**
-*V  SyXmallocMemPool  . . . . . . . memory pool size for xmalloc/xfree family
-**
-**  'SyXmallocMemPool' sets the  size of  the  memory  pool for xmalloc/xfree 
-**  functions to allocate memory from. It is allocated before GASMAN, so that
-**  it does not interfere with GAP workspace extension thru sbrk.
-**
-**  xmalloc memory pool is static and can not grow. It is used by most SPIRAL
-**  related GAP extensions.
-**
-**  The value os 'SyXmallocMemPool'  can  be changed  with  '-s' command line 
-**  option. Default value is 4 Mb.
-*/
-extern Int             SyXmallocMemPool;
 
 
 /****************************************************************************

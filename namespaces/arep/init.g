@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: init.g 3981 2007-02-14 21:55:14Z pueschel $");
 # Automatic loading for AREP-Library
 # MP, 12.03.98, converted to GAP v3.4.4
 # SE, 21.01.98, as 'eplib.g' for EPLib

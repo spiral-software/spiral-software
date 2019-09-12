@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 #ifndef EXCEPTIONS_H
 #error "Do NOT include this file directly. Include 'exceptions.h' instead."
 #endif

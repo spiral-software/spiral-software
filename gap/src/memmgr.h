@@ -871,14 +871,6 @@ extern BagPtr_t * GlobalByCookie( const Char * cookie );
 **  happen to  look like references.
 */
 
-#ifdef  INCLUDE_DECLARATION_PART
-/* The following is the base revision, where this version of GASMAN/GAP4   */
-/* was branched out for SPIRAL (based on GAP3)                             */
-const char * GAP4_Revision_gasman_h =
-   "@(#)Id: gasman.h,v 4.23 2002/04/15 10:03:49 sal Exp";
-#endif
-extern const char * Revision_gasman_h;  /* gap.c uses this. */
-extern const char * Revision_gasman_c;
 
 /* 
  * This definition switches to the bigger bag header, supporting bags up to

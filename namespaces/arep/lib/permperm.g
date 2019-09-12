@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: permperm.g 1674 2005-05-29 09:16:40Z uyvorone $");
 # Determination of Perm-Perm-Symmetry
 # SE, 09.03.96 - , GAPv3.4
 

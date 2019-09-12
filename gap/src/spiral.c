@@ -3,6 +3,7 @@
 #ifdef WIN32
 #include        <windows.h>
 #endif
+#include		<spiral_build_info.h>
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* Bag, NewBag, T_STRING, .. */
 #include        "idents.h"
@@ -1032,6 +1033,22 @@ Obj FunPathRelativeToSPIRAL( Obj hdCall ) {
      return hdRes;
 }
 
+
+/****************************************************************************
+**
+*F  Version()
+**
+** Returns version string generated during build
+*/
+
+Obj FunVersion(Obj hdCall) {
+	Obj hdRes;
+	hdRes = StringToHd(SPIRAL_VERSION_STRING);
+	return hdRes;
+}
+
+
+
 /****************************************************************************
 **
 *F  GetPromptString( char* RecFieldName) . . . . . .looking for prompt string
@@ -1296,6 +1313,7 @@ void            InitSPIRAL (void) {
     InstIntFunc( "Pkg",              FunPkg);
     InstIntFunc( "Reachability",              FunReachability);
     InstIntFunc( "PathRelativeToSPIRAL",  FunPathRelativeToSPIRAL );
+	InstIntFunc( "Version", FunVersion);
     IdentAssign( "NULL", HdVoid);
     IdentAssign( "HdStack", HdStack);
     InstIntFunc( "HdExec",  FunHdExec);

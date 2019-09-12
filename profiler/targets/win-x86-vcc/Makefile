@@ -1,3 +1,7 @@
+##
+##  Copyright (c) 2018-2019, Carnegie Mellon University
+##  See LICENSE for details
+##
 # do not consider the standard implicit suffixes
 .SUFFIXES: 
 
@@ -20,7 +24,7 @@ export LINK    = link
 
 export CC
 
-override CFLAGS  = /I.. /I. /I..\common /I..\conf /FI$(subst /,\,$(STUB)) /DWIN64 /nologo /Dinline=__inline /O2 /Oi /arch:SSE2
+override CFLAGS  = /I.. /I. /I..\common /I..\conf /FI$(subst /,\,$(STUB)) /DWIN64 /nologo /Dinline=__inline /O2 /Oi /openmp
 override LFLAGS  = /nologo /subsystem:console /incremental:no /PDB:$(subst /,\,$(OUTDIR))\vc70.pdb
 
 # this controls the output directory for the conf stuff.

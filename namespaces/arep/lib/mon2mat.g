@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: mon2mat.g 1674 2005-05-29 09:16:40Z uyvorone $");
 # Mon2-Mat-Symmetry
 # =================
 #

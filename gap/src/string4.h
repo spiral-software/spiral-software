@@ -23,10 +23,6 @@
 **  
 **  This  package also contains the   list  function  for ranges, which   are
 **  installed in the appropriate tables by 'InitString'.  */
-#ifdef  INCLUDE_DECLARATION_PART
-const char * GAP4_Revision_string_h =
-   "@(#)Id: string.h,v 4.17 2002/04/15 10:03:58 sal Exp";
-#endif
 
 #include <string.h>  /* for memcpy */
 

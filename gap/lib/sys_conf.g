@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: sys_conf.g 5440 2007-11-06 22:12:05Z dbakshee $");
 
 GlobalPackage(spiral.sys);
 

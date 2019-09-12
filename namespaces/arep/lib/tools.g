@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: tools.g 1674 2005-05-29 09:16:40Z uyvorone $");
 # Universal Tools 
 # SE, MP, 26.02.96 - , GAPv3.4
 

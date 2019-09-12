@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 #ifndef ERRCODES_H_INCLUDED
 #define ERRCODES_H_INCLUDED
 

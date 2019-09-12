@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: summands.g 1674 2005-05-29 09:16:40Z uyvorone $");
 # Recognizing the Block Structures of Matrices
 # SE, MP, 14.02.96 - , GAPv3.4
 

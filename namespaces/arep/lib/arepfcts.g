@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: arepfcts.g 3314 2006-08-18 14:46:06Z pueschel $");
 # Higher Functions for Constructive Representation Theory
 # based on the class ARep, MP, 26.05.97 - , GAPv3.4
 

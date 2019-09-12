@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: integer.g 9971 2010-12-08 19:16:35Z vlad $");
 
 GlobalPackage(gap.int);
 

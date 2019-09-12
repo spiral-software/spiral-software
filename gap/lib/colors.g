@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: colors.g 7379 2008-10-09 21:24:32Z vlad $");
 
 GlobalPackage(gap.colors);
 

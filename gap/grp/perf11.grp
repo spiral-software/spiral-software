@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: perf11.grp 1673 2005-05-29 09:15:59Z uyvorone $");
 #############################################################################
 ##
 #A  perf11.grp                  GAP group library              Volkmar Felsch

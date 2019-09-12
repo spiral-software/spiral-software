@@ -35,7 +35,6 @@
 #include "spiral.h"
 #include "plist.h"
 #include "args.h"
-#include "spiral_cmath.h"
 #include "double.h"
 #include "GapUtils.h"
 

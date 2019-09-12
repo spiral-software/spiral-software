@@ -1,3 +1,7 @@
+##
+##  Copyright (c) 2018-2019, Carnegie Mellon University
+##  See LICENSE for details
+##
 # do not consider the standard implicit suffixes
 .SUFFIXES: 
 
@@ -25,8 +29,6 @@ export RANLIB  = ranlib
 export CC
 
 override CFLAGS += -w -I. -I.. -I../common -I../conf -I../../.. -include $(STUB) -DHAVE_UNISTD_H -DINSIDE_SPIRAL
-
-SYSTEM = $(shell uname -o)
 
 # this is our executable.
 TIMEREXE = $(OUTDIR)/$(notdir $(subst .c,,$(TIMER)))
@@ -124,13 +126,8 @@ $(OUTDIR)/$(notdir $(MATRIX:.c=.o)): $(STUB)
 # cleanup
 ###########
 
-ifeq (Cygwin,$(SYSTEM))
-TIMEREXECLEAN = $(addsuffix .exe,$(TIMEREXE))
-MATRIXEXECLEAN = $(addsuffix .exe,$(MATRIXEXE))
-else
 TIMEREXECLEAN = $(TIMEREXE)
 MATRIXEXECLEAN = $(MATRIXEXE)
-endif
 
 .PHONY: clean
 clean: 

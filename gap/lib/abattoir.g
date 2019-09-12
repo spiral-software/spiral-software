@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: abattoir.g 8811 2009-08-21 14:23:29Z fdemesma $");
 
 # changes for spiral:
 # - look for packages in GAP_DIR/..

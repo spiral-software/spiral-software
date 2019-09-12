@@ -1,3 +1,7 @@
+##
+##  Copyright (c) 2018-2019, Carnegie Mellon University
+##  See LICENSE for details
+##
 # do not consider the standard implicit suffixes
 .SUFFIXES:
 
@@ -67,7 +71,7 @@ buildMatrix:  link.obj $(MATRIXEXE)
 
 $(MATRIXEXE): $(MOBJ) libconf.lib
 	$(LINK) $(LFLAGS) /out:$(subst /,\,$@) $(subst /,\,$^)	
-	
+
 .PHONY: cleanMatrix
 cleanMatrix:
 	-$(RM) $(subst /,\,$(MOBJ)) *.obj $(subst /,\,$(MATRIXEXE)) 2> nul

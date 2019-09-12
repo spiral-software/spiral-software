@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: arep.g 1674 2005-05-29 09:16:40Z uyvorone $");
 # Term-Algebra for Group Representations
 # SE, MP, 13.5.97 - , GAPv3.4
 

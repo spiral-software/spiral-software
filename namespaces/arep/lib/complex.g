@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: complex.g 8824 2009-08-24 12:02:23Z yvoronen $");
 # Exact Complex Arithmetics
 # SE, 17.01.96: initial version under GAP v3.4
 # SE, 03.07.01: fixed 'Sqrt(12) < 0'-bug

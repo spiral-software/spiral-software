@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: newpackage.g 10055 2011-03-04 17:18:14Z yvoronen $");
 
 SPIRAL_DIR := Conf("spiral_dir");
 if ContainsElement(SPIRAL_DIR, ' ') then

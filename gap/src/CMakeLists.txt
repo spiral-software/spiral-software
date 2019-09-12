@@ -12,14 +12,29 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 set(SYSSRCS_COMPILE_DEFNS
     SYS_HAS_TIME_PROTO SYS_HAS_IOCTL_PROTO SYS_HAS_READ_PROTO
     SYS_HAS_MISC_PROTO 
-)
+    )
+
+message(STATUS "CMAKE_HOST_APPLE = ${CMAKE_HOST_APPLE}")
 if (WIN32)
     list (APPEND SYSSRCS_COMPILE_DEFNS SYS_HAS_MALLOC_PROTO SYS_HAS_STRING_PROTO)
 else()
-    list (APPEND SYSSRCS_COMPILE_DEFNS SYS_IS_USG SYS_HAS_SIG_T=void)
+    ##  Not Windows ... linux or Darwin/Mac
+    if (${CMAKE_HOST_APPLE})
+	list (APPEND SYSSRCS_COMPILE_DEFNS SYS_IS_BSD)
+    else ()
+	list (APPEND SYSSRCS_COMPILE_DEFNS SYS_IS_USG SYS_HAS_SIG_T=void)
+    endif ()
 endif()
-	
-set(SPIRAL_COMPILE_DEFNS SYS_IS_64_BIT)
+
+##  Is this a 64 bit processor?
+cmake_host_system_information(RESULT PROCIS64BIT QUERY IS_64BIT)
+message (STATUS "Processor is 64 bit = ${PROCIS64BIT}")
+if (${PROCIS64BIT} EQUAL 1)
+    set(SPIRAL_COMPILE_DEFNS SYS_IS_64_BIT)
+else()
+    set(SPIRAL_COMPILE_DEFNS )
+endif()
+
 if (WIN32)
     list(APPEND SPIRAL_COMPILE_DEFNS
 		WIN32 WIN64 YY_NO_UNISTD_H _USE_MATH_DEFINES _CONSOLE inline=__inline)
@@ -56,7 +71,6 @@ set(SOURCES
     read.c
     eval.c
     spiral_delay_ev.c
-    spiral_cmath.c
     spiral_fft.c
     spiral_spl_prog.c
     spiral.c
@@ -166,7 +180,6 @@ set(SOURCES
     set.h
     spiral.h
     spiral_bag_list.h
-    spiral_cmath.h
     spiral_delay_ev.h
     spiral_fft.h
     spiral_fft.h

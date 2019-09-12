@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 #ifndef VECTOR_DEF_INCLUDED
 #define VECTOR_DEF_INCLUDED
 

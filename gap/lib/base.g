@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: base.g 8672 2009-07-11 14:23:01Z yvoronen $");
 
 GlobalPackage(gap.numbase);
 

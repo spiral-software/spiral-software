@@ -252,6 +252,17 @@ default_profiles := rec(
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
 
+    linux_arm_gcc := rec(
+        name := "linux-arm-gcc",
+        makeopts := rec(
+            CC := "gcc",
+            CFLAGS := "-O2 -std=c99 -fomit-frame-pointer",
+        ),
+        outdir := "/tmp/spiral",
+        meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
+        verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
+    ),
+
     # LINUX embedded profiles
     #########################
     linux_xscale_gcc := rec(

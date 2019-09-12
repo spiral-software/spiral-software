@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: delay.g 3757 2007-01-09 00:57:39Z yvoronen $");
 
 # NOTE:  INJECTION_D for T_REC
 #

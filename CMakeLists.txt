@@ -14,6 +14,8 @@ project(SPIRAL
         VERSION 8.1.0
 		DESCRIPTION "SPIRAL Project"
 		LANGUAGES C CXX)
+		
+set(PROJECT_VERSION_TAG "b2")
 
 ##  Prevent building directly into the source tree
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" SPIRAL_COMPILE_INPLACE)
@@ -35,13 +37,8 @@ if (SPIRAL_COMPILE_INPLACE)
     endif()
 endif()
   
-##  Some .h in sys_conf folder; reference root dir as include dir for "sys_conf/xxx.h"
-##  set(SPIRAL_INC ${SPIRAL_SOURCE_DIR})	# should not need when no sys_conf library
 set(SPIRAL_CONFIG_DIR ${SPIRAL_SOURCE_DIR}/config)
 set(SPIRAL_GEN_INC ${SPIRAL_BINARY_DIR}/include/spiral)
-
-##  set(SYSCONF_LIB sys_conf)				# remove sys_conf library
-##  message(STATUS "SYSCONF_LIB = ${SYSCONF_LIB}")
 
 ##  set(CMAKE_C_STANDARD 99)
 
@@ -85,7 +82,61 @@ configure_file (
     ${SPIRAL_SOURCE_DIR}/gap/src/machine_endian.h
 )
 
+include ("${SPIRAL_SOURCE_DIR}/config/CMakeIncludes/ScriptConfig.cmake")
+if (WIN32)
+    configure_file (
+	${SPIRAL_CONFIG_DIR}/spiral.bat.in
+	${SPIRAL_BINARY_DIR}/gap/spiral.bat
+    )
+    configure_file (
+	${SPIRAL_CONFIG_DIR}/spiral_debug.bat.in
+	${SPIRAL_BINARY_DIR}/gap/spiral_debug.bat
+    )
+    configure_file (
+	${SPIRAL_CONFIG_DIR}/_spiral_win.g.in
+	${SPIRAL_BINARY_DIR}/gap/_spiral_win.g
+    )
+else ()
+    configure_file (
+	${SPIRAL_CONFIG_DIR}/spiral.in
+	${SPIRAL_BINARY_DIR}/gap/spiral
+    )
+    configure_file (
+	${SPIRAL_CONFIG_DIR}/spirald.in
+	${SPIRAL_BINARY_DIR}/gap/spirald
+    )
+    configure_file (
+	${SPIRAL_CONFIG_DIR}/_spiral.g.in
+	${SPIRAL_BINARY_DIR}/gap/_spiral.g
+    )
+endif ()
+
+##  Rule to install the script files when install target is built
+
+if (WIN32)
+    set (SPIRAL_STARTUP_FILES
+	    ${SPIRAL_BINARY_DIR}/gap/spiral.bat
+	    ${SPIRAL_BINARY_DIR}/gap/spiral_debug.bat
+	    ${SPIRAL_BINARY_DIR}/gap/_spiral_win.g
+	)
+else ()
+    set (SPIRAL_STARTUP_FILES
+	    ${SPIRAL_BINARY_DIR}/gap/spiral
+	    ${SPIRAL_BINARY_DIR}/gap/spirald
+	    ${SPIRAL_BINARY_DIR}/gap/_spiral.g
+	)
+endif ()
+
+install (FILES ${SPIRAL_STARTUP_FILES}
+	 DESTINATION ${SPIRAL_SOURCE_DIR}
+	 PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+		     GROUP_EXECUTE GROUP_READ
+		     WORLD_EXECUTE WORLD_READ
+	)
+
 add_subdirectory(gap)
 
-##  enable_testing()
+add_subdirectory(tests)		## holds test scripts
+
+enable_testing()
 

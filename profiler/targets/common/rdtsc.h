@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 #ifndef _RDTSC_H
 #define _RDTSC_H
 

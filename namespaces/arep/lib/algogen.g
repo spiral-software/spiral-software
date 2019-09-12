@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: algogen.g 1674 2005-05-29 09:16:40Z uyvorone $");
 # Decomposition of Matrices with Symmetry
 # MP, 12.12.97 - 2.8.98, GAPv3.4
 

@@ -32,6 +32,7 @@ Class(OSWindows32, OSWindows, rec(is16bit := True, is32bit := True));
 Class(OSWindows64, OSWindows, rec(is16bit := True, is32bit := True, is64bit :=True));
 Class(OSLinux32, OSInfo, rec(osname := "Linux32", is32bit := True, isLinux := True));
 Class(OSLinux64, OSInfo, rec(osname := "Linux64", is32bit := True, is64bit := True, isLinux := True));
+Class(OSArmLinux, OSInfo, rec(osname := "GNU/Linux", is16bit := True, is32bit := True, isLinux := True));
 Class(OSCygwin32, OSInfo, rec(osname := "Cygwin32", is32bit := True, isCygwin := True));
 Class(OSDarwin, OSInfo, rec(osname := "OSX/Darwin", is32bit := True, is64bit := True, isDarwin := True));
 
@@ -47,6 +48,7 @@ SupportedOSs := rec(
     Linux64 := OSLinux64,
     Cygwin32 := OSCygwin32,
     Darwin := OSDarwin,
+    ArmLinux := OSArmLinux,
 );
 
 Class(CPUInfo, rec(
@@ -88,6 +90,10 @@ Class(PowerPC, CPUInfo, rec(
 
 Class(DPA, CPUInfo, rec(
        vendor := "CMU"
+));
+
+Class(ARM, CPUInfo, rec(
+       vendor := "Raspberry Pi Foundation"
 ));
 
 
@@ -343,7 +349,11 @@ SupportedCPUs := rec(
         ),
         default_lang := ""
    )),
-
+                     
+   ARMV7L := Class(ARMV7L, ARM, rec(
+       cpuname := "ARMV7L",
+       cores := 4,
+   )),
 
    BlueGeneL := rec()
 );

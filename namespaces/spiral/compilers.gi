@@ -116,6 +116,32 @@ Class(GnuC, IntelC, rec(
 	end,
 ));
 
+
+Class(GnuC_ARM, IntelC, rec(
+    compiler := "gcc (GNU Compiler Collection)",
+	
+	SIMD := self >> CopyFields(platforms.SIMDArchitectures, rec(
+        hasMMX    := False,
+		hasSSE    := False,
+		hasSSE2   := False,
+		hasSSE3   := False,
+        hasSSSE3  := False,
+		hasSSE4_1 := False,
+		hasSSE4_2 := False)),
+		
+	alignmentSpecifier := meth(arg)
+		local bytes;
+		
+		if Length(arg) > 1 then
+			bytes := arg[2];
+		else
+			bytes := 16;
+		fi;
+	
+		return "__attribute__((aligned("::String(bytes)::")))";
+	end,
+));
+
 Class(VisualC, CompilerDefaults, rec(
     compiler := "MS VisualStudio.NET C++ compiler",
     modes := ["ia32"],
@@ -152,5 +178,6 @@ SupportedCompilers := rec(
     IntelC := IntelC,
     VisualC := VisualC,
     VisualC_12 := VisualC_12,
-    GnuC := GnuC
+    GnuC := GnuC,
+    GnuC_ARM := GnuC_ARM
 );

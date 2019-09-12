@@ -3,7 +3,7 @@
 LiveBags := function()
     local B, E, dead, a;
     [B,E,dead] := BagBounds();
-    return Difference(B + 4*[1..(E-B)/4], dead);
+    return Difference(B + 8*[1..(E-B)/8], dead);
 end;
 
 BagStats := function(bags)

@@ -84,8 +84,6 @@
 **  Base 10000 would have the advantage that printing is  very  much  easier,
 **  but 'PrInt' keeps a terminal at 9600 baud busy for almost  all  integers.
 */
-const char* GAP4_Revision_integer_c =
-"@(#)Id: integer.c,v 4.58 2002/04/22 13:53:06 sal Exp";
 
 #include        "system.h"              /* GAP3 system package             */
 #include        "objects.h"
@@ -96,10 +94,7 @@ const char* GAP4_Revision_integer_c =
 #include        "scanner.h"             /* Pr()                            */
 #include        "integer.h"
 #include        <stdio.h>
-
-#define INCLUDE_DECLARATION_PART
 #include        "integer4.h"            /* integers                        */
-#undef  INCLUDE_DECLARATION_PART
 
 /* GAP3 only has Error() */
 #define ErrorReturnObj(err_msg, arg1, arg2, msg) \

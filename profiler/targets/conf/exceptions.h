@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 /* Exceptions support is built on-top of CExcept library by by Adam
  * M. Costello and Cosmin Truta (cexcept@sourceforge.net).  
  *

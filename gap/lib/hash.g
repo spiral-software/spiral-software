@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: hash.g 10043 2011-02-14 05:51:59Z vlad $");
 
 # -*- mode: shell-script -*-
 GlobalPackage(spiral.hash);

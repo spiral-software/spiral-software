@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: namespaces.g 10054 2011-03-04 17:16:55Z yvoronen $");
 
 GlobalPackage(spiral.namespaces);
 

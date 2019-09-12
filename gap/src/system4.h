@@ -1,23 +1,12 @@
 
 /****************************************************************************
 **
-*W  system.h                    GAP source                   Martin Schoenert
-*W                                                         & Dave Bayer (MAC)
-*W                                                  & Harald Boegeholz (OS/2)
-*W                                                      & Frank Celler (MACH)
-*W                                                         & Paul Doyle (VMS)
-*W                                                  & Burkhard Hoefling (MAC)
-*W                                                    & Steve Linton (MS/DOS)
-**
-**
 *Y  Copyright (C) 2018-2019, Carnegie Mellon University
 *Y  All rights reserved.  See LICENSE for details.
 *Y  
 *Y  This work is based on GAP version 3, with some files from version 4.  GAP is
 *Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
 **
-**  The  file 'system.c'  declares  all operating system  dependent functions
-**  except file/stream handling which is done in "sysfiles.h".
 */
 
 #ifndef _SYSTEM4_H
@@ -26,89 +15,6 @@
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 #include		"system_types.h"
 
-/****************************************************************************
-**
-
-*V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
-*/
-#ifdef CONFIG_H
-
-#include "config.h"
-
-/* define stack align for gasman (from "config.h")                         */
-#define SYS_STACK_ALIGN		C_STACK_ALIGN
-
-/* assume all prototypes are there                                         */
-#define SYS_HAS_CALLOC_PROTO
-#define SYS_HAS_EXEC_PROTO
-#define SYS_HAS_IOCTL_PROTO
-#define SYS_HAS_MALLOC_PROTO
-#define SYS_HAS_MEMSET_PROTO
-#define SYS_HAS_MISC_PROTO
-#define SYS_HAS_READ_PROTO
-#define SYS_HAS_SIGNAL_PROTO
-#define SYS_HAS_STDIO_PROTO
-#define SYS_HAS_STRING_PROTO
-#define SYS_HAS_TIME_PROTO
-#define SYS_HAS_WAIT_PROTO
-#define SYS_HAS_WAIT_PROTO
-
-
-/* some compiles define symbols beginning with an underscore               */
-#if C_UNDERSCORE_SYMBOLS
-# define SYS_INIT_DYNAMIC       "_Init__Dynamic"
-#else
-# define SYS_INIT_DYNAMIC       "Init__Dynamic"
-#endif
-
-/* "config.h" will redefine `vfork' to `fork' if necessary                 */
-#define SYS_MY_FORK             vfork
-
-#define SYS_HAS_SIG_T           RETSIGTYPE
-
-/* prefer `vm_allocate' over `sbrk'                                        */
-#if HAVE_VM_ALLOCATE
-# undef  HAVE_SBRK
-# define HAVE_SBRK              0
-#endif
-
-/* prefer "termio.h" over "sgtty.h"                                        */
-#if HAVE_TERMIO_H
-# undef  HAVE_SGTTY_H
-# define HAVE_SGTTY_H           0
-#endif
-
-/* prefer `getrusage' over `times'                                         */
-#if HAVE_GETRUSAGE
-# undef  HAVE_TIMES
-# define HAVE_TIMES             0
-#endif
-
-/* defualt HZ value                                                        */
-/*  on IRIX we need this include to get the system value                   */
-
-#if HAVE_SYS_SYSMACROS_H
-#include <sys/sysmacros.h>
-#endif
-
-#ifndef  HZ
-# define HZ                     50
-#endif
-
-/* prefer `waitpid' over `wait4'                                           */
-#if HAVE_WAITPID
-# undef  HAVE_WAIT4
-# define HAVE_WAIT4             0
-#endif
-
-#endif
-
-
-/****************************************************************************
-**
-*V  no autoconf . . . . . . . . . . . . . . . . . . . . do not use "config.h"
-*/
-#ifndef CONFIG_H
 
 #ifdef  SYS_HAS_STACK_ALIGN
 #define SYS_STACK_ALIGN         SYS_HAS_STACK_ALIGN
@@ -119,11 +25,7 @@
 #endif
 
 #ifndef SY_STOR_MIN
-# if SYS_MAC_MPW || SYS_TOS_GCC2
-#  define SY_STOR_MIN   0
-# else
 #  define SY_STOR_MIN   0 
-# endif
 #endif
 
 #ifndef SYS_HAS_STACK_ALIGN
@@ -159,21 +61,6 @@
 # define HAVE_DOTGAPRC          1
 #endif
 
-#ifdef SYS_IS_MACH
-# undef  HAVE_ACCESS
-# define HAVE_ACCESS		1
-# undef  HAVE_STAT
-# define HAVE_STAT              1
-# undef  HAVE_UNLINK
-# define HAVE_UNLINK            1
-# undef  HAVE_MKDIR
-# define HAVE_MKDIR             1
-# undef  HAVE_GETRUSAGE
-# define HAVE_GETRUSAGE		1
-# undef  HAVE_DOTGAPRC
-# define HAVE_DOTGAPRC          1
-#endif
-
 #ifdef SYS_IS_USG
 # undef  HAVE_ACCESS
 # define HAVE_ACCESS		1
@@ -187,46 +74,10 @@
 # define HAVE_DOTGAPRC          1
 #endif
 
-#ifdef SYS_IS_OS2_EMX
-# undef  HAVE_ACCESS
-# define HAVE_ACCESS		1
-# undef  HAVE_STAT
-# define HAVE_STAT              1
-# undef  HAVE_UNLINK
-# define HAVE_UNLINK            1
-# undef  HAVE_MKDIR
-# define HAVE_MKDIR             1
-# undef  HAVE_GAPRC
-# define HAVE_GAPRC             1
-#endif
-
 #ifdef SYS_HAS_NO_GETRUSAGE
 # undef  HAVE_GETRUSAGE
 # define HAVE_GETRUSAGE		0
 #endif
-
-#endif
-
-
-/****************************************************************************
-**
-*V  Includes  . . . . . . . . . . . . . . . . . . . . .  include system files
-*/
-#ifdef CONFIG_H
-#endif
-
-
-/****************************************************************************
-**
-
-*V  Revision_system_h . . . . . . . . . . . . . . . . . . . . revision number
-*/
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_system_h =
-   "@(#)Id: system.h,v 4.53 2002/05/04 13:45:54 gap Exp";
-#endif
-extern const char * Revision_system_c;  /* gap.c uses this */
-extern const char * Revision_system_h;
 
 
 /****************************************************************************
@@ -258,17 +109,6 @@ extern const char * Revision_system_h;
 
 /****************************************************************************
 **
-*V  SYS_MACH  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  MACH
-*/
-#ifdef SYS_IS_MACH
-# define SYS_MACH       1
-#else
-# define SYS_MACH       0
-#endif
-
-
-/****************************************************************************
-**
 *V  SYS_USG . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . USG
 */
 #ifdef SYS_IS_USG
@@ -277,80 +117,7 @@ extern const char * Revision_system_h;
 # define SYS_USG        0
 #endif
 
-
-/****************************************************************************
-**
-*V  SYS_OS2_EMX . . . . . . . . . . . . . . . . . . . . . . OS2 using GCC/EMX
-*/
-#ifdef SYS_IS_OS2_EMX
-# define SYS_OS2_EMX    1
-#else
-# define SYS_OS2_EMX    0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_MSDOS_DJGPP . . . . . . . . . . . . . . . . . . . . . MSDOS using GCC
-*/
-#ifdef SYS_IS_MSDOS_DJGPP
-# define SYS_MSDOS_DJGPP 1
-#else
-# define SYS_MSDOS_DJGPP 0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_VMS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . VMS
-*/
-#ifdef SYS_IS_VMS
-# define SYS_VMS        1
-#else
-# define SYS_VMS        0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_MAC_MPW . . . . . . . . . . . . . . . . . . . . . . . . MAC using MPW
-*/
-#ifdef SYS_IS_MAC_MPW
-# define SYS_MAC_MPW    1
-#else
-# define SYS_MAC_MPW    0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_MAC_MWC . . . . . . . . . . . . . . . . . . .  Mac using Metrowerks C
-*/
-#ifdef SYS_IS_MAC_MWC
-# define SYS_MAC_MWC    1
-#else
-# define SYS_MAC_MWC    0
-#endif
-
-/****************************************************************************
-**
-*V  SYS_DARWIN . . . . . . . . . . . . . . .  DARWIN (BSD underlying MacOS X)
-*/
-#ifdef SYS_IS_DARWIN
-# define SYS_DARWIN    1
-#else
-# define SYS_DARWIN    0
-#endif
-
-
-#if SYS_MAC_MWC  /* on the Mac, fputs does not work. Print error messages 
-					using WriteToLog */
-# define FPUTS_TO_STDERR(str) 	WriteToLog (str)
-#else 
-# define FPUTS_TO_STDERR(str) fputs (str, stderr)
-#endif
-
-
+#define FPUTS_TO_STDERR(str) fputs (str, stderr)
 
 /****************************************************************************
 **

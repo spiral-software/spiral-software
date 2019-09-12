@@ -1,3 +1,7 @@
+##
+##  Copyright (c) 2018-2019, Carnegie Mellon University
+##  See LICENSE for details
+##
 # do not consider the standard implicit suffixes
 .SUFFIXES: 
 
@@ -10,8 +14,12 @@ OUTDIR          ?= .
 GAP             ?= $(OUTDIR)/testcode.c
 ADDSRC          ?=
 STUB            ?= $(OUTDIR)/testcode.h
-TIMER           ?= timer.c
+TIMER           ?= ../common/rdtsc_time.c
 TIMER_OPTS      ?= -n 100
+MATRIX          ?= ../common/matrix.c
+
+COUT   ?= $(OUTDIR)/cout.txt
+CERR   ?= $(OUTDIR)/cerr.txt
 
 # setup some defaults.
 export RM      = rm -f
@@ -20,12 +28,11 @@ export RANLIB  = ranlib
 
 export CC
 
-override CFLAGS += -I. -I../common -I../conf -I../../.. -include $(STUB) -DHAVE_UNISTD_H
-
-SYSTEM = $(shell uname -s)
+override CFLAGS += -w -I. -I.. -I../common -I../conf -I../../.. -include $(STUB) -DHAVE_UNISTD_H -DINSIDE_SPIRAL
 
 # this is our executable.
 TIMEREXE = $(OUTDIR)/$(notdir $(subst .c,,$(TIMER)))
+MATRIXEXE = $(OUTDIR)/$(notdir $(subst .c,,$(MATRIX)))
 
 # some defines for source and object files.
 ######
@@ -38,7 +45,7 @@ TIMEROBJ  =$(addprefix $(OUTDIR)/, $(notdir $(TIMER:.c=.o)))
 
 # supported make commands: all, build, test
 .PHONY: all
-all: buildTimer testTimer
+all: clean buildTimer testTimer
 
 .PHONY: build
 build: buildTimer
@@ -46,26 +53,38 @@ build: buildTimer
 .PHONY: test
 test: testTimer
 
+.PHONY: matrix
+matrix: clean buildMatrix testMatrix
+
 
 # internals of this Makefile
 .PHONY: buildTimer
 buildTimer: $(TIMEREXE) 
 
+.PHONY: buildMatrix
+buildMatrix: $(MATRIXEXE)
+
 .PHONY: testTimer
 testTimer: buildTimer
-	@$(TIMEREXE) $(TIMER_OPTS)
+	@-$(TIMEREXE) $(TIMER_OPTS)
+
+.PHONY: testMatrix
+testMatrix: buildMatrix
+	@-$(MATRIXEXE)
 
 # the link command, mashes all objects together.
 $(TIMEREXE): $(TIMER) $(OBJ) libconf.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+$(MATRIXEXE): $(MATRIX) $(OBJ) libconf.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # makes the libconf library in the ../conf dir.
 # this really isn't PHONY but PHONY forces the execution of the make
 # command to confirm that the libconf.a library is actually up to date.
 .PHONY: libconf.a
 libconf.a:
-	$(MAKE) -C ../conf -f Makefile.darwin CONFDIR=$(CURDIR)
+	$(MAKE) -C ../conf -f Makefile.linux CONFDIR=$(CURDIR)
 
 ##########
 # rules for .c -> .o
@@ -73,11 +92,15 @@ libconf.a:
 
 define C_TO_OBJ
 $(OUTDIR)/$(notdir $(1:.c=.o)): $(1)
-	$(CC) $(CFLAGS) -c -o $$@ $$< 1>&2
+	$(CC) $(CFLAGS) -c -o $$@ $$<  >$(COUT) 2>$(CERR)
 endef
+
+#${OBJ}: ${SRC}
+#	$(CC) $(CFLAGS) -c -o $@ $< 1>&2
 
 $(foreach src,$(SRC),$(eval $(call C_TO_OBJ, $(src))))
 $(foreach src,$(TIMER),$(eval $(call C_TO_OBJ, $(src))))
+$(foreach src,$(MATRIX),$(eval $(call C_TO_OBJ, $(src))))
 
 # implicit rules that build .h file dependecy information using the gcc -MM feature of gcc. the .d files are then
 # included in the makefile.
@@ -91,23 +114,23 @@ ifeq (,$(findstring $(CC),"icc gcc"))
 	rm -f $@.$$$$
 
 -include $(TIMER:.c=.d)
+-include $(MATRIX:.c=.d)
 -include $(SRC:.c=.d)
 endif
 
 # hardcoded dependency information. this is required such that the timer is rebuilt when the stub changes.
 
 $(OUTDIR)/$(notdir $(TIMER:.c=.o)): $(STUB)
+$(OUTDIR)/$(notdir $(MATRIX:.c=.o)): $(STUB)
 
 # cleanup
 ###########
 
-ifeq (Cygwin,$(SYSTEM))
-TIMEREXECLEAN = $(addsuffix .exe,$(TIMEREXE))
-else
 TIMEREXECLEAN = $(TIMEREXE)
-endif
+MATRIXEXECLEAN = $(MATRIXEXE)
 
 .PHONY: clean
 clean: 
 	$(MAKE) -C ../conf -f Makefile.linux CONFDIR=$(CURDIR) clean
-	-$(RM) $(SRC:.c=.d) $(TIMER:.c=.d) $(TIMEROBJ) $(TIMEREXECLEAN) 
+	-$(RM) $(SRC:.c=.d) $(TIMER:.c=.d) $(OBJ) $(TIMEROBJ) $(MATRIXOBJ) $(TIMEREXECLEAN) $(MATRIXEXECLEAN)
+

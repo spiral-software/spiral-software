@@ -1,7 +1,7 @@
 SPIRAL
 ======
 
-This is the source tree for SPIRAL.  It builds and runs on both Windows and Linux.
+This is the source tree for SPIRAL.  It builds and runs on Windows, Linux, and macOS.
 
 ## Building SPIRAL
 ### Prerequisites
@@ -10,11 +10,18 @@ This is the source tree for SPIRAL.  It builds and runs on both Windows and Linu
 
 SPIRAL builds on Linux/Unix with **gcc** and **make**, on Windows it builds with **Visual Studio**.
 
+For macOS SPIRAL requires version 10.14 (Mojave) or later of macOS, with a compatible version of **Xcode** and
+and **Xcode Command Line Tools**. 
+
 #### CMake 3
 
 Use the most recent version of CMake 3 available for your platform.  You can download CMake from [cmake.org](http://cmake.org/download/).
 
-### Building on Linux and Other Unix-Like Systems
+#### Python 3
+
+The SPIRAL Profiler requires **Python 3**, which you can get from [python.org](http://python.org/downloads/).
+
+### Building on Linux, macOS, and Other Unix-Like Systems
 
 From the top directory of the SPIRAL source tree:
 ```
@@ -27,6 +34,8 @@ make install
 Use the **spiral** script in the top directory to start SPIRAL.  You can run it from that directory or set your path to include
 it and run **spiral** from elsewhere.  The actual executable is ```gap/bin/gap```, but it must be started
 with the **spiral** script in order to intialize and run correctly.
+
+NOTE: The **spiral** script is automatically created, with deaults appropriate to your environment, during the build process, at the *install* step.
 
 #### Debug Version on Linux/Unix
 
@@ -67,6 +76,70 @@ to your path and run the batch script as **spiral** from a command window or scr
 
 To debug SPIRAL on Windows, build and install the Debug version, use **spiral_debug.bat** to start SPIRAL, then in Visual Studio use
 **Debug->Attach to Process...** to connect the debugger to **gapd.exe**.
+
+## Testing SPIRAL
+
+SPIRAL is released with a suite of self-tests.  The tests are automatically
+configured and made available when **CMake** configures the installation.
+
+### Runnning Tests on Linux/Unix
+
+All tests can be run using **make test** from the `<build>` folder, as follows:
+```
+cd build
+make test
+```
+
+The **CMake** test driver program, **ctest**, can be used to exercise control
+over which tests are run.  You can run a specific named test, tests matching a
+specific type, or all tests using **ctest**.  A couple of examples are shown
+here (refer to the CMake/ctest documetation for a full explanation of all
+options).  The ` -L ` and ` -R ` options take a regular expression argument to
+identify which tests to run.  ` -L ` matches against a label associated to
+each test, while ` -R ` matches against the name of the test.
+
+```
+cd build
+ctest -R Simple-FFT             # Run the test matching the name "Simple-FFT"
+ctest -R [.]*FFT[.]*            # Run all test(s) with "FFT" in the name
+ctest -L smoke                  # Run all test(s) with label "smoke"
+ctest                           # Run all tests
+```
+
+### Disabling Tests
+
+It is possible to disable the setup of tests when configuring the installation
+with **CMake**.  There are four categories of tests: basic, FFT, Advanced, and
+Search.  Each category of test may be turned off by adding a define on the
+cmake command line, as follows:
+```
+-DTESTS_RUN_BASIC=OFF           # Turn off basic tests
+-DTESTS_RUN_ADVANCED=OFF        # Turn off Advanced tests
+-DTESTS_RUN_FFT=OFF             # Turn off FFT tests
+-DTESTS_RUN_SEARCH=OFF          # Turn off Search tests
+```
+
+### Runnning Tests on Windows
+
+**make** is genarally not available on Windows, so we need to use **ctest** in
+order to run the tests.  For Windows **ctest** needs to be informed which
+confiuration was built, using the ` -C <config> ` option; where ` <config> `
+is typically ` Release ` or ` Debug `. Other than this caveat, tests are configured, run, or
+inhibited exactly the same on Windows as Linux/Unix.  For example:
+```
+cd build
+ctest -C Release -R Simple-FFT     # Run the test matching the name "Simple-FFT" on Release build
+ctest -C Release -R [.]*FFT[.]*    # Run all test(s) with "FFT" in the name on Release build
+ctest -C Debug -L smoke            # Run all test(s) with label "smoke" on Debug build
+ctest -C Release                   # Run all tests on Release build
+```
+
+### Debugging Failed Tests
+
+Should a test fail you can view the complete test inputs/outputs generated
+during the test run.  Beneath the `<build>` folder is a **Testing/Temporary**
+folder where **ctest** logs all the generated information.  The data for the
+last test run is contained in the file **LastTest.log**.
 
 Spiral Profiler
 --------------

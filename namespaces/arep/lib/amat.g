@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: amat.g 10087 2011-03-10 17:47:45Z pueschel $");
 # Term-Algebra for Structured Matrices
 # MP, SE 27.05.97 - GAPv3.4
 # SE,    22.07.98 - IdentityAMat added

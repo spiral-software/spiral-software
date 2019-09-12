@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: transf.g 1674 2005-05-29 09:16:40Z uyvorone $");
 # Discrete Linear Signal Transforms
 # SE, MP ab 27.02.96, GAP v3.4
 

@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: complex.g 3757 2007-01-09 00:57:39Z yvoronen $");
 
 ## Complex imaginary I = sqrt(-1)
 ##

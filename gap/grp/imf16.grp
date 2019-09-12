@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: imf16.grp 1673 2005-05-29 09:15:59Z uyvorone $");
 #############################################################################
 ##
 #A  imf16.grp                   GAP group library              Volkmar Felsch

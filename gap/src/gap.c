@@ -2295,15 +2295,6 @@ void            InitGap ( int * pargc, char *** pargv ) {
     
     InitGlobalBag(&HdDbgStackRoot, "HdDbgStackRoot");
     
-    hd = FindIdent( "VERSRC" );
-    version = "v3r4p0 1994/07/10";
-    SET_BAG(hd, 0,  NewBag( T_STRING, SyStrlen(version)+1 ) );
-    SyStrncat( (char*)PTR_BAG(PTR_BAG(hd)[0]), version, SyStrlen(version)+1 );
-    hd = FindIdent( "VERSYS" );
-    version = SyFlags;
-    SET_BAG(hd, 0,  NewBag( T_STRING, SyStrlen(version)+1 ) );
-    SyStrncat( (char*)PTR_BAG(PTR_BAG(hd)[0]), version, SyStrlen(version)+1 );
-
     hd = FindIdent( "LIBNAME" );
     SET_BAG(hd, 0,  NewBag( T_STRING, (UInt)(SyStrlen(SyLibname)+1) ) );
     SyStrncat( (char*)PTR_BAG(PTR_BAG(hd)[0]), SyLibname, SyStrlen(SyLibname) );

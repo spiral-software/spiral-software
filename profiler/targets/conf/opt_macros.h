@@ -1,5 +1,9 @@
 /*
-  $Id: opt_macros.h 10168 2011-06-23 18:58:47Z cangelop $
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
+/*
   This file defines some useful macros and functions for 
   argc/argv command line option processing.
 */

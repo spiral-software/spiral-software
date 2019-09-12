@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+ 
 #include "sys.h"
 
 # define SPIRAL_FIXED_FRACBITS atoi(getenv("spiral_fp"))

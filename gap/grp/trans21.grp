@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: trans21.grp 1673 2005-05-29 09:15:59Z uyvorone $");
 #############################################################################
 ##
 #A  trans21.grp                 GAP group library           Alexander Hulpke

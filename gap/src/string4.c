@@ -1,13 +1,9 @@
-const char * GAP4_Revision_string_c =
-   "@(#)Id: string.c,v 4.67 2002/04/15 10:03:58 sal Exp";
 
 #include        "system.h"              /* system dependent part           */
 #include        "memmgr.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
+#include		"string4.h"
 
-#define INCLUDE_DECLARATION_PART
-#include "string4.h"
-#undef INCLUDE_DECLARATION_PART
 
 /****************************************************************************
 **

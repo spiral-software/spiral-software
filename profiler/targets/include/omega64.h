@@ -1,9 +1,7 @@
-/***************************************************************
- *
- * Copyright (c) 2014, SpiralGen, Inc.
- * All rights reserved.
- *
- ******************************************************************/
+/*
+ *  Copyright (c) 2018-2019, Carnegie Mellon University
+ *  See LICENSE for details
+ */
 
 #ifndef OMEGA_64_H_INCLUDED
 #define OMEGA_64_H_INCLUDED

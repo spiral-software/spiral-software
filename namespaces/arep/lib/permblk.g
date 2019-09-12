@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: permblk.g 1674 2005-05-29 09:16:40Z uyvorone $");
 # Determination of Perm-Irred-Symmetry, 
 # SE, 10.02.97 - , GAPv3.4
 

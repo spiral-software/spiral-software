@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*- 
-CVSID("$Id: rowspace.g 1667 2005-05-29 08:03:20Z uyvorone $");
 
 #############################################################################
 ##
@@ -13,20 +12,6 @@ CVSID("$Id: rowspace.g 1667 2005-05-29 08:03:20Z uyvorone $");
 #Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
 ##
 ##  This file contains functions for row spaces.
-##
-##  $Log$
-##  Revision 1.2  2005/05/29 08:03:19  uyvorone
-##  Added CVSID everywhere
-##
-##  Revision 1.1.1.1  2001/06/18 16:13:05  vorik
-##
-##
-##  Revision 1.2  1997/10/15 10:13:50  gap
-##  Fixes by TB and VF
-##
-##  Revision 1.1.1.1  1996/12/11 12:37:39  werner
-##  Preparing 3.4.4 for release
-##
 ##
 
 #############################################################################

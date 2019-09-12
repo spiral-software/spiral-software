@@ -1,5 +1,4 @@
 # -*- Mode: shell-script -*-
-CVSID("$Id: irredsol.grp 1673 2005-05-29 09:15:59Z uyvorone $");
 #############################################################################
 ##
 #A  irredsol.grp                GAP group library                  Mark Short

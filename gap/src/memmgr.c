@@ -43,13 +43,7 @@
 #include <stdlib.h>
 #include        "system.h"              /* system dependent functions      */
 #include        "scanner.h"             /* Pr()                            */
-
-#define INCLUDE_DECLARATION_PART
-#define __DGC_H__
 #include        "memmgr.h"              /* declaration part of the package */
-#undef __DGC_H__
-#undef  INCLUDE_DECLARATION_PART
-
 #include		"GapUtils.h"
 #include        <assert.h>
 

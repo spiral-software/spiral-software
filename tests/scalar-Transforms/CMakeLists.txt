@@ -19,9 +19,9 @@ set (TESTS_ALL_TESTS
 
 ##  call function my_add_test_target() to add a target for each test
 foreach (test ${TESTS_ALL_TESTS})
-    my_add_test_target(${test} "scalar-Transforms")
+    my_add_test_target(${test} "Scalar-Transforms")
 endforeach()
 
-set_tests_properties (${TESTS_ALL_TESTS} PROPERTIES LABELS "scalar-Transforms")
+set_tests_properties (${TESTS_ALL_TESTS} PROPERTIES LABELS "Scalar-Transforms")
 
 enable_testing()

@@ -19,10 +19,9 @@ set (TESTS_ALL_TESTS
 
 ##  call function my_add_test_target() to add a target for each test
 foreach (test ${TESTS_ALL_TESTS})
-    my_add_test_target(${test} "basic")
+    my_add_test_target(${test} "Basic")
 endforeach()
 
-set_tests_properties (${TESTS_ALL_TESTS} PROPERTIES LABELS "smoke")
-set_property (TEST basic_test PROPERTY PASS_REGULAR_EXPRESSION "Test:.*true")
+set_tests_properties (${TESTS_ALL_TESTS} PROPERTIES LABELS "Basic")
 
 enable_testing()

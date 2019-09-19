@@ -54,7 +54,7 @@ Include(prdft_defaults);
 
 Include(cpus);
 Include(compilers);
-Include(testsimd);
+Include(test);
 
 Load(spiral.sym);
 

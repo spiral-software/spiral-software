@@ -2,6 +2,8 @@
 ##  Generate some simple GAP expressions and assignments.
 ##
 
+failures := 0;
+
 ##  Utility to print test message and success/failure status
 PrintTestResult := function(testname, teststatus)
     Print("\nTest: ", testname, teststatus, "....................\t");
@@ -9,6 +11,7 @@ PrintTestResult := function(testname, teststatus)
         Print("Passed\n");
     else
         Print("Failed\n");
+		failures := failures + 1;
     fi;
     return;
 end;
@@ -89,3 +92,8 @@ b:=ComplexFFT(a);;
 Length(a) = Length(b);
 
 PrintTestResult("Egner's FFT package interface... ", last);
+
+if failures <> 0 then
+	TestFailExit();
+fi;
+

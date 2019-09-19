@@ -296,16 +296,9 @@ Obj       Prod (Obj hd)
     Obj           hdL,  hdR;
     Int                result;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL( PTR_BAG(hd)[0] );
+    hdR = EVAL( PTR_BAG(hd)[1] );
 
-    /* multiply two small integers with a small product                    */
-    /* multiply and divide back to check that no overflow occured          */
-    if ( (Int)hdL & (Int)hdR & T_INT ) {
-        result = ((Int)hdL - 1) * ((Int)hdR >> 1);
-        if ( ((Int)hdR >> 1) == 0
-          || result / ((Int)hdR >> 1) == ((Int)hdL - 1) )
-            return (Obj)((result >> 1) + T_INT);
-    }
 
     return PROD( hdL, hdR );
 }

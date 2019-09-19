@@ -1222,6 +1222,48 @@ Obj             DiffInt(
 }
 
 
+/* 
+ *  prod_intobjs() multiplies two immediate (i.e., small) integers and returns
+ *  true if the product is an immediate integer.
+ */
+
+
+static Obj prod_intobjs(Int l, Int r)
+{
+	Int prod, prodp;
+	
+	if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
+		return INTOBJ_INT(0);
+	
+	if (l == (Int)INTOBJ_INT(1))
+		return (Obj)r;
+	
+	if (r == (Int)INTOBJ_INT(1))
+		return (Obj)l;
+
+	prod = (l >> 2) * (r - 1) + 1;
+
+	prodp = prod << 1;
+	if ((prodp >> 1) != prod)
+		return (Obj) 0;
+
+	prodp = (l << HALF_A_WORD);
+	if ((prodp >> HALF_A_WORD) != l)
+		return (Obj)0;
+
+	prodp = (r << HALF_A_WORD);
+	if ((prodp >> HALF_A_WORD) != r)
+		return (Obj)0;
+
+	if ((prod -1) / (l >> 2) == (r - 1))
+		return (Obj) prod;
+	else
+		return (Obj) 0;
+}
+
+#define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)),	\
+								(o) != (Obj) 0)
+
 /****************************************************************************
 **
 *F  ProdInt( <intL>, <intR> ) . . . . . . . . . . . . product of two integers

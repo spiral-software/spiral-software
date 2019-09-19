@@ -81,8 +81,11 @@ To debug SPIRAL on Windows, build and install the Debug version, use **spiral_de
 
 SPIRAL is released with a suite of self-tests.  The tests are automatically
 configured and made available when **CMake** configures the installation.
+Normally, all tests are configured; however, if a platform does not provide
+required support for a tests it will not be configured (e.g., X86/SIMD tests
+are not configured for ARM processor).
 
-### Runnning Tests on Linux/Unix
+### Running Tests on Linux/Unix
 
 All tests can be run using **make test** from the `<build>` folder, as follows:
 ```
@@ -102,24 +105,25 @@ each test, while ` -R ` matches against the name of the test.
 cd build
 ctest -R Simple-FFT             # Run the test matching the name "Simple-FFT"
 ctest -R [.]*FFT[.]*            # Run all test(s) with "FFT" in the name
-ctest -L smoke                  # Run all test(s) with label "smoke"
+ctest -L Basic                  # Run all test(s) with label "Basic"
 ctest                           # Run all tests
 ```
 
 ### Disabling Tests
 
 It is possible to disable the setup of tests when configuring the installation
-with **CMake**.  There are four categories of tests: basic, FFT, Advanced, and
-Search.  Each category of test may be turned off by adding a define on the
+with **CMake**.  There are five categories of tests: Basic, Advanced, Scalar-Transforms, OpenMP, and
+X86-SIMD.  Each category of test may be turned off by adding a define on the
 cmake command line, as follows:
 ```
--DTESTS_RUN_BASIC=OFF           # Turn off basic tests
--DTESTS_RUN_ADVANCED=OFF        # Turn off Advanced tests
--DTESTS_RUN_FFT=OFF             # Turn off FFT tests
--DTESTS_RUN_SEARCH=OFF          # Turn off Search tests
+-DTESTS_RUN_BASIC=OFF                       # Turn off basic tests
+-DTESTS_RUN_ADVANCED=OFF                    # Turn off Advanced tests
+-DTESTS_RUN_SCALAR_TRANSFORMS=OFF           # Turn off FFT tests
+-DTESTS_RUN_OPENMP=OFF                      # Turn off Search tests
+-DTEST_RUN_X86_SIMD=OFF                     # Turn off X86-SIMD tests
 ```
 
-### Runnning Tests on Windows
+### Running Tests on Windows
 
 **make** is genarally not available on Windows, so we need to use **ctest** in
 order to run the tests.  For Windows **ctest** needs to be informed which
@@ -130,7 +134,7 @@ inhibited exactly the same on Windows as Linux/Unix.  For example:
 cd build
 ctest -C Release -R Simple-FFT     # Run the test matching the name "Simple-FFT" on Release build
 ctest -C Release -R [.]*FFT[.]*    # Run all test(s) with "FFT" in the name on Release build
-ctest -C Debug -L smoke            # Run all test(s) with label "smoke" on Debug build
+ctest -C Debug -L Basic            # Run all test(s) with label "Basic" on Debug build
 ctest -C Release                   # Run all tests on Release build
 ```
 

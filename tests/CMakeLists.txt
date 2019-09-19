@@ -23,12 +23,12 @@ set (TESTS_SOURCE_DIR ${SPIRAL_SOURCE_DIR}/tests)
 
 string (COMPARE NOTEQUAL "${TESTS_RUN_BASIC}" "OFF" PERFORM_TESTS)
 if (${PERFORM_TESTS})
-    add_subdirectory (basic)
+    add_subdirectory (Basic)
 endif ()
 
 string (COMPARE NOTEQUAL "${TESTS_RUN_SCALAR_TRANSFORMS}" "OFF" PERFORM_TESTS)
 if (${PERFORM_TESTS})
-    add_subdirectory (scalar-Transforms)
+    add_subdirectory (Scalar-Transforms)
 endif ()
 
 string (COMPARE EQUAL "${CMAKE_HOST_SYSTEM_PROCESSOR}" "AMD64" INTEL_WIN)
@@ -44,10 +44,14 @@ endif ()
 find_package (OpenMP)
 if (${OpenMP_FOUND})
     message (STATUS "OpenMP found, flag = ${OpenMP_FOUND}")
-    ## OpenMP support found
-    string (COMPARE NOTEQUAL "${TESTS_RUN_OPENMP}" "OFF" PERFORM_TESTS)
-    if (${PERFORM_TESTS})
-	add_subdirectory (OpenMP)
+    ##  OpenMP support found
+    string (COMPARE EQUAL "${CMAKE_HOST_SYSTEM_PROCESSOR}" "armv7l" ARM_LINUX)
+    if (NOT ${ARM_LINUX})
+	##  Don't generate for ARM, no SIMD support
+	string (COMPARE NOTEQUAL "${TESTS_RUN_OPENMP}" "OFF" PERFORM_TESTS)
+	if (${PERFORM_TESTS})
+	    add_subdirectory (OpenMP)
+	endif ()
     endif ()
 endif ()
 

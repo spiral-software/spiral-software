@@ -119,30 +119,6 @@
 #define HALF_A_WORD 16
 #endif
 
-static inline Obj prod_intobjs(Int l, Int r)
-{
-  Int prod;
-  if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
-    return INTOBJ_INT(0);
-  if (l == (Int)INTOBJ_INT(1))
-    return (Obj)r;
-  if (r == (Int)INTOBJ_INT(1))
-    return (Obj)l;
-  prod = ((Int)l >> 2) * ((Int)r-1)+1;
-  if ((prod << 1)>> 1 !=  prod)
-    return (Obj) 0;
-  if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
-      (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
-    return (Obj) prod;
-  if ((prod -1) / (l >> 2) == r-1)
-    return (Obj) prod;
-  else
-    return (Obj) 0;
-}
-
-#define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
-                                  (o) != (Obj) 0)
-   
 
 /****************************************************************************
 **

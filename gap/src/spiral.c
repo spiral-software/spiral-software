@@ -1248,6 +1248,41 @@ Bag  Fun_ObjId ( Bag hdCall ) {
     return _ObjId(EVAL(PTR_BAG(hdCall)[1]));
 }
 
+
+/****************************************************************************
+**
+*F  Exit(val=0) . . . . . . . . . . . .  Exit immediately returning value
+**
+**  FunExit calls system exit(val), default val = 0
+**
+**  This is useful in test scripts that need to return an exit status
+**  to the invoking process.
+*/
+
+
+Bag FunExit( Bag hdCall ) {
+	int val = 0;
+	Obj hdVal;
+	char* usage = "usage: Exit(<int>)";
+
+	if (GET_SIZE_BAG(hdCall) > 2 * SIZE_HD) {
+		return Error(usage, 0, 0);
+	}
+	else if (GET_SIZE_BAG(hdCall) == 2 * SIZE_HD) {
+		hdVal= EVAL(PTR_BAG(hdCall)[1]);
+		if (GET_TYPE_BAG(hdVal) != T_INT) {
+			return Error(usage, 0, 0);
+		}
+		val = HD_TO_INT(hdVal);
+	}
+
+	SyExit(val);
+
+	return HdVoid;
+}
+
+
+
 /****************************************************************************
 **
 *F  InitSPIRAL() . . . . . . . . . . . .  initializes SPIRAL related packages
@@ -1323,6 +1358,8 @@ void            InitSPIRAL (void) {
     InstIntFunc( "FindRefs", FunFindRefs);
     
     InstIntFunc( "_ObjId", Fun_ObjId);
+
+	InstIntFunc("Exit", FunExit);
 
     /**/ EndPackage(); /**/
 

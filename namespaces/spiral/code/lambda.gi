@@ -1,4 +1,3 @@
-
 # Copyright (c) 2018-2019, Carnegie Mellon University
 # See LICENSE for details
 
@@ -222,8 +221,14 @@ Class(FDataOfs, Function, rec(
     len := Checked(IsPosIntSym(len), len)
     )),
 
-    rChildren := self >> [ self.var, self.len, self.ofs ],
-    rSetChild := rSetChildFields("var", "len", "ofs"),
+# <-Daniele's changes
+#    rChildren := self >> [ self.var, self.len, self.ofs],
+#    rSetChild := rSetChildFields("var", "len", "ofs"),
+
+    rChildren := self >> [ self.var, self.len, self.ofs, self._domain, self._range],
+    rSetChild := rSetChildFields("var", "len", "ofs", "_domain", "_range"),
+    from_rChildren := (self, rch) >> ObjId(self)(rch[1], rch[2], rch[3]).setDomain(rch[4]).setRange(rch[5]),
+# ->
 
     domain := self >> self.len,
     print := self >> Print(self.name,"(",self.var,", ",self.len,", ",self.ofs,")"),

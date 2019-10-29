@@ -559,7 +559,9 @@ Class(CUnparserBase, Unparser, rec(
     decl := meth(self,o,i,is)
         local arrays, other, l, arri, myMem;
         [arrays, other] := SplitBy(o.vars, x->IsArray(x.t));
-        DoForAll(arrays, v -> Print(Blanks(i), self.opts.arrayBufModifier, " ", self.declare(v.t, v, i, is), ";\n"));
+        DoForAll(arrays, v -> Print(Blanks(i), 
+                                    When(self.opts.arrayBufModifier <> "", self.opts.arrayBufModifier::" ", ""), 
+                                    self.declare(v.t, v, i, is), ";\n"));
 
         if (Length(other)>0) then
             other:=SortRecordList(other,x->x.t);
@@ -680,7 +682,7 @@ Class(CUnparserBase, Unparser, rec(
                     opts.restrict(), "restrict"), " "), When(t._restrict, rst, "")),
 
     TPtr  := (self, t, vars, i, is) >>
-        Print(Cond(t.qualifiers=[], "", Print(self.infix(t.qualifiers, " "), " ")),
+        Print(Cond(not IsBound(t.qualifiers) or t.qualifiers=[], "", Print(self.infix(t.qualifiers, " "), " ")),
           Cond(vars=[],
           Print(self.declare(t.t, [], i, is), " *", self._restrict(t)),
           Print(self.declare(t.t, [], i, is),
@@ -724,8 +726,9 @@ Class(CUnparserBase, Unparser, rec(
             # To handle vectors. Arena is declared only for scalars. For
             # vectors, we must manually scale the allocation by vector length.
             vsize := 1; if ObjId(elt)=TVect then vsize := elt.size; fi;
-            ptype := Concatenation(elt.name, "Pointer");
-            self.(ptype)(elt, [v], i, is);
+#            ptype := Concatenation(elt.name, "Pointer");
+#            self.(ptype)(elt, [v], i, is);
+            self.TPtr(TPtr(elt), [v], i, is);
             Print(" =  &(ARENA[ (arenalevel-=",self(dims[1]*vsize,i,is),") ])");
           else
             self.(elt.name)(elt, [v], i, is);
@@ -914,6 +917,8 @@ Class(CMacroUnparser, CUnparserBase, rec(
                      self.opts.subName,
                    o.id="init"      and IsBound(self.opts.subName),
                      Concat("init_",self.opts.subName),
+                   o.id="destroy"   and IsBound(self.opts.subName),
+                     Concat("destroy_",self.opts.subName),
                    o.id),
         Print("\n", Blanks(i),
             When(IsBound(o.inline) and o.inline,"inline ",""),
@@ -990,6 +995,8 @@ Class(CUnparser, CUnparserBase, rec(
                      self.opts.subName,
                    o.id="init"      and IsBound(self.opts.subName),
                      Concat("init_",self.opts.subName),
+                   o.id="destroy"   and IsBound(self.opts.subName),
+                     Concat("destroy_",self.opts.subName),
                    o.id),
         Print("\n", Blanks(i),
             self.opts.funcModifier, self.declare(o.ret, var(id, o.ret), i, is), "(",

@@ -49,21 +49,12 @@ endif()
 
 set(SPIRAL_COMPILE_FLAGS -w)
   
-##  system.c compilation
-set(SYSSRCS system.c )
-set(SYSSRCS_LIB syssrcs)
-project(${SYSSRCS_LIB})
-add_library(${SYSSRCS_LIB} STATIC ${SYSSRCS})
+set(PROJECT gap)
 
-target_compile_definitions(${SYSSRCS_LIB} PRIVATE ${SYSSRCS_COMPILE_DEFNS})
-target_compile_definitions(${SYSSRCS_LIB} PRIVATE ${SPIRAL_COMPILE_DEFNS})
-target_compile_options    (${SYSSRCS_LIB} PRIVATE ${SPIRAL_COMPILE_FLAGS})
-
-set(LOCAL_PROJECT gap)
-
-project(${LOCAL_PROJECT})
+project(${PROJECT})
 
 set(SOURCES
+    system.c
     gap.c
     memmgr.c
     scanner.c
@@ -202,20 +193,21 @@ if (!WIN32)
     list(APPEND SOURCES iface_tcpip.c ipc.c)
 endif()
 
-add_executable(${LOCAL_PROJECT} ${SOURCES})
-target_compile_definitions(${LOCAL_PROJECT} PRIVATE ${SPIRAL_COMPILE_DEFNS})
-target_compile_options    (${LOCAL_PROJECT} PRIVATE ${SPIRAL_COMPILE_FLAGS})
-target_link_libraries(${LOCAL_PROJECT} ${SYSSRCS_LIB})
+add_executable(${PROJECT} ${SOURCES})
+target_compile_definitions(${PROJECT} PRIVATE ${SPIRAL_COMPILE_DEFNS})
+target_compile_options    (${PROJECT} PRIVATE ${SPIRAL_COMPILE_FLAGS})
 
-set_target_properties(${LOCAL_PROJECT} PROPERTIES OUTPUT_NAME_DEBUG "${LOCAL_PROJECT}d")
+set_property(SOURCE system.c PROPERTY COMPILE_DEFINITIONS ${SYSSRCS_COMPILE_DEFNS})
+
+set_target_properties(${PROJECT} PROPERTIES OUTPUT_NAME_DEBUG "${PROJECT}d")
 
 if (WIN32)
-    target_link_libraries(${LOCAL_PROJECT} shlwapi.lib)
+    target_link_libraries(${PROJECT} shlwapi.lib)
 else()
-    target_link_libraries(${LOCAL_PROJECT} m)
+    target_link_libraries(${PROJECT} m)
 endif()
 
-install(TARGETS ${LOCAL_PROJECT} DESTINATION ${SPIRAL_SOURCE_DIR}/gap/bin)
+install(TARGETS ${PROJECT} DESTINATION ${SPIRAL_SOURCE_DIR}/gap/bin)
 
 enable_testing()
 

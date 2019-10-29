@@ -1241,21 +1241,15 @@ BagPtr_t NewBag4 ( UInt type, UInt size )
 
     /* get the identifier of the bag and set 'FreeMptrBags' to the next    */
     bag          = FreeMptrBags;
-	if (bag < MptrBags || bag >= OldBags) {
-		// Not a valid bag, head of free chain is corrupt, print warning message
-		printf("Newbag4: FreeMptrBags chain head corrupt, = %p\n", bag);
-		return 0;
-		// char * msg = GuMakeMessage("Newbag4: FreeMptrBags chain head corrupt, = %p\n", bag);
-		// SyAbortBags(msg);
+	if (bag == 0) {
+		// no more free bags available ==> out of memory, exit
+		GuFatalMsgExit(EXIT_MEM, "Newbag4: FreeMptrBags chain is empty, no more memory\n");
+	}
+	else if (bag < MptrBags || bag >= OldBags) {
+		// Not a valid bag handle, head of free chain is corrupt, print message & exit
+		GuFatalMsgExit(EXIT_MEM, "Newbag4: FreeMptrBags chain head is corrupt ... exiting\n");
 	}
     FreeMptrBags = *(BagPtr_t*)bag;
-	//  if (FreeMptrBags < MptrBags || FreeMptrBags >= OldBags) {
-		// Not a valid bag, shouldn't be the next one in chain, print message & die
-		// printf("Newbag4: FreeMptrBags not valid, = %p\n", FreeMptrBags);
-		// return 0;
-		// char * msg = GuMakeMessage("Newbag4: FreeMptrBags not valid, = %p\n", FreeMptrBags);
-		// SyAbortBags(msg);
-	//  }
 
     /* allocate the storage for the bag                                    */
     dst       = AllocBags;
@@ -2046,10 +2040,10 @@ static void IncrementBagHistogram(Int4 size_w, countType_t typ, BagPtr_t * bagp)
 
 	if (size_w >= SIZE_HIST) {
 		sz = ptr->bagSize + HEADER_SIZE * sizeof(BagPtr_t);
-		printf("Big bag: Type = %d, size = %db (%dW), # subbags =%d, Status = %s\n",
-			   bagtype, sz, size_w, NrHandles(bagtype, ptr->bagSize),
-			   (typ == INCREMENT_LIVE) ? "Live" : (typ == INCREMENT_DEAD) ? "Dead" :
-			   (typ == INCREMENT_REMNANT) ? "Remnant" : "Halfdead" );
+//		printf("Big bag: Type = %d, size = %db (%dW), # subbags =%d, Status = %s\n",
+//			   bagtype, sz, size_w, NrHandles(bagtype, ptr->bagSize),
+//			   (typ == INCREMENT_LIVE) ? "Live" : (typ == INCREMENT_DEAD) ? "Dead" :
+//			   (typ == INCREMENT_REMNANT) ? "Remnant" : "Halfdead" );
 		// record the largest size...
 		size_w = SIZE_HIST - 1;
 		if (sz > BagSizeCount[size_w].size)
@@ -2080,16 +2074,16 @@ static void DumpBagsHistogram()
 	// for each populated entry in the histogram table print the information
 	Int4 ii;
 
-	printf("DumpBagsHistogram: Stats for all bags (dead/alive/etc.) found in current GC run\n");
-	printf("Size\tTotal\tLive\tDead\tRemnant\tHalfdead\n");
+//	printf("DumpBagsHistogram: Stats for all bags (dead/alive/etc.) found in current GC run\n");
+//	printf("Size\tTotal\tLive\tDead\tRemnant\tHalfdead\n");
 	
-	for (ii = 0; ii < 2000; ii++) {
-		if (BagSizeCount[ii].count > 0)  { /* found a bag of this size */
-			printf("%7d\t%7d\t%7d\t%7d\t%7d\t%7d\n",
-				   BagSizeCount[ii].size, BagSizeCount[ii].count, BagSizeCount[ii].nlive,
-				   BagSizeCount[ii].ndead, BagSizeCount[ii].nremnant, BagSizeCount[ii].nhalfdead);
-		}
-	}
+//	for (ii = 0; ii < 2000; ii++) {
+//		if (BagSizeCount[ii].count > 0)  { /* found a bag of this size */
+//			printf("%7d\t%7d\t%7d\t%7d\t%7d\t%7d\n",
+//				   BagSizeCount[ii].size, BagSizeCount[ii].count, BagSizeCount[ii].nlive,
+//				   BagSizeCount[ii].ndead, BagSizeCount[ii].nremnant, BagSizeCount[ii].nhalfdead);
+//		}
+//	}
 
 	// for each populated entry in the InfoBags table print the information
 	printf("\nDumpBagsHistogram: Stats by bag type found in current GC run\n");
@@ -3130,12 +3124,25 @@ BagPtr_t GET_LINK_BAG(BagPtr_t bag)
 {
 	BagPtr_t *p = (*(BagPtr_t **)(bag));						/* PTR_BAG(bag); */
 	BagStruct_t *ptr = (BagStruct_t *)(p - HEADER_SIZE);
+#ifdef DEBUG_POINTERS
+	// test link ptr
+	if (ptr->bagLinkPtr != 0 && (ptr->bagLinkPtr < MptrBags || ptr->bagLinkPtr >= StopBags) ) {
+		GuFatalMsgExit(EXIT_MEM, "GET_LINK_BAG: Bag has invalid link ptr, = %p (%p)\n",
+					   bag, ptr->bagLinkPtr);
+	}
+#endif
 	return ptr->bagLinkPtr;
 }
 
 // Set the link pointer to be associated to a bag
 void SET_LINK_BAG(BagPtr_t bag, BagPtr_t val)
 {
+#ifdef DEBUG_POINTERS
+	if (val != 0 && (val < MptrBags || val >= StopBags) ) {
+		GuFatalMsgExit(EXIT_MEM, "SET_LINK_BAG: Attempt to set invalid link ptr, = %p (%p)\n",
+								   bag, val);
+	}
+#endif
 	BagPtr_t *p = (*(BagPtr_t **)(bag));						/* PTR_BAG(bag); */
 	BagStruct_t *ptr = (BagStruct_t *)(p - HEADER_SIZE);
 	ptr->bagLinkPtr = val;
@@ -3177,6 +3184,34 @@ void CHANGED_BAG(BagPtr_t bag)
   /* } */
 }
 
+#ifdef DEBUG_POINTERS
+// functions to replace some macros manipulating link pointers for debug...
+
+BagPtr_t GET_LINK_PTR(BagPtr_t ptr)
+{
+	// ptr points to the start of the bag [header], pull & test the link field
+	BagStruct_t *p = (BagStruct_t *)ptr;
+	if (p->bagLinkPtr != 0 && (p->bagLinkPtr < MptrBags || p->bagLinkPtr >= StopBags) ) {
+		char * msg = GuMakeMessage("GET_LINK_PTR: Bag has invalid link ptr, = %p (%p)\n",
+								   ptr, p->bagLinkPtr);
+		SyAbortBags(msg);
+	}
+	return p->bagLinkPtr;
+}
+
+void SET_LINK_PTR(BagPtr_t ptr, BagPtr_t val)
+{
+	// ptr points to the start of the bag [header], validate the link before saving
+	if (val != 0 && (val < MptrBags || val >= StopBags) ) {
+		char * msg = GuMakeMessage("SET_LINK_PTR: Attempt to set invalid link ptr, = %p (%p)\n",
+								   ptr, val);
+		SyAbortBags(msg);
+	}
+	BagStruct_t *p = (BagStruct_t *)ptr;
+	p->bagLinkPtr = val;
+	return;
+}
+#endif
 
 
 int DoFullCopy;

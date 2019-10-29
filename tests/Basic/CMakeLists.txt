@@ -15,6 +15,7 @@ include ("${SPIRAL_SOURCE_DIR}/config/CMakeIncludes/TestDefines.cmake")
 set (TESTS_ALL_TESTS
 	basic_test
 	break-me
+	integers_test
     )
 
 ##  call function my_add_test_target() to add a target for each test

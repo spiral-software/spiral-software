@@ -1,4 +1,3 @@
-
 # Copyright (c) 2018-2019, Carnegie Mellon University
 # See LICENSE for details
 
@@ -86,11 +85,24 @@ f_to_list := function(f)
 end;
 
 Process_fPrecompute_RR := function(sums, opts)
+
   sums := SubstTopDown(sums, [ @(1,Gath).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Gath(fPrecompute(@(1).val.func)));
   sums := SubstTopDown(sums, [ @(1,Scat).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Scat(fPrecompute(@(1).val.func)));
   sums := SubstTopDown(sums, [ @(1,Diag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Diag(fPrecompute(@(1).val.element)));
   sums := SubstTopDown(sums, [ @(1,RCDiag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> RCDiag(fPrecompute(@(1).val.element)));
   sums := SubstTopDown(sums, [ @(1,RCDiag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @, @], e -> RCDiag(fPrecompute(@(1).val.element), @(1).val.post));
+
+<# 
+  #Franz's suggestions: 
+  # 1) Use FData to avoid fusing instead of fPrecompute (below breaks - need to set domain/range for FData as well)
+  # 2) plug _fPrecompute version in before strategies apply for RR/RM and finally add one more strategy to replace with fPrecompute and run the strategy again
+  # 3) Introduce fParenthesis as boundary for strategies
+  sums := SubstTopDown(sums, [ @(1,Gath).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Gath(FData(@(1).val.func.tolist())));
+  sums := SubstTopDown(sums, [ @(1,Scat).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Scat(FData(@(1).val.func.tolist())));
+  sums := SubstTopDown(sums, [ @(1,Diag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Diag(FData(@(1).val.element.tolist())));
+  sums := SubstTopDown(sums, [ @(1,RCDiag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> RCDiag(FData(@(1).val.element.tolist())));
+  sums := SubstTopDown(sums, [ @(1,RCDiag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @, @], e -> RCDiag(FData(@(1).val.element.tolist()), @(1).val.post));
+#>
 
 #  sums := SubstTopDown(sums, @(1,[RM, RR]), e -> FData(e.tolist()));
 

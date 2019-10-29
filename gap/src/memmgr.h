@@ -811,24 +811,25 @@ extern BagPtr_t * GlobalByCookie( const Char * cookie );
 #define HEADER_SIZE ((sizeof(BagStruct_t) - sizeof(UInt *)) / sizeof(UInt *))
 
 #define DATA_PTR(ptr)         ((UInt **)&(((BagStruct_t *)(ptr))->bagData))
-#define LINK_PTR(ptr)         (((BagStruct_t *)(ptr))->bagLinkPtr)
 #define COPY_PTR(ptr)         (((BagStruct_t *)(ptr))->bagCopyPtr)
 #define SIZE_PTR(ptr)         (((BagStruct_t *)(ptr))->bagSize)
 #define FLAGS_TYPE_PTR(ptr)   (((BagStruct_t *)(ptr))->bagFlagsType)
 
-/* #define DATA_PTR(ptr)         (UInt **)(((UInt *)(ptr))+HEADER_SIZE) */
-/* #define LINK_PTR(ptr)         ((((UInt *)(ptr))[3])) */
-/* #define COPY_PTR(ptr)         ((((UInt *)(ptr))[2])) */
-/* #define SIZE_PTR(ptr)         ((((UInt *)(ptr))[1])) */
-/* #define FLAGS_TYPE_PTR(ptr)   ((((UInt *)(ptr))[0])) */
-
-#define GET_LINK_PTR(ptr)          (LINK_PTR(ptr))
 #define GET_COPY_PTR(ptr)          (COPY_PTR(ptr))
 #define GET_SIZE_PTR(ptr)          (SIZE_PTR(ptr))
 #define GET_TYPE_PTR(ptr)          (FLAGS_TYPE_PTR(ptr) & TYPE_BIT_MASK)
 #define TEST_FLAG_PTR(ptr,flag)     (FLAGS_TYPE_PTR(ptr) & (flag))
 
+#ifdef DEBUG_POINTERS
+#undef   LINK_PTR
+BagPtr_t GET_LINK_PTR(BagPtr_t ptr);
+void     SET_LINK_PTR(BagPtr_t ptr, BagPtr_t val);
+#else
+#define LINK_PTR(ptr)         (((BagStruct_t *)(ptr))->bagLinkPtr)
+#define GET_LINK_PTR(ptr)          (LINK_PTR(ptr))
 #define SET_LINK_PTR(ptr,val)       (LINK_PTR(ptr) = (BagPtr_t)val)
+#endif
+
 #define SET_COPY_PTR(ptr,val)       (COPY_PTR(ptr) = (BagPtr_t)val)
 #define SET_SIZE_PTR(ptr,val)       (SIZE_PTR(ptr) = (UInt)val)
 #define SET_TYPE_PTR(ptr,val)       ((FLAGS_TYPE_PTR(ptr)) = ((FLAGS_TYPE_PTR(ptr)) & BF_ALL_FLAGS) | val)

@@ -18,6 +18,9 @@ UInt PRIVATE_PACKAGES_LEN = 16;
 Obj PushPrivatePackage ( Obj hdNS ) {
     assert(hdNS != 0);
     if ( HdPrivatePackagesStack == 0 ) {
+		// Put the HdPrivatePackagesStackin the global list so that garbage
+		// collection will know it's an active bag
+		InitGlobalBag(&HdPrivatePackagesStack, "HdPrivatePackagesStack");
         HdPrivatePackagesStack = NewBag(T_LIST, SIZE_PLEN_PLIST(PRIVATE_PACKAGES_LEN));
         SET_LEN_PLIST(HdPrivatePackagesStack, 1);
     }
@@ -30,7 +33,8 @@ Obj PopPrivatePackage (void) {
     if( privatePackageTop > 0 ) {
         Obj hdPopped = ELM_PLIST(HdPrivatePackagesStack, privatePackageTop);
         SET_ELM_PLIST(HdPrivatePackagesStack, privatePackageTop, 0);
-        SET_LEN_PLIST(HdPrivatePackagesStack, --(privatePackageTop));
+		privatePackageTop--;			// don't do this inside macro call
+        SET_LEN_PLIST(HdPrivatePackagesStack, privatePackageTop);
         return hdPopped;
     }
     else return Error("No package on top of stack", 0, 0);

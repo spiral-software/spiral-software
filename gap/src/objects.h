@@ -106,22 +106,6 @@
 
 /****************************************************************************
 **
-*F  PROD_INTOBJS( <o>, <l>, <r> ) . . . . . .  product of two integer objects
-**
-**  'PROD_INTOBJS' returns 1 if the product of  the  (imm.)  integer  objects
-**  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
-**  The product itself is stored in <o>.
-*/
-
-#ifdef SYS_IS_64_BIT
-#define HALF_A_WORD 32
-#else
-#define HALF_A_WORD 16
-#endif
-
-
-/****************************************************************************
-**
 *F  TNUM_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
 **
 **  'TNUM_OBJ' returns the type of the object <obj>.

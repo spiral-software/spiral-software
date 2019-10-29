@@ -207,7 +207,7 @@ GenerateInitCode := function ( func, data_container, opts )
     fi;
     res := res.setRange(range);
     res.init := res.var.init;
-
+    
     return res;
 end;
 
@@ -245,11 +245,15 @@ Process_fPrecompute := function(sums, opts)
         e -> GenerateData(e, opts));
 
     sums := _Process_fPrecompute(sums, precompute_func,
-           (e, cx) -> ((not IsBound(cx.BB) or cx.BB=[]) and 
-                       (not IsBound(cx.RecursStep) or cx.RecursStep=[]) and
-                       (not IsBound(cx.RS) or cx.RS=[]) and        # NOTE: (YSV, autolib) remove this
-                       (not IsBound(cx.RSBase) or cx.RSBase=[])) or # NOTE: (YSV, autolib) remove this
-                      (IsBound(cx.BB) and cx.BB<>[] and has_free_vars(e, cx.BB)) or 
-	              (IsBound(cx.RecursStep) and cx.RecursStep<>[] and has_free_vars(e, cx.RecursStep)));
+           (e, cx) -> (
+                        ( (not IsBound(cx.BB) or cx.BB=[]) and 
+                        (not IsBound(cx.RecursStep) or cx.RecursStep=[]) and
+                        (not IsBound(cx.RS) or cx.RS=[]) and        # NOTE: (YSV, autolib) remove this
+                        (not IsBound(cx.RSBase) or cx.RSBase=[])) or # NOTE: (YSV, autolib) remove this
+                        (IsBound(cx.BB) and cx.BB<>[] and has_free_vars(e, cx.BB)) or 
+	                    (IsBound(cx.RecursStep) and cx.RecursStep<>[] and has_free_vars(e, cx.RecursStep)) 
+                    ) and
+                        (Difference(e.lambda().free(), Filtered(e.lambda().free(), IsLoopIndex)) = [])
+                    );
     return sums;
 end;

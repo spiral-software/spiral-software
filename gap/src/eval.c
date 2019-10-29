@@ -55,7 +55,7 @@
 #include        "args.h"
 #include		"GapUtils.h"
 #include        "debug.h"
-
+#include        "objects.h"
 
 /****************************************************************************
 **
@@ -294,19 +294,19 @@ Obj       (*TabProd[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
 Obj       Prod (Obj hd)
 {
     Obj           hdL,  hdR;
-    Int                result;
+    Obj           hdResult;
 
     hdL = EVAL( PTR_BAG(hd)[0] );
-    hdR = EVAL( PTR_BAG(hd)[1] );
+	hdR = EVAL( PTR_BAG(hd)[1] );
 
-
-    return PROD( hdL, hdR );
+    hdResult = PROD( hdL, hdR );
+	return hdResult;
 }
 
 Obj       CantProd (Obj hdL, Obj hdR)
 {
     return Error("operations: product of %s and %s is not defined",
-                 (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)] );
+				 (Int)InfoBags[GET_TYPE_BAG(hdL)].name, (Int)InfoBags[GET_TYPE_BAG(hdR)].name );
 }
 
 
@@ -408,10 +408,14 @@ Obj       (*TabPow[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
 Obj       Pow (Obj hd)
 {
     Obj           hdL,  hdR;
+    Obj           hdResult;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL( PTR_BAG(hd)[0] );
+	hdR = EVAL( PTR_BAG(hd)[1] );
 
-    return POW( hdL, hdR );
+    hdResult = POW( hdL, hdR );
+	return hdResult;
+	
 }
 
 Obj       CantPow (Obj hdL, Obj hdR)

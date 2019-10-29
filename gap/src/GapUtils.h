@@ -21,7 +21,7 @@ void GuSysSetProgname(char *progname);
 char *GuSysGetProgname();
 void GuSysSetExitFunc(void (*exit_func)(int) );
 void (*GuSysGetExitFunc())(int);
-
+void GuFatalMsgExit(int exit_code, const char *err_msg, ...);
 
 /** Generates a unique temporary file name from template. Template must be
  * a simple filename (without directory paths), last six characters of

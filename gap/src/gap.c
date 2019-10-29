@@ -1875,9 +1875,10 @@ Bag       FunTYPE (Bag hdCall)
         SyStrncat( (char*)PTR_BAG(hdType), "null", 4 );
     }
     else {
-        hdType = NewBag( T_STRING, SyStrlen(NameType[GET_TYPE_BAG(hdObj)])+1 );
-        SyStrncat( (char*)PTR_BAG(hdType), NameType[GET_TYPE_BAG(hdObj)],
-                   SyStrlen(NameType[GET_TYPE_BAG(hdObj)])+1 );
+		char *objtyp = InfoBags[GET_TYPE_BAG(hdObj)].name;
+        hdType = NewBag( T_STRING, SyStrlen( objtyp ) + 1 );
+        SyStrncat( (char*)PTR_BAG(hdType), objtyp,
+                   SyStrlen( objtyp ) + 1 );
     }
 
    return hdType;

@@ -164,6 +164,16 @@ static void gu_sys_fatal(int exit_code, const char *err_msg, ...)
     gu_utils.sys_exit_func(exit_code);
 }
 
+/* public function to print an [fatal] error message and exit with the specified code */
+void GuFatalMsgExit(int exit_code, const char *err_msg, ...)
+{
+    va_list ap;
+    va_start(ap, err_msg);
+	gu_sys_err("Spiral fatal error, exiting\n");
+	gu_sys_err(err_msg, ap);
+	exit(exit_code);
+}
+
 /* if DEBUG is set, print the message to stderr */
 void GuSysDebug(const char *msg, ...)
 {

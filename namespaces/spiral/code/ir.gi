@@ -1,4 +1,3 @@
-
 # Copyright (c) 2018-2019, Carnegie Mellon University
 # See LICENSE for details
 
@@ -275,14 +274,15 @@ Class(Exp, Symbolic, rec(
    ev := self >> Error("not implemented"),
 
    eval := meth(self)
-       local evargs, res;
+       local evargs, res, type;
        evargs := List(self.args, e -> e.eval());
 
        if evargs <> [] and ForAll(evargs, IsValue) then
            res := ShallowCopy(self);
            res.args := evargs;
            res := res.ev();
-	   return self.t.value(res);
+           type := self.computeType();
+	   return type.value(res);
        else
            res := ApplyFunc(ObjId(self), evargs);
            res.t := self.t; # NOTE: why is this line here?
@@ -552,7 +552,7 @@ Class(neg, AutoFoldExp, rec(
 Class(sub,  AutoFoldExp, rec(
 
     # __sub is overriden in descendant 'subs' (saturated substraction)
-    __sub := (self, a, b) >> self.t.value(a - b),
+    __sub := (self, a, b) >> let(type := self.computeType(), type.value(a - b)),
 
     ev := self >> self.__sub(self.args[1].ev(), self.args[2].ev()).ev(),
 
@@ -829,7 +829,7 @@ Class(idiv, AutoFoldExp, rec(
 #F Assume N-dim tensor dimension where d is the stride of dimension D and n*d of dimension D+1.
 #F idivmod isolates the index i_D from the linearized i = .. + i_{D+1}*n*d + i_D*d + ...
 Class(idivmod,  AutoFoldExp, rec(
-    # ev := self >> ( idiv( self.args[1].ev(), self.args[3].ev() ) mod self.args[2].ev()).ev() ,
+    ev := self >> idiv( self.args[1].ev(), self.args[3].ev() ) mod self.args[2].ev() ,
     computeType := self >> TInt));
 
 

@@ -94,6 +94,7 @@
 #include        "scanner.h"             /* Pr()                            */
 #include        "integer.h"
 #include        <stdio.h>
+#include        <stdlib.h>
 #include        "integer4.h"            /* integers                        */
 
 /* GAP3 only has Error() */
@@ -1222,47 +1223,31 @@ Obj             DiffInt(
 }
 
 
-/* 
+/*
  *  prod_intobjs() multiplies two immediate (i.e., small) integers and returns
- *  true if the product is an immediate integer.
+ *  the product as an immediate integer; if the product overflows then zero is
+ *  returned.  NOTE: a valid result of zero is returned as INTOBJ_INT(0) which
+ *  is not equal to zero.
  */
 
-
-static Obj prod_intobjs(Int l, Int r)
+static Obj prod_intobjs(Obj l, Obj r)
 {
-	Int prod, prodp;
-	
-	if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
+	Int left = INT_INTOBJ(l);
+	Int right = INT_INTOBJ(r);
+	Int result = 0;
+
+	if (left == 0 || right == 0)
 		return INTOBJ_INT(0);
+
+	if (MAX_SMALL_INTEGER / llabs(left) < llabs(right)) {
+		// product of left * right will overflow to large int
+		return result;
+	}
 	
-	if (l == (Int)INTOBJ_INT(1))
-		return (Obj)r;
-	
-	if (r == (Int)INTOBJ_INT(1))
-		return (Obj)l;
-
-	prod = (l >> 2) * (r - 1) + 1;
-
-	prodp = prod << 1;
-	if ((prodp >> 1) != prod)
-		return (Obj) 0;
-
-	prodp = (l << HALF_A_WORD);
-	if ((prodp >> HALF_A_WORD) != l)
-		return (Obj)0;
-
-	prodp = (r << HALF_A_WORD);
-	if ((prodp >> HALF_A_WORD) != r)
-		return (Obj)0;
-
-	if ((prod -1) / (l >> 2) == (r - 1))
-		return (Obj) prod;
-	else
-		return (Obj) 0;
+	result = left * right;
+	return INTOBJ_INT(result);
 }
 
-#define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)),	\
-								(o) != (Obj) 0)
 
 /****************************************************************************
 **
@@ -1296,13 +1281,13 @@ Obj             ProdInt(
 	/* multiplying two small integers                                      */
 	if (ARE_INTOBJS(opL, opR)) {
 
-		/* multiply two small integers with a small product                */
-		/* multiply and divide back to check that no overflow occured      */
-		if (PROD_INTOBJS(prd, opL, opR)) {
+		/* multiply two small integers: check result is a small product    */
+		prd = prod_intobjs(opL, opR);
+		if (prd != 0) {
 			return prd;
 		}
 
-		/* get the integer values                                          */
+		/* result is not a small product: get the integer values           */
 		i = INT_INTOBJ(opL);
 		k = INT_INTOBJ(opR);
 
@@ -1542,8 +1527,12 @@ Obj             PowInt(
 		i = INT_INTOBJ(opR);
 		while (i != 0) {
 
-			if (i % 2 == 1)  pow = ProdInt(pow, opL);
-			if (i > 1)  opL = ProdInt(opL, opL);
+			if (i % 2 == 1) {
+				pow = ProdInt(pow, opL);
+			}
+			if (i > 1) {
+				opL = ProdInt(opL, opL);
+			}
 			i = i / 2;
 		}
 	}

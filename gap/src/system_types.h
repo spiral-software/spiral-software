@@ -41,6 +41,8 @@ typedef unsigned long int       UInt;
 typedef unsigned long long int	UInt8;
 typedef unsigned long long int	UInt;
 #endif
+#define	MAX_SMALL_INTEGER 0x0FFFFFFFFFFFFFFF
+#define	MIN_SMALL_INTEGER (MAX_SMALL_INTEGER * -1)
 
 /* 32bit machines                                                          */
 #else
@@ -56,6 +58,9 @@ typedef unsigned short int      UInt2;
 typedef unsigned long int       UInt4;
 typedef unsigned long long      UInt8;
 typedef unsigned long int       UInt;
+
+#define	MAX_SMALL_INTEGER 0x0FFFFFFF
+#define	MIN_SMALL_INTEGER (MAX_SMALL_INTEGER * -1)
 #endif
 
 #define NUM_TO_INT(n)  ((Int) n)

@@ -74,7 +74,7 @@ end;
 
 Class(DefaultCodegen, Codegen, rec(
     Formula := meth(self, o, y, x, opts)
-        local icode, datas, prog, params, sub, initsub, io, t, initcode, initparams;
+        local icode, datas, prog, params, sub, initsub, destroysub, io, t, initcode, initparams;
         
         o := SumsUnification(o.child(1), opts);
 
@@ -118,6 +118,7 @@ Class(DefaultCodegen, Codegen, rec(
         io := When(x=y, [x], [y, x]);
         sub := Cond(IsBound(opts.subName), opts.subName, "transform");
         initsub := Cond(IsBound(opts.subName), Concat("init_", opts.subName), "init");
+        destroysub := Cond(IsBound(opts.subName), Concat("destroy_", opts.subName), "destroy");
         icode := func(TVoid, sub, Concatenation(io, params), icode);
 
         if IsBound(opts.generateInitFunc) and opts.generateInitFunc then
@@ -126,7 +127,8 @@ Class(DefaultCodegen, Codegen, rec(
                 decl(List(datas, x->x.var),
                     chain(
                         func(TVoid, initsub, initparams :: Set(Collect(initcode, param)), initcode), 
-                        icode
+                        icode,
+                        func(TVoid, destroysub, [], skip()) 
                     )));
         else
             prog := program( func(TVoid, initsub, params, chain()), icode);

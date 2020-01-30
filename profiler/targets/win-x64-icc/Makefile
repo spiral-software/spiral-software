@@ -1,5 +1,5 @@
 ##
-##  Copyright (c) 2018-2019, Carnegie Mellon University
+##  Copyright (c) 2018-2020, Carnegie Mellon University
 ##  See LICENSE for details
 ##
 # do not consider the standard implicit suffixes
@@ -82,7 +82,7 @@ $(EXE): $(OBJ) libconf.lib
 	$(LINK) $(LFLAGS) /out:$(subst /,\,$@) $(subst /,\,$^)
 
 libconf.lib:
-	$(MAKE) -C ..\conf -f Makefile.win CONFDIR=$(CURDIR)
+	$(MAKE) -C ..\conf -f Makefile.icc CONFDIR=$(CURDIR)
 
 # the link.c file is empty but crucial. It is required because of
 # peculiarities in the WinAPI CreateProcess() call inside of make.exe.
@@ -125,5 +125,5 @@ $(OUTDIR)/$(notdir $(TIMER:.c=.obj)): $(STUB)
 
 .PHONY: clean
 clean:
-	$(MAKE) -C ..\conf -f Makefile.win CONFDIR=$(CURDIR) clean
+	$(MAKE) -C ..\conf -f Makefile.icc CONFDIR=$(CURDIR) clean
 	-$(RM) $(subst /,\,$(OBJ)) link.obj $(subst /,\,$(EXE)) 2> nul

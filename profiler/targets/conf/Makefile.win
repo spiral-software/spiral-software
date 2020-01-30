@@ -1,32 +1,64 @@
 ##
-##  Copyright (c) 2018-2019, Carnegie Mellon University
+##  Copyright (c) 2018-2020, Carnegie Mellon University
 ##  See LICENSE for details
 ##
 # setup some defaults.
+
 RM      = del /f /q
 LIB	= lib
-#ifndef CC
 CC      = cl
-#endif
+CFLAGS  = /DWIN32 /DWIN64 /nologo /O2
+LINK	= link.exe
 
-override CFLAGS  = /O2 /DWIN32 /nologo
+OBJDIR	= $(CONFDIR)
+SRCDIR	= ..\..\targets\conf
 
-CONFDIR ?= .
+##  OBJS	= exceptions.obj misc.obj vector.obj xmalloc.obj sys.obj vector_def.obj
+##  SRC 	= exceptions.c misc.c vector.c xmalloc.c sys.c vector_def.c
+
+EXCEPTO = exceptions.obj
+EXCEPTOBJ = $(OBJDIR)\$(EXCEPTO)
+EXCEPTF	= $(EXCEPTO:.obj=.c)
+EXCEPTSRC = $(SRCDIR)\$(EXCEPTF)
+
+MISCO = misc.obj
+MISCOBJ = $(OBJDIR)\$(MISCO)
+MISCF	= $(MISCO:.obj=.c)
+MISCSRC = $(SRCDIR)\$(MISCF)
+
+VECTORO = vector.obj
+VECTOROBJ = $(OBJDIR)\$(VECTORO)
+VECTORF	= $(VECTORO:.obj=.c)
+VECTORSRC = $(SRCDIR)\$(VECTORF)
+
+XMALLOCO = xmalloc.obj
+XMALLOCOBJ = $(OBJDIR)\$(XMALLOCO)
+XMALLOCF = $(XMALLOCO:.obj=.c)
+XMALLOCSRC = $(SRCDIR)\$(XMALLOCF)
+
+SYSO	= sys.obj
+SYSOBJ	= $(OBJDIR)\$(SYSO)
+SYSF	= $(SYSO:.obj=.c)
+SYSSRC	= $(SRCDIR)\$(SYSF)
+
+VECDEFO = vector_def.obj
+VECDEFOBJ = $(OBJDIR)\$(VECDEFO)
+VECDEFF = $(VECDEFO:.obj=.c)
+VECDEFSRC = $(SRCDIR)\$(VECDEFF)
+
+OBJS	= $(EXCEPTOBJ) $(MISCOBJ) $(VECTOROBJ) $(XMALLOCOBJ) $(SYSOBJ) $(VECDEFOBJ)
 
 .PHONY: all
-all: $(CONFDIR)/libconf.lib
+all: $(CONFDIR)\libconf.lib
 
-SRC = exceptions.c misc.c vector.c xmalloc.c sys.c vector_def.c
+{$(SRCDIR)}.c{$(OBJDIR)}.obj:
+	$(CC) $(CFLAGS) /Fo$@ /c $< >nul
 
-OBJ := $(addprefix $(join $(CONFDIR), /),$(SRC:.c=.obj))
+$(OBJS):
 
-$(CONFDIR)/libconf.lib: $(OBJ)
-	$(LIB) /nologo /OUT:$@ $(subst /,\,$^)
-
-$(CONFDIR)/%.obj: %.c
-	$(CC) $(CFLAGS) /c $< /Fo$@ >nul
-# $(subst /,\,$@) >nul
+$(CONFDIR)\libconf.lib: $(OBJS)
+	$(LIB) /nologo /OUT:$(CONFDIR)\libconf.lib $(OBJS)
 
 .PHONY: clean
 clean:
-	-$(RM) $(subst /,\,$(OBJ)) $(subst /,\,$(CONFDIR))\libconf.* 2> null
+	-$(RM) $(CONFDIR)\*.obj $(CONFDIR)\libconf.lib 2> null

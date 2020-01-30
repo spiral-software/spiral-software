@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -332,19 +332,7 @@ Class(GTPS, GTBase, Tagged_tSPL, rec(
         kernel := FoldR([1..self.rank()], (ker, i) -> ker.downRank(i, inds[i]), Copy(self)),
         spl    := Scat(kernel.getScat()) * kernel.child(1) * Gath(kernel.getGath()),
         FoldL(inds, (ker, idx) -> IParSeq(idx.setAttr("GT"), kernel.params[2], ker), spl)),
-<#
-    toISums := self >> let(
-    inds := List(self.getIts(), Ind),
-    kernel := self._scat(self.getScat()) * self.params[1] * self._gath(self.getGath()),
-    FoldL(inds, (ker, idx) -> ISum(idx.setAttr("GT"), ker), kernel)
-    ),
 
-    transpose := self >> let(p:=self.params,
-        GT(p[1].transpose(), p[3], p[2], p[4]).withTags(self.transposedTags())),
-
-    conjTranspose := self >> let(p:=self.params,
-        GT(p[1].conjTranspose(), p[3], p[2], p[4]).withTags(self.transposedTags())),
-    #>
     hashAs := self >> let(p:=self.params,
         ObjId(self)(HashAsSPL(p[1]), p[2], p[3], p[4], p[5]).withTags(self.tags)),
     

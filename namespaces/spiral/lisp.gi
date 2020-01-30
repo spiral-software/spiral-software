@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 # Functions to export variousl GAP/SPL data structures as LISP expressions

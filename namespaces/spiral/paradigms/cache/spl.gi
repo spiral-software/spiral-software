@@ -1,19 +1,7 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
-
-<#
-Class(B, Tagged_tSPL, rec(
-    abbrevs := [
-        (size) -> Checked(Is2Power(size),
-            [size]
-        )
-    ],
-    dims := (self) >> [self.params[1], self.params[1]]
-
-));
-#>
 
 Declare(_numBlocks);
 

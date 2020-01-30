@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -241,11 +241,3 @@ NewRulesFor(TMat, rec(
     )
 ));
 
-<#
-TMat_Blk.rblk := 128; TMat_Blk.cblk := 16;
-opts := GetSSE_BitOpts();
-opts.sumsgen := DefaultSumsGen; # NOTE: use by default
-t := TMat(RandomBitMat(256,256)).withTags([AVecReg(SSEB_128)]);
-r := SemiRandomRuleTree(t, TMat_Blk, opts);
-s := SumsRuleTree(r, opts);
-#>

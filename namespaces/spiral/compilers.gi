@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -116,6 +116,32 @@ Class(GnuC, IntelC, rec(
 	end,
 ));
 
+ 
+ Class(Llvm_Clang, IntelC, rec(
+    compiler := "clang (LLVM Compiler Collection)",
+	
+	SIMD := self >> CopyFields(platforms.SIMDArchitectures, rec(
+        hasMMX    := True,
+		hasSSE    := True,
+		hasSSE2   := True,
+		hasSSE3   := True,
+        hasSSSE3  := True,
+		hasSSE4_1 := True,
+		hasSSE4_2 := True)),
+		
+	alignmentSpecifier := meth(arg)
+		local bytes;
+		
+		if Length(arg) > 1 then
+			bytes := arg[2];
+		else
+			bytes := 16;
+		fi;
+	
+		return "__attribute__((aligned("::String(bytes)::")))";
+	end,
+));
+
 
 Class(GnuC_ARM, IntelC, rec(
     compiler := "gcc (GNU Compiler Collection)",
@@ -179,5 +205,6 @@ SupportedCompilers := rec(
     VisualC := VisualC,
     VisualC_12 := VisualC_12,
     GnuC := GnuC,
-    GnuC_ARM := GnuC_ARM
+    GnuC_ARM := GnuC_ARM,
+    Llvm_Clang := Llvm_Clang
 );

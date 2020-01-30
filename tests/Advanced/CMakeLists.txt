@@ -13,9 +13,10 @@ include ("${SPIRAL_SOURCE_DIR}/config/CMakeIncludes/TestDefines.cmake")
 
 ##  Define the Advanced example tests...
 set (TESTS_ALL_TESTS
-	Hockney
-	Planewave-3D-FFT
+        Hockney
+        Planewave-3D-FFT
         WarpX-1D
+        DFT_PD_Stage1
     )
 
 ##  call function my_add_test_target() to add a target for each test

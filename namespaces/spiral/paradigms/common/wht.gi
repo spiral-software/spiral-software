@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 # Cross-compatibility
@@ -392,24 +392,6 @@ NewRulesFor(WHT, rec(
         apply            := (nt, c, cnt) -> c[1],
         switch := true,
     ),
-
-    # makes sure we don't get things like 
-    #
-<#
-
-    WHT_tSPL_BinSplit_withVec := rec(
-        forTransposition := false,
-        applicable := (nt) -> nt.hasTag(AVecReg),
-        children := (nt) -> let(
-            t := nt.getTag(AVecReg),
-            v := t.v,
-
-            
-        ),
-        apply := (nt, c, cnt) -> c[1],
-    ),
-#>
-
 
     #F WHT_Base: WHT_1 = F_2
     #F
@@ -830,113 +812,6 @@ NewRulesFor(GT, rec(
         )
     ),
 ));
-
-<#
-        children := meth(self, t)
-            local cachetag, cs, n, m, ch, e, a, s;
-
-            n := Rows(t);
-
-            cachetag := t.getTag(_ACache());
-
-            # for now, we can only handle one cache level.
-            Constraint(IsList(cachetag) = false);
-
-            # the cachespec is the 2nd parameter.
-            cs := cachetag.params[2];
-
-            a := Log2Int(cs.assoc);
-            e := Log2Int(cs.blksize);
-            s := Log2Int(cs.nsets);
-
-            n := Log2Int(n);
-            m := Maximum(List([1..n-1], nn -> a + Maximum(e + s - nn, 0)));
-            n := n - m;
-
-            ch := [[
-                Inplace(
-                    GT(WHT(m), XChain([0,1]), XChain([0,1]), [2^n]).withTags(t.getTags())
-                ),
-                Inplace(
-                    GT(WHT(n), XChain([1,0]), XChain([1,0]), [2^m]).withTags(t.getTags())
-                )
-# .withTags(
-#                    Filtered(t.getTags(), e ->
-#                        _dropCacheTags(e, n, true)
-#                    )
-#                )
-            ]];
-
-            Print(ch);
-
-            return ch;
-        end,
-
-        apply := (self, t, C, Nonterms) >>  Inplace(ApplyFunc(Compose, C))
-    ),
-
-    # this binsplit handles all kinds of flags, but it does not require them.
-    # flags handled: AInplace, ACache
-    WHT_GT_CacheInplace := rec(
-        switch := true,
-        maxSize := false,
-        minSize := false,
-
-        applicable := (self, t) >> let(
-            n := Rows(t),
-
-            t.hasTag(_AInplace())
-#            and t.hasTag(_ACache())
-            and n > 2 
-            and not IsPrime(n)),
-
-        children := meth(self, t)
-            local cachetag, cs, n, m, ch, e, a, s;
-
-            n := Rows(t);
-
-            cachetag := t.getTag(_ACache());
-
-            # for now, we can only handle one cache level.
-            Constraint(IsList(cachetag) = false);
-
-            # the cachespec is the 2nd parameter.
-            cs := cachetag.params[2];
-
-            a := Log2Int(cs.assoc);
-            e := Log2Int(cs.blksize);
-            s := Log2Int(cs.nsets);
-
-            n := Log2Int(n);
-            m := Maximum(List([1..n-1], nn -> a + Maximum(e + s - nn, 0)));
-            n := n - m;
-
-            ch := [[
-                Inplace(
-                    GT(WHT(m), XChain([0,1]), XChain([0,1]), [2^n]).withTags(t.getTags())
-                ),
-                Inplace(
-                    GT(WHT(n), XChain([1,0]), XChain([1,0]), [2^m]).withTags(t.getTags())
-                )
-# .withTags(
-#                    Filtered(t.getTags(), e ->
-#                        _dropCacheTags(e, n, true)
-#                    )
-#                )
-            ]];
-
-            Print(ch);
-
-            return ch;
-        end,
-
-        apply := (self, t, C, Nonterms) >>  ApplyFunc(Compose, C)
-    ),
-#>
-
-
-
-
 
 #   (WHTmn x Ik) -> (WHTm x Ikn) (Im x (WHTn x Ik))
 NewRulesFor(TTensorI, rec(

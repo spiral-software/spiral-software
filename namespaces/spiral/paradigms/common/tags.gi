@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -26,17 +26,4 @@ Class(ALimitNthLoop, AGenericTag);
 #
 Class(AIO, AGenericTag);
 
-<#DEPRACATED
-########################################################################
-#   TTag rules
-RulesFor(TTag, rec(
-    TTag_down := rec(
-        info := "Push down tag",
-        forTransposition := false,
-        isApplicable := P -> IsBound(P[1].tagpos),
-        allChildren := P -> [[ AddTag(P[1], P[2]) ]],
-        rule := (self, P, C) >> let(tagl := P[2], tag :=When(IsList(tagl), tagl[1], tagl), tag.container(C[1]))
-    )
-));
 
-DEPRACATED#>

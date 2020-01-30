@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 import argparse
@@ -75,10 +75,10 @@ if args.get('version', False):
 debug    = args.get('debug', False)
 request  = args.get('request', def_request)
 target   = args.get('target', def_target)
-srcdir   = args.get('srcdir', def_srcdir)
+srcdir   = os.path.realpath(args.get('srcdir', def_srcdir))
 keeptemp = args.get('keeptemp', False)
 prefix   = args.get('prefix', def_prefix)
-workdir  = args.get('workdir', def_workdir)
+workdir  = os.path.realpath(args.get('workdir', def_workdir))
 
 if debug:
 	print("Options:")
@@ -125,6 +125,10 @@ for fname in filelist:
 		sys.exit('Error: Could not copy ' + fname + ' to ' + tempworkdir)
 
 # run the request
+if debug:
+	print("temporary work directory:", tempworkdir);
+	print("command file:", cmdfile);
+
 os.chdir(tempworkdir)
 try:
 	if sys.platform == 'win32':
@@ -145,7 +149,8 @@ resfile = request + '.txt'
 try:
 	shutil.copy(resfile, srcdir)
 except:
-	res = 1
+	cleanup()
+	sys.exit('Error: Could not copy results ' + resfile + ' to ' + srcdir)
 
 cleanup()
 

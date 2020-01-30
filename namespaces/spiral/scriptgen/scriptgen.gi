@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -263,7 +263,7 @@ Class(ScriptGenBase, rec(
 	
 
 	# subclass must implement _init()
-	_init := () >> Error("Cannot instantiate abstract class\n"),
+	_init := (self) >> Error("Cannot instantiate abstract class\n"),
 	
 	
 	_setTransform := meth(self, tr)

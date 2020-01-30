@@ -1,5 +1,5 @@
 ##
-##  Copyright (c) 2018-2019, Carnegie Mellon University
+##  Copyright (c) 2018-2020, Carnegie Mellon University
 ##  See LICENSE for details
 ##
 # do not consider the standard implicit suffixes
@@ -7,39 +7,37 @@
 
 # these are defines that can be passed in
 
-CC              ?= cl.exe
-OUTDIR 		?= .
-GAP    		?= $(OUTDIR)/testcode.c
-STUB   		?= $(OUTDIR)/testcode.h
-TIMER  		?= ../common/rdtsc_time.c
-MATRIX 		?= ../common/matrix.c
-COUT   		?= $(OUTDIR)/cout.txt
-CERR   		?= $(OUTDIR)/cerr.txt
-LLOG		?= $(OUTDIR)/llog.txt
+RM      = del /f /q
+CC      = cl
+MAKE	= nmake
+LINK	= link
 
-# setup some defaults.
-export SHELL   = cmd.exe
-export RM      = del /f /q
-export LINK    = link
+##  We expect OUTDIR to be passed as a command line argument
 
-export CC
+GAP    		= $(OUTDIR)\testcode.c
+STUB   		= $(OUTDIR)\testcode.h
+TIMERSRC  	= rdtsc_time.c
+MATRIXSRC	= matrix.c
+COMMONDIR	= ..\..\targets\common
+TIMER		= $(COMMONDIR)\$(TIMERSRC)
+MATRIX		= $(COMMONDIR)\$(MATRIXSRC)
+COUT   		= $(OUTDIR)\cout.txt
+CERR   		= $(OUTDIR)\cerr.txt
+LLOG		= $(OUTDIR)\llog.txt
 
-override CFLAGS  = /I.. /I. /I..\common /I..\conf /FI$(subst /,\,$(STUB)) /DWIN64 /nologo /Dinline=__inline /O2 /Oi /openmp
-override LFLAGS  = /nologo /subsystem:console /incremental:no /PDB:$(subst /,\,$(OUTDIR))\vc70.pdb
+CFLAGS  = /I..\..\targets /I..\..\targets\common /I..\..\targets\conf /FI$(STUB) /DWIN64 /nologo /Dinline=__inline /O2 /Oi /openmp
+LFLAGS  = /nologo /subsystem:console /incremental:no /PDB:$(OUTDIR)\vc70.pdb
 
 # this controls the output directory for the conf stuff.
-export CONFDIR = ../win-x64-vcc
+CONFDIR 	= ..\..\targets\win-x86-vcc
 
-TIMEREXE=$(OUTDIR)/$(notdir $(subst .c,.exe,$(TIMER)))
-MATRIXEXE=$(OUTDIR)/$(notdir $(subst .c,.exe,$(MATRIX)))
-
-# some defines for source and object files.
-######
+TIMEREXE=$(OUTDIR)\$(TIMERSRC:.c=.exe)
+MATRIXEXE=$(OUTDIR)\$(MATRIXSRC:.c=.exe)
 
 # object files are always placed into the local directory.
-OBJ=$(addprefix $(OUTDIR)/, $(notdir $(GAP:.c=.obj)))
-TIMEROBJ=$(addprefix $(OUTDIR)/, $(notdir $(TIMER:.c=.obj)))
-MATRIXOBJ=$(addprefix $(OUTDIR)/, $(notdir $(MATRIX:.c=.obj)))
+OBJ=$(GAP:.c=.obj)
+TIMEROBJ=$(TIMEREXE:.exe=.obj)
+MATRIXOBJ=$(MATRIXEXE:.exe=.obj)
 
 ALLSRC = $(TIMER) $(MATRIX) $(GAP)
 
@@ -48,31 +46,28 @@ ALLSRC = $(TIMER) $(MATRIX) $(GAP)
 all: build test 
 
 .PHONY: build
-build: delTimerBinFiles link.obj $(TIMEREXE) 
+build: delTimerBinFiles $(TIMEREXE)
 
 .PHONY: test
 test: build
 	@-$(TIMEREXE)
 
 .PHONY: matrix
-matrix: cleanMatrix buildMatrix testMatrix
+matrix: delMatrixBinFiles buildMatrix testMatrix
 
 .PHONY: buildMatrix
-buildMatrix: delMatrixBinFiles link.obj $(MATRIXEXE)
+buildMatrix: delMatrixBinFiles $(MATRIXEXE)
 
 .PHONY: testMatrix
 testMatrix: buildMatrix
 	@-$(MATRIXEXE)
 
-.PHONY:	cleanMatrix
-	-$(RM) $(subst /,\,$(MATRIXOBJ)) *.obj $(subst /,\,$(MATRIXEXE)) 2> nul
-
 # the link command, mashes all objects together.
 $(TIMEREXE): $(TIMEROBJ) $(OBJ) libconf.lib
-	$(LINK) $(LFLAGS) /out:$(subst /,\,$@) $(subst /,\,$^)
+	$(LINK) $(LFLAGS) /out:$@ $(TIMEROBJ) $(OBJ) $(CONFDIR)\libconf.lib
 
 $(MATRIXEXE): $(MATRIXOBJ) $(OBJ) libconf.lib
-	$(LINK) $(LFLAGS) /out:$(subst /,\,$@) $(subst /,\,$^)
+	$(LINK) $(LFLAGS) /out:$@ $(MATRIXOBJ) $(OBJ) $(CONFDIR)\libconf.lib
 
 # make sure that timed code always up-to-date
 delTimerBinFiles:
@@ -80,46 +75,37 @@ delTimerBinFiles:
 	-$(RM) $(TIMEREXE) 2> nul
 
 delMatrixBinFiles:
-	-$(RM) $(OBJ) $(TIMEROBJ) 2> nul
+	-$(RM) $(OBJ) $(MATRIXOBJ) 2> nul
 	-$(RM) $(MATRIXEXE) 2> nul
 
 libconf.lib:
-	$(MAKE) -C ..\conf -f Makefile.win CONFDIR=$(CURDIR)
-
-# the link.c file is empty but crucial. It is required because of 
-# peculiarities in the WinAPI CreateProcess() call inside of make.exe.
-
-# namely, there is a discrepancy between the 1st and 2nd param passed
-# to CreateProcess, as the 1st contains the path-expanded version of 'link'
-# and the 2nd has 'link' with all of its command line options. The 
-# linker assumes the 2nd param consists only of command line arguments, 
-# and interprets 'link' as a missing 'link.obj'. Yes, this sucks.
-link.obj: link.c
-	$(CC) /c /nologo /Fo$@ $< >$(LLOG)
+	$(MAKE) /C /S /f ..\..\targets\conf\Makefile.win CONFDIR=$(CONFDIR) all
 
 ##########
 # rules for .c -> .o
 ###########
 
-# this implicit rule does not work since the src/obj are not in the same dir 
-# in some cases.
-# %.obj: %.c
-#	$(CC) $(CFLAGS) /c /Fo$@ $<
-
-# instead we use the power of gnu make to autogenerate the .c/.o relationship
-# for each file. refer to http://www.gnu.org/software/make/manual/make.pdf
+# Implicit rules for src/obj in nmake don't work as src and object are not in
+# same directories.  NOTE: We can't simply build in the source directory as
+# the source remains common for multiple targets.  Thus we have separate
+# rules for each object (nmake doesn't support anything other than literal
+# substitution and doesn't provide looping or rule definitions).
 
 # we pipe to null because visual c likes to spit out the name of the file
 # it is compiling, and I'm not sure how to make it stop
 
-define C_TO_OBJ
-$(OUTDIR)/$(notdir $(1:.c=.obj)): $(1)
-	$(CC) $(CFLAGS) /c /Fo$$(subst /,\,$$@) $$(subst /,\,$$<) >$(COUT) 2>$(CERR)
-endef
-$(foreach src,$(ALLSRC),$(eval $(call C_TO_OBJ, $(src))))
+$(OBJ): $(GAP) $(STUB)
+	$(CC) $(CFLAGS) /c /Fo$@ $(GAP) >$(COUT) 2>$(CERR)
+
+$(TIMEROBJ): $(TIMER)
+	$(CC) $(CFLAGS) /c /Fo$@ $(TIMER) >$(COUT) 2>$(CERR)
+
+$(MATRIXOBJ):$(MATRIX)
+	$(CC) $(CFLAGS) /c /Fo$@ $(MATRIX) >$(COUT) 2>$(CERR)
+
 
 # hardcoded dependency information. this is required such that the timer is rebuilt when the stub changes.
-$(OUTDIR)/$(notdir $(TIMER:.c=.obj)): $(STUB)
+$(TIMEREXE:.exe=.obj): $(STUB)
 
 
 # cleanup 
@@ -127,4 +113,4 @@ $(OUTDIR)/$(notdir $(TIMER:.c=.obj)): $(STUB)
 
 .PHONY: clean
 clean: delTimerBinFiles delMatrixBinFiles
-	$(MAKE) -C ..\conf -f Makefile.win CONFDIR=$(CURDIR) clean
+	$(MAKE) /C /S /f ..\..\target\conf\Makefile.win CONFDIR=$(CONFDIR) clean

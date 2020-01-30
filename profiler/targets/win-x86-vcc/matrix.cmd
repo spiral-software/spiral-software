@@ -1,10 +1,14 @@
 @echo off
 
-REM  Copyright (c) 2018-2019, Carnegie Mellon University
-REM  See LICENSE for details
+REM  Copyright (c) 2018-2020, Carnegie Mellon University
+REM  See LICENSE for details 
 
-rem call "%VS160COMNTOOLS%\VsDevCmd.bat"
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat" > nul
+REM For Visual Studio 2017 and later the environment variables are set by: VsDevCmd.bat.  The path
+REM to VsDevCmd.bat can be determined with vswhere.exe, which is (by default) located at:
+REM "C:\Program Files (x86)\Microsoft Visual Studio\Installer" We'll use this to locate
+REM VsDevCmd.bat, then run it to set the environment for nmake...
+
+for /f "usebackq delims=#" %%a in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere" -latest -property installationPath`) do call "%%a\Common7\Tools\VsDevCmd.bat" > nul
 
 set SGBETEMPDIR=%cd%
-make matrix -R -C ../../targets/win-x86-vcc GAP=%SGBETEMPDIR%\testcode.c STUB=%SGBETEMPDIR%\testcode.h CC="cl" CFLAGS="-O2" OUTDIR=%SGBETEMPDIR% -s > matrix.txt
+nmake /C /S /f ../../targets/win-x86-vcc/Makefile GAP=%SGBETEMPDIR%\testcode.c STUB=%SGBETEMPDIR%\testcode.h CC="cl" OUTDIR=%SGBETEMPDIR% matrix  > matrix.txt

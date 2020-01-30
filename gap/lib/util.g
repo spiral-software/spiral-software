@@ -106,11 +106,8 @@ WithBases := function (arg)
     return result;
 end;
 
-WithBasesClass := function (arg)
+_withBasesClass := function (arg)
     local  result, bases;
-    if Length(arg) < 1 then
-    Error("Usage: WithBasesClass(<base1>, ..., <baseN>, <obj>)");
-    fi;
     result := ShallowCopy(Last(arg));
     bases := Flat(arg{[1..Length(arg)-1]});
     if bases<>[] then result.__bases__ := bases; fi;
@@ -143,13 +140,6 @@ CompileClass := function (cls)
         return _moveBasesDown(cls);
     fi;
 end;
-
-<#
-maybeCompile := cls -> When(IsRec(cls) and IsBound(cls.__bases__), CompileClass(cls));
-
-compileClassesPkg := pkg -> DoForAll(NSFields(pkg), f -> maybeCompile(pkg.(f)));
-#>
-
 
 abstract := () -> ((arg) >> Error("not implemented"));
 
@@ -259,7 +249,7 @@ Class := UnevalArgs(
     obj.__cid__ := cid.nextKey();
     obj := Concatenation([obj], z[2]);
 
-    result := WithBasesClass(bases, ApplyFunc(Inherit, obj));
+    result := _withBasesClass(bases, ApplyFunc(Inherit, obj));
     Assign(nam, CantCopy(result));
     if IsBound(AllClasses.(result.__name__)) then
         Print("\nWarning: \"", result.__name__, "\" class redefined.\n");

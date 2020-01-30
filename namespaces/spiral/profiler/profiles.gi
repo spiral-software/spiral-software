@@ -1,17 +1,9 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
 Declare(_StandardMeasureVerify);
-Declare(_VerifyMMM);
-Declare(_FPGAMeasureVerify);
-Declare(_GetSimicsData);
-
-#Declare(_RemoteMeasureVerify);
-#Declare(_RemoteDownload);
-#Declare(_RemoteClean);
-#Declare(_RemoteRunMake);
 
 SetMakeOptsPThreads:=function(opts)
    opts.profile.makeopts.LDFLAGS:=Concat(When(IsBound(opts.profile.makeopts.LDFLAGS),opts.profile.makeopts.LDFLAGS,"")," -lpthread -L/lib/tls -lm");
@@ -82,6 +74,7 @@ default_profiles := rec(
         outdir := "/tmp/spiral/power",
         meas := (a, b) -> _StandardMeasureVerify(a, b, ""),
         verify := (a, b) -> _StandardMeasureVerify(a, b, "verify") ),
+
     arm_icount := rec(
         name := "arm-icount",
         makeopts := rec(
@@ -123,6 +116,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     linux_arm_pthread := rec(
         name := "linux-arm",
         makeopts := rec(
@@ -132,6 +126,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, "pthread"),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verifyPThread")
     ),
+
     linux_x86_icc_openmp := rec(
         name := "linux-x86",
         makeopts := rec(
@@ -142,6 +137,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     linux_x86_gcc := rec(
         name := "linux-x86",
         makeopts := rec(
@@ -152,6 +148,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     linux_x86_threads := rec(
         name := "linux-x86",
         makeopts := rec(
@@ -166,6 +163,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     linux_x86_icc_threads := rec(
         name := "linux-x86",
         makeopts := rec(
@@ -180,6 +178,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     linux_x86_perfmon2 := rec(
         name := "linux-x86-perfmon2",
         makeopts := rec(
@@ -190,6 +189,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     linux_x86_newtimer := rec(
         name := "linux-x86-newtimer",
         makeopts := rec(
@@ -224,7 +224,6 @@ default_profiles := rec(
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
 
-
     linux_lrb_icc_threads := rec(
         name := "linux-lrb-icc",
         makeopts := rec(
@@ -239,6 +238,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     linux_x86_vtune := rec(
         name := "linux-x86-vtune",
         makeopts := rec(
@@ -265,6 +265,7 @@ default_profiles := rec(
 
     # LINUX embedded profiles
     #########################
+
     linux_xscale_gcc := rec(
         name := "linux-xscale-gcc",
         makeopts := rec(
@@ -289,6 +290,7 @@ default_profiles := rec(
 
     # MS WINDOWS profiles
     ##############
+
     win_x86_vcc := rec(
         name := "win-x86-vcc",
         makeopts := rec(
@@ -299,17 +301,19 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     win_x64_vcc := rec(
         name := "win-x64-vcc",
         makeopts := rec(
             CC := "cl",
             CFLAGS := "/O3",
         ),
-		premake := () -> "vcvarsall.bat amd64 > nul",
+        premake := () -> "vcvarsall.bat amd64 > nul",
         outdir := "/temp/vcc64",
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     win_x86_icc := rec(
         name := "win-x86-icc",
         makeopts := rec(
@@ -321,6 +325,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     win_x86_icc_openmp := rec(
         name := "win-x86-icc-openmp",
         makeopts := rec(
@@ -333,6 +338,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     win_x86_icc_threads := rec(
         name := "win-x86-icc-threads",
         makeopts := rec(
@@ -344,6 +350,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     win_x64_icc := rec(
         name := "win-x64-icc",
         makeopts := rec(
@@ -355,6 +362,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     win_x64_icc_openmp := rec(
         name := "win-x64-icc-openmp",
         makeopts := rec(
@@ -367,6 +375,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     win_x64_icc_threads := rec(
         name := "win-x64-icc-threads",
         makeopts := rec(
@@ -378,9 +387,10 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     win_x86_gcc := rec(
         name := "win-x86-gcc",
-		target := rec(name := "win-x86-gcc"),
+        target := rec(name := "win-x86-gcc"),
         makeopts := rec(
             CC := "gcc",
             CFLAGS := "-O3 -march=native -std=c99 -Wno-implicit -Wno-aggressive-loop-optimizations",
@@ -389,9 +399,22 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
-  win_x86_nvcc_gpu := rec(
-    name := "win-x86-nvcc-gpu",
-    makeopts := rec(
+
+    win_x86_llvm := rec(
+        name := "win-x86-llvm",
+        target := rec(name := "win-x86-llvm"),
+        makeopts := rec(
+            CC := "clang",
+            CFLAGS := "-O2 -march=native -std=c99 -Wall",
+        ),
+        outdir := "/temp",
+        meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
+        verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
+    ),
+
+    win_x86_nvcc_gpu := rec(
+        name := "win-x86-nvcc-gpu",
+        makeopts := rec(
             CC := "nvcc",
             CFLAGS := "",
             GAP:= "gap.cu"
@@ -419,6 +442,7 @@ default_profiles := rec(
 
     # CELL processor profiles
     ##############
+
     linux_cellSPU_gcc := rec(
         name := "linux-cellSPU-gcc",
         makeopts := rec(
@@ -430,6 +454,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     linux_cellSPU_gcc_MMM := rec(
         name := "linux-cellSPU-gcc-MMM",
         makeopts := rec(
@@ -441,6 +466,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     linux_cellmultiSPU_gcc := rec(
         name := "linux-cellmultiSPU-gcc",
         makeopts := rec(
@@ -459,6 +485,7 @@ default_profiles := rec(
         verifyfftw := (a,b) -> _StandardMeasureVerify(a,b, "fftwverify"),
         verifyquick  := (a,b) -> _StandardMeasureVerify(a,b, "quickverify")
     ),
+
     linux_cellmultiSPU_speadk := rec(
         name := "linux-cellmultiSPU-speadk",
         makeopts := rec(
@@ -473,6 +500,7 @@ default_profiles := rec(
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify"),
         verifyfftw := (a,b) -> _StandardMeasureVerify(a,b, "fftwverify")
     ),
+
     linux_cellPPU_gcc := rec(
         name := "linux-cellPPU-gcc",
         makeopts := rec(
@@ -484,6 +512,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     win_remote := rec(
         name := "win-remote",
         host := "host.domain",
@@ -509,6 +538,7 @@ default_profiles := rec(
 
     # SIMPLESCALAR 3.0 profiles
     ##############
+
     ssnix_simple_gcc_cachemiss := rec(
         name := "ssnix-simple-gcc",
         makeopts := rec(
@@ -521,6 +551,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b,""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     ssnix_simple_gcc_instr := rec(
         name := "ssnix-simple-gcc",
         makeopts := rec(
@@ -547,8 +578,10 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b,""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     # FPGA Hardware generator profile
     ####################
+
     fpga_splhdl := rec(
         name := "fpga-splhdl",
         outdir := "/tmp/spiral",
@@ -565,12 +598,12 @@ default_profiles := rec(
             DATATYPE := "fix 16", #other possibility 'float'.
             TWIDTYPE := ""
         ),
-        meas := (a,b) -> _FPGAMeasureVerify(a,b,""),
-#        verify := (a,b) -> _FPGAMeasureVerify(a,b, "verify")
+        meas := (a,b) -> _StandardMeasureVerify(a,b,""),
     ),
 
     # INTEL MAC profiles
     #######
+
     darwin_x86_gcc := rec(
         name := "darwin-x86",
         makeopts := rec(
@@ -581,6 +614,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
+
     darwin_x86_icc := rec(
         name := "darwin-x86",
         makeopts := rec(
@@ -591,24 +625,10 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
-    # SIMICS profiles
-    ############
-    linux_simics_icc := rec(
-        name := "linux-simics-icc",
-        makeopts := rec(
-            CC := "icc",
-            CFLAGS := "-O3 -fomit-frame-pointer -std=c99",
-            PORT := "2000",
-            HOST := "localhost",
-            EVENT := "sys-cycles",
-        ),
-        outdir := "/tmp/spiral",
-        meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
-        verify := (a,b) -> _StandardMeasureVerify(a,b, "verify"),
-        getalldata := (b) -> _GetSimicsData(b)
-    ),
+
     # PTLSim backend
     ############
+
     linux_ptlsim_icc := rec(
         name := "linux-ptlsim",
         makeopts := rec(
@@ -619,6 +639,7 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify"),
     ),
+
     # Basilio's code analyzer.
      linux_x86_anl := rec(
          name := "linux-x86-anl",

@@ -1,13 +1,7 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
-
-<# this stuff is in spl2sums.gi for the moment
-Tensor.gathTensor := (self,i) >> fTensor;
-Tensor.scatTensor := (self,i) >> fTensor;
-Tensor.fTensor := fTensor;
-#>
 
 Class(LegacySumsGen, HierarchicalVisitor, rec(
 

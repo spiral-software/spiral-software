@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -164,23 +164,6 @@ Class(ParSeq, SumsBase, BaseOperation, rec(
 
     print := (self, i, is) >> self._print([self.fb_cnt] :: self.rChildren(), i, is),
 
-
-    
-    #-----------------------------------------------------------------------
-    <#
-    transpose := self >>   # we use CopyFields to copy all fields of self
-        CopyFields(self, rec(
-           _children := List(self._children, x->x.transpose()),
-           dimensions := Reversed(self.dimensions))),
-    inverse := self >>   # we use CopyFields to copy all fields of self
-        CopyFields(self, rec(
-           _children := List(self._children, x->x.inverse()),
-           dimensions := Reversed(self.dimensions))),
-    conjTranspose := self >>   # we use CopyFields to copy all fields of self
-        CopyFields(self, rec(
-           _children := List(self._children, x->x.conjTranspose()),
-           dimensions := Reversed(self.dimensions)))
-    #>
 ));
 
 

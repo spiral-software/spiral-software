@@ -1,11 +1,11 @@
 
 /****************************************************************************
 **
-*Y  Copyright (C) 2018-2019, Carnegie Mellon University
+*Y  Copyright (C) 2018-2020, Carnegie Mellon University
 *Y  All rights reserved.  See LICENSE for details.
 *Y  
 *Y  This work is based on GAP version 3, with some files from version 4.  GAP is
-*Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
+*Y  Copyright (C) (1987--2020) by the GAP Group (www.gap-system.org).
 **
 */
 
@@ -123,11 +123,8 @@
 **
 *T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
 */
-#ifdef  DGC_DEBUG
-typedef UInt const * const * Bag;
-#else
 typedef UInt * *        Bag;
-#endif
+
 
 /****************************************************************************
 **

@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -26,7 +26,7 @@ Class(spu_common, SIMD_VMX, rec(
 
     backendConfig := rec(
                         profile := default_profiles.linux_cellmultiSPU_gcc,
-                        measureFunction := _CellSPUMeasureVerify
+                        measureFunction := _StandardMeasureVerify
                      ),
 ));
 
@@ -333,7 +333,7 @@ Class(ppu_4x32f, spu_4x32f, rec(
     includes := () -> ["<omega32.h>", "<vec_types.h>", "<altivec.h>", "<spu2vmx.h>"],
     backendConfig := rec(
                         profile := default_profiles.linux_cellPPU_gcc,
-                        measureFunction := _CellSPUMeasureVerify
+                        measureFunction := _StandardMeasureVerify
                      )
 ));
 

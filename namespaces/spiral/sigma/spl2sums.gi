@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -16,7 +16,7 @@ WID := (N, n, ofs) -> Scat(IDFUNC(N,n,ofs));
 
 
 ###########################################################################################
-# SumsSPL has changed, it now takes (spl, opts) instead of just (spl)
+# SumsSPL(spl, opts)
 SumsSPL := function(spl, opts) 
     local s;
     if IsBound(opts.sumsgen) then
@@ -28,22 +28,6 @@ SumsSPL := function(spl, opts)
         Error("opts.sumsgen must be defined!");
      fi;
 end;
-
-
-<# using new double dispatch on spl -> sums generation
-SumsSPL := function(spl)
-    local sums;
-    if IsBound(spl.memo_sums) then
-    sums := spl.memo_sums;
-    else
-    sums := spl.sums();
-    spl._sums := sums;
-    fi;
-    sums.root := spl;
-    #sums.sums := self >> self;
-    return sums;
-end;
-#>
 
 SumsSPLOpts := function(spl,opts)
   local sums;

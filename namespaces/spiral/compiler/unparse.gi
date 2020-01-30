@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -21,19 +21,19 @@ Unparse := function(code, unparser, i, is)
     # We need this so that cx_leave runs before the function returns
     if not IsBound(unparser.cx) then unparser := WithBases(unparser, rec(cx := empty_cx())); fi;
     if IsRec(code) then
-	cx_enter(unparser.cx, code);
+    cx_enter(unparser.cx, code);
         o := ObjId(code);
-	if IsBound(unparser.(o.name)) then
+    if IsBound(unparser.(o.name)) then
             res := D($(unparser.(o.name)(code, i, is)));
 
-	elif IsBound(o.unparse) and IsBound(unparser.(o.unparse)) then
+    elif IsBound(o.unparse) and IsBound(unparser.(o.unparse)) then
             res := D($(unparser.(o.unparse)(code, i, is)));
 
-	else return Error("Cannot unparse <o>. Unparser ", unparser, " does not have field '",
+    else return Error("Cannot unparse <o>. Unparser ", unparser, " does not have field '",
                 o.name, "'", When(IsBound(o.unparse), Concat(" or ",o.unparse), ""));
-	fi;
+    fi;
     else
-	res := D($(unparser.atomic(code, i, is)));
+    res := D($(unparser.atomic(code, i, is)));
     fi;
     cx_leave(unparser.cx, code);
     return $res;
@@ -43,7 +43,7 @@ Class(Unparser, rec(
    gen := meth(self, subname, o, opts)
         local oo;
         # using WithBases prevents mem leaks, by avoiding of keeping extra state around
-	self := WithBases(self, rec(opts := opts, cx := empty_cx())); 
+    self := WithBases(self, rec(opts := opts, cx := empty_cx())); 
         oo := self.preprocess(o);
         Print(
             self.header(subname, oo),
@@ -59,14 +59,14 @@ Class(Unparser, rec(
     # list of arguments , arguments are printed using this unparser
     printf := (self, str, args) >> ApplyFunc(PrintEvalF, Concatenation([str],
         List(args, a -> 
-	    Cond(IsFunc(a), a, 
-		 () -> Cond(IsType(a), self.declare(a, [], 0, 0), self(a, 0, 0)))))),
+        Cond(IsFunc(a), a, 
+         () -> Cond(IsType(a), self.declare(a, [], 0, 0), self(a, 0, 0)))))),
 
     # printf with initial indentation
     indprintf := (self, i, is, str, args) >> Print(Blanks(i),
         ApplyFunc(PrintEvalF, Concatenation([str],
                 List(args, a-> Cond(IsFunc(a), a, 
-		 () -> Cond(IsType(a), self.declare(a, [], i+is, is), self(a, i+is, is))))))),
+         () -> Cond(IsType(a), self.declare(a, [], i+is, is), self(a, i+is, is))))))),
 
     prefix := meth(self, f, lst)
         local first, c;
@@ -86,19 +86,33 @@ Class(Unparser, rec(
     #F infix takes 2 - 3 arguments. the 3rd argument specifies the number of spaces to indent, otherwise 0
     #F
     infix := meth(arg)
-        local self, lst, sep, i, cnt, c;
-        if not Length(arg) in [3, 4] then Error("Usage: infix(<lst>, <sep>, [<i>])\n"); fi;
+        local self, lst, sep, i, count, c, first;
+        if not Length(arg) in [3, 4] then
+            Error("Usage: infix(<lst>, <sep>, [<i>])\n");
+        fi;
 
-	if Length(arg)=3 then  [self, lst, sep] := arg; i := 0;
-	else                   [self, lst, sep, i] := arg; 
-	fi;
+        if Length(arg)=3 then
+            [self, lst, sep] := arg;
+            i := 0;
+        else
+            [self, lst, sep, i] := arg; 
+        fi;
 
-        cnt := 0;
+        count := 0;
+        first := true;
         for c in lst do
-	    When(cnt > 0 and 0 = (cnt mod self.infixbreak), Print("\n",Blanks(i+4)));
-	    When(cnt > 0, Print(sep));
-            cnt := cnt + 1;
+            if (count > 0) then
+                if ((count mod self.infixbreak) = 0) then
+                    Print(sep, "\n",Blanks(i+4));
+                    first := true;
+                fi;
+				if not first then
+                    Print(sep);
+                fi;
+            fi;
+            count := count + 1;
             self(c,0,4);
+            first := false;
         od;
     end,
 
@@ -367,48 +381,48 @@ Class(CUnparserBase, Unparser, rec(
 
     multi_if := meth(self,o,i,is)
         local j, conds;
-	conds := o.args { [1..Int(Length(o.args)/2)]*2 - 1 };
+    conds := o.args { [1..Int(Length(o.args)/2)]*2 - 1 };
 
         # degenerate case, no conditions, else branch only
         if Length(o.args)=1 then 
-	    self(o.args[1], i, is);
+        self(o.args[1], i, is);
 
-	# generate switch stmt
-	elif ForAll(conds, c -> ObjId(c)=eq and ObjId(c.args[1]) in [var,param] and c.args[1]=conds[1].args[1] and IsValue(c.args[2])) then
-	    Print(Blanks(i), "switch(", self(conds[1].args[1], i, is), ") { \n");
+    # generate switch stmt
+    elif ForAll(conds, c -> ObjId(c)=eq and ObjId(c.args[1]) in [var,param] and c.args[1]=conds[1].args[1] and IsValue(c.args[2])) then
+        Print(Blanks(i), "switch(", self(conds[1].args[1], i, is), ") { \n");
             j := 1;
             while j < Length(o.args) do
                 Print(Blanks(i+Int(is/2)), "case ", self(o.args[j].args[2], i, is), ": ");
-		Cond(ObjId(o.args[j+1])=ret, 
-		     Print(self(o.args[j+1],0,is), Blanks(i+is), "break;\n "),
-		     Print("{\n", self(o.args[j+1],i+is,is), Blanks(i+is), "break; }\n"));
-		j := j+2;
+        Cond(ObjId(o.args[j+1])=ret, 
+             Print(self(o.args[j+1],0,is), Blanks(i+is), "break;\n "),
+             Print("{\n", self(o.args[j+1],i+is,is), Blanks(i+is), "break; }\n"));
+        j := j+2;
             od;
             # Print out the else branch if it exists (j=Length)
             if j = Length(o.args) then 
-		Print(Blanks(i+Int(is/2)), "default: ");
-		Cond(ObjId(o.args[j])=ret, 
-		     Print(self(o.args[j], 0, is)),
-		     Print("{\n", self(o.args[j], i+is, is), Blanks(i+Int(is/2)), "}\n"));
+        Print(Blanks(i+Int(is/2)), "default: ");
+        Cond(ObjId(o.args[j])=ret, 
+             Print(self(o.args[j], 0, is)),
+             Print("{\n", self(o.args[j], i+is, is), Blanks(i+Int(is/2)), "}\n"));
             fi;
-	    Print(Blanks(i), "}\n");
+        Print(Blanks(i), "}\n");
 
-	# general IF cascade
-	else
+    # general IF cascade
+    else
 
             j := 1;
             while j < Length(o.args) do
                 Print(Blanks(i), When(j<>1, "else "), "if (",
                       self(o.args[j],  i+is,is), ") {\n",
                       self(o.args[j+1],i+is,is), Blanks(i), "}\n");
-		j := j+2;
+        j := j+2;
             od;
             # Print out the else branch if it exists (j=Length)
             if j = Length(o.args) then 
-		Print(Blanks(i), "else {\n",
+        Print(Blanks(i), "else {\n",
                       self(o.args[j],  i+is, is), Blanks(i), "}\n");
             fi;
-	fi;
+    fi;
     end,
 
     zallocate := (self, o, i, is) >> Print(
@@ -510,7 +524,7 @@ Class(CUnparserBase, Unparser, rec(
     cond := (self,o,i,is) >> Cond(
       Length(o.args)=3,
           Cond(ObjId(o.args[3]) = errExp, 
-	       self(o.args[2], i, is), 
+           self(o.args[2], i, is), 
                Print("((",self(o.args[1],i,is),") ? (",self(o.args[2],i,is),") : (",self(o.args[3],i,is),"))")),
 
       # NOTE: no else case here, maybe just leave it like this?
@@ -535,10 +549,10 @@ Class(CUnparserBase, Unparser, rec(
                  Print("(", self._decval(re), " + ", self.opts.c99.I, " * ", self._decval(im), ")"))),
 
         o.t = TReal, let(
-	    v := Cond(IsCyc(o.v), ReComplex(Complex(o.v)), o.v),
-	    Cond(v < 0, 
-		 Print("(", self._decval(v), ")"),
-		 Print(self._decval(v)))),
+        v := Cond(IsCyc(o.v), ReComplex(Complex(o.v)), o.v),
+        Cond(v < 0, 
+         Print("(", self._decval(v), ")"),
+         Print(self._decval(v)))),
 
         IsArray(o.t),                      Print("{", WithBases(self, rec(infixbreak:=4)).infix(o.v, ", ", i), "}"),
         o.v < 0,                           Print("(", o.v, ")"),
@@ -769,7 +783,7 @@ Class(CMacroUnparser, CUnparserBase, rec(
             self.prefixTT("ADD", o.args[1].t, rem.t, [o.args[1], rem]))),
 
     sub := (self,o,i,is) >> Cond(o.t=TInt or IsPtrT(o.t), Inherited(o, i, is), 
-	self.prefixTT("SUB", o.args[1].t, o.args[2].t, o.args)),
+    self.prefixTT("SUB", o.args[1].t, o.args[2].t, o.args)),
 
     nth := (self,o,i,is) >> Cond(o.t=TInt or IsPtrT(o.t), Inherited(o, i, is), self.prefixT("NTH", o.t, [o.loc, o.idx])),
     neg := (self,o,i,is) >> Cond(o.t=TInt or IsPtrT(o.t), Inherited(o, i, is), self.prefixT("NEG", o.t, o.args)),
@@ -795,7 +809,7 @@ Class(CMacroUnparser, CUnparserBase, rec(
     Value := (self, o, i, is) >> Cond(
         IsArray(o.t), Print("{", self.infix(o.v, ", "), "}"),
         let(fmt := self._const(o),
-	    pfx := Cond(self.cx.isInside(data), "CD_", "C_"),
+        pfx := Cond(self.cx.isInside(data), "CD_", "C_"),
             Cond(fmt[2]=[], Print(pfx, fmt[1]),
                  fmt[1]="INT", Print(fmt[2][1]), 
                  self.prefix(Concat(pfx, fmt[1]), fmt[2])))),

@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 NewRulesFor(WHT, rec(
@@ -29,67 +29,3 @@ NewRulesFor(WHT, rec(
 	)
 ));
 
-<#
-NewRulesFor(TTensorI, rec(
-	TTensorI_WHT_Mem := rec(
-		switch := true,
-		applicable := (self, nt) >> nt.params[1] > 2
-			and not IsPrime
-	)
-));
-#>
-<#
-
-NewRulesFor(WHT, rec(
-	WHT_tSPL_CT_MemVec := rec(
-		applicable := nt -> let(
-			m := nt.getTag(AMem),
-			v := nt.getTag(AVV),
-			size := 2^nt.params[1]
-
-			m
-			and not IsList(m)
-			and v
-			and not IsList(v)
-			and m.activation() = 0
-			and size > 2 * v.vregs * v.vlen
-		),
-
-		children := (nt) -> let(
-			v := nt.getTag(AVV),
-			size := 2^nt.params[1],
-			m := v.vregs / 2,
-			n := size / m,
-
-			TComplose(
-				Inplace(TTensor(
-					WHT(Log2Int(m)),
-					AVec,
-					AVec,
-					n
-				)),
-				TTensor(
-					WHT(Log2Int(n)),
-					APar,
-					APar,
-					m
-				)
-			)
-		),
-
-		apply :=  (nt, c, cnt) -> [c],
-			
-		
-	),
-
-));
-
-
-NewRulesFor(TTensor, rec(
-	TTensor_WHT_Vec := rec(
-		applicable := 
-		children := 
-		apply := 
-	)
-));
-#>

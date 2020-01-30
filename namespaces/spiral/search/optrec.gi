@@ -1,11 +1,32 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
 # Option Records
 # ==============
 # MP, BS, from 01/25/01, GAPv3.4.4
+
+
+# general default search options
+SEARCH_DEFAULTS :=
+    rec(
+		timeLimit          := false,
+		globalUnrolling    := false,
+		globalUnrollingMin := 8,
+		globalUnrollingMax := 64,
+		timeBaseCases      := true
+    );
+
+# default DP search options
+DP_DEFAULTS :=
+    rec(
+        nBest     := 1,
+        optimize  := "minimize",
+        verbosity := 3,
+	    DPVec     := false,
+	    DPVecVlen := 4
+    );
 
 
 #F Search Options Record
@@ -27,13 +48,9 @@
 
 PrintSpecSearchOptionsRecord := function()
    Print("  timeLimit := false | <minutes>,\n");
-   Print("  localUnrolling := true | false,\n");
-   Print("  localUnrollingMin := <positive int>,\n");
-   Print("  localUnrollingMax := <positive int>,\n");
    Print("  globalUnrolling := true | false,\n");
    Print("  globalUnrollingMin := <positive int>,\n"); 
-   Print("  globalUnrollingMax := <positive int>,\n"); 
-   Print("  bestFound := \"save\" | \"none\",\n");
+   Print("  globalUnrollingMax := <positive int>,\n");
 end;
 
 
@@ -54,18 +71,7 @@ CheckSearchOptionsRecord := function( R )
         if not ( R.(r) = false or ( IsInt(R.(r)) and R.(r) > 0 ) ) then
        Error( "timeLimit must be either false or a positive integer" );
     fi;
-     elif r = "localUnrolling" then
-        if not IsBool(R.(r)) then
-       Error( "Search option localUnrolling must be true or false" );
-    fi;
-     elif r = "localUnrollingMin" then
-        if not IsInt(R.(r)) then
-       Error( "localUnrollingMin is not an integer" );
-    fi;
-     elif r = "localUnrollingMax" then
-        if not IsInt(R.(r)) then
-       Error( "localUnrollingMax is not an integer" );
-    fi;
+
      elif r = "globalUnrolling" then
         if not IsBool(R.(r)) then
        Error( "Search option globalUnrolling must be true or false" );
@@ -77,10 +83,6 @@ CheckSearchOptionsRecord := function( R )
      elif r = "globalUnrollingMax" then
         if not IsInt(R.(r)) then
        Error( "globalUnrollingMax is not an integer" );
-    fi;
-     elif r = "bestFound" then
-        if not IsString(R.(r)) and R.(r) in ["save","none"] then
-       Error( "bestFound must be either \"save\" or \"none\"" );
     fi;
      elif r = "timeBaseCases" then
         if not IsBool(R.(r)) then
@@ -109,13 +111,6 @@ MergeSearchOptionsRecord := function( R )
       fi;
    od;
 
-   if OR.localUnrolling = true and OR.globalUnrolling = true then
-      Error( "Can not search over both local and global Unrolling" );
-   fi;
-   if OR.localUnrolling = true and
-      OR.localUnrollingMin > OR.localUnrollingMax then
-      Error( "localUnrollingMin > localUnrollingMax" );
-   fi;
    if OR.globalUnrolling = true and
       OR.globalUnrollingMin > OR.globalUnrollingMax then
       Error( "globalUnrollingMin > globalUnrollingMax" );
@@ -144,7 +139,6 @@ PrintSpecDPOptionsRecord := function()
    Print("  optimize := \"minimize\" | \"maximize\",\n");
    Print("  hashTable := <hashTable>,\n");
    Print("  verbosity := <non-negative integer>\n");
-   Print("  saveMemory := <boolean>\n");
    Print(");\n");
 end;
 
@@ -182,10 +176,6 @@ CheckDPOptionsRecord := function( R )
          if not IsRec( R.(r) ) then
         Error( "breakdownRules must be a record" );
          fi;
-      elif r = "saveMemory" then
-         if not IsBool(R.(r)) then
-            Error("saveMemory must be boolean");
-         fi;
       elif not r in RecFields(SEARCH_DEFAULTS) and  r <> "DPVec" and r <> "measureFunction" and r <> "wrap" 
       and not IsSystemRecField(r) then
          Error( "Unknown DPOptionsRecord field <r>" );
@@ -206,177 +196,6 @@ MergeDPOptionsRecord := function( R )
    for r in RecFields(DP_DEFAULTS) do
       if not IsBound( OR.(r) ) then
          OR.(r) := DP_DEFAULTS.(r);
-      fi;
-   od;
-
-   return OR;
-end;
-
-
-#F Exhaustive Search Options Record
-#F --------------------------------
-
-#F The Exhaustive Search Options Records maintain options for exhaustive search.
-#F
-
-#F PrintSpecExhaustiveSearchOptionsRecord()
-#F   prints the specification for the ExhaustiveSearch search options
-#F 
-
-PrintSpecExhaustiveSearchOptionsRecord := function()
-   Print("rec(\n");
-   Print("  timeLimit := false | <minutes>,\n");
-   Print("  bestFound := \"save\" | \"none\",\n");
-   Print("  verbosity := <non-negative integer>\n");
-   Print(");\n");
-end;
-
-
-#F CheckExhaustiveSearchOptionsRecord( <ExhaustiveSearch-options-record> )
-#F   checks to see if ExhaustiveSearch-options-record is valid
-#F
-
-CheckExhaustiveSearchOptionsRecord := function( R )
-   local r;
-
-   CheckSearchOptionsRecord(R);
-   for r in RecFields(R) do
-      if r = "verbosity" then
-         if not (IsInt(R.(r)) and R.(r) >= 0) then
-        Error( "verbosity must be a non-negative integer" );
-     fi;
-      elif not r in [ "bestFound", "timeLimit" ] and not IsSystemRecField(r) then
-         Error( "Unknown ExhaustiveSearchOptionsRecord field <r>" );
-      fi;
-   od;
-end;
-
-
-#F MergeExhaustiveSearchOptionsRecord( <ExhaustiveSearch-options-record> )
-#F   merges <ExhaustiveSearch-options-record> with the defaults
-#F
-
-MergeExhaustiveSearchOptionsRecord := function( R )
-   local OR, r;
-
-   CheckExhaustiveSearchOptionsRecord(R);
-   OR := ShallowCopy(R);
-   for r in RecFields(EXHAUSTIVE_SEARCH_DEFAULTS) do
-      if not IsBound( OR.(r) ) then
-         OR.(r) := EXHAUSTIVE_SEARCH_DEFAULTS.(r);
-      fi;
-   od;
-   if not IsBound( OR.bestFound ) then
-      OR.bestFound := SEARCH_DEFAULTS.bestFound;
-   fi;
-   if not IsBound( OR.timeLimit ) then
-      OR.timeLimit := SEARCH_DEFAULTS.timeLimit;
-   fi;
-
-   return OR;
-end;
-
-
-
-
-#F Timed Search Options Record
-#F ---------------------------
-
-#F The Timed Search Options Records maintain options for timed search.
-#F
-
-#F PrintSpecTimedSearchOptionsRecord()
-#F   prints the specification for the TimedSearch search options
-#F 
-
-PrintSpecTimedSearchOptionsRecord := function()
-   Print("rec(\n");
-   Print("  timeLimit := <minutes>,\n");
-   Print("  searches  := ",
-         "[ \"<searchMethod1>\", <SearchOpts1>, <timeLimit1>,\n");
-   Print("                 ...\n" );
-   Print("                 ",
-         "\"<searchMethodN>\", <SearchOptsN>, <timeLimitN> ]\n");
-   Print("  verbosity := <non-negative integer>\n");
-   Print(");\n");
-end;
-
-
-#F CheckTimedSearchOptionsRecord( <TimedSearch-options-record> )
-#F   checks to see if TimedSearch-options-record is valid
-#F
-
-CheckTimedSearchOptionsRecord := function( R )
-   local r, i;
-
-   for r in RecFields(R) do
-      if r = "timeLimit" then
-         if not ( IsInt(R.(r)) and R.(r) > 0 ) then
-        Error( "timeLimit must be a positive integer" );
-     fi;
-      elif r = "searches" then
-         if not IsList( R.(r) ) then
-        Error( "field 'searches' must be a list" );
-     elif Length(R.(r)) = 0 then
-        Error( "field 'searches' must be a non-empty list" );
-     elif not ( Length(R.(r)) mod 3 ) = 0 then
-        Error( "field 'searches' must be of the form:\n",
-           "  [ \"<searchMethod1>\", <SearchOpts1>, <timeLimit1>,\n",
-           "    ...\n",
-           "    \"<searchMethodN>\", <SearchOptsN>, <timeLimitN> ]\n" );
-     else
-        for i in [1,4..(Length(R.(r))-2)]
-        do
-           if not R.(r)[i] in [ "DP", 
-                                "ExhaustiveSearch", "TimedSearch" ] then
-          Error( "field 'searches' must be of the form:\n",
-           "  [ \"<searchMethod1>\", <SearchOpts1>, <timeLimit1>,\n",
-           "    ...\n",
-           "    \"<searchMethodN>\", <SearchOptsN>, <timeLimitN> ]\n",
-               "searchMethod ", R.(r)[i], " not one of ",
-           "\"DP\",  \n",
-            " or \"ExhaustiveSearch\"" );
-           elif not (    ( IsInt( R.(r)[i+2] ) and R.(r)[i+2] > 0 )
-              or R.(r)[i+2] = false ) then
-          Error( "field 'searches' must be of the form:\n",
-           "  [ \"<searchMethod1>\", <SearchOpts1>, <timeLimit1>,\n",
-           "    ...\n",
-           "    \"<searchMethodN>\", <SearchOptsN>, <timeLimitN> ]\n",
-               "timeLimit must be either false or a positive integer" );
-           else
-              if R.(r)[i] = "DP" then
-             CheckDPOptionsRecord(R.(r)[i+1]);
-          elif R.(r)[i] = "ExhaustiveSearch" then
-             CheckExhaustiveSearchOptionsRecord(R.(r)[i+1]);
-          elif R.(r)[i] = "TimedSearch" then
-             CheckTimedSearchOptionsRecord(R.(r)[i+1]);
-              fi;
-           fi;
-        od;
-     fi;
-      elif r = "verbosity" then
-         if not (IsInt(R.(r)) and R.(r) >= 0) then
-        Error( "verbosity must be a non-negative integer" );
-     fi;
-      elif not IsSystemRecField(r) then 
-         Error( "Unknown TimedSearchOptionsRecord field <r>" );
-      fi;
-   od;
-end;
-
-
-#F MergeTimedSearchOptionsRecord( <TimedSearch-options-record> )
-#F   merges <TimedSearch-options-record> with the defaults
-#F
-
-MergeTimedSearchOptionsRecord := function( R )
-   local OR, r;
-
-   CheckTimedSearchOptionsRecord(R);
-   OR := ShallowCopy(R);
-   for r in RecFields(TIMED_SEARCH_DEFAULTS) do
-      if not IsBound( OR.(r) ) then
-         OR.(r) := TIMED_SEARCH_DEFAULTS.(r);
       fi;
    od;
 

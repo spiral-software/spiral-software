@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -114,56 +114,6 @@ Class(B, PermClass, rec(
     transpose := self >> B(self.params[1], List(self.params[2], e -> [e[2],e[1]])),
 
     sums := (self) >> Chain(Error("Don't use legacy sumsgen!!"), true),
-
-<#
-    operations := rec(
-        \* := function(left, right)
-            local m, l, i, j;
-
-            if ObjId(right) = B and left.params[1] = right.params[1] then
-
-                # multiply together and subtract the identity
-                m := (left.bm() * right.bm()) - (MatSPL(I(Log2Int(left.params[1]))) * GF(2).root);
-
-                # put the locations of the nonzero terms into a list.
-                l := [];
-                for i in [1..Length(m)] do
-                    for j in [1..Length(m[i])] do
-                        if m[i][j] = GF(2).root then
-                            Add(l, [i,j]);
-                        fi;
-                    od;
-                od;
-
-                # return a new object
-                return B(right.domain(), l);
-
-#            elif IsMat(right) then
-#                return false; # MatAMat(left.toAMat()) * right;
-            else
-                return false; # Error("Don't know how to multiply.");
-            fi;
-        end,
-
-        \= := function(left, right)
-            if ObjId(right) = B then
-                return left.params = right.params, 
-            elif IsMat(right) then
-                return left.toAMat() = AMatMat(right);
-            else
-                Error("Don't know how to compare.");
-            fi;
-        end,
-
-        Print := meth(self)
-            if IsBound(self.params[2]) then
-                Print(self.name, "(", PrintCS(self.params[2]), ")");
-            else
-                Print(self.name);
-            fi;
-        end,
-    )
-#>
 ));
 
 Declare(B2);
@@ -335,14 +285,6 @@ CL := function(N, STR, CS)
     for j in [0..i-2] do
         A[j+1][j+i] := GF(2).root;
     od;
-<#
-    for j in [0..k-1] do
-        Constraint(A[j+i-k][j+i] = GF(2).zero);
-        A[j+i-k][j+i] := GF(2).root;
-
-#        Add(l, [j+i-k, j+i]);
-    od;
-#>
 
     Q := (TransposedMat(P) * A) - (MatSPL(I(n))*GF(2).root);
 

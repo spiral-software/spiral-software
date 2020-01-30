@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -286,26 +286,3 @@ NewRulesFor(GT, rec(
         )
     )
 ));
-
-<#
-# script!
-
-o := SpiralDefaults;
-o.breakdownRules := rec();
-o.breakdownRules.GT := [
-    paradigms.cache.breakdown.GT_BB_IxA,
-    paradigms.cache.breakdown.GT_BB_IxAxI,
-    paradigms.cache.breakdown.GT_BB_AxI,
-    paradigms.cache.breakdown.GT_BB_DropTag,
-    GT_DFT_CT,
-    GT_NthLoop,
-    GT_DFT_Base2,
-    GT_WHT_CT,
-    GT_WHT_Base
-];
-o.breakdownRules.WHT := [WHT_TopInplace, WHT_Base, WHT_CT];
-o.breakdownRules.@ := [@_Base];
-o.breakdownRules.InfoNt := [Info_Base];
-
-o.globalUnrolling := 16;
-#>

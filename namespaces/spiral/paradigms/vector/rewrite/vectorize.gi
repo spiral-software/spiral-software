@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -151,23 +151,6 @@ RewriteRules(RulesVec, rec(
         e -> [ VGath_sv(@(1).val.func, getV(@(2).val), 1), @(2).val ]),
     Diag_VConstruct := ARule(Compose, [ [Diag, @(1)], @(2, _VConstructR, _v_divides_rows) ],
         e -> [ VDiag(@(1).val, getV(@(2).val)), @(2).val ]),
-
-<#  Turned off to avoid early vectorization
-    
-    Scat_vTagged := ARule(Compose, [ @(1, Scat), @(2).cond(_v_tagged_ntR) ],
-        e -> [ VScat_sv(@(1).val.func, @(2).val.getAnyTag(_VTags).v, 1), @(2).val ]),
-    Gath_vTagged := ARule(Compose, [ @(1, Gath), @(2).cond(_v_tagged_ntR) ],
-        e -> [ VGath_sv(@(1).val.func, @(2).val.getAnyTag(_VTags).v, 1), @(2).val ]),
-    Diag_vTagged := ARule(Compose, [ @(1, Diag), @(2).cond(_v_tagged_ntR) ],
-        e -> [ VDiag(@(1).val.element, @(2).val.getAnyTag(_VTags).v), @(2).val ]),
-
-    vTagged_Scat := ARule(Compose, [ @(2).cond(_v_tagged_ntL), @(1, Scat) ],
-        e -> [  @(2).val, VScat_sv(@(1).val.func, @(2).val.getAnyTag(_VTags).v, 1) ]),
-    vTagged_Gath := ARule(Compose, [ @(2).cond(_v_tagged_ntL), @(1, Gath) ],
-        e -> [  @(2).val, VGath_sv(@(1).val.func, @(2).val.getAnyTag(_VTags).v, 1) ]),
-    vTagged_Diag := ARule(Compose, [ @(2).cond(_v_tagged_ntL), @(1, Diag) ],
-        e -> [  @(2).val, VDiag(@(1).val.element, @(2).val.getAnyTag(_VTags).v) ]),
-#>
 
     VGath_Prm := ARule(Compose, [ @(1, VGath), @(2, Prm) ],
         e -> [ @(1).val, VGath_sv(@(2).val.func, getV(@(1).val), 1) ]),

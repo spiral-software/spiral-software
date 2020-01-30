@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -1125,14 +1125,6 @@ Class(SSE_16x8i, SIMD_Intel, rec(
     average := (x1,x2) -> average_16x8i(x1,x2),
 
     #splats the first slot of the vector across the full vector
-    <#
-    dupload := (y, x) -> let(
-	u := var.fresh_t("U", y.t), 
-	decl([u], chain(
-	    assign(u, vunpacklo_16x8i(x, x)),
-	    assign(u, vushufflelo_8x16i(u, [1,1,1,1])),
-	    assign(y, vunpacklo_2x64i(u, u))))),
-    #>
     dupload := (self, y, x) >> assign(y, vdup(x, self.v)),
     # computes the horizontal minimum of the vector and splats it
     hmin := (self,y,x,opts) >> let(

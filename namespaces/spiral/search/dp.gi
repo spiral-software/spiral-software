@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -399,12 +399,6 @@ DPSPL := function( arg )
          rvars.hashTable := opts.hashTable;
       else
          rvars.hashTable := HashTableDP();
-      fi;
-
-      # if doing local unrolling, then turn off global unrolling
-      if dpopts.localUnrolling
-      then
-         opts.globalUnrolling := 1;
       fi;
 
       result := DPSPLRec( spl, dpopts, opts, rvars );

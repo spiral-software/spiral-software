@@ -1,11 +1,11 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 Import(compiler, sigma, spl, formgen, rewrite);
 ImportAll(transforms);
 Import(code);
-Import(search);           # DP, HashTableBestFound [base_search.gi]
+Import(search);
 Import(paradigms.common); # IsTSPL
 Import(paradigms.smp);    # SMP mixins, used in reccodegen.gi and unparse.gi
 ImportAll(paradigms.vector);

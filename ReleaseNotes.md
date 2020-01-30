@@ -1,3 +1,45 @@
+## Release Notes for Spiral Version 8.1.2
+
+### Introduction
+
+These release notes for Spiral 8.1.2 provide an overview of the release and document the known issues.  For details of the changes applied since the last release, please see the **Change Summary** below.
+
+### Supported Platforms
+
+Spiral is supported on Windows, Linux, and MacOS.
+
+Spiral is configured using **cmake** and is expected to run on most UNIX-like systems.
+
+See the [**README**](./README.md) file for more information on how to build for a specific platform.
+
+### Get Spiral Version 8.1.2
+
+You can download the lastest release from:
+
+https://github.com/spiral-software/spiral-software.git
+
+## Change Summary
+
+### New Features
+
+No significant new features, this is a maintenance release.
+
+### Bug Fixes
+
+* Fixed sums_ruletree bug demonstrated by new test Advanced/DFT_PD_Stage1.g
+* Added target win-x86-llvm (for LLVM compiler) to profiler targets
+* Removed obsolete/dead code
+
+### Known Issues
+
+None at present.
+
+## License
+
+Spiral is open source software licensed under the terms of the Simplified BSD License (see the [**LICENSE**](./LICENSE) file for the full text).
+
+
+
 ## Release Notes for Spiral Version 8.1.1
 
 ### Introduction

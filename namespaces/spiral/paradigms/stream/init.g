@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 Include(codegen);
@@ -29,7 +29,6 @@ Include(dct);
 Include(hacks);
 Include(webscr);
 Include(scripts);
-Include(tests);
 Include(permnetwork);
 Include(sw);
 Include(sort_explore);

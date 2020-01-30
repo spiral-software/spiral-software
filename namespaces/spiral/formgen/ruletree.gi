@@ -1,12 +1,19 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
-# needs rule.g, spl.g, optrec.g
 
-#F Global auxiliary variables
-#F --------------------------
+#F RuleTreeOps.\=( <ruletree1>, <ruletree2> )
+#F    returns true if <ruletree1> and <ruletree2> are equal, i.e., they
+#F    represent the same breakdown strategy.  Otherwise, false is returned.
+#F
+
+RuleTreeOps := CantCopy(OperationsRecord("RuleTreeOps"));
+
+
+IsRuleTree := T -> IsRec(T) and IsBound(T.isRuleTree) and T.isRuleTree;
+
 
 #F Ruletrees
 #F =========
@@ -30,67 +37,56 @@
 #F   splOptions = [ <option1>, <option2>, .. ]
 #F     valid <options> : "unrolled", "pcl"
 #F
-RuleTreeOps := CantCopy(OperationsRecord("RuleTreeOps"));
 
-#F IsRule( <rule> )
-#F   returns true if <rule> is a rule and false otherwise.
-#F
-IsRuleTree := T -> IsRec(T) and IsBound(T.isRuleTree) and T.isRuleTree;
-
-
-#F RuleTreeOps.\=( <ruletree1>, <ruletree2> )
-#F    returns true if <ruletree1> and <ruletree2> are equal, i.e., they
-#F    represent the same breakdown strategy.  Otherwise, false is returned.
-#F
 Class(RuleTreeClass, rec(
-   spl     := self >> SPLRuleTree(self),
-   measure := self >> SPLRuleTree(self).measure(),
-   shortPrint := false,
-   dims    := self >> self.node.dims(),
-   dmn    := self >> self.node.dmn(),
-   rng    := self >> self.node.rng(),
+    spl  := self >> SPLRuleTree(self),
+    measure := self >> SPLRuleTree(self).measure(),
+    shortPrint := false,
+    dims := self >> self.node.dims(),
+    dmn  := self >> self.node.dmn(),
+    rng  := self >> self.node.rng(),
 
-   print   := meth(self, i, is)
-       local ch;
+    print := meth(self, i, is)
+        local ch;
 
-       if Length(self.children) = 0 then
-          # print leaves in one line
-           Print(self.rule, "( ");
-           When (self.transposed, Print("\"T\","));
-           self.node.print(i+is, is);
-           When (IsBound(self.splOptions),
-               Print(", ", self.splOptions, " )"),
-               Print(" )"));
-       else
-          # print children on separate lines
-           Print(self.rule, "( ",
-               When(self.transposed, "\"T\", ", ""),
-               When(not self.shortPrint, self.node.print(i+is, is), ""), ",\n", Blanks(i+is)
-           );
-           self.children[1].print(i+is, is);
-           for ch in Drop(self.children, 1) do
-               Print(",\n", Blanks(i+is));
-               ch.print(i+is, is);
-           od;
+        if Length(self.children) = 0 then
+           # print leaves in one line
+            Print(self.rule, "( ");
+            When (self.transposed, Print("\"T\","));
+            self.node.print(i+is, is);
+            When (IsBound(self.splOptions),
+                Print(", ", self.splOptions, " )"),
+                Print(" )"));
+        else
+            # print children on separate lines
+            Print(self.rule, "( ",
+                When(self.transposed, "\"T\", ", ""),
+                When(not self.shortPrint, self.node.print(i+is, is), ""), ",\n", Blanks(i+is)
+            );
+            self.children[1].print(i+is, is);
+            for ch in Drop(self.children, 1) do
+                Print(",\n", Blanks(i+is));
+                ch.print(i+is, is);
+            od;
 
-           When (IsBound(self.splOptions),
-               Print("\n", Blanks(i), ", ", self.splOptions, " )"),
-               Print(" )"));
-       fi;
-   end,
+            When (IsBound(self.splOptions),
+                Print("\n", Blanks(i), ", ", self.splOptions, " )"),
+                Print(" )"));
+        fi;
+    end,
 
     # new with tSPL and opts.baseHash:
     # we cannot blindly transpose everything, as vector
     # permutations that are automatically generated
     # may not support transposition
-   transpose := self >>
-    When((not self.node.transposeSymmetric()) and self.node.isSymmetric(),
-        self,
-        RuleTree(
-            self.rule,
-            When(self.transposed, "", "T"),
-            self.node.transpose(),
-            List(self.children, x->x.transpose())
+    transpose := self >>
+        When((not self.node.transposeSymmetric()) and self.node.isSymmetric(),
+            self,
+            RuleTree(
+                self.rule,
+                When(self.transposed, "", "T"),
+                self.node.transpose(),
+                List(self.children, x->x.transpose())
         )
     ),
     # RuleTreeRewriting enabled by default
@@ -102,46 +98,52 @@ Class(RuleTreeClass, rec(
 ));
 
 RuleTreeOps.\= := function( T1, T2 )
-  return
-    IsRuleTree(T1) and IsRuleTree(T2) and
-    T1.rule = T2.rule and
-    T1.transposed = T2.transposed and
-    IsIdenticalSPL(T1.node, T2.node) and
-    T1.children = T2.children and
-    ( (IsBound(T1.splOptions) and IsBound(T2.splOptions)
-                              and T1.splOptions = T2.splOptions)
-      or (not IsBound(T1.splOptions) and not IsBound(T2.splOptions))
-    );
+    return
+        IsRuleTree(T1) and IsRuleTree(T2) and
+        T1.rule = T2.rule and
+        T1.transposed = T2.transposed and
+        IsIdenticalSPL(T1.node, T2.node) and
+        T1.children = T2.children and
+        (   (   IsBound(T1.splOptions) and 
+		        IsBound(T2.splOptions) and
+                T1.splOptions = T2.splOptions
+			) or
+            (   not IsBound(T1.splOptions) and 
+			    not IsBound(T2.splOptions)
+			)
+        );
 end;
 
-# RuleTreeNC( <rule>, <non-terminal spl>, <children> )
-#   returns the corresponding ruletree without any checking.
+#F RuleTreeNC( <rule>, <non-terminal spl>, <children> )
+#F   returns the corresponding ruletree without any checking.
 
 RuleTreeNC := function ( R, S, C )
-  return WithBases(RuleTreeClass,
-    rec(
-      isRuleTree := true,
-      operations := RuleTreeOps,
-      node       := S,
-      transposed := false,
-      rule       := R,
-      children   := C
-    ));
+    return WithBases(RuleTreeClass,
+        rec(
+            isRuleTree := true,
+            operations := RuleTreeOps,
+            node       := S,
+            transposed := false,
+            rule       := R,
+            children   := C
+		)
+    );
 end;
 
 # RuleTreeTNC( <rule>, <non-terminal spl>, <children> )
 #   returns the corresponding transposed ruletree without any checking.
 
 RuleTreeTNC := function ( R, S, C )
-  return WithBases(RuleTreeClass,
-    rec(
-      isRuleTree := true,
-      operations := RuleTreeOps,
-      node       := S,
-      transposed := true,
-      rule       := R,
-      children   := C
-    ));
+	return WithBases(RuleTreeClass,
+		rec(
+		    isRuleTree := true,
+		    operations := RuleTreeOps,
+		    node       := S,
+		    transposed := true,
+		    rule       := R,
+		    children   := C
+		)
+	);
 end;
 
 #F RuleTree(
@@ -177,45 +179,50 @@ RuleTree := function ( arg )
     R := false;
 
     for a in arg do
-    if IsString(a) and a = "T" then t := true;
-    elif IsList(a) and ForAll(a, IsString) then u := a;
-    elif IsSPL(a) then
-        if S=false then S := a;
-        else Add(C, a); fi;
-    elif IsRuleTree(a) then Add(C, a);
-    elif IsList(a) then Append(C, a);
-    elif IsRule(a) and R=false then R := a;
-    else Error(
-        "usage: \n",
-        "  RuleTree( \n",
-        "    <rule>, [ \"T\" ,] <non-terminal spl> \n",
-        "    [, <children> ] [, <list-of-sploptions> ] )");
+        if IsString(a) and a = "T" then 
+	        t := true;
+        elif IsList(a) and ForAll(a, IsString) then 
+	        u := a;
+        elif IsSPL(a) then
+			if S=false then 
+				S := a;
+			else 
+				Add(C, a); 
+			fi;
+		elif IsRuleTree(a) then 
+			Add(C, a);
+		elif IsList(a) then 
+			Append(C, a);
+		elif IsRule(a) and R=false then 
+			R := a;
+		else Error(
+			"usage: \n",
+			"  RuleTree( \n",
+			"    <rule>, [ \"T\" ,] <non-terminal spl> \n",
+			"    [, <children> ] [, <list-of-sploptions> ] )");
 
-    fi;
+		fi;
     od;
 
     Constraint(IsRule(R));
     Constraint(IsSPL(S));
 
     if not IsList(u) and ForAll(u, IsString) then
-    Error("<u> must be a list of spl options");
+        Error("<u> must be a list of spl options");
     elif not (IsList(C) and ForAll(C, c -> IsSPL(c) or IsRuleTree(c))) then
-    Error("<C> must be a list of ruletrees or non-terminal spls");
-# YSV: sometimes we do want to transpose, in particular in RuleTreeClass.transpose(), ruletree
-#      is transposed recursively, including things like base cases, which, eg. for DFT, are
-#      "not meant for transposition" simply because they are invariant under transposition
-#    elif t and not R.forTransposition then
-#    Error("<R> is not meant for transposition");
+        Error("<C> must be a list of ruletrees or non-terminal spls");
     fi;
 
     RT := When(t, RuleTreeTNC(R, S, C), RuleTreeNC(R, S, C));
-    if u <> [ ] then RT.splOptions := u;  fi;
+    if u <> [ ]
+	    then RT.splOptions := u;
+	fi;
     return RT;
 end;
 
 
 #F ExtractChildrenSPL ( <spl> )
-#F   returns the list of non-terminal spls conatined in <spl>.
+#F   returns the list of non-terminal spls contained in <spl>.
 #F   The order is left first - depth first (non-terminals are
 #F   always leaves.
 #F
@@ -227,10 +234,12 @@ ExtractChildrenSPL := S -> Collect(S, @.cond(IsNonTerminal));
 #F   are copied by reference.
 #F
 CopyRuleTree := function( orig )
-   local new;
-   new := ShallowCopy(orig);
-   if IsRuleTree(new) then new.children := List(orig.children, CopyRuleTree); fi;
-   return new;
+    local new;
+    new := ShallowCopy(orig);
+    if IsRuleTree(new) then 
+	    new.children := List(orig.children, CopyRuleTree);
+	fi;
+    return new;
 end;
 
 _matchChildren := (C1, C2) ->
@@ -244,51 +253,52 @@ _matchChildren := (C1, C2) ->
 #F   (if possible)
 #F   Uses: opts.breakdownRules (for backwards compatibility of R.switch only)
 ApplyRuleTreeSPL := function ( rtree, spl, opts )
-   local i, R, C, C1, CC, children, L;
-   Constraint(IsRuleTree(rtree));
-   Constraint(IsSPL(spl));
+    local i, R, C, C1, CC, children, L;
+    Constraint(IsRuleTree(rtree));
+    Constraint(IsSPL(spl));
 
-   if rtree.transposed then
-       return ApplyRuleTreeSPL(rtree.transpose(), spl.transpose(), opts).transpose();
-   fi;
+    if rtree.transposed then
+        return ApplyRuleTreeSPL(rtree.transpose(), spl.transpose(), opts).transpose();
+    fi;
 
-   R := rtree.rule;
-   children:=[];
+    R := rtree.rule;
+    children:=[];
 
-   # if <spl> was not compatible with <ruletree>.node to start with
-   # then at some point there will be a split in <ruletree> that is not
-   # applicable to the generated ruletree.
-   if not IsApplicableRule( R, spl, opts.breakdownRules ) then
-       Error("<rtree> can not be expanded from <spl>");
-   fi;
+    # if <spl> was not compatible with <ruletree>.node to start with
+    # then at some point there will be a split in <ruletree> that is not
+    # applicable to the generated ruletree.
+    if not IsApplicableRule( R, spl, opts.breakdownRules ) then
+        Error("<rtree> can not be expanded from <spl>");
+    fi;
 
-   # determine the right set of children from allChildren to be used
-   # in expansion
-   C1 := _allChildren(R, rtree.node, opts);
-   C := List([1..Length(rtree.children)], c -> rtree.children[c].node);
-   i := PositionProperty([1..Length(C1)], j -> _matchChildren(C1[j], C));
+    # determine the right set of children from allChildren to be used
+    # in expansion
+    C1 := _allChildren(R, rtree.node, opts);
+    C := List([1..Length(rtree.children)], c -> rtree.children[c].node);
+    i := PositionProperty([1..Length(C1)], j -> _matchChildren(C1[j], C));
 
-   # DEBUG HACK: AppendTo("applytree", R, "\n", C, "\n", C1, "\n---------\n");
-   if i = false then
-       Error("<ruletree> can not be expanded from <spl>, could not find matching children"); fi;
+    # DEBUG HACK: AppendTo("applytree", R, "\n", C, "\n", C1, "\n---------\n");
+    if i = false then
+        Error("<ruletree> can not be expanded from <spl>, could not find matching children"); 
+	fi;
 
-   # determine all children for <spl> and pick the right set
-   L :=  _allChildren(R, spl, opts);
-   if i > Length(L) then
-       Error("<ruletree> can not be expanded from <spl>");
-   else
-       C1 := L[i];
-   fi;
+    # determine all children for <spl> and pick the right set
+    L :=  _allChildren(R, spl, opts);
+    if i > Length(L) then
+        Error("<ruletree> can not be expanded from <spl>");
+    else
+        C1 := L[i];
+    fi;
 
-   # recurse and return
-   children := List([1..Length(rtree.children)], i -> ApplyRuleTreeSPL(rtree.children[i], C1[i], opts));
+    # recurse and return
+    children := List([1..Length(rtree.children)], i -> ApplyRuleTreeSPL(rtree.children[i], C1[i], opts));
 
-   return RuleTreeNC(R, spl, children);
+    return RuleTreeNC(R, spl, children);
 end;
 
 
-#F Printing of RuleTrees
-#F ---------------------
+#F Printing RuleTrees
+#F ------------------
 #F
 
 #F RuleTreeOps.Print( <ruletree> [, <indent> , <indentStep> ] )
@@ -297,21 +307,22 @@ end;
 #F   indent = 0, indentStep = 2.
 #F
 RuleTreeOps.Print := function ( arg )
-  local T, indent, indentStep;  if Length(arg) = 1 then
-    T          := arg[1];
-    indent     := 0;
-    indentStep := 2;
-  elif Length(arg) = 3 then
-    T          := arg[1];
-    indent     := arg[2];
-    indentStep := arg[3];
-  else
-    Error("usage: RuleTreeOps.Print( <ruletree> [, <indent> , <indentStep> ] )");
-  fi;
-  Constraint(IsRuleTree(T));
-  Constraint(IsPosInt0(indent));
-  Constraint(IsPosInt0(indentStep));
-  T.print(indent, indentStep);
+    local T, indent, indentStep;  
+	if Length(arg) = 1 then
+        T          := arg[1];
+        indent     := 0;
+        indentStep := 2;
+    elif Length(arg) = 3 then
+        T          := arg[1];
+        indent     := arg[2];
+        indentStep := arg[3];
+    else
+        Error("usage: RuleTreeOps.Print( <ruletree> [, <indent> , <indentStep> ] )");
+    fi;
+    Constraint(IsRuleTree(T));
+    Constraint(IsPosInt0(indent));
+    Constraint(IsPosInt0(indentStep));
+    T.print(indent, indentStep);
 end;
 
 PrintRuleTreeCustom := function (T, i, is, spl_print, ruletree_print)
@@ -321,12 +332,12 @@ PrintRuleTreeCustom := function (T, i, is, spl_print, ruletree_print)
     Constraint(IsPosInt0(is));
 
     if IsSPL(T) then 
-  spl_print(T);
+        spl_print(T);
     else # T is a ruletree
-  Print(Blanks(i), ruletree_print(T), "\n");
+        Print(Blanks(i), ruletree_print(T), "\n");
         for ch in T.children do
             PrintRuleTreeCustom(ch, i+is, is, spl_print, ruletree_print);
-  od;
+        od;
     fi;
 end;
 
@@ -341,15 +352,19 @@ end;
 PrintNodesRuleTree := function ( arg )
     local T, i, is;
     if Length(arg) = 1 then
-  T := arg[1]; i := 0; is := 2;
+        T := arg[1]; 
+		i := 0; 
+		is := 2;
     elif Length(arg) = 3 then
-  T := arg[1]; i := arg[2]; is := arg[3];
+        T := arg[1];
+		i := arg[2];
+		is := arg[3];
     else
-  Error("usage: PrintNodesRuleTree( <ruletree> [, <indent> , <indentStep> ] )");
+        Error("usage: PrintNodesRuleTree( <ruletree> [, <indent> , <indentStep> ] )");
     fi;
     PrintRuleTreeCustom(T, i, is,
-  T -> Print(T, " (nt)"),
-  T -> Print(T.node));
+        T -> Print(T, " (nt)"),
+        T -> Print(T.node));
 end;
 
 
@@ -364,15 +379,15 @@ end;
 PrintRulesRuleTree := function(arg)
     local T, i, is;
     if Length(arg) = 1 then
-  T := arg[1]; i := 0; is := 2;
+        T := arg[1]; i := 0; is := 2;
     elif Length(arg) = 3 then
-  T := arg[1]; i := arg[2]; is := arg[3];
+        T := arg[1]; i := arg[2]; is := arg[3];
     else
-  Error("usage: PrintRulesRuleTree( <ruletree> [, <indent> , <indentStep> ] )");
+        Error("usage: PrintRulesRuleTree( <ruletree> [, <indent> , <indentStep> ] )");
     fi;
     PrintRuleTreeCustom(T, i, is,
-  T -> Print("nt (", T.dimensions[1], ")"),
-  T -> Print(T.rule, When(T.transposed," ^ T",""), "(", T.node.dimensions[1], ")"));
+    T -> Print("nt (", T.dimensions[1], ")"),
+    T -> Print(T.rule, When(T.transposed," ^ T",""), "(", T.node.dimensions[1], ")"));
 end;
 
 
@@ -386,90 +401,88 @@ end;
 #F
 
 PrettyPrintRuleTree := function ( arg )
-  local T, chIndent, whiteIndent, linedIndent, oldLinedIndent, newline, params, i;
+    local T, chIndent, whiteIndent, linedIndent, oldLinedIndent, newline, params, i;
 
-  # new line plus indents
-  newline := function ( )
+    # new line plus indents
+    newline := function ( )
     local i;
 
     Print("\n");
     for i in [1..whiteIndent] do
-      Print(" ");
+        Print(" ");
     od;
     if not linedIndent = "" then
-       Print( linedIndent, "--" );
+        Print( linedIndent, "--" );
     fi;
-  end;
+    end;
 
-  # decode arg
-  if Length(arg) = 1 then
-    T           := arg[1];
-    whiteIndent := 0;
-    linedIndent := "";
-  elif Length(arg) = 2 then
-    T           := arg[1];
-    whiteIndent := arg[2];
-    linedIndent := "";
-  elif Length(arg) = 3 then
-    T           := arg[1];
-    whiteIndent := arg[2];
-    linedIndent := arg[3];
-  else
-    Error(
-      "usage: PrintNodesRuleTree( <ruletree> [, <indent> , <indentStep> ] )"
-    );
-  fi;
-
-  # check arguments
-  if not ( IsRuleTree(T) or IsSPL(T) and T.type = "nonTerminal" ) then
-    Error("<T> must be a ruletree or a non-terminal spl");
-  fi;
-  if not IsInt(whiteIndent) and whiteIndent >= 0 then
-    Error("<whiteIndent> must be pos-int");
-  fi;
-  if not IsString(linedIndent) then
-    Error("<linedIndent> must be a string");
-  fi;
-
-  chIndent := whiteIndent+Length(linedIndent)+4;
-  # spl case
-  if IsSPL(T) then
-    T.print(chIndent, 2); Print(" (nt)");
-    return;
-  fi;
-  
-  T.node.print(chIndent, 2);
-  Print("     {" );
-  Print(T.rule);
-  if T.transposed then
-    Print(" ^ T");
-  fi;
-  if IsBound(T.splOptions) then
-    Print(", ", T.splOptions);
-  fi;
-  Print( "}" );
-
-  if Length(T.children) > 0 then
-    if linedIndent = "" then
-       oldLinedIndent := linedIndent;
+    # decode arg
+    if Length(arg) = 1 then
+        T           := arg[1];
+        whiteIndent := 0;
+        linedIndent := "";
+    elif Length(arg) = 2 then
+        T           := arg[1];
+        whiteIndent := arg[2];
+        linedIndent := "";
+    elif Length(arg) = 3 then
+        T           := arg[1];
+        whiteIndent := arg[2];
+        linedIndent := arg[3];
     else
-       oldLinedIndent := Concatenation( linedIndent, "  " );
+        Error("usage: PrintNodesRuleTree( <ruletree> [, <indent> , <indentStep> ] )");
     fi;
-    linedIndent := Concatenation( oldLinedIndent, " |" );
-    for i in [1..Length(T.children)-1] do
-      newline();
-      PrettyPrintRuleTree(T.children[i], whiteIndent, linedIndent);
-    od;
-    linedIndent := Concatenation( oldLinedIndent, " \`" );
-    newline();
-    linedIndent := Concatenation( oldLinedIndent, "  " );
-    PrettyPrintRuleTree(T.children[Length(T.children)],
+
+    # check arguments
+    if not ( IsRuleTree(T) or IsSPL(T) and T.type = "nonTerminal" ) then
+        Error("<T> must be a ruletree or a non-terminal spl");
+    fi;
+    if not IsInt(whiteIndent) and whiteIndent >= 0 then
+        Error("<whiteIndent> must be pos-int");
+    fi;
+    if not IsString(linedIndent) then
+        Error("<linedIndent> must be a string");
+    fi;
+
+    chIndent := whiteIndent+Length(linedIndent)+4;
+    # spl case
+    if IsSPL(T) then
+        T.print(chIndent, 2); Print(" (nt)");
+        return;
+    fi;
+  
+    T.node.print(chIndent, 2);
+    Print("     {" );
+    Print(T.rule);
+    if T.transposed then
+        Print(" ^ T");
+    fi;
+    if IsBound(T.splOptions) then
+        Print(", ", T.splOptions);
+    fi;
+    Print( "}" );
+
+    if Length(T.children) > 0 then
+        if linedIndent = "" then
+            oldLinedIndent := linedIndent;
+        else
+            oldLinedIndent := Concatenation( linedIndent, "  " );
+        fi;
+        linedIndent := Concatenation( oldLinedIndent, " |" );
+        for i in [1..Length(T.children)-1] do
+            newline();
+            PrettyPrintRuleTree(T.children[i], whiteIndent, linedIndent);
+        od;
+        linedIndent := Concatenation( oldLinedIndent, " \`" );
+        newline();
+        linedIndent := Concatenation( oldLinedIndent, "  " );
+        PrettyPrintRuleTree(T.children[Length(T.children)],
                             whiteIndent, linedIndent);
-     linedIndent := oldLinedIndent;
-  fi;
-  if whiteIndent = 0 and linedIndent = "" then
-    newline();
-  fi;
+        linedIndent := oldLinedIndent;
+    fi;
+    if whiteIndent = 0 and linedIndent = "" then
+        newline();
+    fi;
 end;
 
 
@@ -528,63 +541,61 @@ SRRDebug2 := Ignore;
 _SemiRandomRuleTree := function(spl, top_rule, cutoff_func, opts)
     local splT, ch, i, R, rules, rulesT, rule, rand, candidates, ch, children, ch_candidates;
 
-   if not (IsSPL(spl)) then
-      Error("usage: SemiRandomRuleTree( <spl>, <top_rule>, <cutoff>, <opts> )");
+    if not (IsSPL(spl)) then
+        Error("usage: SemiRandomRuleTree( <spl>, <top_rule>, <cutoff>, <opts> )");
+    elif cutoff_func(spl) then
+	    return spl;
+    elif MultiHashLookup(opts.baseHashes, spl) <> false then
+        return MultiHashLookup(opts.baseHashes, spl)[1].ruletree;
+    else
+        if (spl.transposed) then
+            splT := TransposedSPL(spl);
+        else
+            splT := spl;
+        fi;
 
-   elif cutoff_func(spl) then return spl;
+        if top_rule <> false then
+            rules := [top_rule];
+            rulesT := []; # check top_rule
+        else
+            rules  := AllApplicableRulesDirect(spl, opts.breakdownRules);
+            rulesT := AllApplicableRulesForTransposition(splT, opts.breakdownRules);
+            if rules = [ ] and rulesT = [ ] then
+                return false;
+            fi;
+        fi;
 
-   elif MultiHashLookup(opts.baseHashes, spl) <> false then
-       return MultiHashLookup(opts.baseHashes, spl)[1].ruletree;
+        # next line for debugging
+        SRRDebug1("spl: ", spl, ". rules: ", rules);
 
-   else
-       if (spl.transposed) then
-           splT := TransposedSPL(spl);
-       else
-           splT := spl;
-       fi;
+        candidates := Set([1..(Length(rules)+Length(rulesT))]);
+        while candidates <> [] do
+            rand := RandomList(candidates);
+            RemoveSet(candidates, rand);
 
-       if top_rule <> false then
-           rules := [top_rule];
-           rulesT := []; # check top_rule
-       else
-           rules  := AllApplicableRulesDirect(spl, opts.breakdownRules);
-           rulesT := AllApplicableRulesForTransposition(splT, opts.breakdownRules);
-           if rules = [ ] and rulesT = [ ] then
-               return false;
-           fi;
-       fi;
+            # Do not remove the next line. Used for debugging.
+            SRRDebug2("Chosen rand: ", rand);
 
-           # Do not remove the next line. Used for debugging.
-           SRRDebug1("spl: ", spl, ". rules: ", rules);
-
-       candidates := Set([1..(Length(rules)+Length(rulesT))]);
-       while candidates <> [] do
-          rand := RandomList(candidates);
-          RemoveSet(candidates, rand);
-
-          # Do not remove the next line. Used for debugging.
-          SRRDebug2("Chosen rand: ", rand);
-
-         if rand <= Length(rules) then
-           rule := rules[rand];
-           ch_candidates := _allChildren(rule, spl,opts);
-           ch_candidates := Permuted(ch_candidates, Random(SymmetricGroup(Length(ch_candidates))));
-           for children in ch_candidates do
-             children := List( children, s -> _SemiRandomRuleTree(s, false, cutoff_func, opts) );
-             if not ForAny(children, c -> IsBool(c) and c=false) then
-               return RuleTreeNC( rule, spl, children );
+            if rand <= Length(rules) then
+                rule := rules[rand];
+                ch_candidates := _allChildren(rule, spl,opts);
+                ch_candidates := Permuted(ch_candidates, Random(SymmetricGroup(Length(ch_candidates))));
+                for children in ch_candidates do
+                    children := List( children, s -> _SemiRandomRuleTree(s, false, cutoff_func, opts) );
+                    if not ForAny(children, c -> IsBool(c) and c=false) then
+                        return RuleTreeNC( rule, spl, children );
+                    fi;
+                od;
+            else
+                rule := rulesT[rand-Length(rules)];
+                children := RandomChildrenRule( rule, splT, opts.breakdownRules );
+                children := List( children, s->_SemiRandomRuleTree(TransposedSPL(s), false, cutoff_func, opts) );
+                if not ForAny(children, c -> IsBool(c) and c=false) then
+                    return RuleTreeTNC( rule, spl, children );
+                fi;
              fi;
-           od;
-         else
-           rule := rulesT[rand-Length(rules)];
-           children := RandomChildrenRule( rule, splT, opts.breakdownRules );
-           children := List( children, s->_SemiRandomRuleTree(TransposedSPL(s), false, cutoff_func, opts) );
-           if not ForAny(children, c -> IsBool(c) and c=false) then
-           return RuleTreeTNC( rule, spl, children );
-           fi;
-         fi;
-       od;
-       return false;
+        od;
+        return false;
    fi;
 end;
 
@@ -594,28 +605,31 @@ end;
 #F
 #ExpandSPLRules := function( S, ruleset )
 ExpandSPLRules := function( arg )
-  local i, L, St, R, S, ruleset, opts;
-  S := arg[1];
-  ruleset := arg[2];
-  Constraint(IsSPL(S));
+    local i, L, St, R, S, ruleset, opts;
+    S := arg[1];
+    ruleset := arg[2];
+    Constraint(IsSPL(S));
 
-  if IsBound(arg[3]) then opts := arg[3];
-  else opts := rec(); fi;
+    if IsBound(arg[3]) then
+	    opts := arg[3];
+    else 
+	    opts := rec();
+	fi;
 
-      L  := [ ];
-      for R in AllApplicableRulesDirect(S, ruleset) do
-          Append(L, List(_allChildren(R,S,opts), c -> RuleTreeNC(R, S, c)));
-      od;
+    L  := [ ];
+    for R in AllApplicableRulesDirect(S, ruleset) do
+        Append(L, List(_allChildren(R,S,opts), c -> RuleTreeNC(R, S, c)));
+    od;
 
-      # now transposed if applicable
-      St := TransposedSPL(S);
+    # now transposed if applicable
+    St := TransposedSPL(S);
 
-      for R in AllApplicableRulesForTransposition(St, ruleset) do
-          Append(L, List(_allChildren(R, St, opts),
-                  c -> RuleTreeTNC(R, S, List(c, TransposedSPL))));
-      od;
+    for R in AllApplicableRulesForTransposition(St, ruleset) do
+        Append(L, List(_allChildren(R, St, opts),
+            c -> RuleTreeTNC(R, S, List(c, TransposedSPL))));
+    od;
 
-      return L;
+    return L;
 end;
 
 #F ExpandSPL( <spl>, <opts> )
@@ -696,38 +710,37 @@ AllRuleTreesCutoff := (S, cutoff_func, opts) -> _AllRuleTrees(S, cutoff_func, Ha
 _NofRuleTrees := function ( S, cutoff, memohash, opts, level, trace )
     local p, Cs, St, n, lkup, indentstr, i;
     Constraint(IsSPL(S));
-  Constraint(IsRec(opts));
-  
+    Constraint(IsRec(opts));
 
-  if trace then
-    indentstr := "";
-    for i in [2..level] do
-      indentstr := Concat(indentstr, ".  ");
-    od;
-    indentstr := Concat(indentstr, String(level), " ");
-    Print(indentstr, ">> _NofRuleTrees(", S, ")\n");
-  fi;
+    if trace then
+        indentstr := "";
+        for i in [2..level] do
+            indentstr := Concat(indentstr, ".  ");
+        od;
+        indentstr := Concat(indentstr, String(level), " ");
+        Print(indentstr, ">> _NofRuleTrees(", S, ")\n");
+    fi;
 
     # check cutoff, baseHashes, and our memoization hash
     if cutoff(S) then
-    if trace then
-      Print(indentstr, "<< (cutoff) 1\n");
+        if trace then
+            Print(indentstr, "<< (cutoff) 1\n");
+        fi;
+        return 1; 
     fi;
-    return 1; 
-  fi;
     if MultiHashLookup(opts.baseHashes, S) <> false then
-    if trace then
-      Print(indentstr, "<< (MultiHashLookup) 1\n");
+        if trace then
+            Print(indentstr, "<< (MultiHashLookup) 1\n");
+        fi;
+        return 1; 
     fi;
-    return 1; 
-  fi;
     lkup := HashLookup(memohash, S);
     if lkup <> false then
-    if trace then
-      Print(indentstr, "<< hashed: ", lkup, "\n");
+        if trace then
+            Print(indentstr, "<< hashed: ", lkup, "\n");
+        fi;
+        return lkup; 
     fi;
-    return lkup; 
-  fi;
 
     # first apply rules as they are
     Cs := List(AllApplicableRulesDirect(S, opts.breakdownRules), r -> _allChildren(r,S, opts));
@@ -743,9 +756,9 @@ _NofRuleTrees := function ( S, cutoff, memohash, opts, level, trace )
 
     HashAdd(memohash, S, n);
   
-  if trace then
-    Print(indentstr, "<< (", S, ") ", n, "\n");
-  fi;
+    if trace then
+        Print(indentstr, "<< (", S, ") ", n, "\n");
+    fi;
   
     return n;
 end;
@@ -770,17 +783,19 @@ NofRuleTreesCutoff := (spl, cutoff_func, opts) -> _NofRuleTrees(spl, cutoff_func
 #F   return the set of rules contained in <ruletree>.
 #F
 RulesInRuleTree := function ( T )
-  local C;
-  Constraint(IsRuleTree(T));
+    local C;
+    Constraint(IsRuleTree(T));
 
-  # base case
-  if T.children = [ ] then return Set([T.rule]); fi;
+    # base case
+    if T.children = [ ] then
+	    return Set([T.rule]);
+	fi;
 
-  # recurse with ruletree children
-  C := Filtered(T.children, IsRuleTree);
-  C := Set(Concatenation(List(C, RulesInRuleTree)));
-  AddSet(C, T.rule);
-  return C;
+    # recurse with ruletree children
+    C := Filtered(T.children, IsRuleTree);
+    C := Set(Concatenation(List(C, RulesInRuleTree)));
+    AddSet(C, T.rule);
+    return C;
 end;
 
 
@@ -789,61 +804,66 @@ end;
 #F   of pairs [rule, number].
 #F
 RulesInRuleTreeAll := function ( T )
-  local C, C1, c, i;
-  Constraint(IsRuleTree(T));
+    local C, C1, c, i;
+    Constraint(IsRuleTree(T));
 
-  # base case
-  if T.children = [ ] then return Set([ [T.rule, 1] ]); fi;
+    # base case
+    if T.children = [ ] then
+	    return Set([ [T.rule, 1] ]);
+	fi;
 
-  # recurse with ruletree children
-  C := Filtered(T.children, IsRuleTree);
-  C := Concatenation(List(C, RulesInRuleTreeAll));
+    # recurse with ruletree children
+    C := Filtered(T.children, IsRuleTree);
+    C := Concatenation(List(C, RulesInRuleTreeAll));
 
-  # merge
-  C1 := [ ];
-  for c in C do
-    i := PositionProperty(C1, p -> c[1] = p[1]);
+    # merge
+    C1 := [ ];
+    for c in C do
+        i := PositionProperty(C1, p -> c[1] = p[1]);
+        if i = false then
+            AddSet(C1, c);
+        else
+            C1[i][2] := C1[i][2] + c[2];
+        fi;
+    od;
+
+    i := PositionProperty(C1, p -> p[1] = T.rule);
     if i = false then
-      AddSet(C1, c);
+        AddSet(C1, [T.rule, 1]);
     else
-      C1[i][2] := C1[i][2] + c[2];
+        C1[i][2] := C1[i][2] + 1;
     fi;
-  od;
-
-  i := PositionProperty(C1, p -> p[1] = T.rule);
-  if i = false then
-    AddSet(C1, [T.rule, 1]);
-  else
-    C1[i][2] := C1[i][2] + 1;
-  fi;
-  return C1;
+        return C1;
 end;
 
 
 ApplyRuleTreeStep := function ( rt, recurse )
-  local nt, C, Nonterms, S, c;
-  if IsNonTerminal(rt) or IsSPL(rt) then return rt; fi;
+    local nt, C, Nonterms, S, c;
+    if IsNonTerminal(rt) or IsSPL(rt) then 
+	    return rt;
+	fi;
 
-  Constraint(IsRuleTree(rt));
+    Constraint(IsRuleTree(rt));
 
-  C := List(rt.children, recurse);
-  nt := rt.node;
-  Nonterms := List(rt.children, c -> When(IsRuleTree(c), c.node, c));
+    C := List(rt.children, recurse);
+    nt := rt.node;
+    Nonterms := List(rt.children, c -> When(IsRuleTree(c), c.node, c));
 
-# YSV: MDCT note, comment the next if.
-  if rt.transposed then
-      nt := TransposedSPL(nt);
-      C := List(C, TransposedSPL);
-      Nonterms := List(Nonterms, TransposedSPL);
-  fi;
+    if rt.transposed then
+        nt := TransposedSPL(nt);
+        C := List(C, TransposedSPL);
+        Nonterms := List(Nonterms, TransposedSPL);
+    fi;
 
-  S := _apply(rt.rule, nt, C, Nonterms);
-  if rt.transposed then S := TransposedSPL(S); fi;
+    S := _apply(rt.rule, nt, C, Nonterms);
+    if rt.transposed then 
+	    S := TransposedSPL(S); 
+	fi;
 
-  trace_log.addTreeExpansion(rt.rule,nt,S,rt.children,CopyFields(rt.node, rec(params := C)), var);
+    trace_log.addTreeExpansion(rt.rule,nt,S,rt.children,CopyFields(rt.node, rec(params := C)), var);
 
-  S.root := rt.node;
-  return S;
+    S.root := rt.node;
+    return S;
 end;
 
 SPLRuleTreeStep := rt -> ApplyRuleTreeStep(rt, c -> RecursStep(
@@ -860,7 +880,9 @@ SPLRuleTree := function(rt)
     t := rt.node;
     if IsBound(t.getTags) then
         for tag in Reversed(t.getTags()) do
-            if IsBound(tag.container) then spl := tag.container(spl); fi;
+            if IsBound(tag.container)
+			    then spl := tag.container(spl);
+			fi;
         od;
     fi;
     trace_log.endStage("tSPL","SPL", spl);    
@@ -1028,7 +1050,7 @@ Declare(_ruleTree1);
 #F   NOTE: this function does not check if a tree can
 #F   actually just be created, it just tries to return
 #F   the first one. RuleTreeN(spl, 1, opts) does the
-#F   same thing buf first checks.
+#F   same thing but first checks.
 #F 
 
 RuleTree1 := (spl, opts) -> _ruleTree1(spl, HashTableSPL(), opts);
@@ -1155,7 +1177,7 @@ RuleTreeGetN := function(ruletree, opts)
 
     r := _ruleTreeGetN(ruletree, memohash, opts, 0);
 
-    # ruleTreeGenN may return false if we couldn't match the tree in the passed
+    # ruleTreeGetN may return false if we couldn't match the tree in the passed
     # in breakdownRules/baseHashes.
     return When(IsInt(r), r + 1, false);
 end;
@@ -1172,7 +1194,6 @@ _ruleTreeGetN := function(rt, memohash, opts, offset)
     # if we're dealing with a transposed tree -- skip past (and update offset)
     # past all the direct breakdowns.
     if rt.transposed = true then
-
         # re-transpose the node to get all the normal rules we missed
         R := AllApplicableRulesDirect(TransposedSPL(rt.node), opts.breakdownRules);
         offset :=  offset + Sum(R, r -> 
@@ -1180,7 +1201,6 @@ _ruleTreeGetN := function(rt, memohash, opts, offset)
                 Product(C, c -> _getNumTrees(c, memohash, opts))
             )
         );
-
         # ok now use the transpose rules for the subsequent search
         R := AllApplicableRulesForTransposition(rt.node, opts.breakdownRules);
     else
@@ -1188,37 +1208,29 @@ _ruleTreeGetN := function(rt, memohash, opts, offset)
     fi;
 
     for r in R do
-
         # does rule match?
         if r = rt.rule then
             for c in _allChildren(r, rt.node, opts) do
-
                 # does child match?
                 if c = List(rt.children, e -> e.node) then
                     off := Product(rt.children, e -> _getNumTrees(e.node, memohash, opts));
                     for ch in rt.children do
                         n := _getNumTrees(ch.node, memohash, opts);
-
                         off := When(n > 0, off / n, off);
-
                         offset := offset + (off * _ruleTreeGetN(ch, memohash, opts, 0));
                     od;
-
                     return offset;
-
                 # child doesn't match, increase offset
                 else
                     offset := offset + Product(c, e -> _getNumTrees(e, memohash, opts));
                 fi; 
             od;
-
         # rule doesn't match, so increase offset by all possible expansions we didn't use
         else
             offset := offset 
                 + Sum(_allChildren(r, rt.node, opts), C ->  
                     Product(C, c -> _getNumTrees(c, memohash, opts))
                 );
-    
         fi;
     od;
 

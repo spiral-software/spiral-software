@@ -3,11 +3,11 @@
 *A  function.c                  GAP source                   Martin Schoenert
 **
 **
-*Y  Copyright (C) 2018-2019, Carnegie Mellon University
+*Y  Copyright (C) 2018-2020, Carnegie Mellon University
 *Y  All rights reserved.  See LICENSE for details.
 *Y  
 *Y  This work is based on GAP version 3, with some files from version 4.  GAP is
-*Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
+*Y  Copyright (C) (1987--2020) by the GAP Group (www.gap-system.org).
 **
 **  This package contains the functions  that  mainly  deal  with  functions.
 **
@@ -37,11 +37,6 @@
 /*V HdCallRecname */
 Bag HdCallRecname;
 
-Bag HdTrace;
-
-#ifdef DGC_DEBUG
-Bag HdPartialCollectAfterFunccall;
-#endif
 
 /****************************************************************************
 **
@@ -514,8 +509,6 @@ Bag       EvFunccall (Bag hdCall)
             Pr("%>",0,0);  Print( hdRes );
             if ( i < nrArg )  Pr("%<, ",0,0);
             else              Pr("%< )",0,0);
-
-            ListAdd(VAR_VALUE(HdTrace), hdRes);
         }
     }
     
@@ -559,14 +552,11 @@ Bag       EvFunccall (Bag hdCall)
     
     /* If the function is traced, print the return value                   */
     if ( trace & 1 ) {
-        Pr("\n%>",0,0); Print( PTR_BAG(hdCall)[0] );  Pr("%< returns",0,0);
+        Pr("\n%>",0,0); Print( PTR_BAG(hdCall)[0] );  Pr("%< returns ",0,0);
         if ( hdRes != HdVoid )  Print( hdRes );
-        Pr("%<",0,0);
+        Pr("%< ",0,0);
     }
-#ifdef DGC_DEBUG
-    if (VAR_VALUE(HdPartialCollectAfterFunccall)==HdTrue)
-        dgc_CollectBagsPartial();
-#endif
+
     return hdRes;
 }
 
@@ -780,13 +770,13 @@ Bag       FunUnevalArgs (Bag hdCall)
 
 /****************************************************************************
 **
-*F  FunTrace( <hdCall> )  . . . . . . . . . . . . . internal function 'Trace'
+*F  FunTraceFunc( <hdCall> )  . . . . . . . . . . . . . internal function 'TraceFunc'
 **
-**  'FunTrace' implements the internal function 'Trace'.
+**  'FunTraceFunc' implements the internal function 'TraceFunc'.
 **
-**  'Trace( <function>... )'
+**  'TraceFunc( <function>... )'
 **
-**  'Trace' switches on  tracing  for  the  functions  passed  as  arguments.
+**  'TraceFunc' switches on  tracing  for  the  functions  passed  as  arguments.
 **  Whenever such a function is called GAP prints a message of the form:
 **
 **      <function1>( <arg1>, <arg2>, ... )
@@ -795,12 +785,12 @@ Bag       FunUnevalArgs (Bag hdCall)
 **       <function2> returns
 **      <function1> returns <value>
 **
-**  Where <function1>, <function2>, <arg1>, <arg2> and <value>  are  replaced
+**  Where <function1>, <function2>, <arg1>, <arqg2> and <value>  are  replaced
 **  by the respective values.
 **
-**  'Untrace' switches this off again.
+**  'UntraceFunc' switches this off again.
 */
-Bag       FunTrace (Bag hdCall)
+Bag       FunTraceFunc (Bag hdCall)
 {
     Bag           hdDef;
     short               nrLoc,  i;
@@ -813,6 +803,7 @@ Bag       FunTrace (Bag hdCall)
             return Error("sorry I can not trace internal function",0,0);
         if ( t != T_FUNCTION && t != T_METHOD )
             return Error("usage: TraceFunc( <function>... )",0,0);
+        /* use negative nrLoc -- number of locals -- as flag to enable tracing in EvFunccall */
         nrLoc = ((short*)((char*)PTR_BAG(hdDef)+GET_SIZE_BAG(hdDef)))[-1];
         if ( 0 <= nrLoc )  nrLoc = -nrLoc-1;
         ((short*)((char*)PTR_BAG(hdDef)+GET_SIZE_BAG(hdDef)))[-1] = nrLoc;
@@ -823,15 +814,15 @@ Bag       FunTrace (Bag hdCall)
 
 /****************************************************************************
 **
-*F  FunUntrace( <hdCall> )  . . . . . . . . . . . internal function 'Untrace'
+*F  FunUntraceFunc( <hdCall> )  . . . . . . . . . . . internal function 'UntraceFunc'
 **
-**  'FunUntrace' implements the internal function 'Untrace'.
+**  'FunUntrace' implements the internal function 'UntraceFunc'.
 **
-**  'Untrace( <function>... )'
+**  'UntraceFunc( <function>... )'
 **
-**  'Untrace' switches of the tracing for the functions passed as  arguments.
+**  'UntraceFunc' switches off tracing for the functions passed as  arguments.
 */
-Bag       FunUntrace (Bag hdCall)
+Bag       FunUntraceFunc (Bag hdCall)
 {
     Bag           hdDef;
     short               nrLoc, i;
@@ -1146,12 +1137,6 @@ void            PrReturn (Bag hdRet)
 
 void            InitFunc (void)
 {
-#ifdef DGC_DEBUG
-    HdPartialCollectAfterFunccall = FindIdent( "__stressDGC" );
-    InitGlobalBag(&HdPartialCollectAfterFunccall, "HdPartialCollectAfterFunccall");
-    SET_VAR_VALUE(HdPartialCollectAfterFunccall, HdFalse);
-#endif
-
     InstEvFunc( T_FUNCCALL, EvFunccall  );
     InstEvFunc( T_FUNCTION, EvFunction  );
     InstEvFunc( T_METHOD,   EvFunction  );
@@ -1170,12 +1155,12 @@ void            InitFunc (void)
     InstPrFunc( T_MAKEMETH, PrMethod    );
     InstPrFunc( T_RETURN,   PrReturn    );
 
-    InstIntFunc( "IsFunc",      FunIsFunc    );
-    InstIntFunc( "IsMeth",      FunIsMeth    );
-    InstIntFunc( "TraceFunc",   FunTrace     );
-    InstIntFunc( "UntraceFunc", FunUntrace   );
-    InstIntFunc( "ApplyFunc",   FunApplyFunc );
-    InstIntFunc( "UnevalArgs",  FunUnevalArgs);
+    InstIntFunc( "IsFunc",      FunIsFunc      );
+    InstIntFunc( "IsMeth",      FunIsMeth      );
+    InstIntFunc( "TraceFunc",   FunTraceFunc   );
+    InstIntFunc( "UntraceFunc", FunUntraceFunc );
+    InstIntFunc( "ApplyFunc",   FunApplyFunc   );
+    InstIntFunc( "UnevalArgs",  FunUnevalArgs  );
 
     INIT_FAST_CALL();
 
@@ -1185,10 +1170,6 @@ void            InitFunc (void)
 
     HdCallRecname = FindRecname( "__call__" );
     InitGlobalBag(&HdCallRecname, "HdCallRecname");
-
-    HdTrace = FindIdent( "TRACE" );
-    InitGlobalBag(&HdTrace, "HdTrace");
-    SET_VAR_VALUE(HdTrace, NewList(0));
 
     RecursionDepth = 0;
 }

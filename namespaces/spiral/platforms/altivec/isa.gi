@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -20,7 +20,7 @@ Class(altivec_common, SIMD_VMX, rec(
 
     backendConfig := rec(
                         profile := default_profiles.linux_altivec_gcc,
-                        measureFunction := _CellSPUMeasureVerify
+                        measureFunction := _StandardMeasureVerify
                      ),
 ));
 

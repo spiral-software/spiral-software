@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -334,8 +334,6 @@ StreamRandomPerm := function(size, width)
    return s.createCode();
 end;
 
-Declare(HDLVerify2);
-
 StreamRandomPerms := function(size, width, number)
    local it, s, s2;
    it := Ind(number);
@@ -653,41 +651,6 @@ _MaxAbsVec := function(m)
    return res;
 end;
 
-# Tell HDLVerify function to use ModelSim.  This may not work out of the box in general.
-testTarget := "testmodelsim";
-#testTarget := "test";
-
-# Compile SPL to hardware, simulate it, and compare its matrix to the initial (initSPL).
-# Example: HDLVerify(streamDFTPease(8,2,4,1), TRC(DFT(8)), InitStreamHw());
-# Assumes (I think) 16 bit fixed-point.
-HDLVerify := function(SPL, initSPL, opts)
-   local act, exp, dif;
-   act := spiral.profiler._FPGAMeasureVerify(SPL, opts, testTarget);
-   exp := MatSPL(initSPL);
-   dif := _AbsFloatMat(act - exp);
-#   return [_MaxMat(dif), _AvgMat(dif)];
-   return _MaxMat(dif);
-end;
-
-# Compile SPL to hardware, simulate it, and compare its matrix with MatSPL(SPL).
-HDLVerify2 := function(SPL, opts)
-   return _MaxMat(_AbsFloatMat(spiral.profiler._FPGAMeasureVerify(SPL, opts, testTarget) - MatSPL(SPL)));
-end;
-
-# Same as HDLVerify, but also specify fixed-point bit-width.
-HDLVerifyBitWidth := function(SPL, initSPL, bw, opts)
-   local act, exp, dif;
-
-   spiral.paradigms.stream._setHDLDataType("fix", bw);
-
-   act := spiral.profiler._FPGAMeasureVerify(SPL, opts, testTarget);
-   exp := MatSPL(initSPL);
-   dif := _AbsFloatMat(act - exp);
-#   return [_MaxMat(dif), _AvgMat(dif)];
-   return _MaxMat(dif);
-end;
-
-
 _setHDLDataType := function(t, w)
     spiral.profiler.default_profiles.fpga_splhdl.makeopts.DATATYPE := ConcatenationString(t, " ", StringInt(w));
 end;
@@ -789,17 +752,12 @@ HDLCompileIntel := function(name, t, bw, freq)
 
    opts := InitStreamHw();
    
-#   t := streamDFTNoFold(n,1);
-
-#   opts.profile.outdir := "/Users/pam/run/intel";
    opts.profile.makeopts.OUTNAME := ConcatenationString(String(name), ".v");
    opts.profile.makeopts.GAP := ConcatenationString(String(name), ".spl");
- #  opts.profile.meas := (a,b) -> spiral.profiler._FPGAMeasureVerify(a,b,"testbench");
-   
    opts.profile.makeopts.WRAP := ConcatenationString("-lic -af ", String(freq), " -s -r -v");
    res := CMeasure(t, opts);
 
-    return res;
+   return res;
 end;
 
 # For what we are doing now, we need to turn on scaling + license 

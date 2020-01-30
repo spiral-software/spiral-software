@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -83,20 +83,6 @@ RewriteRules(RulesCxRC_Term, rec(
         RCVDiag(RCVData(dup), 2*v)
     )),
 
-
-############################################
-## Yevgen's rules that reduce # of shuffles
-<#
-    vRC_VDiag     := Rule([@(1, vRC), @(2, VDiag)], e -> let(v:=2*@(2).val.v, 
-        RCVDiagSplit(RCVDataSplit(@(2).val.element, v), v))),
-
-    vRC_VDiag_x_I := Rule([@(1, vRC), @(2, VDiag_x_I)], e -> let(
-        v   := @(2).val.v, 
-        elt := @(2).val.element, 
-        dup := Cond(IsVecT(elt.range()), elt, VDup(elt, v)), 
-        RCVDiagSplit(RCVDataSplitVec(dup), 2*v)
-    )),
-#>
 
 ############################################
 ## Yevgen's searchable rules for autolib

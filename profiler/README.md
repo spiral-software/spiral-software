@@ -5,7 +5,6 @@ SPIRAL calls the profiler to time candidate kernels during a search.
 
 The profiler requires Python 3 (>= 3.3).
 
-On Windows you will need an instance of **Gnu Make**, which you can download from https://sourceforge.net/projects/gnuwin32/files/make/3.81/
 
 Configuration
 -------------

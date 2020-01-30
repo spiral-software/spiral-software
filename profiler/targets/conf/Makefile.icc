@@ -1,0 +1,33 @@
+##
+##  Copyright (c) 2018-2020, Carnegie Mellon University
+##  See LICENSE for details
+##
+# setup some defaults.
+RM      = del /f /q
+LIB	= lib
+#ifndef CC
+CC      = icl
+#endif
+
+override CFLAGS  = /O2 /DWIN32 /DWIN64 /nologo
+
+CONFDIR ?= .
+
+.PHONY: all
+all: $(CONFDIR)/libconf.lib
+
+SRC = exceptions.c misc.c vector.c xmalloc.c sys.c vector_def.c
+
+OBJ := $(addprefix $(join $(CONFDIR), /),$(SRC:.c=.obj))
+
+$(CONFDIR)/libconf.lib: $(OBJ)
+	$(LIB) /nologo /OUT:$@ $(subst /,\,$^)
+
+$(CONFDIR)/%.obj: %.c
+	$(CC) $(CFLAGS) /c $< /Fo$@ >nul
+# $(subst /,\,$@) >nul
+
+.PHONY: clean
+clean:
+	-$(RM) $(subst /,\,$(OBJ)) $(subst /,\,$(CONFDIR))\libconf.* 2> null
+	

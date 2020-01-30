@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2018-2019, Carnegie Mellon University
+## Copyright (c) 2018-2020, Carnegie Mellon University
 ## All rights reserved.
 ## 
 ## See LICENSE file for full information
@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.8...3.14)
 set(CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, MinSizeRel")
 
 project(SPIRAL
-        VERSION 8.1.1
+        VERSION 8.1.2
 		DESCRIPTION "SPIRAL Project"
 		LANGUAGES C CXX)
 		

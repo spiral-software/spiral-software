@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -796,15 +796,6 @@ Class(T_Real, T_Type, rec(
        )),
    
    complexType := self >> T_Complex(self),
-
-<#
-   csize  := self >> Cond( 
-       self.params[1] = 128, 16,
-       self.params[1] = 80,  10,
-       self.params[1] = 64,   8,
-       self.params[1] = 32,   4,
-       sizeof(self)),
-#>
 ));
 
 Class(T_Complex, T_Type, rec(

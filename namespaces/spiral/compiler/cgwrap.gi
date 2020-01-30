@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -103,12 +103,6 @@ _getXY := function(sums, opts)
         Y := List([1..Length(sums.rng())],
            (i) -> var(Concatenation("Y", String(i)), sums.rng()[i], sums.rng()[i].size));
 
-<#
-        X := List([1..Length(sums.dmn())],
-           (i) -> var(Concatenation("X", String(i)), TPtr(sums.dmn()[i].t), sums.dmn()[i].size));
-        Y := List([1..Length(sums.rng())],
-           (i) -> var(Concatenation("Y", String(i)), TPtr(sums.rng()[i].t), sums.rng()[i].size));
-#>
         return [X, Y];
     fi;
 

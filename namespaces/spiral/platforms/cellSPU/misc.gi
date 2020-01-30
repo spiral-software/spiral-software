@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -54,16 +54,6 @@ shuffle := (in1, in2, p, n, k) -> Flat([
 
 iperm4 := self >> Filtered(Cartesian(self.params()), i->i[1]<>i[2] and i[3] <> i[4]);
 
-# Container for hex numbers
-<# vhex exists in vec_ir.gi
-Class(vhex, Value, rec(
-    __call__ := arg >> let(self := arg[1], WithBases(self,
-    rec(p := arg[2], operations := PrintOps))),
-
-    isVhex := true,
-    print := self >> Print(self.name, "(", self.p, ")")
-));
-#>
 
 # Generic instructions
 #

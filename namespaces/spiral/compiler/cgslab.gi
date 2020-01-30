@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -11,22 +11,7 @@ _LuaInit := function(datas, slab, opts)
 
     Error("haha");
 
-<#
-    # setup the 
-    init := List(datas, e -> 
-        fcall("access", [
-            var.fresh("D1", fld(e.var.t, slab, e.var.id)),
-            Concat([
-                type(e.var),
-                ":", 
-                length(e.var), 
-                ":",
-                quote(lua(SReduce(e.var.init, opts), opts))
-            ])
-        ])
-    );
-#>
-    # the 
+
 end;
 
 #

@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -15,19 +15,19 @@ IsMinusOne:=(x)->IsVal(x,-1);
 Declare(CGen);
 
 ISum.cprint := meth(self,i,is)
-       Print("for( ", self.var.cprint(), " = ", self.domain, ") { \n");
-       self.expr.cprint(i+is,i);
-       Print(Blanks(i), "}\n");
+    Print("for( ", self.var.cprint(), " = ", self.domain, ") { \n");
+    self.expr.cprint(i+is,i);
+    Print(Blanks(i), "}\n");
 end;
 
 Compose.cprint := meth(self,i,is)
-       local c;
-       for c in self.children() do
-           Print(Blanks(i+is));
-       c.cprint(i+is, is);
-       Print(";\n");
-       od;
-       Print("\n");
+    local c;
+    for c in self.children() do
+	    Print(Blanks(i+is));
+        c.cprint(i+is, is);
+        Print(";\n");
+    od;
+    Print("\n");
 end;
 
 # -------------------
@@ -45,25 +45,21 @@ Typ.cdecl := (self, var) >> When(IsList(var),
     Print(self.ctype, " ", PrintCS(List(var, v->v.id))),
     Print(self.ctype, " ", var.id));
 
-#TVectDouble.cdecl := (self, var) >> Print("__m128i ", PrintCS(var));
-
 TArray.cdecl  := meth(self,var)
     local dims, elemtype;
-    if IsList(var) then DoForAll(var, v->Print(v.t.cdecl(v), "; "));
+    if IsList(var) then
+	    DoForAll(var, v->Print(v.t.cdecl(v), "; "));
     elif not IsArray(self.t) then
-    #Print("static ",
-    Print(self.t.ctype, Print(" ", var.id, "[", self.size, "]"));
-    #if self.t = TComplex then Print("[2]"); fi;
+        Print(self.t.ctype, Print(" ", var.id, "[", self.size, "]"));
     else
-    dims := [];
-    elemtype := self;
-    while IsArray(elemtype) do
-        Add(dims, elemtype.size);
-        elemtype := elemtype.t;
-    od;
-    Print(elemtype.ctype, " ", var.id);
-    DoForAll(dims, d->Print("[",d,"]"));
-    #if elemtype = TComplex then Print("[2]"); fi;
+        dims := [];
+        elemtype := self;
+        while IsArray(elemtype) do
+            Add(dims, elemtype.size);
+            elemtype := elemtype.t;
+        od;
+        Print(elemtype.ctype, " ", var.id);
+        DoForAll(dims, d->Print("[",d,"]"));
     fi;
 end;
 
@@ -74,7 +70,9 @@ end;
 
 _cprintcs := function ( lst )
     local  i;
-    if Length(lst) = 0 then return; fi;
+    if Length(lst) = 0 then
+	    return; 
+	fi;
     lst[1].cprint();
     for i  in [ 2 .. Length(lst) ]  do
         Print(", ", lst[i].cprint());
@@ -90,17 +88,13 @@ Loc.cprint := self >> self.print();
 Value.idx_cprint := self >> Print(self.v);
 
 Value.cprint := self >> Cond(
-# This was printing complex numbers based on integers,
-# we need to introduce TComplexInt, since trying to determine if a cyc is
-# integer based is inefficient and not clean
-#    self.t = TComplex and IsCyc(self.v),
-#        Print("{", Re(self.v), ",", Im(self.v), "}"),
     self.t = TComplex, let(c:=Complex(self.v),
         Print("{", ReComplex(c), ",", ImComplex(c), "}")),
     self.t = TDouble and IsCyc(self.v),
         Print("(", ccprint(ReComplex(Complex(self.v)), self.t), ")"),
     IsArray(self.t),
-        Print("{", _cprintcs(self.v), "}"),
+        Print("{", 
+		(self.v), "}"),
     self.v < 0,
         Print("(", ccprint(self.v, self.t), ")"),
     Print(ccprint(self.v, self.t)));
@@ -109,9 +103,11 @@ infix_print := function(lst, sep)
     local first, c;
     first := true;
     for c in lst do
-        if first then first := false;
-    else  Print(sep);
-    fi;
+        if first then
+		    first := false;
+        else
+		    Print(sep);
+        fi;
         c.cprint();
     od;
     return "";
@@ -121,11 +117,16 @@ pinfix_print := function(lst, sep)
     local first, c;
     first := true;
     for c in lst do
-        if first then first := false;
-    else  Print(sep);
-    fi;
-    if not IsBound(c.rChildren) or c.rChildren()=[] then c.cprint();
-    else Print("(",c.cprint(), ")");fi;
+        if first then
+		    first := false;
+        else
+		    Print(sep);
+        fi;
+        if not IsBound(c.rChildren) or c.rChildren()=[] then
+		    c.cprint();
+        else
+		    Print("(",c.cprint(), ")");
+		fi;
     od;
     return "";
 end;
@@ -167,63 +168,69 @@ leq.cprint := self >> Chain(
 # -------------------
 
 assign.cprint := meth(self, i, is)
-    # if IsVar(self.loc) then Print(self.loc.t.ctype, " "); fi;
     Print(Blanks(i), self.loc.cprint(), " = ", self.exp.cprint(), ";\n");
 end;
 
 chain.cprint := meth(self,i,is)
-       local c, vars;
-       Print(Blanks(i), "{", Blanks(is-1));
-       vars := Set(
-       List(Collect(self, [assign, @.target(var), @(1)]),
-            e->e.loc));
-       if false and Length(vars) > 0 then
-       Print("double ");
-       PrintCS(vars);
-       Print(";\n");
-       else
-       Print("\n");
-       fi;
-       for c in self.cmds do
-       c.cprint(i+is, is);
-       od;
-       Print(Blanks(i), "}\n");
+    local c, vars;
+    Print(Blanks(i), "{", Blanks(is-1));
+    vars := Set(
+    List(Collect(self, [assign, @.target(var), @(1)]),
+		e->e.loc));
+    if false and Length(vars) > 0 then
+	    Print("double ");
+	    PrintCS(vars);
+	    Print(";\n");
+    else
+	    Print("\n");
+    fi;
+    for c in self.cmds do
+	    c.cprint(i+is, is);
+    od;
+    Print(Blanks(i), "}\n");
 end;
 
 data.cprint := meth(self,i,is)
-      Print(Blanks(i), "{", Blanks(is-1), When(IsArray(self.value.t), "static ", ""),
+    Print(Blanks(i), "{", Blanks(is-1), When(IsArray(self.value.t), "static ", ""),
         self.value.t.cdecl(self.var), " = ", self.value.cprint(), ";");
-      Print("\n");
-      self.cmd.cprint(i+is, is);
-      Print(Blanks(i), "}\n");
+    Print("\n");
+    self.cmd.cprint(i+is, is);
+    Print(Blanks(i), "}\n");
 end;
 
 decl.cprint := meth(self,i,is)
-      local v, first, types;
-      Print(Blanks(i), "{", Blanks(is-1));
-      if Length(self.vars) > 1 and Length(Set(List(self.vars, v->v.t)))=1 then
-      # all types are the same
-      self.vars[1].t.cdecl(self.vars);
-      Print(";\n");
-      else
-      first := self.vars[1];
-      if IsArray(first.t) then Print("static "); fi;
-      first.t.cdecl(first); Print(";\n");
-      for v in Drop(self.vars, 1) do
-          Print(Blanks(i+is));
-      if IsArray(v.t) then Print("static "); fi;
-          v.t.cdecl(v);
-          Print(";\n");
-      od;
-      fi;
-      self.cmd.cprint(i+is, is);
-      Print(Blanks(i), "}\n");
+    local v, first, types;
+    Print(Blanks(i), "{", Blanks(is-1));
+    if Length(self.vars) > 1 and Length(Set(List(self.vars, v->v.t)))=1 then
+        # all types are the same
+        self.vars[1].t.cdecl(self.vars);
+        Print(";\n");
+    else
+        first := self.vars[1];
+        if IsArray(first.t) then
+		    Print("static ");
+		fi;
+        first.t.cdecl(first);
+		Print(";\n");
+        for v in Drop(self.vars, 1) do
+            Print(Blanks(i+is));
+            if IsArray(v.t) then
+			    Print("static ");
+			fi;
+            v.t.cdecl(v);
+            Print(";\n");
+        od;
+    fi;
+    self.cmd.cprint(i+is, is);
+    Print(Blanks(i), "}\n");
 end;
 
 loop.cprint_c99 := meth(self,i,is)
        local v, lo, hi;
        Constraint(IsRange(self.range));
-       v := self.var; lo := self.range[1]; hi := Last(self.range);
+       v := self.var; 
+	   lo := self.range[1]; 
+	   hi := Last(self.range);
        Print(Blanks(i));
        Print("for(int ", v, " = ", lo, "; ", v, " <= ", hi, "; ", v, "++) \n");
        self.cmd.cprint(i+is, is);
@@ -232,7 +239,9 @@ end;
 loop.cprint := meth(self,i,is)
        local v, lo, hi;
        Constraint(IsRange(self.range));
-       v := self.var; lo := self.range[1]; hi := Last(self.range);
+       v := self.var; 
+	   lo := self.range[1]; 
+	   hi := Last(self.range);
        Print(Blanks(i));
        Print("{int ",v,"; for(", v, " = ", lo, "; ", v, " <= ", hi, "; ", v, "++) \n");
        self.cmd.cprint(i+is, is);
@@ -324,17 +333,10 @@ CRuntimeTest := function ( testFunc, cmd, opts )
     opts := Copy(opts);
     Constraint(IsCommand(cmd));
     Constraint(IsRec(opts));
-    if not IsBound(opts.dataType) then opts.dataType := "real"; fi;
+    if not IsBound(opts.dataType) then 
+	    opts.dataType := "real"; 
+	fi;
     opts := DeriveSPLOptions(cmd, opts);
-
-#     if IsDMP(cmd) then
-#   opts.language  := opts.dmplanguage;
-#   opts.compflags := opts.dmpcompflags;
-#   opts.splflags  := opts.dmpsplflags;
-#   opts.cgen := CGenDMP;
-#   #VIENNA: NOTE change to something more reliable
-
-
     prog := ProgSPL(cmd, opts);
     prog.type := ProgInputType.TargetSource;
 
@@ -343,9 +345,9 @@ CRuntimeTest := function ( testFunc, cmd, opts )
     result := testFunc(cmd, opts, prog);
 
     if IsBool(result) and result=false then
-    Error("Compiled code execution failed, offending program kept in '", prog.file, "'");
+        Error("Compiled code execution failed, offending program kept in '", prog.file, "'");
     else
-    return result;
+        return result;
     fi;
 end;
 

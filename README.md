@@ -57,14 +57,18 @@ directory enter one of the following commands, depending on your version of Visu
 if your version isn't shown here.
 
 ```
+cmake ..		(for Visual Studio 2019)
+
 cmake -G "Visual Studio 14 2015" -A x64 ..
 
 cmake -G "Visual Studio 15 2017" -A x64 ..
-
-cmake -G "Visual Studio 16 2019" -A x64 ..
 ```
 
-When CMake is finished, open the new **SPIRAL.sln** in the **build** directory with Visual Studio.  Select the Release or Debug configuration,
+When CMake is finished, the software can be built either using **cmake** or with Visual Studio.
+
+#### Building with Visual Studio
+
+Open the new **SPIRAL.sln** in the **build** directory with Visual Studio.  Select the Release or Debug configuration,
 then right click on **INSTALL** in the Solution Explorer window and select **Build** from the popup menu.
 
 Use **spiral.bat** to launch Spiral.  You can create a shortcut to 
@@ -76,6 +80,41 @@ to your path and run the batch script as **spiral** from a command window or scr
 
 To debug SPIRAL on Windows, build and install the Debug version, use **spiral_debug.bat** to start SPIRAL, then in Visual Studio use
 **Debug->Attach to Process...** to connect the debugger to **gapd.exe**.
+
+There are a few pre-requisites for Visual Studio to be able to correctly run the profiler from SPIRAL.  These may be checked/configured as follows:
+
+1. Start Visual Studio Installer
+2. Select **Modify** button
+3. Select **Individual Components** (the components already installed are listed under *Installation Details* to the right)
+4. Ensure (or add) the following components:
+ * Python language support
+ * MSVC v142 - VS 2019 C++ x64/x86 build tools
+ * Python 3 64-bit (3.7.X)
+ * C++ CMake tools for Windows
+ * Windows 10 SDK (10.0.NNNNN...)
+5. If you add any components select the **Modify** button to download and install the required packages.
+
+#### Building SPIRAL with cmake
+
+**cmake** can be used to start the toolchain to build the solution from a **cmd** window, instead of starting the Visual Studio IDE.  After running the cmake command to configure the build system (i.e., cmake .. or other variant as discussed above), run the following:
+
+```
+cmake --build <dir> [options] [--[native-options]]
+```
+
+Typical options used with the command are:
+```
+<dir>                Project directory to build
+--target <tgt>       Build <tgt> instead of the default target(s)
+--config <cfg>       For multi-configuration tools, choose <cfg>
+--clean-first        Build target "clean" first, then build
+--verbose            Enable verbose output
+```
+For example, the following commands will build the Release version on Windows using the default VS 2019 compiler and install the binary and batch scripts:
+```
+cmake ..
+cmake --build . --config Release --target install
+```
 
 ## Testing SPIRAL
 

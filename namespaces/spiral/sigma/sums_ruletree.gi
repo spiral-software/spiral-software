@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -75,41 +75,6 @@ SumsRuleTreeStrategy := function ( rt, strategy, opts )
     return rt;
 end;
 
-f_to_list := function(f)
-  local res, fv;
-  res := f.lambda().tolist();
-  for fv in f.free() do
-    res := Flat( List(res, e -> Lambda(fv, e).tolist() ) );
-  od;
-  return res;
-end;
-
-Process_fPrecompute_RR := function(sums, opts)
-
-  sums := SubstTopDown(sums, [ @(1,Gath).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Gath(fPrecompute(@(1).val.func)));
-  sums := SubstTopDown(sums, [ @(1,Scat).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Scat(fPrecompute(@(1).val.func)));
-  sums := SubstTopDown(sums, [ @(1,Diag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Diag(fPrecompute(@(1).val.element)));
-  sums := SubstTopDown(sums, [ @(1,RCDiag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> RCDiag(fPrecompute(@(1).val.element)));
-  sums := SubstTopDown(sums, [ @(1,RCDiag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @, @], e -> RCDiag(fPrecompute(@(1).val.element), @(1).val.post));
-
-<# 
-  #Franz's suggestions: 
-  # 1) Use FData to avoid fusing instead of fPrecompute (below breaks - need to set domain/range for FData as well)
-  # 2) plug _fPrecompute version in before strategies apply for RR/RM and finally add one more strategy to replace with fPrecompute and run the strategy again
-  # 3) Introduce fParenthesis as boundary for strategies
-  sums := SubstTopDown(sums, [ @(1,Gath).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Gath(FData(@(1).val.func.tolist())));
-  sums := SubstTopDown(sums, [ @(1,Scat).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Scat(FData(@(1).val.func.tolist())));
-  sums := SubstTopDown(sums, [ @(1,Diag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> Diag(FData(@(1).val.element.tolist())));
-  sums := SubstTopDown(sums, [ @(1,RCDiag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @], e -> RCDiag(FData(@(1).val.element.tolist())));
-  sums := SubstTopDown(sums, [ @(1,RCDiag).cond(e -> Collect(e, @(2,[RM, RR])) <> []), @, @], e -> RCDiag(FData(@(1).val.element.tolist()), @(1).val.post));
-#>
-
-#  sums := SubstTopDown(sums, @(1,[RM, RR]), e -> FData(e.tolist()));
-
-  sums := SubstTopDown(sums, [ @(1,Grp), @(2) ], e -> @(2).val);
-  return sums;
-end;
-
 #F SumsRuleTree(<rt>, <opts>)
 #F
 #F <opts> flags used:
@@ -118,24 +83,21 @@ end;
 #F   opts.generateComplexCode == bool   if set to false, then RC rewriting strategy is applied
 #F
 SumsRuleTree := function(rt, opts)
-    local sums, rsums, t, tag;
-    if IsNonTerminal(rt) then rt := RandomRuleTree(rt,opts); fi;
-    sums := SumsRuleTreeStrategy(rt, [], opts);
-    sums := ApplyStrategy(sums, opts.formulaStrategies.sigmaSpl, UntilDone, opts);
-    sums := ApplyStrategy(sums, opts.formulaStrategies.preRC, UntilDone, opts);
-    if (not opts.generateComplexCode) and (not rt.node.isReal()) then # NOTE: when t_in/t_out available check them instead of isReal
-        rsums := ApplyStrategy(RC(sums), opts.formulaStrategies.rc, UntilDone, opts);
-    else
-        rsums := sums;
-    fi;
-    rsums := Process_fPrecompute_RR(rsums, opts);
-
-    rsums := ApplyStrategy(rsums, opts.formulaStrategies.sigmaSpl, UntilDone, opts);
-    rsums := ApplyStrategy(rsums, opts.formulaStrategies.postProcess, UntilDone, opts);
-    rsums := SumsUnification(rsums, opts);
-    rsums.ruletree := rt;
-
-    return rsums;
+        local sums, rsums, t, tag;
+        if IsNonTerminal(rt) then rt := RandomRuleTree(rt,opts); fi;
+        sums := SumsRuleTreeStrategy(rt, [], opts);
+        sums := ApplyStrategy(sums, opts.formulaStrategies.sigmaSpl, UntilDone, opts);
+        sums := ApplyStrategy(sums, opts.formulaStrategies.preRC, UntilDone, opts);
+        if (not opts.generateComplexCode) and (not rt.node.isReal()) then # NOTE: when t_in/t_out available check them instead of isReal
+            rsums := ApplyStrategy(RC(sums), opts.formulaStrategies.rc, UntilDone, opts);
+        else
+            rsums := sums;
+        fi;
+        rsums := ApplyStrategy(rsums, opts.formulaStrategies.postProcess, UntilDone, opts);
+        rsums := SumsUnification(rsums, opts);
+        rsums.ruletree := rt;
+     
+        return rsums;
 end;
 
 #F See SumsRuleTree

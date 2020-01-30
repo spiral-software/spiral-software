@@ -3,11 +3,11 @@
 *A  function.h                  GAP source                   Martin Schoenert
 **
 **
-*Y  Copyright (C) 2018-2019, Carnegie Mellon University
+*Y  Copyright (C) 2018-2020, Carnegie Mellon University
 *Y  All rights reserved.  See LICENSE for details.
 *Y  
 *Y  This work is based on GAP version 3, with some files from version 4.  GAP is
-*Y  Copyright (C) (1987--2019) by the GAP Group (www.gap-system.org).
+*Y  Copyright (C) (1987--2020) by the GAP Group (www.gap-system.org).
 **
 **  This package delcares the functions  that  mainly  deal  with  functions.
 **
@@ -207,13 +207,13 @@ Bag       EvReturn ( Bag hdRet );
 
 /****************************************************************************
 **
-*F  FunTrace( <hdCall> )  . . . . . . . . . . . . . . internal function Trace
+*F  FunTraceFunc( <hdCall> )  . . . . . . . . . . . . . . internal function Trace
 **
-**  'FunTrace' implements the internal function 'Trace'.
+**  'FunTraceFunc' implements the internal function 'TraceFunc'.
 **
-**  'Trace( <function>... )'
+**  'TraceFunc( <function>... )'
 **
-**  'Trace' switches on  tracing  for  the  functions  passed  as  arguments.
+**  'TraceFunc' switches on  tracing  for  the  functions  passed  as  arguments.
 **  Whenever such a function is called GAP prints a message of the form:
 **
 **      <function1>( <arg1>, <arg2>, ... )
@@ -225,22 +225,22 @@ Bag       EvReturn ( Bag hdRet );
 **  Where <function1>, <function2>, <arg1>, <arg2> and <value>  are  replaced
 **  by the respective values.
 **
-**  'Untrace' switches this off again.
+**  'UntraceFunc' switches this off again.
 */
-Bag       FunTrace ( Bag hdCall );
+Bag       FunTraceFunc ( Bag hdCall );
 
 
 /****************************************************************************
 **
-*F  FunUntrace( <hdCall> )  . . . . . . . . . . . . internal function Untrace
+*F  FunUntraceFunc( <hdCall> )  . . . . . . . . internal function UntraceFunc
 **
-**  'FunUntrace' implements the internal function 'Untrace'.
+**  'FunUntraceFunc' implements the internal function 'UntraceFunc'.
 **
-**  'Untrace( <function>... )'
+**  'UntraceFunc( <function>... )'
 **
-**  'Untrace' switches of the tracing for the functions passed as  arguments.
+**  'UntraceFunc' switches of the tracing for the functions passed as  arguments.
 */
-Bag       FunUntrace ( Bag hdCall );
+Bag       FunUntraceFunc( Bag hdCall );
 
 
 /****************************************************************************

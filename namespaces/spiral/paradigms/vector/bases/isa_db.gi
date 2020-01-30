@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -61,14 +61,14 @@ SIMD_ISA_DB.buildBases := meth(self, isa)
     tab1 := HashTableDP();
     for t in SIMD_ISA_DB.getBases(isa) do
 #    [ TL(2*v,v,1,1).withTags(tags), TL(2*v,2,1,1).withTags(tags), TL(v*v,v,1,1).withTags(tags), TL(v*v/4,v/2,1,2).withTags(tags) ]
-        t1 := DP(t, rec(measureFunction := VCost, verbosity := 0, hashTable := tab1, saveMemory := false, globalUnrolling := true),
+        t1 := DP(t, rec(measureFunction := VCost, verbosity := 0, hashTable := tab1, globalUnrolling := true),
                 CopyFields(isa.splopts, rec(breakdownRules := rset1, dataType := "no default", baseHashes := [], globalUnrolling := 10000)));
     od;
 
     tab2 := HashTableDP();
     for t in SIMD_ISA_DB.getBases(isa) do
 #    [ TL(2*v,v,1,1).withTags(tags), TL(2*v,2,1,1).withTags(tags), TL(v*v,v,1,1).withTags(tags), TL(v*v/4,v/2,1,2).withTags(tags) ]
-        t2 := DP(t, rec(measureFunction := VCost, verbosity := 0, hashTable := tab2, saveMemory := false, globalUnrolling := false),
+        t2 := DP(t, rec(measureFunction := VCost, verbosity := 0, hashTable := tab2, globalUnrolling := false),
                 CopyFields(isa.splopts, rec(breakdownRules := rset2, dataType := "no default", baseHashes := [], globalUnrolling := 10000)));
     od;
     AddMergedHashTables(self.hash, [tab1, tab2]);

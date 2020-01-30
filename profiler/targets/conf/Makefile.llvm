@@ -1,0 +1,39 @@
+##
+##  Copyright (c) 2018-2020, Carnegie Mellon University
+##  See LICENSE for details
+##
+# setup some defaults.
+ifndef RM
+RM      = del /F /Q
+endif
+ifndef AR
+AR      = llvm-ar
+endif
+ifndef RANLIB
+RANLIB  = llvm-ranlib
+endif
+ifndef CC
+CC      = clang
+endif
+
+override CFLAGS += -DWIN32 -DWIN64
+
+CONFDIR ?= .
+
+.PHONY: all
+all: $(CONFDIR)/libconf.a
+
+
+SRC = misc.c vector.c xmalloc.c sys.c vector_def.c exceptions.c
+
+OBJ := $(addprefix $(join $(CONFDIR), /),$(SRC:.c=.o))
+
+$(CONFDIR)/libconf.a: $(OBJ)
+	$(AR) -csr $@ $^
+
+$(CONFDIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY: clean
+clean:
+	-$(RM) $(subst /,\,$(OBJ:.o=.d)) $(subst /,\,$(CONFDIR))\libconf.* 2> null

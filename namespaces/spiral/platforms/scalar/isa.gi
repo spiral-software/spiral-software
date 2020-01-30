@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -204,19 +204,6 @@ ISA_Bridge.add(Class(CVT_SKLR_f32_clip8ui, CVT_SKLR_f32_clip32i, rec(
     clip        := rec( min := T_UInt(8).range().min, max := T_UInt(8).range().max ),
 )));
 
-# NOTE: bridge below doesn't work, CopyPropagate cannot handle situation 
-# when this code nested in a loop marked for unrolling.
-<#
-ISA_Bridge.add(Class(CVT_SKLR_f32_SSE_4x32f, ISA_Bridge_I, rec(
-    isa_from    := SSE_4x32f(T_Real(32)),
-    isa_to      := SKLR_f32,
-    code := (self, y, x, opts) >> let(
-        i  := Ind(self.isa_from.v),
-        loop(i, i.range, 
-            assign( nth(y, i), nth(x, i) )
-        ).unroll()
-    )
-)));
-#>
+
 
 

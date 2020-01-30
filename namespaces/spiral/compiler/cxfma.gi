@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -173,12 +173,4 @@ DoCXFMA := function(code)
    MarkDefUse(code);
    return(code);
 end;
-
-<#
- adds := x->Length(Collect(x, @(1,[add,sub]))); 
- fmas := x->Length(Collect(x, @(1,[cxfma,cxfms,cxnfma])));
- mults := x->Length(Collect(x, @(1,mul))); 
-
- fcost := x->[adds(x), fmas(x), mults(x)];
-#>
 

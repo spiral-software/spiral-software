@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -33,30 +33,6 @@
 Class(Visitor, rec(
    __call__ := arg >> ApplyFunc(arg[1].visit, arg{[2..Length(arg)]}),
 
-<#
-#MRT visitAs functionality has been removed.
-#MRT lambda moved to real function. this thing is too long.
-#MRT
-   visit := arg >> Cond(Length(arg)<2, Error("Usage: <VisitorClass>(<object>, ...args...)"),
-    let(self := arg[1],
-	o   := arg[2],
-	len := Length(arg),
-
-	# lists are handled with .ListClass, records with .<objid>
-	# other objects with .atomic
-	Cond(
-	IsRec(o) or IsList(o), let(o := ObjId(o),
-	    Cond(IsBound(self.(o.name)), 
-		     ApplyFunc(self.(o.name), arg{[2..len]}),
-		 IsBound(o.visitAs) and IsBound(self.(o.visitAs)),
-	             ApplyFunc(self.(o.visitAs), arg{[2..len]}), 
-		 Error("Cannot visit <arg[2]>. Visitor ", self, " does not have field '",
-		       o.name, "'", When(IsBound(o.visitAs), 
-			   Concat(" or ",o.visitAs, " (from .visitAs)"), ""))
-	    )),
-
-	 ApplyFunc(self.atomic, arg{[2..len]}))))
-#>
     # this is a rewrite of the lambda expression. The lambda was getting
     # way too long. This implements the double dispach for the visitor
     # class. 

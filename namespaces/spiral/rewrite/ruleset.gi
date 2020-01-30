@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -145,7 +145,11 @@ _ARule_Transparent := (op, transp_ops, from, to) -> Checked(
 		                     Subst((x,cx) -> List($to(x, cx), y->$tr_op(y))))))
 );
 
+
+IsRuleSet := x -> IsRec(x) and IsBound(x.isRuleSet) and x.isRuleSet;
+
 Class(RuleSet, rec(
+	isRuleSet    := true,
     rules        := rec(),
     # counts how many time this RuleSet changed
     _changes     := 0,

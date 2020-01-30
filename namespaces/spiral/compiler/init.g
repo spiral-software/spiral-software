@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2019, Carnegie Mellon University
+# Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
 # Sigma-SPL to code translation and basic block compiler
@@ -50,8 +50,6 @@ Include(cgslab);
 Include(cgstrat);
 
 Include(unparse);
-
-Include(debug);
 
 Include(datatype);
 Include(bug);

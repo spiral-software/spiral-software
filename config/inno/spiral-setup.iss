@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Spiral"
-#define MyAppVersion "8.1.1"
+#define MyAppVersion "8.1.2"
 #define MyAppPublisher "SpiralGen, Inc."
 #define MyAppURL "https://www.spiralgen.com"
 #define MyAppExeName "spiral.bat"

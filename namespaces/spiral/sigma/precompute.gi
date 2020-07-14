@@ -246,14 +246,13 @@ Process_fPrecompute := function(sums, opts)
 
     sums := _Process_fPrecompute(sums, precompute_func,
            (e, cx) -> (
-                        ( (not IsBound(cx.BB) or cx.BB=[]) and 
+                        ((not IsBound(cx.BB) or cx.BB=[]) and 
                         (not IsBound(cx.RecursStep) or cx.RecursStep=[]) and
-                        (not IsBound(cx.RS) or cx.RS=[]) and        # NOTE: (YSV, autolib) remove this
-                        (not IsBound(cx.RSBase) or cx.RSBase=[])) or # NOTE: (YSV, autolib) remove this
+                        (not IsBound(cx.RS) or cx.RS=[]) and        
+                        (not IsBound(cx.RSBase) or cx.RSBase=[])) or 
                         (IsBound(cx.BB) and cx.BB<>[] and has_free_vars(e, cx.BB)) or 
 	                    (IsBound(cx.RecursStep) and cx.RecursStep<>[] and has_free_vars(e, cx.RecursStep)) 
-                    ) and
-                        (Difference(e.lambda().free(), Filtered(e.lambda().free(), IsLoopIndex)) = [])
+                    )
                     );
     return sums;
 end;

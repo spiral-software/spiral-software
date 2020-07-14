@@ -120,7 +120,7 @@ Bag       FunPcp (Bag hdCall)
 
     /** Set collector and collector depended entries. **********************/
     for ( i = 0;  i <= COMBI_COLLECTOR;  i++ )
-      if ( ! SyStrcmp( Collectors[ i ].name, (char*) PTR_BAG( hdCol ) ) )
+      if ( ! strcmp( Collectors[ i ].name, (char*) PTR_BAG( hdCol ) ) )
           break;
     if ( i > COMBI_COLLECTOR )
         return Error("Pcp: unknown collector \"%s\"", (Int)PTR_BAG(hdCol), 0);
@@ -246,14 +246,14 @@ Bag       FunExtendCentralPcp (Bag hdCall)
             return Error( usage, 0, 0 );
         hdA = NewBag( T_AGEN, SIZE_HD + GET_SIZE_BAG( hdTmp ) + 1 );
         *(char*)( PTR_BAG( hdA ) + 1 ) = '\0';
-        SyStrncat( (char*)( PTR_BAG( hdA ) + 1 ), "+", 1 );
-        SyStrncat( (char*)( PTR_BAG( hdA ) + 1 ),
+        strncat( (char*)( PTR_BAG( hdA ) + 1 ), "+", 1 );
+        strncat( (char*)( PTR_BAG( hdA ) + 1 ),
                    (char*)( PTR_BAG( hdTmp ) ),
                    GET_SIZE_BAG( hdTmp ) - 1 );
         hdI = NewBag( T_AGEN, SIZE_HD + GET_SIZE_BAG( hdTmp ) + 1 );
         *(char*)( PTR_BAG( hdI ) + 1 ) = '\0';
-        SyStrncat( (char*)( PTR_BAG( hdI ) + 1 ), "-", 1 );
-        SyStrncat( (char*)( PTR_BAG( hdI ) + 1 ),
+        strncat( (char*)( PTR_BAG( hdI ) + 1 ), "-", 1 );
+        strncat( (char*)( PTR_BAG( hdI ) + 1 ),
                    (char*)( PTR_BAG( hdTmp ) ),
                    GET_SIZE_BAG( hdTmp ) - 1 );
         SET_BAG( hdA ,  0 ,  hdI );
@@ -294,14 +294,14 @@ Bag       FunExtendCentralPcp (Bag hdCall)
     ptL[ -1 ] = INT_TO_HD( new );
     for ( i = old;  i < new;  i++ )
         ptL[ i ] = HD_IDENTITY( hdP );
-    CHANGED_BAG(HD_POWERS( hdP ));
+    //  CHANGED_BAG(HD_POWERS( hdP ));
     /** Resize <COMMUTATORS> and append the new trivial rhs ****************/
     Resize( HD_COMMUTATORS( hdP ), ( new*(new-1)/2 + 1 ) * SIZE_HD );
     ptL = COMMUTATORS( hdP );
     ptL[ -1 ] = INT_TO_HD( new * ( new - 1 ) / 2 );
     for ( i = old * (old-1) / 2;  i < new * (new-1) / 2;  i++ )
         ptL[ i ] = HD_IDENTITY( hdP );
-    CHANGED_BAG(HD_COMMUTATORS( hdP ));
+    //  CHANGED_BAG(HD_COMMUTATORS( hdP ));
     /** Resize <INDICES> and add the indices of the new generators. ********/
     Resize( HD_INDICES( hdP ), new * sizeof( Int ) );
     for ( i = old;  i < new;  i++ )
@@ -313,7 +313,7 @@ Bag       FunExtendCentralPcp (Bag hdCall)
     ptL[ -1 ] = INT_TO_HD( new );
     for ( i = old;  i < new;  i++ )
         ptL[ i ] = ELM_PLIST( hdL, i + 1 - old );
-    CHANGED_BAG(HD_WORDS( hdP ));
+    //  CHANGED_BAG(HD_WORDS( hdP ));
     /** Collector depend part **********************************************/
     switch ( COLLECTOR( hdP ) )
     {

@@ -25,7 +25,7 @@ export RANLIB  = ranlib
 
 export CC
 
-override CFLAGS += -w -I.. -I. -I../common -I../conf -I../../.. -include $(STUB) -DHAVE_UNISTD_H -DINSIDE_SPIRAL
+override CFLAGS += -w -fopenmp -I.. -I. -I../common -I../conf -I../../.. -include $(STUB) -DHAVE_UNISTD_H -DINSIDE_SPIRAL
 
 # this is our executable.
 TIMEREXE = $(OUTDIR)/$(notdir $(subst .c,,$(TIMER)))

@@ -8,7 +8,7 @@ Import(paradigms.distributed);
 # local functions and variables are prefixed with an underscore.
 
 _WriteStub := function(code, outdir, opts)
-    local outstr, s, stub, outfile, i;
+    local outstr, s, stub, outfile, i, testvec, multiline;
     
     outfile := Concat(outdir, "/testcode.h");
     
@@ -51,17 +51,50 @@ _WriteStub := function(code, outdir, opts)
     od;
 
     PrintTo(outfile, outstr);
+	
+	#add testvector if specified in opts
+	
+	if IsBound(opts.testvector) then
+		testvec := opts.testvector;
+		multiline := false;
+		if not IsVector(testvec) then
+			Error("opts.testvector must be a valid vector");
+		fi;
+		AppendTo(outfile, "\n\nstatic ", DeriveScalarType(opts), " testvector[] = {");
+		if Length(testvec) > 10 then
+			AppendTo(outfile, "\n    ");
+		fi;
+		for i in [1 .. Length(testvec)] do
+			if i > 1 then
+				AppendTo(outfile, ", ");
+				if Mod(i, 10) = 1 then
+					AppendTo(outfile, "\n    ");
+					multiline := true;
+				fi;
+			fi;
+			AppendTo(outfile, testvec[i]);
+		od;
+		if multiline then
+			AppendTo(outfile, "\n");
+		fi;
+		AppendTo(outfile, "};\n");
+	fi;
+	
 end;
 
 
-_MakeOutDirString := (opts) -> Concat(
-    Cond(IsBound(opts.outdir),
-        opts.outdir,
-        "/tmp"
-    ),
-    "/",
-    String(GetPid())
-);
+_MakeOutDirString := function(opts)
+	local tmp;
+	
+	tmp := GetEnv("SPIRAL_TEMP_OUT_PATH");
+	if (tmp = "") then
+        tmp := "/tmp";
+    fi;
+    return Concat(
+		Cond(IsBound(opts.outdir), opts.outdir, tmp),
+		"/",
+		String(GetPid()));
+end;
 
 
 #
@@ -152,17 +185,37 @@ _CallProfiler := function(request, code, opts)
 
 	retval := ReadVal(outputFile);
 	
-	#PrintLine("Profiler returned: ", retval);
-	
     return retval;
 end;
 
+
+## CMeasure(code, opts)
+##
+## Call profiler to time transform implemented by code
+
 CMeasure := (code, opts) -> _CallProfiler("time", code, opts);
 
+## CMatrix(code, opts)
+##
+## Call profiler to generate matrix equivalent of transform implemented by code
+
 CMatrix := function(code, opts)
-	ret := _CallProfiler("matrix", code, opts);
-	return Cond(IsMat(ret), TransposedMat(ret), ret);
+	local retmat;
+	retmat := _CallProfiler("matrix", code, opts);
+	return Cond(IsMat(retmat), TransposedMat(retmat), retmat);
 end;
+
+## CVector(code, vector, opts)
+##
+## Call profiler to apply transform implemented by code to vector
+
+CVector := function (code, vector, opts)
+	local retvec;
+	opts.testvector := vector;
+	retvec :=  _CallProfiler("vector", code, opts);
+	return retvec;
+end;
+
 
 #F Find maximum memory requirement of all arrays
 #F Used to determine memory arena size (for temp array reuse)

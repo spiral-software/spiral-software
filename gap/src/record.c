@@ -138,7 +138,7 @@ Obj    SetRecname ( Obj hdRec, Obj hdField, Obj hdVal ) {
     ptRec = FindRecnameRec(hdRec, hdField, &hdRealRec);
     if ( ptRec != 0 ) { /* field exists */
         ptRec[1] = hdVal;
-        CHANGED_BAG(hdRealRec);
+        //  CHANGED_BAG(hdRealRec);
     } else { /* create a new field */
         Resize(hdRec, GET_SIZE_BAG(hdRec) + 2*SIZE_HD);
         SET_BAG(hdRec,  GET_SIZE_BAG(hdRec) / SIZE_HD - 2 ,  hdField );
@@ -157,7 +157,7 @@ Obj    SetRecname_nobases ( Obj hdRec, Obj hdField, Obj hdVal ) {
     ptRec = _FindRecnameRec_nobases(hdRec, hdField);
     if ( ptRec != 0 ) { /* field exists */
         ptRec[1] = hdVal;
-        CHANGED_BAG(hdRec);
+        //  CHANGED_BAG(hdRec);
     } else { /* create a new field */
         Resize(hdRec, GET_SIZE_BAG(hdRec) + 2*SIZE_HD);
         SET_BAG(hdRec,  GET_SIZE_BAG(hdRec) / SIZE_HD - 2 ,  hdField );
@@ -595,7 +595,8 @@ Bag       HdStrSum; /* hdOperSym */
 Bag       HdCallSum; /* hdCall */
 
 Obj  SumRec ( Obj hdL, Obj hdR ) {
-    return EvBinaryRecOperator(HdRnSum, "~.operations.+", hdL, hdR, 0);
+    Obj ret = EvBinaryRecOperator(HdRnSum, "~.operations.+", hdL, hdR, 0);
+    return ret;
 }
 
 /****************************************************************************
@@ -915,7 +916,7 @@ Obj  DefaultLtRec ( Obj hdL, Obj hdR ) {
             hdVal = PTR_BAG(hdL)[2*i-1];
             k = i;
             while ( h < k
-                 && SyStrcmp( RECNAM_NAME( hdNam ),
+                 && strcmp( RECNAM_NAME( hdNam ),
                               RECNAM_NAME( PTR_BAG(hdL)[2*(k-h)-2] ) ) < 0 ) {
                 SET_BAG(hdL, 2*k-2,  PTR_BAG(hdL)[2*(k-h)-2] );
                 SET_BAG(hdL, 2*k-1,  PTR_BAG(hdL)[2*(k-h)-1] );
@@ -935,7 +936,7 @@ Obj  DefaultLtRec ( Obj hdL, Obj hdR ) {
             hdVal = PTR_BAG(hdR)[2*i-1];
             k = i;
             while ( h < k
-                 && SyStrcmp( RECNAM_NAME( hdNam ),
+                 && strcmp( RECNAM_NAME( hdNam ),
                               RECNAM_NAME( PTR_BAG(hdR)[2*(k-h)-2] ) ) < 0 ) {
                 SET_BAG(hdR, 2*k-2,  PTR_BAG(hdR)[2*(k-h)-2] );
                 SET_BAG(hdR, 2*k-1,  PTR_BAG(hdR)[2*(k-h)-1] );
@@ -962,7 +963,7 @@ Obj  DefaultLtRec ( Obj hdL, Obj hdR ) {
 		    } while(1);
 
             if ( PTR_BAG(hdL)[2*j-2] != PTR_BAG(hdR)[2*i-2] ) {
-                if ( SyStrcmp( RECNAM_NAME( PTR_BAG(hdR)[2*i-2] ),
+                if ( strcmp( RECNAM_NAME( PTR_BAG(hdR)[2*i-2] ),
                            RECNAM_NAME( PTR_BAG(hdL)[2*j-2] ) ) < 0 ) {
                     return HdTrue;
                 }
@@ -1279,9 +1280,9 @@ Bag       FunRecFields (Bag hdCall)
     for ( i = 1; i <= LEN_PLIST( hdNam ); i++ ) {
 
             hdStr = NewBag( T_STRING, GET_SIZE_BAG( PTR_BAG(hdRec)[2*i-2] ) );
-            SyStrncat( (char*)PTR_BAG(hdStr),
+            strncat( (char*)PTR_BAG(hdStr),
                        RECNAM_NAME( PTR_BAG(hdRec)[2*i-2] ),
-                       SyStrlen( RECNAM_NAME(PTR_BAG(hdRec)[2*i-2]) ) );
+                       strlen( RECNAM_NAME(PTR_BAG(hdRec)[2*i-2]) ) );
             SET_ELM_PLIST( hdNam, listpos++, hdStr );
 
     }

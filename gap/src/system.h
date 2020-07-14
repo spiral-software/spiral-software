@@ -1,6 +1,3 @@
-/* Changes for Spiral:
-   - support for environmant variables
-*/
 /****************************************************************************
 **
 *A  system.h                    GAP source                   Martin Schoenert
@@ -15,6 +12,9 @@
 **  This file declares operating system dependent functions.
 **
 */
+
+#ifndef _SYSTEM_H
+#define _SYSTEM_H
 
 #include		"system_types.h"
 
@@ -204,40 +204,6 @@ extern void             SyHelp ( char * topic, Int fin );
 
 /****************************************************************************
 **
-*F  SyStrlen( <str> ) . . . . . . . . . . . . . . . . . .  length of a string
-**
-**  'SyStrlen' returns the length of the string <str>, i.e.,  the  number  of
-**  characters in <str> that precede the terminating null character.
-*/
-extern  Int            SyStrlen ( const char * str );
-
-
-/****************************************************************************
-**
-*F  SyStrcmp( <str1>, <str2> )  . . . . . . . . . . . . . compare two strings
-**
-**  'SyStrcmp' returns an integer greater than, equal to, or less  than  zero
-**  according to whether <str1> is greater  than,  equal  to,  or  less  than
-**  <str2> lexicographically.
-*/
-extern  Int            SyStrcmp ( const char * str1,  const char * str2 );
-
-
-/****************************************************************************
-**
-*F  SyStrncat( <dst>, <src>, <len> )  . . . . .  append one string to another
-**
-**  'SyStrncat'  appends characters from the  <src>  to <dst>  until either a
-**  null character  is encoutered  or  <len>-1 characters have   been copied.
-**  <dst> becomes the concatenation of <dst> and <src>.  The resulting string
-**  is always null terminated.  'SyStrncat' returns a pointer to <dst>.
-*/
-extern  char *          SyStrncat ( char * dst,  const char * src, Int len );
-
-extern  char *          SyStrncpy ( char * dst,  const char * src, Int len );
-
-/****************************************************************************
-**
 *F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
 **
 **  The function 'SyFopen'  is called to open the file with the name  <name>.
@@ -340,36 +306,6 @@ extern  char *          SyFgets ( char * line,  Int length,  Int fid );
 */
 extern  void            SyFputs ( char * line, Int fid );
 
-
-/****************************************************************************
-**
-*V SyFwrite ( <ptr>, <size>, <count>, <fid> ) . . . .  read from the file <fid>
-**
-** Same as stdio fwrite() function.
-** Writes an array of <count> elements, each one with a <size> of size bytes, 
-** to the <fid> from the block of memory specified by <ptr>.
-** The total amount of bytes written if successful is (size * count).
-** Returns the total number of elements successfully written. If this number 
-** differs from the count parameter, it indicates an error.
-**
-*/
-
-extern	Int		SyFwrite ( const void * ptr, Int size, Int count, Int fid );
-
-/****************************************************************************
-**
-*V SyFread ( <ptr>, <size>, <count>, <fid> ) . . . .  read from the file <fid>
-**
-** Same as stdio fread() function.
-** Reads an array of <count> elements, each one with a <size> of size bytes, 
-** from the <fid> and stores them in the block of memory specified by <ptr>.
-** The total amount of bytes read if successful is (size * count).
-** Returns the total number of elements successfully read. If this number 
-** differs from the count parameter, either an error occured or the End Of File was reached.
-**
-*/
-
-extern	Int		SyFread ( void * ptr, Int size, Int count, Int fid );
 
 /****************************************************************************
 **
@@ -527,4 +463,228 @@ void SyLoadHistory();
 
 void SySaveHistory();
 
-#include "system4.h"
+#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
+#include		"system_types.h"
+
+
+#ifdef  SYS_HAS_STACK_ALIGN
+#define SYS_STACK_ALIGN         SYS_HAS_STACK_ALIGN
+#endif
+
+#ifndef SYS_ARCH
+# define SYS_ARCH = "unknown";
+#endif
+
+#ifndef SY_STOR_MIN
+#  define SY_STOR_MIN   0 
+#endif
+
+#ifndef SYS_HAS_STACK_ALIGN
+#define SYS_STACK_ALIGN         sizeof(UInt *)
+#endif
+
+#ifdef SYS_HAS_SIGNALS
+# define HAVE_SIGNAL            1
+#else
+# define HAVE_SIGNAL            0
+#endif
+
+#define HAVE_ACCESS		0
+#define HAVE_STAT		0
+#define HAVE_UNLINK             0
+#define HAVE_MKDIR              0
+#define HAVE_GETRUSAGE		0
+#define HAVE_DOTGAPRC		0
+#define HAVE_GHAPRC             0
+
+#ifdef SYS_IS_BSD
+# undef  HAVE_ACCESS
+# define HAVE_ACCESS		1
+# undef  HAVE_STAT
+# define HAVE_STAT              1
+# undef  HAVE_UNLINK
+# define HAVE_UNLINK            1
+# undef  HAVE_MKDIR
+# define HAVE_MKDIR             1
+# undef  HAVE_GETRUSAGE
+# define HAVE_GETRUSAGE		1
+# undef  HAVE_DOTGAPRC
+# define HAVE_DOTGAPRC          1
+#endif
+
+#ifdef SYS_IS_USG
+# undef  HAVE_ACCESS
+# define HAVE_ACCESS		1
+# undef  HAVE_STAT
+# define HAVE_STAT              1
+# undef  HAVE_UNLINK
+# define HAVE_UNLINK            1
+# undef  HAVE_MKDIR
+# define HAVE_MKDIR             1
+# undef  HAVE_DOTGAPRC
+# define HAVE_DOTGAPRC          1
+#endif
+
+#ifdef SYS_HAS_NO_GETRUSAGE
+# undef  HAVE_GETRUSAGE
+# define HAVE_GETRUSAGE		0
+#endif
+
+
+/****************************************************************************
+**
+
+*V  SYS_ANSI  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  ANSI C
+*/
+#ifdef SYS_HAS_ANSI
+# define SYS_ANSI       SYS_HAS_ANSI
+#else
+# ifdef __STDC__
+#  define SYS_ANSI      1
+# else
+#  define SYS_ANSI      0
+# endif
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_BSD . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . BSD
+*/
+#ifdef SYS_IS_BSD
+# define SYS_BSD        1
+#else
+# define SYS_BSD        0
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_USG . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . USG
+*/
+#ifdef SYS_IS_USG
+# define SYS_USG        1
+#else
+# define SYS_USG        0
+#endif
+
+#define FPUTS_TO_STDERR(str) fputs (str, stderr)
+
+/****************************************************************************
+**
+*T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
+*/
+typedef UInt** Bag;
+
+
+/****************************************************************************
+**
+*T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
+**
+**  'Obj' is the type of objects.
+*/
+#define Obj             Bag
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*V  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
+**
+**  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
+**  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
+**  must be  divisable by 'SyStackAlign'.  So if it  is 1, identifiers may be
+**  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
+**  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
+**  from a macro passed from the makefile, because it is machine dependent.
+**
+**  This value is passed to 'InitBags'.
+*/
+extern UInt SyStackAlign;
+
+
+
+/****************************************************************************
+**
+*V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
+**
+*/
+extern UInt SyMsgsFlagBags;
+
+
+/****************************************************************************
+**
+*V  SyStorMin . . . . . . . . . . . . . .  default size for initial workspace
+**
+**  'SyStorMin' is the size of the initial workspace allocated by Gasman,
+**  in kilobytes
+**
+**  The default size is 0; the value must be specifed with the '-m' option on
+**  the command line to start GAP.
+*/
+extern Int SyStorMin;
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * gasman interface * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+*F  SyAllocBags( <size> ) . . . . . . allocate memory block of <size> bytes
+**
+**  See description in system4.c
+*/
+extern UInt*** SyAllocBags(Int size);
+
+
+/****************************************************************************
+**
+*F  SyAbortBags(<msg>)  . . . . . . . . . . abort GAP in case of an emergency
+**
+**  'SyAbortBags' is the function called by Gasman in case of an emergency.
+*/
+extern void SyAbortBags(
+    Char* msg);
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+*F  InitSystem4( <argc>, <argv> )  . . .  initialize system package from GAP4
+**
+**  'InitSystem' is called very early during the initialization from  'main'.
+**  It is passed the command line array  <argc>, <argv>  to look for options.
+**
+**  For UNIX it initializes the default files 'stdin', 'stdout' and 'stderr',
+**  installs the handler 'syAnsIntr' to answer the user interrupts '<ctr>-C',
+**  scans the command line for options, tries to  find  'LIBNAME/init.g'  and
+**  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
+*/
+extern void InitSystem4(
+    Int                 argc,
+    Char* argv[]);
+
+
+
+typedef void            (*TNumAbortFuncBags) (
+    Char* msg);
+
+extern  TNumAbortFuncBags       AbortFuncBags;
+
+
+#endif // _SYSTEM_H
+

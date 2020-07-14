@@ -1,8 +1,12 @@
-/* need documentation for this file */
+/*
+ *  Copyright (c) 2018-2020, Carnegie Mellon University
+ *  See LICENSE for details
+ */
 
 #include        <math.h>
+#include        <stdio.h>
 #include        <stdlib.h>
-#include	<string.h>
+#include        <string.h>
 
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* dynamic storage manager         */
@@ -16,12 +20,15 @@
 
 #include		"GapUtils.h"
 
-Bag       CheckInputType (int input_type)
+Bag CheckInputType(int input_type)
 {
-    if(input_type < 0 || input_type >= INPUT_LAST)
-	return Error("Bad input type %d, must be in range [0,%d]", 
-		     input_type, INPUT_LAST-1);
-    else return HdVoid;
+	if (input_type < 0 || input_type >= INPUT_LAST) {
+		return Error("Bad input type %d, must be in range [0,%d]",
+			input_type, INPUT_LAST - 1);
+	}
+	else {
+		return HdVoid;
+	}
 }
 
 
@@ -32,53 +39,63 @@ Bag       CheckInputType (int input_type)
 **
 */
 
+extern void yypush_new_buffer_state();
+extern void yypop_buffer_state();
+
 int isReadValFromFile;
 int addEndOfLineOnlyOnce;
-Bag       ReadValFromFile (char *fname)
+
+Bag ReadValFromFile(char* fname)
 {
-    Bag hdResult;
-    /* Read and evaluate test output from temporary file                   */
+	Bag hdResult;
+	/* Read and evaluate test output from temporary file                   */
 	isReadValFromFile = 1;
 	addEndOfLineOnlyOnce = 1;
-    OpenInput(fname);
-    EnterKernel();
-    hdResult = ReadIt();
-    if(hdResult!=NULL)
-	hdResult = EVAL(hdResult);
-    if(hdResult==NULL || hdResult==HdVoid)
-	hdResult = HdFalse;
-    ExitKernel( 0 );
-    CloseInput();
+	int res = OpenInput(fname);
+	if (res == 0) {
+		return HdFalse;
+	}
+	yypush_new_buffer_state();
+	hdResult = ReadIt();
+	if (hdResult != NULL) {
+		hdResult = EVAL(hdResult);
+	}
+	if (hdResult == NULL || hdResult == HdVoid) {
+		hdResult = HdFalse;
+	}
+	yypop_buffer_state();
+	CloseInput();
 	isReadValFromFile = 0;
 	addEndOfLineOnlyOnce = 0;
-    return hdResult;
+	return hdResult;
 }
 
-Bag       FunReadVal (Bag hdCall)
+Bag FunReadVal(Bag hdCall)
 {
-    char * usage = "usage: ReadVal( <fname> )";
-    Bag hdFname;
-    char * fname;
+	char* usage = "usage: ReadVal( <fname> )";
+	Bag hdFname;
+	char* fname;
 
-    /* get and check the argument                                          */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error(usage, 0,0);
-    hdFname = EVAL( PTR_BAG(hdCall)[1] );
-    if( GET_TYPE_BAG(hdFname) != T_STRING ) return Error(usage,0,0);
+	/* get and check the argument                                          */
+	if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) return Error(usage, 0, 0);
+	hdFname = EVAL(PTR_BAG(hdCall)[1]);
+	if (GET_TYPE_BAG(hdFname) != T_STRING) 
+		return Error(usage, 0, 0);
 
-    fname = (char*) PTR_BAG(hdFname);
-    GuSysCheckExists(fname);
-    return ReadValFromFile(fname);
+	fname = (char*)PTR_BAG(hdFname);
+	GuSysCheckExists(fname);
+	return ReadValFromFile(fname);
 }
 
 
 /****************************************************************************
 **
-*F  InitSPIRAL_SPLProg() . . . . . . . . . 
+*F  InitSPIRAL_SPLProg() . . . . . . . . .
 **
-**  'InitSPIRAL_SPLProg' initializes 
+**  'InitSPIRAL_SPLProg' initializes
 */
 void InitSPIRAL_SPLProg(void) {
-    GlobalPackage2("spiral", "splprog");
-    InstIntFunc( "ReadVal",           FunReadVal);
-    EndPackage();
+	GlobalPackage2("spiral", "splprog");
+	InstIntFunc("ReadVal", FunReadVal);
+	EndPackage();
 }

@@ -76,7 +76,7 @@ Class(SSE_2x64f, SIMD_Intel, rec(
         arithcost := (self, opcount) >> opcount[1]+opcount[2]
     ),
     
-    includes     := self >> ["<include/omega64.h>"] :: self.intelCommonIncludes(), 
+    includes     := self >> ["<include/omega64.h>", "<include/mm_malloc.h>"] :: self.intelCommonIncludes(), 
     active       := true,
     isFixedPoint := false,
     isFloat      := true,

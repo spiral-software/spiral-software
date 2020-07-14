@@ -6,7 +6,7 @@ REM  See LICENSE for details
 set SGBETEMPDIR=%cd%
 
 set OLDPATH=%PATH%
-set PATH_FOR_PROFILER_COMPILER="C:\Users\patrick\Documents\LLVM\bin"
+set PATH_FOR_PROFILER_COMPILER="C:\LLVM\bin"
 set PATH=%PATH%;%PATH_FOR_PROFILER_COMPILER%
 
 REM  When SPIRAL is installed using the windows installer and the LLVM clang compiler

@@ -26,8 +26,30 @@ if (${PERFORM_TESTS})
     add_subdirectory (Basic)
 endif ()
 
+##  Look for python3, and if found verify if major/minor version.  Don't add any
+##  tests (except Basic above) if we can't find python3 or it's major/minor
+##  version is less than our required minium
+
+set (Python3_MIN_REQUIRED_VERSION "3.6")
+set (_p3_good FALSE)
+
+find_package (Python3 COMPONENTS Interpreter)
+if (${Python3_FOUND})
+    ##  compare version ...
+    string (COMPARE LESS ${Python3_VERSION} ${Python3_MIN_REQUIRED_VERSION} _p3_old)
+    if (${_p3_old})
+	##  Python3 version found is less than minimum required -- too old
+	message (STATUS "Found Python3: Version = ${Python3_VERSION}, Less than required version ${Python3_MIN_REQUIRED_VERSION}, do basic tests ONLY")
+    else ()
+	message (STATUS "Found Python3: Version = ${Python3_VERSION}")
+	set (_p3_good TRUE)
+    endif ()
+else ()
+    message (STATUS "Python3 NOT FOUND: do basic tests ONLY")
+endif ()
+
 string (COMPARE NOTEQUAL "${TESTS_RUN_SCALAR_TRANSFORMS}" "OFF" PERFORM_TESTS)
-if (${PERFORM_TESTS})
+if (${PERFORM_TESTS} AND ${_p3_good})
     add_subdirectory (Scalar-Transforms)
 endif ()
 
@@ -36,7 +58,7 @@ string (COMPARE EQUAL "${CMAKE_HOST_SYSTEM_PROCESSOR}" "x86_64" INTEL_LINUX)
 if (${INTEL_WIN} OR ${INTEL_LINUX})
     ##  Intel architecture, include the AVX/SIMD tests
     string (COMPARE NOTEQUAL "${TESTS_RUN_X86_SIMD}" "OFF" PERFORM_TESTS)
-    if (${PERFORM_TESTS})
+    if (${PERFORM_TESTS} AND ${_p3_good})
 	add_subdirectory (X86-SIMD)
     endif ()
 endif ()
@@ -49,16 +71,18 @@ if (${OpenMP_FOUND})
     if (NOT ${ARM_LINUX})
 	##  Don't generate for ARM, no SIMD support
 	string (COMPARE NOTEQUAL "${TESTS_RUN_OPENMP}" "OFF" PERFORM_TESTS)
-	if (${PERFORM_TESTS})
+	if (${PERFORM_TESTS} AND ${_p3_good})
 	    add_subdirectory (OpenMP)
 	endif ()
     endif ()
 endif ()
 
 string (COMPARE NOTEQUAL "${TESTS_RUN_ADVANCED}" "OFF" PERFORM_TESTS)
-if (${PERFORM_TESTS})
+if (${PERFORM_TESTS} AND ${_p3_good})
     add_subdirectory (Advanced)
 endif ()
+
+list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 
 enable_testing ()
 

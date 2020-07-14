@@ -380,7 +380,7 @@ Obj  FunCurrentDir ( Obj hdCall )
     if ( GET_SIZE_BAG(hdCall) != 1 * SIZE_HD )
 		return Error(usage, 0, 0);
 
-    if ( SyStrcmp(file, "*stdin*")==0 || SyStrcmp(file, "*stderr*")==0 )
+    if ( strcmp(file, "*stdin*")==0 || strcmp(file, "*stderr*")==0 )
         return StringToHd(config_demand_val("spiral_dir")->strval );
 
     else {
@@ -388,7 +388,7 @@ Obj  FunCurrentDir ( Obj hdCall )
 		char path_sep = config_demand_val("path_sep")->strval[0];
 		Obj hd = StringToHd(file);
 
-		pos = SyStrlen(file);
+		pos = strlen(file);
 		while ( pos >=0 && file[pos] != path_sep )
 			--pos;
 
@@ -513,11 +513,11 @@ Obj PathNSSpec(Obj hd, char path_sep) {
         UInt rhs_len, lhs_len;
         lhs_st = PathNSSpec(PTR_BAG(hd)[0], path_sep);
         rhs = RecnameObj(PTR_BAG(hd)[1]);
-        rhs_len = SyStrlen(RECNAM_NAME(rhs));
+        rhs_len = strlen(RECNAM_NAME(rhs));
         lhs_len = GET_SIZE_BAG(lhs_st) - 1;
         Resize(lhs_st, lhs_len + rhs_len + 2);
         CHARS_STRING(lhs_st)[lhs_len] = path_sep;
-        SyStrncat(CHARS_STRING(lhs_st) + lhs_len + 1, RECNAM_NAME(rhs), rhs_len);
+        strncat(CHARS_STRING(lhs_st) + lhs_len + 1, RECNAM_NAME(rhs), rhs_len);
         return lhs_st;
     }
     else return Error("pkg.subpkg... expected", 0, 0);
@@ -571,8 +571,8 @@ Bag       FunNSFields (Bag hdCall)
         Obj ent = PTR_BAG(hdNS)[i];
         if ( ent == 0 || VAR_VALUE(ent)==0 )  continue;
         else {
-            Obj hdNam = NEW_STRING(SyStrlen(VAR_NAME(ent)));
-            strncpy(CHARS_STRING(hdNam), VAR_NAME(ent), SyStrlen(VAR_NAME(ent))+1);
+            Obj hdNam = NEW_STRING(strlen(VAR_NAME(ent)));
+            strncpy(CHARS_STRING(hdNam), VAR_NAME(ent), strlen(VAR_NAME(ent))+1);
             SET_BAG(hdRes, listpos++,  hdNam );
         }
     }

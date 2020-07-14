@@ -148,12 +148,25 @@ _allChildren := function( arg )
 end;
 # children[i] could be a complicated SPL expansion of the nonterms[i]
 # or children could be same as nonterms, depending on the workflow you are using
+#_apply := (R, nt, children, nonterms) -> Checked(IsRule(R), IsSPL(nt),
+#    When(IsNewRule(R), 
+#	 R.apply(nt, children, nonterms),
+#	 When(NumGenArgs(R.rule)=2, 
+#	      R.rule(nt.params, children),
+#	      R.rule(nt.params, children, nonterms)))
+#);
+
+# Current rule wrap for fftx needs attributes from nt object. 
+# The wrapper has var. arg. This fact is used here
+# to recognize the wrapper and pass nt instead of its params.
 _apply := (R, nt, children, nonterms) -> Checked(IsRule(R), IsSPL(nt),
     When(IsNewRule(R), 
-	 R.apply(nt, children, nonterms),
-	 When(NumGenArgs(R.rule)=2, 
-	      R.rule(nt.params, children),
-	      R.rule(nt.params, children, nonterms)))
+     R.apply(nt, children, nonterms),
+     Cond(NumGenArgs(R.rule)=-1,
+            R.rule(nt, children, nonterms),
+            NumGenArgs(R.rule)=2, 
+            R.rule(nt.params, children),
+            R.rule(nt.params, children, nonterms)))
 );
 
 #F IsApplicableRule( <rule>, <non-terminal>, <ruleset> )

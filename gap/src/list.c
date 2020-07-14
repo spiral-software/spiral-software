@@ -635,7 +635,6 @@ Bag       SumSclList (Bag hdL, Bag hdR)
     Int                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_LIST( hdR );
     hdS = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdS, len );
@@ -648,7 +647,6 @@ Bag       SumSclList (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdS );
     return hdS;
 }
 
@@ -661,7 +659,6 @@ Bag       SumListScl (Bag hdL, Bag hdR)
     Int                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_LIST( hdL );
     hdS = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdS, len );
@@ -674,7 +671,6 @@ Bag       SumListScl (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdS );
     return hdS;
 }
 
@@ -688,7 +684,6 @@ Bag       SumListList (Bag hdL, Bag hdR)
     Int                i;              /* loop variable                   */
 
     /* get and check the length                                            */
-    EnterKernel();
     len = LEN_LIST( hdL );
     if ( len != LEN_LIST( hdR ) ) {
         return Error(
@@ -707,7 +702,6 @@ Bag       SumListList (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdS );
     return hdS;
 }
 
@@ -748,7 +742,6 @@ Bag       DiffSclList (Bag hdL, Bag hdR)
     Int                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_LIST( hdR );
     hdD = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdD, len );
@@ -761,7 +754,6 @@ Bag       DiffSclList (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdD );
     return hdD;
 }
 
@@ -774,7 +766,6 @@ Bag       DiffListScl (Bag hdL, Bag hdR)
     Int                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_LIST( hdL );
     hdD = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdD, len );
@@ -787,7 +778,6 @@ Bag       DiffListScl (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdD );
     return hdD;
 }
 
@@ -801,7 +791,6 @@ Bag       DiffListList (Bag hdL, Bag hdR)
     Int                i;              /* loop variable                   */
 
     /* get and check the length                                            */
-    EnterKernel();
     len = LEN_LIST( hdL );
     if ( len != LEN_LIST( hdR ) ) {
         return Error(
@@ -820,7 +809,6 @@ Bag       DiffListList (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdD );
     return hdD;
 }
 
@@ -864,7 +852,6 @@ Bag       ProdSclList (Bag hdL, Bag hdR)
     Int                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_LIST( hdR );
     hdP = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdP, len );
@@ -879,7 +866,6 @@ Bag       ProdSclList (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdP );
     return hdP;
 }
 
@@ -892,7 +878,6 @@ Bag       ProdListScl (Bag hdL, Bag hdR)
     Int                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_LIST( hdL );
     hdP = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdP, len );
@@ -907,7 +892,6 @@ Bag       ProdListScl (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdP );
     return hdP;
 }
 
@@ -921,7 +905,6 @@ Bag       ProdListList (Bag hdL, Bag hdR)
     Int                i;              /* loop variable                   */
 
     /* get and check the length                                            */
-    EnterKernel();
     len = LEN_LIST( hdL );
     if ( len != LEN_LIST( hdR ) ) {
         return Error(
@@ -941,7 +924,6 @@ Bag       ProdListList (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdP );
     return hdP;
 }
 

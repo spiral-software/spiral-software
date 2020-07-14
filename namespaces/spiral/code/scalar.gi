@@ -214,7 +214,7 @@ end;
 #
 PrintScalarToSPLNC := s -> s.printSPL();
 
-Value.printSPL := self >> Global.PrintNumberToSPLNC(self.v);
+Value.printSPL := self >> spiral.spl.PrintNumberToSPLNC(self.v);
 Exp.printSPL := self >> Print(self.name, "(",
     DoForAllButLast(self.args, a->Chain(a.printSPL(), Print(", "))),
     Last(self.args).printSPL(), ")");

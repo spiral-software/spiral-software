@@ -68,5 +68,6 @@ ss := SumsRuleTree(rt, opts);
 
 c := CodeSums(ss, opts);
 Add(c.cmds[1].cmds[2].params, sym);
-PrintCode(name, c, opts);
-PrintTo(name::".c", PrintCode(name, c, opts));
+
+##  PrintCode(name, c, opts);
+##  PrintTo(name::".c", PrintCode(name, c, opts));

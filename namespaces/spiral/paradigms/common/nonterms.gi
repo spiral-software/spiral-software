@@ -32,7 +32,7 @@ PermClass.doNotMeasure := true;
 #F
 #F *!!* Should be used for all new constructs instead of tSPL
 #F
-Class(Tagged_tSPL, TaggedNonTerminal, LISPExport, rec(
+Class(Tagged_tSPL, TaggedNonTerminal, rec(
     isTSPL := true
 ));
 

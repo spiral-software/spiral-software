@@ -278,7 +278,7 @@ void DbgErrorLoopStarting() {
 
 static Obj DebugEVAL ( Obj hdE ) {
     CheckBreakpoints(hdE, 0);
-    return (* OrigEvTab[TNUM_BAG( hdE )])(hdE);
+    return (* OrigEvTab[GET_TYPE_BAG( hdE )])(hdE);
 }
 
 static Obj DebugVarEVAL ( Obj hdVar ) {

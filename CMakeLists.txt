@@ -6,12 +6,12 @@
 ##
 
 # specify this only here, lower levels use CMAKE_MINIMUM_REQUIRED_VERSION that this sets
-cmake_minimum_required(VERSION 3.8...3.14)
+cmake_minimum_required(VERSION 3.14)
 
 set(CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, MinSizeRel")
 
 project(SPIRAL
-        VERSION 8.1.2
+        VERSION 8.2.0
 		DESCRIPTION "SPIRAL Project"
 		LANGUAGES C CXX)
 		

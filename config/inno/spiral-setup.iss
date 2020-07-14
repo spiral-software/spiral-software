@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Spiral"
-#define MyAppVersion "8.1.2"
+#define MyAppVersion "8.2.0"
 #define MyAppPublisher "SpiralGen, Inc."
 #define MyAppURL "https://www.spiralgen.com"
 #define MyAppExeName "spiral.bat"
@@ -74,7 +74,7 @@ Source: "{#SourcePath}\tests\*"; DestDir: "{app}\tests"; Flags: ignoreversion re
 Source: "{#SourcePath}\config\inno\installer-readme.md"; DestDir: "{app}"; Flags: isreadme
 
 [Registry]
-Root: HKA; Subkey: "Environment"; ValueType:string; ValueName: "SPIRAL_PROFILER_TARGET_PATH"; ValueData: "{code:GetDataOutputDir}\profiler"; Flags: preservestringtype uninsdeletevalue
+Root: HKA; Subkey: "Environment"; ValueType:string; ValueName: "SPIRAL_PROFILER_WORKDIR_PATH"; ValueData: "{code:GetDataOutputDir}\profiler"; Flags: preservestringtype uninsdeletevalue
 Root: HKA; Subkey: "Software\SpiralGen"; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\SpiralGen\{#MyAppName}"; ValueType: string; ValueName: "DataOutputsFolder"; ValueData: "{code:GetDataOutputDir}"; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\SpiralGen\{#MyAppName}"; ValueType: string; ValueName: "VSCompilerName"; ValueData: "{code:GetCCompilerName}"; Flags: uninsdeletevalue;
@@ -706,7 +706,7 @@ end;
 
 
 [Run]
-Filename: "{cmd}"; Parameters: "/C set SPIRAL_PROFILER_TARGET_PATH={code:GetDataOutputDir}\profiler & ""{app}\{#MyAppExeName}"""; WorkingDir: "{code:GetDataOutputDir}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: postinstall skipifsilent unchecked
+Filename: "{cmd}"; Parameters: "/C set SPIRAL_PROFILER_WORKDIR_PATH={code:GetDataOutputDir}\profiler & ""{app}\{#MyAppExeName}"""; WorkingDir: "{code:GetDataOutputDir}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: postinstall skipifsilent unchecked
 
 [UninstallDelete]
 ;; uninstall only files potentially created by running spiral...

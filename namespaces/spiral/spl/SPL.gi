@@ -59,7 +59,7 @@ HashAsSPL := o -> Cond(
 #
 # Base class for all SPL constructs
 # ==========================================================================
-Class(ClassSPL, LISPExport, IsabelleExport, AttrMixin, rec(
+Class(ClassSPL, AttrMixin, rec(
     isSPL := true,
     transposed := false,
 

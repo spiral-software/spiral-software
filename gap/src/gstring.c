@@ -516,7 +516,7 @@ Int            IsPossString (Bag hdList)
 */
 Bag       EqString (Bag hdL, Bag hdR)
 {
-    if ( SyStrcmp( (char*)PTR_BAG(hdL), (char*)PTR_BAG(hdR) ) == 0 )
+    if ( strcmp( (char*)PTR_BAG(hdL), (char*)PTR_BAG(hdR) ) == 0 )
         return HdTrue;
     return HdFalse;
 }
@@ -533,7 +533,7 @@ Bag       EqString (Bag hdL, Bag hdR)
 */
 Bag       LtString (Bag hdL, Bag hdR)
 {
-    if ( SyStrcmp( (char*)PTR_BAG(hdL), (char*)PTR_BAG(hdR) ) < 0 )
+    if ( strcmp( (char*)PTR_BAG(hdL), (char*)PTR_BAG(hdR) ) < 0 )
         return HdTrue;
     return HdFalse;
 }
@@ -740,7 +740,7 @@ Bag       EvMakeString (Bag hdMake)
     Bag           hdString;
 
     hdString = NewBag( T_STRING, GET_SIZE_BAG(hdMake) );
-    SyStrncat( (char*)PTR_BAG(hdString), (char*)PTR_BAG(hdMake), GET_SIZE_BAG(hdMake)-1 );
+    strncat( (char*)PTR_BAG(hdString), (char*)PTR_BAG(hdMake), GET_SIZE_BAG(hdMake)-1 );
 
     return hdString;
 }

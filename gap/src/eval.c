@@ -299,7 +299,14 @@ Obj       Prod (Obj hd)
     hdL = EVAL( PTR_BAG(hd)[0] );
 	hdR = EVAL( PTR_BAG(hd)[1] );
 
+#if _DEBUG
+    ObjType typeL = GET_TYPE_BAG(hdL);
+    ObjType typeR = GET_TYPE_BAG(hdR);
+    Obj(*prodfunc)(Obj, Obj) = TabProd[typeL][typeR];
+    hdResult = prodfunc(hdL, hdR);
+#else
     hdResult = PROD( hdL, hdR );
+#endif
 	return hdResult;
 }
 
@@ -1246,7 +1253,7 @@ Obj       CopyShadow (Obj hdOld)
         else SET_BAG(hdNew, i-1,  0 );
     }
 
-    SET_FLAG_BAG(hdNew, GET_FLAGS_BAG(hdOld) & (BF_ENVIRONMENT | BF_ENV_VAR | BF_WEAKREFS));
+    SET_FLAG_BAG(hdNew, GET_FLAGS_BAG(hdOld) & (BF_ENVIRONMENT | BF_ENV_VAR /* | BF_WEAKREFS */ ));
 
     /* return the shadow                                                   */
     return hdNew;
@@ -1668,17 +1675,17 @@ void            PrVar (Obj hdVar)
 */
 void            PrVarName (char *name)
 {
-    if ( !SyStrcmp(name,"and")      || !SyStrcmp(name,"do")
-      || !SyStrcmp(name,"elif")     || !SyStrcmp(name,"else")
-      || !SyStrcmp(name,"end")      || !SyStrcmp(name,"fi")
-      || !SyStrcmp(name,"for")      || !SyStrcmp(name,"function")
-      || !SyStrcmp(name,"if")       || !SyStrcmp(name,"in")
-      || !SyStrcmp(name,"local")    || !SyStrcmp(name,"mod")
-      || !SyStrcmp(name,"not")      || !SyStrcmp(name,"od")
-      || !SyStrcmp(name,"or")       || !SyStrcmp(name,"repeat")
-      || !SyStrcmp(name,"return")   || !SyStrcmp(name,"then")
-      || !SyStrcmp(name,"until")    || !SyStrcmp(name,"while")
-      || !SyStrcmp(name,"quit") ) {
+    if ( !strcmp(name,"and")      || !strcmp(name,"do")
+      || !strcmp(name,"elif")     || !strcmp(name,"else")
+      || !strcmp(name,"end")      || !strcmp(name,"fi")
+      || !strcmp(name,"for")      || !strcmp(name,"function")
+      || !strcmp(name,"if")       || !strcmp(name,"in")
+      || !strcmp(name,"local")    || !strcmp(name,"mod")
+      || !strcmp(name,"not")      || !strcmp(name,"od")
+      || !strcmp(name,"or")       || !strcmp(name,"repeat")
+      || !strcmp(name,"return")   || !strcmp(name,"then")
+      || !strcmp(name,"until")    || !strcmp(name,"while")
+      || !strcmp(name,"quit") ) {
         Pr("\\",0,0);
     }
 
@@ -1889,7 +1896,7 @@ PtrIntFunc     FindIntFunc(char* name)
 {
     UInt i;
     for (i=0; i<IntFuncsCount; i++) {
-        if (SyStrcmp(IntFuncs[i].name, name)==0) {
+        if (strcmp(IntFuncs[i].name, name)==0) {
             return IntFuncs[i].func;
         }
     }
@@ -1906,7 +1913,7 @@ Bag            InstIntFunc (char *name, PtrIntFunc func)
 {
     Obj           hdDef,  hdVar;
 
-    hdDef = NewBag( T_FUNCINT, sizeof(PtrIntFunc) + SyStrlen(name) + 1 );
+    hdDef = NewBag( T_FUNCINT, sizeof(PtrIntFunc) + strlen(name) + 1 );
     * (PtrIntFunc*) PTR_BAG(hdDef) = func;
 
     if (FindIntFunc(name) != 0)
@@ -1927,7 +1934,7 @@ Bag            InstIntFunc (char *name, PtrIntFunc func)
 
     ProtectVar(hdVar);
     /* this enables us to print internal functions */
-    SyStrncat( (char*)PTR_BAG(hdDef) + sizeof(PtrIntFunc), name, SyStrlen(name));
+    strncat( (char*)PTR_BAG(hdDef) + sizeof(PtrIntFunc), name, strlen(name));
     return hdDef;
 }
 

@@ -27,17 +27,19 @@ else()
 endif()
 
 ##  Is this a 64 bit processor?
-cmake_host_system_information(RESULT PROCIS64BIT QUERY IS_64BIT)
-message (STATUS "Processor is 64 bit = ${PROCIS64BIT}")
-if (${PROCIS64BIT} EQUAL 1)
-    set(SPIRAL_COMPILE_DEFNS SYS_IS_64_BIT)
+##  cmake_host_system_information(RESULT PROCIS64BIT QUERY IS_64BIT)
+##  message (STATUS "Processor is 64 bit = ${PROCIS64BIT}")
+##  Could be 64 bit system but building for 32 bit; test sizeof(void_p) instead
+
+if (${CMAKE_SIZEOF_VOID_P} EQUAL "8")
+    set(SPIRAL_COMPILE_DEFNS SYS_IS_64_BIT WIN64)
 else()
     set(SPIRAL_COMPILE_DEFNS )
 endif()
 
 if (WIN32)
     list(APPEND SPIRAL_COMPILE_DEFNS
-		WIN32 WIN64 YY_NO_UNISTD_H _USE_MATH_DEFINES _CONSOLE inline=__inline)
+		WIN32 YY_NO_UNISTD_H _USE_MATH_DEFINES _CONSOLE inline=__inline)
 endif()
 
 string(COMPARE EQUAL "${CMAKE_BUILD_TYPE}" "Debug" SPIRAL_COMPILE_DEBUG)
@@ -178,7 +180,6 @@ set(SOURCES
     statemen.h
     string4.h
     system.h
-    system4.h
     system_types.h
     tables.h
     tietze.h

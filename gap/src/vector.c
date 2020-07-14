@@ -617,7 +617,6 @@ Bag       SumIntVector (Bag hdL, Bag hdR)
     UInt       i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_PLIST( hdR );
     hdS = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdS, len );
@@ -639,7 +638,6 @@ Bag       SumIntVector (Bag hdL, Bag hdR)
 
     /* return the result                                                   */
     if ( isVec )  Retype( hdS, T_VECTOR );
-    ExitKernel( hdS );
     return hdS;
 }
 
@@ -666,7 +664,6 @@ Bag       SumVectorInt (Bag hdL, Bag hdR)
     UInt       i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_PLIST( hdL );
     hdS = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdS, len );
@@ -688,7 +685,6 @@ Bag       SumVectorInt (Bag hdL, Bag hdR)
 
     /* return the result                                                   */
     if ( isVec )  Retype( hdS, T_VECTOR );
-    ExitKernel( hdS );
     return hdS;
 }
 
@@ -717,7 +713,6 @@ Bag       SumVectorVector (Bag hdL, Bag hdR)
     UInt       i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_PLIST( hdL );
     if ( len != LEN_PLIST( hdR ) ) {
         return Error(
@@ -747,7 +742,6 @@ Bag       SumVectorVector (Bag hdL, Bag hdR)
 
     /* return the result                                                   */
     if ( isVec )  Retype( hdS, T_VECTOR );
-    ExitKernel( hdS );
     return hdS;
 }
 
@@ -774,7 +768,6 @@ Bag       DiffIntVector (Bag hdL, Bag hdR)
     UInt       i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_PLIST( hdR );
     hdD = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdD, len );
@@ -796,7 +789,6 @@ Bag       DiffIntVector (Bag hdL, Bag hdR)
 
     /* return the result                                                   */
     if ( isVec )  Retype( hdD, T_VECTOR );
-    ExitKernel( hdD );
     return hdD;
 }
 
@@ -823,7 +815,6 @@ Bag       DiffVectorInt (Bag hdL, Bag hdR)
     UInt       i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_PLIST( hdL );
     hdD = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdD, len );
@@ -845,7 +836,6 @@ Bag       DiffVectorInt (Bag hdL, Bag hdR)
 
     /* return the result                                                   */
     if ( isVec )  Retype( hdD, T_VECTOR );
-    ExitKernel( hdD );
     return hdD;
 }
 
@@ -874,7 +864,6 @@ Bag       DiffVectorVector (Bag hdL, Bag hdR)
     UInt       i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_PLIST( hdL );
     if ( len != LEN_PLIST( hdR ) ) {
         return Error(
@@ -904,7 +893,6 @@ Bag       DiffVectorVector (Bag hdL, Bag hdR)
 
     /* return the result                                                   */
     if ( isVec )  Retype( hdD, T_VECTOR );
-    ExitKernel( hdD );
     return hdD;
 }
 
@@ -931,7 +919,6 @@ Bag       ProdIntVector (Bag hdL, Bag hdR)
     UInt       i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_PLIST( hdR );
     hdP = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdP, len );
@@ -957,7 +944,6 @@ Bag       ProdIntVector (Bag hdL, Bag hdR)
 
     /* return the result                                                   */
     if ( isVec )  Retype( hdP, T_VECTOR );
-    ExitKernel( hdP );
     return hdP;
 }
 
@@ -984,7 +970,6 @@ Bag       ProdVectorInt (Bag hdL, Bag hdR)
     UInt       i;              /* loop variable                   */
 
     /* make the result list                                                */
-    EnterKernel();
     len = LEN_PLIST( hdL );
     hdP = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdP, len );
@@ -1010,7 +995,6 @@ Bag       ProdVectorInt (Bag hdL, Bag hdR)
 
     /* return the result                                                   */
     if ( isVec )  Retype( hdP, T_VECTOR );
-    ExitKernel( hdP );
     return hdP;
 }
 
@@ -1039,7 +1023,6 @@ Bag       ProdVectorVector (Bag hdL, Bag hdR)
     UInt       i;              /* loop variable                   */
 
     /* check that the lengths agree                                        */
-    EnterKernel();
     len = LEN_PLIST( hdL );
     if ( len != LEN_PLIST( hdR ) ) {
         return Error(
@@ -1089,7 +1072,6 @@ Bag       ProdVectorVector (Bag hdL, Bag hdR)
     }
 
     /* return the result                                                   */
-    ExitKernel( hdP );
     return hdP;
 }
 
@@ -1098,104 +1080,54 @@ Bag       ProdVectorVector (Bag hdL, Bag hdR)
 **
 *F  ProdVectorMatrix(<hdL>,<hdR>) . . . . .  product of a vector and a matrix
 **
-**  'ProdVectorMatrix' returns the product of the vector <hdL> and the matrix
-**  <hdR>.  The product is the sum of the  rows  of <hdR>, each multiplied by
-**  the corresponding entry of <hdL>.
+**  'ProdVectorMatrix' returns a vector of the products of <hdL> with each column
+**  of <hdR>.
 **
-**  'ProdVectorMatrix'  is an improved version of 'ProdListList',  which does
-**  not  call 'PROD' and  also accummulates  the sum into  one  fixed  vector
-**  instead of allocating a new for each product and sum.
 */
-Bag       ProdVectorMatrix (Bag hdL, Bag hdR)
+Bag       ProdVectorMatrix(Bag hdL, Bag hdR)
 {
-    Bag           hdP;            /* handle of the product           */
-    Bag           hdPP;           /* one summand of product          */
-    Bag           hdSS;           /* temporary for sum               */
-    Bag           hdQQ;           /* another temporary               */
-    Bag           hdLL;           /* one element of left operand     */
-    Bag           hdRR;           /* one element of right operand    */
-    Bag *         ptRR;           /* pointer into the right operand  */
-    Bag           hdRRR;          /* one element from a row          */
-    UInt       len;            /* length                          */
-    UInt       col;            /* length of the rows              */
-    UInt       isVec;          /* is the result a vector          */
-    UInt       i, k;           /* loop variables                  */
+    UInt    len;            // length of vector
+    UInt    rows;           // number of matrix rows
+    UInt    cols;           // number of matrix columns;
+    UInt    isVec;          // true if result is a vector
+    UInt    r, c;           // row/column indeces
+    Bag     hdRes;         // handle of result vector
+    Bag     hdC;            // handle of column vector
+	Bag     hdP;            // handle of vector-column product
 
-    /* check the lengths                                                   */
-    len = LEN_PLIST( hdL );
-    col = LEN_PLIST( ELM_PLIST( hdR, 1 ) );
-    if ( len != LEN_PLIST( hdR ) )
-        return Error("Vector *: vectors must have the same length", 0, 0);
+    // check the vector length = number of rows in matrix
+    len  = LEN_PLIST(hdL);
+    rows = LEN_PLIST(hdR);
+    cols = LEN_PLIST(ELM_PLIST(hdR, 1));
 
-    /* make the result list by multiplying the first entries               */
-    hdP = PROD( ELM_PLIST( hdL, 1 ), ELM_PLIST( hdR, 1 ) );
-    isVec = (GET_TYPE_BAG(hdP) == T_VECTOR);
-
-    /* loop over the other entries and multiply                            */
-    for ( i = 2; i <= len; i++ ) {
-        EnterKernel();
-        hdLL = ELM_PLIST( hdL, i );
-        hdRR = ELM_PLIST( hdR, i );
-        ptRR = PTR_BAG( hdRR );
-        if ( hdLL == INT_TO_HD(1) ) {
-            for ( k = 1; k <= col; k++ ) {
-                hdRRR = ptRR[k];
-                hdPP = PTR_BAG(hdP)[k];
-                hdSS = (Bag)((Int)hdPP + (Int)hdRRR - T_INT);
-                if ( (((Int)hdSS) & 3) != T_INT
-                  || ((((Int)hdSS)<<1)>>1) != ((Int)hdSS) ) {
-                    hdSS = SUM( hdPP, hdRRR );
-                    ptRR = PTR_BAG( hdRR );
-                    isVec = isVec && GET_TYPE_BAG(hdSS) <= T_UNKNOWN;
-                }
-                SET_BAG(hdP, k, hdSS);
-            }
-        }
-        else if ( hdLL == INT_TO_HD(-1) ) {
-            for ( k = 1; k <= col; k++ ) {
-                hdRRR = ptRR[k];
-                hdPP = PTR_BAG(hdP)[k];
-                hdSS = (Bag)((Int)hdPP - (Int)hdRRR + T_INT);
-                if ( (((Int)hdSS) & 3) != T_INT
-                  || (((Int)hdPP) & 3) != T_INT
-                  || ((((Int)hdSS)<<1)>>1) != ((Int)hdSS) ) {
-                    hdSS = DIFF( hdPP, hdRRR );
-                    ptRR = PTR_BAG( hdRR );
-                    isVec = isVec && GET_TYPE_BAG(hdSS) <= T_UNKNOWN;
-                }
-                SET_BAG(hdP, k, hdSS);
-            }
-        }
-        else if ( hdLL != INT_TO_HD(0) ) {
-            for ( k = 1; k <= col; k++ ) {
-                hdRRR = ptRR[k];
-                hdPP = (Bag)(((Int)hdLL-T_INT) * ((Int)hdRRR>>1));
-                if ( ((Int)hdLL & 3) != T_INT || ((Int)hdRRR & 3) != T_INT
-                  || (((Int)hdRRR>>1) != 0
-                   && (Int)hdPP / ((Int)hdRRR>>1) != ((Int)hdLL-T_INT))) {
-                    hdPP = PROD( hdLL, hdRRR );
-                    ptRR = PTR_BAG( hdRR );
-                }
-                else {
-                    hdPP = (Bag)(((Int)hdPP>>1) + T_INT);
-                }
-                hdQQ = PTR_BAG(hdP)[k];
-                hdSS = (Bag)((Int)hdQQ + (Int)hdPP - T_INT);
-                if ( (((Int)hdSS) & 3) != T_INT
-                  || ((((Int)hdSS)<<1)>>1) != ((Int)hdSS) ) {
-                    hdSS = SUM( hdQQ, hdPP );
-                    ptRR = PTR_BAG( hdRR );
-                    isVec = isVec && GET_TYPE_BAG(hdSS) <= T_UNKNOWN;
-                }
-                SET_BAG(hdP, k, hdSS);
-            }
-        }
-        ExitKernel( (Bag)0 );
+    if (len != rows) {
+        return Error("Vector * Matrix: vector length must equal matrix row count", 0, 0);
     }
 
-    /* return the result                                                   */
-    if ( isVec )  Retype( hdP, T_VECTOR );
-    return hdP;
+    // create result vector
+    hdRes = NewBag(T_LIST, SIZE_PLEN_PLIST(cols));
+    SET_LEN_PLIST(hdRes, cols);
+    isVec = 1;
+
+    // create temporary column vector
+    hdC = NewBag(T_LIST, SIZE_PLEN_PLIST(rows));
+    SET_LEN_PLIST(hdC, rows);
+
+    // for each column, multiply by vector
+    for (c = 1; c <= cols; c++) {
+        // copy the column elements into a vector
+        for (r = 1; r <= rows; r++) {
+            SET_ELM_PLIST(hdC, r, ELM_PLIST(ELM_PLIST(hdR, r), c));
+        }
+        hdP = PROD(hdL, hdC);
+        SET_ELM_PLIST(hdRes, c, hdP);
+    }
+
+    // return the result
+    if (isVec) {
+        Retype(hdRes, T_VECTOR);
+    }
+    return hdRes;
 }
 
 
@@ -1295,8 +1227,6 @@ Bag       PowMatrixInt (Bag hdL, Bag hdR)
         /* make row operations to reach form $ ( <inv> | Id_<len> ) $      */
         /* loop over the columns of <mat>                                  */
         for ( k = len+1; k <= 2*len; k++ ) {
-            EnterKernel();
-
             /* find a nonzero entry in this column                         */
             for ( i = k-len;
                   i <= len
@@ -1331,8 +1261,6 @@ Bag       PowMatrixInt (Bag hdL, Bag hdR)
                     }
                 }
             }
-
-            ExitKernel( (Bag)0 );
         }
 
         /* throw away the right halves of each row                         */

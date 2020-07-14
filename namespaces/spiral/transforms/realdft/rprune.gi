@@ -104,6 +104,7 @@ NewRulesFor(PrunedPRDFT, rec(
     ),
     PrunedPRDFT_CT_rec_block := rec(
        forTransposition := true,
+       fPrecompute := f->fPrecompute(f),
        applicable := (self, nt) >> nt.params[1] > 2
             and not nt.hasTags()
             and not IsPrime(nt.params[1])
@@ -113,8 +114,8 @@ NewRulesFor(PrunedPRDFT, rec(
        children := (nt) -> Filtered(_pruned_PRF12_CT_Children(nt.params[1],nt.params[2],PRDFT1, DFT1, PRDFT3,
                                         (m, n, k)->_pruned_children(m, n, nt.params[4], (r, sp) -> PrunedPRDFT(r, k mod n, nt.params[3], sp))),
                               lst -> ForAll(Filtered(lst, i->ObjId(i) = PrunedPRDFT), j->j.params[4] <> [])),
-       apply := (nt, C, cnt) -> let(N:=nt.params[1], k:=nt.params[2], m:=Cols(C[1]), n := N/m,
-            _pruned_PRF12_CT_Stage1(N, k, C, Diag(BHD(m,1,-1)), j->RC(Diag(fPrecompute(Twid(N,m,k,0,0,j+1))))) *
+       apply := (self, nt, C, cnt) >> let(N:=nt.params[1], k:=nt.params[2], m:=Cols(C[1]), n := N/m,
+            _pruned_PRF12_CT_Stage1(N, k, C, Diag(BHD(m,1,-1)), j->RC(Diag(self.fPrecompute(Twid(N,m,k,0,0,j+1))))) *
             _build_stack(m, n, nt.params[4], let(s1len := When(IsEvenInt(n), 3, 2), C{[s1len+1..Length(C)]}), nt.dims()[2], Gath, IterVStack, VStack, (a,b)->a*b))
     )
 ));
@@ -346,7 +347,9 @@ NewRulesFor(IOPrunedMDRConv, rec(
                             i := Ind(nfreq*nlist[2]),
                             hfunc := Cond(ObjId(diag) = Lambda,
                                 let(j := Ind(nlist[3]),
-                                    Lambda(j, cxpack(diag.at(2*(j + i*nlist[3])), diag.at(2*(j + i*nlist[3])+1)))
+                                    # Lambda(j, cxpack(diag.at(2*(j + i*nlist[3])), diag.at(2*(j + i*nlist[3])+1)))
+                                    pos := i +j*nfreq*nlist[2],
+                                    Lambda(j, cxpack(diag.at(2*pos), diag.at(2*pos+1)))
                                 ),
                                 ObjId(diag) = fUnk,
                                 fUnk(TComplex, nlist[3]),
@@ -365,11 +368,11 @@ NewRulesFor(IOPrunedMDRConv, rec(
                                 InfoNt(i)
                             ]]),
 
-       apply := (nt, C, cnt) -> let(prdft1d := Grp(C[1]),
-                                    pdft1d := Grp(C[2]),
-                                    iopconv := Grp(C[3]),
-                                    ipdft1d := Grp(C[4]),
-                                    iprdft1d := Grp(C[5]),
+       apply := (nt, C, cnt) -> let(prdft1d := C[1],
+                                    pdft1d := C[2],
+                                    iopconv := C[3],
+                                    ipdft1d := C[4],
+                                    iprdft1d := C[5],
                                     i := cnt[6].params[1],
                                     nlist := nt.params[1],
                                     n1 := nlist[1],

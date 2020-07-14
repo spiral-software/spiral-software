@@ -65,7 +65,7 @@ Obj    CharToHd   (char c) {
 }
 
 Obj    StringVar (Obj var) {
-  UInt len = SyStrlen(VAR_NAME(var));
+  UInt len = strlen(VAR_NAME(var));
   Obj st = NEW_STRING(len);
   strncpy(CHARS_STRING(st), VAR_NAME(var), len);
   return st;

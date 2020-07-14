@@ -19,7 +19,7 @@ Obj  FuncLocalsLookup(Obj hdFunc, char * name, int* ptr_index) {
     ACT_NUM_LOCALS_FUNC(hdFunc, nrLoc);
     nrEntries = nrArg + nrLoc;
     for ( k = 1; k <= nrEntries; ++k ) {
-        if ( ! SyStrcmp( name, (char*)(PTR_BAG((Bag)PTR_BAG(hdFunc)[k])+OFS_IDENT) ) ) {
+        if ( ! strcmp( name, (char*)(PTR_BAG((Bag)PTR_BAG(hdFunc)[k])+OFS_IDENT) ) ) {
             if (ptr_index) *ptr_index = k;
 	    return (Bag)PTR_BAG(hdFunc)[k];
         }
@@ -66,7 +66,7 @@ UInt TableLookup(Obj hdTable, char * name, UInt name_ofs) {
 
     /* Look through the table, until you find a free slot or our name      */
     while ( PTR_BAG(hdTable)[k] != 0
-         && SyStrcmp( (char*)(PTR_BAG((Bag)PTR_BAG(hdTable)[k])+name_ofs), name ) ) {
+         && strcmp( (char*)(PTR_BAG((Bag)PTR_BAG(hdTable)[k])+name_ofs), name ) ) {
         k = (k + 1) % TableSize(hdTable);
     }
     return k;
@@ -97,8 +97,8 @@ Obj  TableResize(Obj hdTable, UInt new_size, UInt name_ofs) {
     *pHdTab++ = 0;
     
     nument = pHdSav - PTR_BAG(hdSav);
-    CHANGED_BAG(hdSav);
-    CHANGED_BAG(hdTable);
+    //  CHANGED_BAG(hdSav);
+    //  CHANGED_BAG(hdTable);
 
     Resize( hdTable, TableBytes(new_size) );
     
@@ -134,12 +134,12 @@ Obj  TableAddIdent(Obj hdTable, UInt pos, char * nam) {
     static char name[MAX_IDENT_SIZE];  
     Obj hd, props;
     UInt len;
-    len = SyStrlen(nam);
+    len = strlen(nam);
     /* name might disappear during garbage collection */
-    SyStrncpy(name, nam, len + 1);
+    strncpy(name, nam, len + 1);
 
     hd = NewBag( T_VAR, SIZE_HD * OFS_IDENT + len + 1);
-    SyStrncpy( VAR_NAME(hd), name, len + 1 );
+    strncpy( VAR_NAME(hd), name, len + 1 );
     SET_BAG(hdTable, pos,  hd ); 
     SetTableNumEnt(hdTable, TableNumEnt(hdTable)+1);
     /* If the identifer table is overcrowded enlarge it                */
@@ -155,12 +155,12 @@ Obj  TableAddRecnam(Obj hdTable, UInt pos, char * nam) {
     static char name[MAX_IDENT_SIZE];  
     Obj hd;
     UInt len;
-    len = SyStrlen(nam);
+    len = strlen(nam);
     /* name might disappear during garbage collection */
-    SyStrncpy(name, nam, len+1);
+    strncpy(name, nam, len+1);
 
     hd = NewBag( T_RECNAM, SIZE_HD * OFS_RECNAM + len + 1);
-    SyStrncpy( (char*)(PTR_BAG(hd)+OFS_RECNAM), name, len + 1 );
+    strncpy( (char*)(PTR_BAG(hd)+OFS_RECNAM), name, len + 1 );
     SET_BAG(hdTable, pos,  hd );
     SetTableNumEnt(hdTable, TableNumEnt(hdTable)+1);
     /* If the identifer table is overcrowded enlarge it                */

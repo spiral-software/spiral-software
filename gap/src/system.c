@@ -253,78 +253,6 @@ UInt   syStartTime;
 UInt   syStopTime;
 
 
-/****************************************************************************
-**
-*F  IsAlpha( <ch> ) . . . . . . . . . . . . .  is a character a normal letter
-*F  IsDigit( <ch> ) . . . . . . . . . . . . . . . . .  is a character a digit
-**
-**  'IsAlpha' returns 1 if its character argument is a normal character  from
-**  the range 'a..zA..Z' and 0 otherwise.
-**
-**  'IsDigit' returns 1 if its character argument is a digit from  the  range
-**  '0..9' and 0 otherwise.
-**
-**  'IsAlpha' and 'IsDigit' are implemented in the declaration part  of  this
-**  package as follows:
-**
-#include        <ctype.h>
-#define IsAlpha(ch)     (isalpha(ch))
-#define IsDigit(ch)     (isdigit(ch))
-*/
-
-
-/****************************************************************************
-**
-*F  SyStrlen( <str> ) . . . . . . . . . . . . . . . . . .  length of a string
-**
-**  'SyStrlen' returns the length of the string <str>, i.e.,  the  number  of
-**  characters in <str> that precede the terminating null character.
-*/
-#ifndef SYS_STRING_H                    /* string functions                */
-# include      <string.h>
-# define SYS_STRING_H
-#endif
-
-Int            SyStrlen (const char * str )
-{
-    return strlen( str );
-}
-
-
-/****************************************************************************
-**
-*F  SyStrcmp( <str1>, <str2> )  . . . . . . . . . . . . . compare two strings
-**
-**  'SyStrcmp' returns an integer greater than, equal to, or less  than  zero
-**  according to whether <str1> is greater  than,  equal  to,  or  less  than
-**  <str2> lexicographically.
-*/
-Int            SyStrcmp (const char * str1,const char * str2 )
-{
-    return strcmp( str1, str2 );
-}
-
-
-/****************************************************************************
-**
-*F  SyStrncat( <dst>, <src>, <len> )  . . . . .  append one string to another
-**
-**  'SyStrncat'  appends characters from the  <src>  to <dst>  until either a
-**  null character  is  encoutered  or  <len>  characters have   been copied.
-**  <dst> becomes the concatenation of <dst> and <src>.  The resulting string
-**  is always null terminated.  'SyStrncat' returns a pointer to <dst>.
-*/
-char *          SyStrncat (char * dst,const char * src, Int len )
-{
-    return strncat( dst, src, len );
-}
-
-
-char *          SyStrncpy (char * dst, const char *src, Int len )
-{
-    return strncpy( dst, src, len );
-}
-
 
 /****************************************************************************
 **
@@ -373,21 +301,21 @@ Int            SyFopen (char * name, char *mode )
     Int                fid;
 
     /* handle standard files                                               */
-    if ( SyStrcmp( name, "*stdin*" ) == 0 ) {
-        if ( SyStrcmp( mode, "r" ) != 0 )  return -1;
+    if ( strcmp( name, "*stdin*" ) == 0 ) {
+        if ( strcmp( mode, "r" ) != 0 )  return -1;
         return 0;
     }
-    else if ( SyStrcmp( name, "*stdout*" ) == 0 ) {
-        if ( SyStrcmp( mode, "w" ) != 0 )  return -1;
+    else if ( strcmp( name, "*stdout*" ) == 0 ) {
+        if ( strcmp( mode, "w" ) != 0 )  return -1;
         return 1;
     }
-    else if ( SyStrcmp( name, "*errin*" ) == 0 ) {
-        if ( SyStrcmp( mode, "r" ) != 0 )  return -1;
+    else if ( strcmp( name, "*errin*" ) == 0 ) {
+        if ( strcmp( mode, "r" ) != 0 )  return -1;
         if ( syBuf[2].fp == (FILE*)0 )  return -1;
         return 2;
     }
-    else if ( SyStrcmp( name, "*errout*" ) == 0 ) {
-        if ( SyStrcmp( mode, "w" ) != 0 )  return -1;
+    else if ( strcmp( name, "*errout*" ) == 0 ) {
+        if ( strcmp( mode, "w" ) != 0 )  return -1;
         return 3;
     }
 
@@ -1650,7 +1578,7 @@ void            syEchos ( char *str, Int fid )
 
     /* otherwise, write it to the associate echo output device             */
     else
-        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+        write( fileno(syBuf[fid].echo), str, strlen(str) );
 }
 
 #endif
@@ -1819,7 +1747,7 @@ void            syEchos ( char *str, Int fid )
 
     /* otherwise, write it to the associate echo output device             */
     else
-        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+        write( fileno(syBuf[fid].echo), str, strlen(str) );
 }
 
 #endif
@@ -2198,44 +2126,6 @@ void            SyFputs ( char line[], Int fid )
 
 
 
-
-/****************************************************************************
-**
-*V SyFwrite ( <ptr>, <size>, <count>, <fid> ) . . . .  read from the file <fid>
-**
-** Same as stdio fwrite() function.
-** Writes an array of <count> elements, each one with a <size> of size bytes, 
-** to the <fid> from the block of memory specified by <ptr>.
-** The total amount of bytes written if successful is (size * count).
-** Returns the total number of elements successfully written. If this number 
-** differs from the count parameter, it indicates an error.
-**
-*/
-
-Int		SyFwrite ( const void * ptr, Int size, Int count, Int fid )
-{
-    return fwrite(ptr, size, count, syBuf[fid].fp);
-}
-
-/****************************************************************************
-**
-*V SyFread ( <ptr>, <size>, <count>, <fid> ) . . . .  read from the file <fid>
-**
-** Same as stdio fread() function.
-** Reads an array of <count> elements, each one with a <size> of size bytes, 
-** from the <fid> and stores them in the block of memory specified by <ptr>.
-** The total amount of bytes read if successful is (size * count).
-** Returns the total number of elements successfully read. If this number 
-** differs from the count parameter, either an error occured or the End Of File was reached.
-**
-*/
-
-Int		SyFread ( void * ptr, Int size, Int count, Int fid )
-{
-    return fread(ptr, size, count, syBuf[fid].fp);
-}
-
-
 /****************************************************************************
 **
 *F  syWinPut(<fid>,<cmd>,<str>) . . . . . . send a line to the window handler
@@ -2262,7 +2152,7 @@ void            syWinPut (Int fid, char *cmd, char *str)
     else                         fd = fileno(syBuf[fid].fp);
 
     /* print the cmd                                                       */
-    write( fd, cmd, SyStrlen(cmd) );
+    write( fd, cmd, strlen(cmd) );
 
     /* print the output line, duplicate '@' and handle <ctr>-<chr>         */
     s = str;  t = tmp;
@@ -2505,15 +2395,7 @@ inline Int            SyIsIntr ()
 **  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
 */
-#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
-# if SYS_ANSI
-#  include      <stdlib.h>
-# endif
-# define SYS_STDLIB_H
-#endif
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 19.3   */
-extern  void            exit ( int );
-#endif
+
 
 void            SyExit (Int ret)
 {
@@ -2533,20 +2415,9 @@ void            SyExit (Int ret)
 **
 **  For UNIX we can use 'system', which does exactly what we want.
 */
-#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
-# if SYS_ANSI
-#  include      <stdlib.h>
-# endif
-# define SYS_STDLIB_H
-#endif
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 19.2   */
-#ifndef WIN32
-extern  int             system ( SYS_CONST char * );
-#endif
-#endif
+
 
 #ifndef WIN32
-#include <stdlib.h>
 #include <sys/wait.h>
 #endif
 
@@ -2815,26 +2686,26 @@ void            SyHelp (char *topic, Int fin)
     /* if the topic is '<' we are interested in the one before 'LastTopic' */
     offset = 0;
     last[0] = '\0';
-    if ( SyStrcmp( topic, "<" ) == 0 ) {
+    if ( strcmp( topic, "<" ) == 0 ) {
         topic = syLastTopics[ syLastIndex ];
         offset = -1;
     }
 
     /* if the topic is '>' we are interested in the one after 'LastTopic'  */
-    if ( SyStrcmp( topic, ">" ) == 0 ) {
+    if ( strcmp( topic, ">" ) == 0 ) {
         topic = syLastTopics[ syLastIndex ];
         offset = 1;
     }
 
     /* if the topic is '<<' we are interested in the first section         */
     last2[0] = '\0';
-    if ( SyStrcmp( topic, "<<" ) == 0 ) {
+    if ( strcmp( topic, "<<" ) == 0 ) {
         topic = syLastTopics[ syLastIndex ];
         offset = -2;
     }
 
     /* if the topic is '>>' we are interested in the next chapter          */
-    if ( SyStrcmp( topic, ">>" ) == 0 ) {
+    if ( strcmp( topic, ">>" ) == 0 ) {
         topic = syLastTopics[ syLastIndex ];
         offset = 2;
     }
@@ -2868,7 +2739,7 @@ void            SyHelp (char *topic, Int fin)
     }
 
     /* if the subject is 'Welcome to GAP' display a welcome message        */
-    if ( SyStrcmp( topic, "Welcome to GAP" ) == 0 ) {
+    if ( strcmp( topic, "Welcome to GAP" ) == 0 ) {
 
         syEchos( "    Welcome to GAP ______________________________", fin );
         syEchos( "_____________ Welcome to GAP\n",                    fin );
@@ -2906,12 +2777,12 @@ void            SyHelp (char *topic, Int fin)
     }
 
     /* if the topic is 'chapter' display the table of chapters             */
-    if ( SyStrcmp(topic,"chapters")==0 || SyStrcmp(topic,"Chapters")==0 ) {
+    if ( strcmp(topic,"chapters")==0 || strcmp(topic,"Chapters")==0 ) {
 
         /* open the table of contents file                                 */
         filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-        SyStrncat( filename, "online.toc", 11 );
+        strncat( filename, SyHelpname, sizeof(filename)-12 );
+        strncat( filename, "online.toc", 11 );
         fid = SyFopen( filename, "r" );
         if ( fid == -1 ) {
             syEchos( "Help: cannot open the table of contents file '",fin );
@@ -2991,12 +2862,12 @@ void            SyHelp (char *topic, Int fin)
     }
 
     /* if the topic is 'sections' display the table of sections            */
-    if ( SyStrcmp(topic,"sections")==0 || SyStrcmp(topic,"Sections")==0 ) {
+    if ( strcmp(topic,"sections")==0 || strcmp(topic,"Sections")==0 ) {
 
         /* open the table of contents file                                 */
         filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-        SyStrncat( filename, "online.toc", 11 );
+        strncat( filename, SyHelpname, sizeof(filename)-12 );
+        strncat( filename, "online.toc", 11 );
         fid = SyFopen( filename, "r" );
         if ( fid == -1 ) {
             syEchos( "Help: cannot open the table of contents file '",fin);
@@ -3074,12 +2945,12 @@ void            SyHelp (char *topic, Int fin)
     }
 
     /* if the topic is 'Copyright' print the copyright                     */
-    if ( SyStrcmp(topic,"copyright")==0 || SyStrcmp(topic,"Copyright")==0 ) {
+    if ( strcmp(topic,"copyright")==0 || strcmp(topic,"Copyright")==0 ) {
 
         /* open the copyright file                                         */
         filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-14 );
-        SyStrncat( filename, "copyrigh.tex", 13 );
+        strncat( filename, SyHelpname, sizeof(filename)-14 );
+        strncat( filename, "copyrigh.tex", 13 );
         fid = SyFopen( filename, "r" );
         if ( fid == -1 ) {
             syEchos( "Help: cannot open the copyright file '",fin);
@@ -3187,8 +3058,8 @@ void            SyHelp (char *topic, Int fin)
 
         /* open the index                                                  */
         filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-        SyStrncat( filename, "online.idx", 11 );
+        strncat( filename, SyHelpname, sizeof(filename)-12 );
+        strncat( filename, "online.idx", 11 );
         fid = SyFopen( filename, "r" );
         if ( fid == -1 ) {
             syEchos( "Help: cannot open the index file '", fin);
@@ -3201,14 +3072,14 @@ void            SyHelp (char *topic, Int fin)
 
         /* make a header line                                              */
         line[0] = '\0';
-        SyStrncat( line, topic, 40 );
-        SyStrncat( line,
+        strncat( line, topic, 40 );
+        strncat( line,
         " _________________________________________________________________",
                   73 - 5 );
         line[72-5] = ' ';
         line[73-5] = '\0';
-        SyStrncat( line, "Index", 6 );
-        SyStrncat( line, "\n", 2 );
+        strncat( line, "Index", 6 );
+        strncat( line, "\n", 2 );
         syEchos( "    ", fin );
         syEchos( line, fin );
 
@@ -3295,8 +3166,8 @@ void            SyHelp (char *topic, Int fin)
 
     /* open the table of contents                                          */
     filename[0] = '\0';
-    SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-    SyStrncat( filename, "online.toc", 11 );
+    strncat( filename, SyHelpname, sizeof(filename)-12 );
+    strncat( filename, "online.toc", 11 );
     fid = SyFopen( filename, "r" );
     if ( fid == -1 ) {
         syEchos( "Help: cannot open the table of contents file '", fin );
@@ -3487,8 +3358,8 @@ void            SyHelp (char *topic, Int fin)
 
         /* open the 'online.tex' file                                      */
         filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-        SyStrncat( filename, "online.tex", 11 );
+        strncat( filename, SyHelpname, sizeof(filename)-12 );
+        strncat( filename, "online.tex", 11 );
         fid = SyFopen( filename, "r" );
         if ( fid == -1 ) {
             syEchos( "Help: cannot open the online manual file '", fin );
@@ -3520,9 +3391,9 @@ void            SyHelp (char *topic, Int fin)
 
     /* try to open the chapter file                                        */
     filename[0] = '\0';
-    SyStrncat( filename, SyHelpname, sizeof(filename)-13 );
-    SyStrncat( filename, syChapnames[chapnr-1], 9 );
-    SyStrncat( filename, ".tex", 4 );
+    strncat( filename, SyHelpname, sizeof(filename)-13 );
+    strncat( filename, syChapnames[chapnr-1], 9 );
+    strncat( filename, ".tex", 4 );
     fid = SyFopen( filename, "r" );
     if ( fid == -1 ) {
         syEchos( "Help: cannot open the chapter file '", fin );
@@ -3536,13 +3407,13 @@ void            SyHelp (char *topic, Int fin)
     /* create the line we are looking for                                  */
     if ( secnr == 0 ) {
         secline[0] = '\0';
-        SyStrncat( secline, "\\Chapter{", 10 );
-        SyStrncat( secline, secname, sizeof(secline)-10 );
+        strncat( secline, "\\Chapter{", 10 );
+        strncat( secline, secname, sizeof(secline)-10 );
     }
     else {
         secline[0] = '\0';
-        SyStrncat( secline, "\\Section{", 10 );
-        SyStrncat( secline, secname, sizeof(secline)-10 );
+        strncat( secline, "\\Section{", 10 );
+        strncat( secline, secname, sizeof(secline)-10 );
     }
 
     /* search the file for the correct '\Chapter' or '\Section' line       */
@@ -3583,14 +3454,14 @@ void            SyHelp (char *topic, Int fin)
 
     /* make a header line                                                  */
     line[0] = '\0';
-    SyStrncat( line, secname, 40 );
-    SyStrncat( line,
+    strncat( line, secname, 40 );
+    strncat( line,
     " _____________________________________________________________________",
-             73 - SyStrlen(chapname) );
-    line[72-SyStrlen(chapname)] = ' ';
-    line[73-SyStrlen(chapname)] = '\0';
-    SyStrncat( line, chapname, SyStrlen(chapname)+1 );
-    SyStrncat( line, "\n", 2 );
+             73 - strlen(chapname) );
+    line[72-strlen(chapname)] = ' ';
+    line[73-strlen(chapname)] = '\0';
+    strncat( line, chapname, strlen(chapname)+1 );
+    strncat( line, "\n", 2 );
     syEchos( "    ", fin );
     syEchos( line, fin );
 
@@ -3810,7 +3681,7 @@ void            InitSystem (int argc, char **argv)
     syBuf[0].fp = stdin;   setbuf( stdin, syBuf[0].buf );
     if ( isatty( fileno(stdin) ) ) {
         if ( isatty( fileno(stdout) )
-          && ! SyStrcmp( ttyname(fileno(stdin)), ttyname(fileno(stdout)) ) )
+          && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stdout)) ) )
             syBuf[0].echo = stdout;
         else
             syBuf[0].echo = fopen( ttyname(fileno(stdin)), "w" );
@@ -3823,7 +3694,7 @@ void            InitSystem (int argc, char **argv)
     syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
     if ( isatty( fileno(stderr) ) ) {
         if ( isatty( fileno(stdin) )
-          && ! SyStrcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
+          && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
             syBuf[2].fp = stdin;
         else
             syBuf[2].fp = fopen( ttyname(fileno(stderr)), "r" );
@@ -3852,7 +3723,7 @@ void            InitSystem (int argc, char **argv)
     /* scan the command line for options                                   */
     while ( argc > 1 && argv[1][0] == '-' ) {
 
-        if ( SyStrlen(argv[1]) != 2 ) {
+        if ( strlen(argv[1]) != 2 ) {
             fputs("gap: sorry, options must not be grouped '",stderr);
             fputs(argv[1],stderr);  fputs("'.\n",stderr);
             goto usage;
@@ -3873,16 +3744,16 @@ void            InitSystem (int argc, char **argv)
                 fputs("gap: option '-l' must have an argument.\n",stderr);
                 goto usage;
             }
-            SyStrncat( SyLibname, argv[2], sizeof(SyLibname)-2 );
+            strncat( SyLibname, argv[2], sizeof(SyLibname)-2 );
 #if SYS_BSD || SYS_USG 
-            if ( SyLibname[SyStrlen(SyLibname)-1] != '/'
-              && SyLibname[SyStrlen(SyLibname)-1] != ';' )
-                SyStrncat( SyLibname, "/", 1 );
+            if ( SyLibname[strlen(SyLibname)-1] != '/'
+              && SyLibname[strlen(SyLibname)-1] != ';' )
+                strncat( SyLibname, "/", 1 );
 #endif
 #if WIN32
-            if ( SyLibname[SyStrlen(SyLibname)-1] != '\\'
-              && SyLibname[SyStrlen(SyLibname)-1] != ';' )
-                SyStrncat( SyLibname, "\\", 1 );
+            if ( SyLibname[strlen(SyLibname)-1] != '\\'
+              && SyLibname[strlen(SyLibname)-1] != ';' )
+                strncat( SyLibname, "\\", 1 );
 #endif
             ++argv; --argc;
             break;
@@ -3894,14 +3765,14 @@ void            InitSystem (int argc, char **argv)
             }
             SyHelpname[0] = '\0';
 #if SYS_BSD || SYS_USG 
-            SyStrncat( SyHelpname, argv[2], sizeof(SyLibname)-2 );
-            if ( SyLibname[SyStrlen(SyHelpname)-1] != '/' )
-                SyStrncat( SyHelpname, "/", 1 );
+            strncat( SyHelpname, argv[2], sizeof(SyLibname)-2 );
+            if ( SyLibname[strlen(SyHelpname)-1] != '/' )
+                strncat( SyHelpname, "/", 1 );
 #endif
 #if WIN32
-            SyStrncat( SyHelpname, argv[2], sizeof(SyLibname)-2 );
-            if ( SyLibname[SyStrlen(SyHelpname)-1] != '\\' )
-                SyStrncat( SyHelpname, "\\", 1 );
+            strncat( SyHelpname, argv[2], sizeof(SyLibname)-2 );
+            if ( SyLibname[strlen(SyHelpname)-1] != '\\' )
+                strncat( SyHelpname, "\\", 1 );
 #endif
             ++argv; --argc;
             break;
@@ -3912,11 +3783,11 @@ void            InitSystem (int argc, char **argv)
                 goto usage;
             }
             SyMemory = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
+            if ( argv[2][strlen(argv[2])-1] == 'k'
+              || argv[2][strlen(argv[2])-1] == 'K' )
                 SyMemory = SyMemory * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
+            if ( argv[2][strlen(argv[2])-1] == 'm'
+              || argv[2][strlen(argv[2])-1] == 'M' )
                 SyMemory = SyMemory * 1024 * 1024;
             ++argv; --argc;
             break;
@@ -3936,11 +3807,11 @@ void            InitSystem (int argc, char **argv)
                 goto usage;
             }
             pre = atoi(argv[2]);
-            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
-              || argv[2][SyStrlen(argv[2])-1] == 'K' )
+            if ( argv[2][strlen(argv[2])-1] == 'k'
+              || argv[2][strlen(argv[2])-1] == 'K' )
                 pre = pre * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
-              || argv[2][SyStrlen(argv[2])-1] == 'M' )
+            if ( argv[2][strlen(argv[2])-1] == 'm'
+              || argv[2][strlen(argv[2])-1] == 'M' )
                 pre = pre * 1024 * 1024;
             ++argv; --argc;
             break;
@@ -4009,15 +3880,15 @@ void            InitSystem (int argc, char **argv)
 
    /* try to find 'LIBNAME/init.g' to read it upon initialization         */
     i = 0;  fid = -1;
-    while ( fid == -1 && i <= SyStrlen(SyLibname) ) {
+    while ( fid == -1 && i <= strlen(SyLibname) ) {
         for ( k = i; SyLibname[k] != '\0' && SyLibname[k] != ';'; k++ )  ;
         SyInitfiles[0][0] = '\0';
         if ( sizeof(SyInitfiles[0]) < k-i+6+1 ) {
             fputs("gap: <libname> is too long\n",stderr);
             goto usage;
         }
-        SyStrncat( SyInitfiles[0], SyLibname+i, k-i );
-        SyStrncat( SyInitfiles[0], "init.g", 6 );
+        strncat( SyInitfiles[0], SyLibname+i, k-i );
+        strncat( SyInitfiles[0], "init.g", 6 );
         if ( (fid = SyFopen( SyInitfiles[0], "r" )) != -1 )
             SyFclose( fid );
         i = k + 1;
@@ -4039,9 +3910,9 @@ void            InitSystem (int argc, char **argv)
 #if SYS_BSD || SYS_USG
       if ( getenv("HOME") != 0 ) {
           SyInitfiles[i][0] = '\0';
-          SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
-          SyStrncat( SyInitfiles[i], "/.gaprc",
-                  (Int)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
+          strncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
+          strncat( SyInitfiles[i], "/.gaprc",
+                  (Int)(sizeof(SyInitfiles[0])-1-strlen(SyInitfiles[i])));
           if ( (fid = SyFopen( SyInitfiles[i], "r" )) != -1 ) {
               ++i;
               SyFclose( fid );
@@ -4060,7 +3931,7 @@ void            InitSystem (int argc, char **argv)
             goto usage;
         }
         SyInitfiles[i][0] = '\0';
-        SyStrncat( SyInitfiles[i], argv[1], sizeof(SyInitfiles[0])-1 );
+        strncat( SyInitfiles[i], argv[1], sizeof(SyInitfiles[0])-1 );
         ++i;
         ++argv;  --argc;
     }
@@ -4306,6 +4177,247 @@ void SySaveHistory(){
   fclose(fp);
 }
 
-// the makefile for spiral does something special with the system.o file, 
-// and the contents of system4 need to be in there. 
-#include "system4.c"
+
+
+
+#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
+# if SYS_ANSI
+#  include      <stdlib.h>
+# endif
+# define SYS_STDLIB_H
+#endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*V  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
+**
+**  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
+**  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
+**  must be  divisable by 'SyStackAlign'.  So if it  is 1, identifiers may be
+**  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
+**  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
+**  from a macro passed from the makefile, because it is machine dependent.
+**
+**  This value is passed to 'InitBags'.
+*/
+UInt SyStackAlign = SYS_STACK_ALIGN;
+
+
+/****************************************************************************
+**
+*V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
+**
+**  'SyMsgsFlagBags' determines whether garabage collections are reported  or
+**  not.
+**
+**  Per default it is false, i.e. Gasman is silent about garbage collections.
+**  It can be changed by using the  '-g'  option  on the  GAP  command  line.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+
+UInt SyMsgsFlagBags = NUM_TO_UINT(0);
+
+
+/****************************************************************************
+**
+*V  SyStorMin . . . . . . . . . . . . . .  default size for initial workspace
+**
+**  See description in system.h
+*/
+Int SyStorMin = SY_STOR_MIN;
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * gasman interface * * * * * * * * * * * * * * *
+*/
+
+
+
+/****************************************************************************
+**
+*F  SyAllocBags( <size> ) . . . . . allocate memory block of <size> kilobytes
+**
+**  'SyAllocBags' is called from memory mamagement to get new storage from the
+**  operating system.  <size> is the needed amount in kilobytes.  This function
+**  has been simplified to just allocate a block of memory and let memory
+**  manager work with it.  There is no longer any assumptions about blocks
+**  being contigous or adjacent.
+**
+**  'SyAllocBags' must return 0 if it cannot extend the workspace (i.e.,
+**  allocate more memory), and a pointer to the allocated area to indicate
+**  success.
+*/
+
+UInt*** SyAllocBags(Int size)
+{
+    UInt* p;
+    UInt*** ret;
+
+    size *= 1024;
+    ret = (UInt***)malloc(size);
+    if (ret == (UInt***)NULL) {
+        fputs("gap: cannot extend the workspace any more\n", stderr);
+        return (UInt***)0;
+    }
+    else {
+        for (p = ret; p < ret + size / sizeof(UInt); p++)
+            *p = 0;
+
+        return ret;
+    }
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  SyAbortBags( <msg> )  . . . . . . . . . abort GAP in case of an emergency
+**
+**  'SyAbortBags' is the function called by Gasman in case of an emergency.
+*/
+void SyAbortBags(
+    Char* msg)
+{
+    SyFputs(msg, 3);
+    abort();
+    /*SyExit( 2 );*/
+}
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+*F  InitSystem4( <argc>, <argv> )  . . .  initialize system package from GAP4
+**
+**  'InitSystem4' is called very early during the initialization from  'main'.
+**  It is passed the command line array  <argc>, <argv>  to look for options.
+**
+**  For UNIX it initializes the default files 'stdin', 'stdout' and 'stderr',
+**  installs the handler 'syAnsIntr' to answer the user interrupts '<ctr>-C',
+**  scans the command line for options, tries to  find  'LIBNAME/init.g'  and
+**  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
+*/
+
+#ifndef SYS_HAS_MALLOC_PROTO
+# if SYS_ANSI                           /* ANSI decl. from H&S 16.1, 16.2  */
+extern void* malloc(size_t);
+extern void   free(void*);
+# else                                  /* TRAD decl. from H&S 16.1, 16.2  */
+extern char* malloc(unsigned);
+extern void   free(char*);
+# endif
+#endif
+
+static UInt ParseMemory(Char* s)
+{
+    UInt size;
+    size = atoi(s);
+    if (s[strlen(s) - 1] == 'k'
+        || s[strlen(s) - 1] == 'K')
+        size = size * 1024;
+    if (s[strlen(s) - 1] == 'm'
+        || s[strlen(s) - 1] == 'M')
+        size = size * 1024 * 1024;
+    if (s[strlen(s) - 1] == 'g'
+        || s[strlen(s) - 1] == 'G')
+        size = size * 1024 * 1024 * 1024;
+    return size;
+}
+
+#define ONE_ARG(opt) \
+        case opt: \
+            if ( argc < 3 ) { \
+                FPUTS_TO_STDERR("gap4: option " #opt " must have an argument.\n"); \
+                goto usage; \
+            } 
+
+void InitSystem4(
+    Int                 argc,
+    Char* argv[])
+{
+    Int                 pre = 100 * 1024; /* amount to pre'malloc'ate        */
+    Char* ptr;            /* pointer to the pre'malloc'ated  */
+    Char* ptr1;           /* more pre'malloc'ated  */
+    UInt                i;              /* loop variable                   */
+
+    /* scan the command line for options                                   */
+    while (argc > 1 && argv[1][0] == '-') {
+        if (strlen(argv[1]) != 2) {
+            FPUTS_TO_STDERR("gap: sorry, options must not be grouped '");
+            FPUTS_TO_STDERR(argv[1]);  FPUTS_TO_STDERR("'.\n");
+            goto usage;
+        }
+
+        switch (argv[1][1]) {
+            /* '-a <memory>', set amount to pre'm*a*lloc'ate                   */
+            ONE_ARG('a');
+            pre = ParseMemory(argv[2]);
+            ++argv; --argc; break;
+
+            /* '-g', Gasman should be verbose                                  */
+            ONE_ARG('g');
+            SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
+            ++argv; --argc; break;
+
+            /* '-m <memory>', change the value of 'SyStorMin'                  */
+            ONE_ARG('m');
+            SyStorMin = ParseMemory(argv[2]) / 1024;
+            ++argv; --argc; break;
+
+            /* '-h', print a usage help                                        */
+        case 'h':
+            goto fullusage;
+
+            /* default, skip unknown option, GAP3 should handle it             */
+        default: break;
+            /*
+                  FPUTS_TO_STDERR("gap: '");  FPUTS_TO_STDERR(argv[1]);
+                  FPUTS_TO_STDERR("' option is unknown.\n");
+                  goto usage;*/
+
+        }
+        ++argv; --argc;
+    }
+
+    /* fix max if it is lower than min                                     */
+    // if ( SyStorMax < SyStorMin )
+    //    SyStorMax = SyStorMin;          // no need for a maximum memory amount
+    /* now we start                                                        */
+    return;
+
+    /* print a usage message                                               */
+usage:
+    FPUTS_TO_STDERR("usage: gap4 [OPTIONS] [FILES]\n");
+    FPUTS_TO_STDERR("       use '-h' option to get help.\n");
+    FPUTS_TO_STDERR("\n");
+    SyExit(1);
+
+fullusage:
+    FPUTS_TO_STDERR("usage: gap4 [OPTIONS] [FILES]\n");
+    FPUTS_TO_STDERR("\n");
+    FPUTS_TO_STDERR("  -g          show GASMAN messages (full garbage collections)\n");
+    FPUTS_TO_STDERR("  -g -g       show GASMAN messages (all garbage collections)\n");
+    FPUTS_TO_STDERR("  -m <mem>    set the initial workspace size\n");
+    FPUTS_TO_STDERR("  -a <mem>    set amount to pre-malloc-ate\n");
+    FPUTS_TO_STDERR("              postfix 'm' = *1024*1024, 'g' = *1024*1024*1024\n");
+    FPUTS_TO_STDERR("\n");
+    SyExit(1);
+}
+

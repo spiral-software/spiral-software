@@ -297,6 +297,7 @@ void yy_switch_to_buffer (YY_BUFFER_STATE new_buffer  );
 YY_BUFFER_STATE yy_create_buffer (FILE *file,int size  );
 void yy_delete_buffer (YY_BUFFER_STATE b  );
 void yy_flush_buffer (YY_BUFFER_STATE b  );
+void yypush_new_buffer_state();
 void yypush_buffer_state (YY_BUFFER_STATE new_buffer  );
 void yypop_buffer_state (void );
 
@@ -754,41 +755,6 @@ static int input (void );
 #define ECHO do { if (fwrite( yytext, yyleng, 1, yyout )) {} } while (0)
 #endif
 
-/* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
- * is returned in "result".
- */
-#ifndef YY_INPUT
-#define YY_INPUT(buf,result,max_size) \
-	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
-		{ \
-		int c = '*'; \
-		size_t n; \
-		for ( n = 0; n < max_size && \
-			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
-			buf[n] = (char) c; \
-		if ( c == '\n' ) \
-			buf[n++] = (char) c; \
-		if ( c == EOF && ferror( yyin ) ) \
-			YY_FATAL_ERROR( "input in flex scanner failed" ); \
-		result = n; \
-		} \
-	else \
-		{ \
-		errno=0; \
-		while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
-			{ \
-			if( errno != EINTR) \
-				{ \
-				YY_FATAL_ERROR( "input in flex scanner failed" ); \
-				break; \
-				} \
-			errno=0; \
-			clearerr(yyin); \
-			} \
-		}\
-\
-
-#endif
 
 /* No semi-colon after return; correct usage is to write "yyterminate();" -
  * we don't want an extra ';' after the "return" because that will cause
@@ -847,8 +813,9 @@ YY_DECL
 #line 55 "scan.l"
 
 
-/* DMT - Defined above, but not used?? */
-#undef YY_INPUT
+/* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
+ * is returned in "result".
+ */
 #define YY_INPUT(buf,result,max_size) { \
        int len; \
        In=In+1; \
@@ -2010,6 +1977,14 @@ void yypush_buffer_state (YY_BUFFER_STATE new_buffer )
 	yy_load_buffer_state( );
 	(yy_did_buffer_switch_on_eof) = 1;
 }
+
+void yypush_new_buffer_state()
+{
+	// FILE * value is saved but not used
+	yypush_buffer_state(yy_create_buffer(0, YY_BUF_SIZE));
+}
+
+
 
 /** Removes and deletes the top of the stack, if present.
  *  The next element becomes the new top.

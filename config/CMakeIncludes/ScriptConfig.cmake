@@ -1,7 +1,7 @@
 ##
 ## SPIRAL License
 ##
-## Copyright (c) 2018, Carnegie Mellon University
+## Copyright (c) 2020, Carnegie Mellon University
 ## All rights reserved.
 ## 
 ## See LICENSE file for full information
@@ -14,23 +14,24 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 string (COMPARE EQUAL "${CMAKE_HOST_SYSTEM_PROCESSOR}" "AMD64" INTEL_WIN)
 string (COMPARE EQUAL "${CMAKE_HOST_SYSTEM_PROCESSOR}" "x86_64" INTEL_LINUX)
 string (COMPARE EQUAL "${CMAKE_HOST_SYSTEM_PROCESSOR}" "armv7l" ARM_LINUX)
+string (COMPARE EQUAL "${CMAKE_HOST_SYSTEM_PROCESSOR}" "ppc64le" PPC_LINUX)
 
 
 if (${INTEL_WIN} OR ${INTEL_LINUX})
     ##  Intel architecture, SupportedCPU = Core_AVX
     set (CPU_ARCH_TYPE "Core_AVX")
     set (CPU_FREQUENCY 2195)
-    set (SPIRAL_MEMORY_POOL "2048m")
+    set (SPIRAL_MEMORY_POOL "1g")
 elseif (${ARM_LINUX})
     ##  Raspberry Pi, SupportedCPU = armv7l
     set (CPU_ARCH_TYPE "ARMV7L")
     set (CPU_FREQUENCY 1500)
-    set (SPIRAL_MEMORY_POOL "1024m")
+    set (SPIRAL_MEMORY_POOL "1g")
 elseif (${CMAKE_HOST_APPLE})
     ##  Apple ... MacBook
     set (CPU_ARCH_TYPE "Core_AVX")
     set (CPU_FREQUENCY 2195)
-    set (SPIRAL_MEMORY_POOL "2048m")
+    set (SPIRAL_MEMORY_POOL "1g")
 endif ()
 
 if (WIN32)
@@ -93,4 +94,26 @@ elseif (${INTEL_WIN} OR ${INTEL_LINUX})
     set (SPIRAL_COMPILER_NAME "GnuC")
     set (SPIRAL_DEBUGGER_NAME "gdb --args")
 
+elseif (${PPC_LINUX})
+    ##  Linux on Power9 (Summit)
+    ##  Use GDB as debugger, --args ==> arguments after program name are for debugged process
+    set (CPU_ARCH_TYPE "PowerPC970")
+    set (CPU_FREQUENCY 3800)
+    set (SPIRAL_MEMORY_POOL "1g")
+    set (PROFILER_TARGET "linux-ppc64le-gcc")
+    set (PROFILE_TARGET_ID "linux_power_gcc")
+    set (SPIRAL_OS_NAME "Linux64")
+    set (SPIRAL_COMPILER_NAME "GnuC")
+    set (SPIRAL_DEBUGGER_NAME "gdb --args")
+
+else ()
+    ## default fall through
+    set (CPU_ARCH_TYPE "Pentium")
+    set (CPU_FREQUENCY 2000)
+    set (SPIRAL_MEMORY_POOL "1g")
+    set (PROFILER_TARGET "linux-x86")
+    set (PROFILE_TARGET_ID "linux_x86_gcc")
+    set (SPIRAL_OS_NAME "Linux64")
+    set (SPIRAL_COMPILER_NAME "GnuC")
+    set (SPIRAL_DEBUGGER_NAME "gdb --args")
 endif ()

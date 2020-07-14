@@ -1084,3 +1084,214 @@ GenGUID := () -> "{" :: RandomHexStr(8) :: "-" :: RandomHexStr(4) :: "-" ::
 
 
 
+##  Utility functions to get information from memory manager
+
+#F  GetMemMgrTrace()
+#F      Turn on and display tracing information for one iteration of garbage collection
+#F
+GetMemMgrTrace := function()
+    local currTrace, currMsg;
+    currTrace := GASMAN("traceSTAT");
+    currMsg   := GASMAN("messageSTAT");
+    if currMsg   > 0 then GASMAN("message"); fi;
+    if currTrace = 0 then GASMAN("traceON"); fi;
+    GASMAN("collect");
+    if currMsg   > 0 then GASMAN("message"); fi;
+    if currTrace = 0 then GASMAN("traceOFF"); fi;
+end;
+
+#F  PrintResetRuntimeStats()
+#F      Print the runtime (timing) information for Spiral and reset it
+#F
+PrintResetRuntimeStats := function()
+    GetRuntimeStats();
+    ResetRuntimeStats();
+end;
+
+
+#F CheckFileExists (file, folder)
+#F     If <folder> is not "" look in <folder> under "spiral_dir" for <file>
+#F     otherwise, look for a file named <file>
+#F     Return True is found, otherwise, False
+
+CheckFileExists := function(file, folder)
+    local path, res, sep;
+    res := false;
+    
+    if file = "" then
+	PrintLine("Usage: CheckFileExists (<file>, <folder>); file name required");
+	return res;
+    fi;
+    if folder <> "" then
+	path := Conf("spiral_dir");
+        sep  := Conf("path_sep"); 
+        path := Concat(path, sep, folder, sep, file);
+    else
+	path := file;
+    fi;
+
+    if sys_exists(path) <> 0 then res := true; else res := false; fi;
+    return res;
+end;
+
+#F IntFromHexString(<str>)
+#F     Accepts a hexadecimal string and returns the Integer value.
+#F     The string may optionally have a leading "0x" and both upper and lower
+#F     case letters are supported, i.e., 0XF00D1 = 0xf00d1
+
+IntFromHexString := function(hexstr)
+    local digs, vals, res, i, hstr, posch;
+    
+    digs := "0123456789abcdefABCDEF";	    # hex digits, cater for upper/lower case alpha
+    vals := [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 10, 11, 12, 13, 14, 15 ];
+
+    if StartsWith(hexstr, "0x") or StartsWith(hexstr, "0X") then
+        hstr := SubString(hexstr, 3);	    # skip over leading "0x"
+    else
+	hstr := hexstr;
+    fi;
+
+    res := 0;
+    for i in [1..Length(hstr)] do
+    	posch := Position(digs, hstr[i]);
+	if posch = false then
+	    Error("usage: string must consist of decimal digits and letter a-f (or A-F) only");
+	    return 0;
+	fi;
+	res := res * 16 + vals[posch];
+    od;
+
+    return res;
+end;
+
+
+#F ToUpperHexStr(hexstr [, sup])
+#F     Accepts a hexadecimal string and returns the uppercase version of the string
+#F     The string may optionally have a leading "0x"
+#F     If <sup> = true leading zero digits (but not "0x") are suppressed
+
+ToUpperHexStr := function( arg )
+    local res, pos, ihd, ohd, lhstr, i, posch, hexstr, sup;
+
+    hexstr := arg[1];
+    if Length(arg) = 2 then sup := arg[2]; else sup := false; fi;
+    
+    ihd := "0123456789abcdefABCDEF";	    # hex digits, cater for upper/lower case alpha
+    ohd := "0123456789ABCDEFABCDEF";
+
+    res := [];
+    pos := 0;
+    lhstr := hexstr;
+    
+    if StartsWith(hexstr, "0x") or StartsWith(hexstr, "0X") then
+        res := "0X";
+	pos := 2;
+	lhstr := SubString(hexstr, 3);
+    fi;
+
+    if sup then
+        while lhstr[1] = '0' do
+	    lhstr := SubString(lhstr, 2);
+	od;
+    fi;
+    
+    for i in [1..Length(lhstr)] do
+    	posch := Position(ihd, lhstr[i]);
+	if posch = false then
+	    Error("usage: string must consist of decimal digits and letter a-f (or A-F) only");
+	    return "";
+	fi;
+    	res[pos + i] := ohd[posch];
+    od;
+
+    return res;
+end;
+
+
+#F HexStringFromInt( <int> [, <pre> [, <case>]] )
+#F     Accepts a positive integer and returns the corresponding hexadecimal string
+#F     If <pre> is true the resulting string is prefixed with "0X"
+#F     If <case> is true then the output string uses Upper case letters, otherwise, lowercase
+
+HexStringFromInt := function( arg )
+    local hexl, hexu, lis, lisr, dig, res, val, pre, case;
+
+    val := arg[1];
+    if Length(arg) >= 2 then pre  := arg[2]; else pre  := false; fi;
+    if Length(arg)  = 3 then case := arg[3]; else case := false; fi;
+
+    hexl := "0123456789abcdef";
+    hexu := "0123456789ABCDEF";
+    lis := []; lisr := []; res := "";
+    
+    while val > 0 do
+    	dig := val mod 16;
+	Add(lis, dig);
+	val := (val - dig) / 16;
+##	val := val / 16;
+    od;
+    lisr := Reversed(lis);
+
+    if case = true then		    # return uppercase letters in string
+        if pre = true then	    # prepend result with "0X"
+	    res := "0X";
+	fi;
+	Append (res, List(lisr, x->hexu[x+1] ) );
+    else			    # return lowercase letters in string
+        if pre = true then
+	    res := "0x";
+	fi;
+	Append (res, List(lisr, x->hexl[x+1] ) );
+    fi;
+    return res;
+end;
+
+
+#F TimeStamp()
+#F     Return current time formatted as hh:mm:ss
+
+TimeStamp := function()
+    local start, chrs, itim, res;
+
+    chrs  := "0123456789:";
+    itim  := [ 0, 0, 10, 0, 0, 10, 0, 0 ];
+    start := Date();
+    res := "";
+
+    if start[4] >= 10 then itim[1] := Int(start[4] / 10); fi;
+    itim[2] := start[4] mod 10;
+    if start[5] >= 10 then itim[4] := Int(start[5] / 10); fi;
+    itim[5] := start[5] mod 10;
+    if start[6] >= 10 then itim[7] := Int(start[6] / 10); fi;
+    itim[8] := start[6] mod 10;
+
+    Append ( res, List ( itim, x->chrs[x+1] ) );
+    return res;
+end;
+
+#F ElapsedTime( begin_tim, end_tim )
+#F     Return the delta in seconds between two timestamps: end_tim - begin_tim
+#F     Timestamps are assumed to be formatted as hh:mm:ss
+#F     If beg_tim > end_time then 24 hours (86,400 sec) is added to get a +ve result
+
+ElapsedTime := function(begt, endt)
+    local bt, et, delta, subs;
+
+    subs := begt{ [1, 2] };
+    bt   := IntString(subs) * 3600;
+    subs := begt{ [4, 5] };
+    bt   := bt + IntString(subs) * 60;
+    subs := begt{ [7, 8] };
+    bt   := bt + IntString(subs);
+
+    subs := endt{ [1, 2] };
+    et   := IntString(subs) * 3600;
+    subs := endt{ [4, 5] };
+    et   := et + IntString(subs) * 60;
+    subs := endt{ [7, 8] };
+    et   := et + IntString(subs);
+
+    delta := et - bt;
+    if delta < 0 then delta := delta + 86400; fi;
+    return delta;
+end;

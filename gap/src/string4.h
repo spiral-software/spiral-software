@@ -62,7 +62,7 @@
 **  Note that  'GET_LEN_STRING' is a macro, so  do not call it with arguments
 **  that have sideeffects.
 */
-#define GET_LEN_STRING(list)          (SyStrlen(CSTR_STRING(list)))
+#define GET_LEN_STRING(list)          (strlen(CSTR_STRING(list)))
 
 /****************************************************************************
 **

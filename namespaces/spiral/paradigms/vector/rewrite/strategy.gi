@@ -9,6 +9,7 @@ VectorStrategySum := [
     MergedRuleSet(JoinDirectSums,StretchRaderMid),
     MergedRuleSet(StandardSumsRules, RulesPropagate),
     # when to terminate Grp() has become an issue: too early -> diags go the wrong way; too late->Rader stretch breaks
+	RulesSMP,
     MergedRuleSet(StandardSumsRules, RulesPropagate, StretchRaderMid, JoinDirectSums, RulesTermGrp),
     MergedRuleSet(StandardSumsRules, RulesPropagate, StretchRaderMid, JoinDirectSums, RulesTermGrp, RulesVDiag),
     MergedRuleSet(StandardSumsRules, RulesPropagate, StretchRaderMid, JoinDirectSums, RulesTermGrp, RulesSMP, RulesVec),

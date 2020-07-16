@@ -39,7 +39,7 @@
 #include        "ipc.h"
 #include		"GapUtils.h"
 
-extern void InitGap ( int * pargc, char *** pargv );
+extern void InitGap (int argc, char** argv, int* stackBase);
 
 extern int CURR_INTERFACE;
 extern int LAST_INTERFACE;
@@ -297,7 +297,7 @@ int interface_reset(){
   exc_type_t          e;
   Try {
     /* initialize everything                                             */
-    InitGap( &reset_argc, &reset_argv );
+    InitGap( reset_argc, reset_argv, &reset_argc);
   }
   Catch(e) {
     exc_show();

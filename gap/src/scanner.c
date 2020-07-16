@@ -255,41 +255,7 @@ Int            NrHadSyntaxErrors = 0;
 char            * Prompt;
 
 
-/****************************************************************************
-**
-*T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
-*V  InputFiles[]  . . . . . . . . . . . . .  stack of open input files, local
-*V  Input . . . . . . . . . . . . . . .  pointer to current input file, local
-*V  In  . . . . . . . . . . . . . . . . . pointer to current character, local
-**
-**  'TypInputFile' describes the  information stored  for  open input  files:
-**  'file' holds the file  identifier which is received  from   'SyFopen' and
-**  which  is  passed to 'SyFgets'   and  'SyFclose' to identify  this  file.
-**  'name' is the name of  the file, this   is only used  in error  messages.
-**  'line' is a buffer  that  holds the current  input  line.  This is always
-**  terminated by the character '\0'.  Because 'line' holds  only part of the
-**  line for very  long lines  the last character   need not be  a <newline>.
-**  'ptr' points to the current character within that line.  This is not used
-**  for the current input file, where 'In' points to the  current  character.
-**  'number' is the number of the current line, is used in error messages.
-**
-**  'InputFiles' is the stack of the open input  files.  It is represented as
-**  an array of structures of type 'TypInputFile'.
-**
-**  'Input' is a pointer to the current input file.   It points to the top of
-**  the stack 'InputFiles'.
-**
-**  'In' is a  pointer to  the current  input character, i.e.,  '*In' is  the
-**  current input  character.  It points  into the buffer 'Input->line'.
-**
-typedef struct {
-    long        file;
-    char        name [64];
-    char        line [256];
-    char        * ptr;
-    long        number;
-}       TypInputFile;
-*/
+
 TypInputFile    InputFiles [SCANNER_INPUTS];
 TypInputFile    * Input;
 char            * In;
@@ -360,30 +326,6 @@ Int            Logfile = -1;
 Int            InputLogfile = -1;
 
 
-/****************************************************************************
-**
-*V  TestInput . . . . . . . . . . . . .  file identifier of test input, local
-*V  TestOutput  . . . . . . . . . . . . file identifier of test output, local
-*V  TestLine  . . . . . . . . . . . . . . . . one line from test input, local
-**
-**  'TestInput' is the file  identifier of the  file for test input.  If this
-**  is not -1 and 'GetLine'  reads a line  from  'TestInput' that begins with
-**  '#>' 'GetLine'  assumes that this  was  expected as   output that did not
-**  appear and echoes this input line to 'TestOutput'.
-**
-**  'TestOutput' is the current output file  for test output.  If 'TestInput'
-**  is not -1 then 'PutLine' compares every line that is about to  be printed
-**  to 'TestOutput' with the next line from 'TestInput'.  If this line starts
-**  with '#>' and the rest of it  matches the output  line the output line is
-**  not printed and the input comment line is discarded.  Otherwise 'PutLine'
-**  prints the output line and does not discard the input line.
-**
-**  'TestLine' holds the one line that is read from 'TestInput' to compare it
-**  with a line that is about to be printed to 'TestOutput'.
-*/
-Int            TestInput  = -1;
-Int            TestOutput = -1;
-char            *TestLine;
 
 
 /****************************************************************************
@@ -419,21 +361,16 @@ char            GetLine (void)
     In = Input->line;  In[0] = '\0';
     NrErrLine = 0;
 
-    /* if the input file is the test input there may be one line waiting   */
-    if ( Input->file == TestInput && TestLine[0] != '\0' ) {
-        SyStrncat( In, TestLine, sizeof(Input->line) );
-        TestLine[0] = '\0';
-    }
-
-    /* otherwise try to read a line                                        */
-    else if ( ! SyFgets( In, sizeof(Input->line), Input->file ) ) {
+ 
+    /* try to read a line                                        */
+   if ( ! SyFgets( In, sizeof(Input->line), Input->file ) ) {
         In[0] = '\377';  In[1] = '\0';
         return *In;
     }
 
     /* deal with help requests (preliminary hack)                          */
     if ( In[0] == '?' ) {
-        In[SyStrlen(In)-1] = '\0';
+        In[strlen(In)-1] = '\0';
         SyHelp( In+1, Input->file );
         In[0] = '\n';
         In[1] = '\0';
@@ -445,13 +382,7 @@ char            GetLine (void)
     if ( InputLogfile != -1 && (Input->file == 0 || Input->file == 2) )
         SyFputs( In, InputLogfile );
 
-    /* if this input file is the test input look for unmatched '#>' lines  */
-    if ( Input->file == TestInput && In[0] == '#' && In[1] == '>' ) {
-        SyFputs( In, TestOutput );
-        return GetLine();
-    }
-
-    /* return the current character                                        */
+        /* return the current character                                        */
     return *In;
 }
 
@@ -528,29 +459,29 @@ void            GetIdent (void)
 
     /* now check if 'Value' holds a keyword                                */
     switch ( 256*Value[0]+Value[i-1] ) {
-    case 256*'a'+'d': if(!SyStrcmp(Value,"and"))     Symbol=S_AND;     break;
-    case 256*'d'+'o': if(!SyStrcmp(Value,"do"))      Symbol=S_DO;      break;
-    case 256*'e'+'f': if(!SyStrcmp(Value,"elif"))    Symbol=S_ELIF;    break;
-    case 256*'e'+'e': if(!SyStrcmp(Value,"else"))    Symbol=S_ELSE;    break;
-    case 256*'e'+'d': if(!SyStrcmp(Value,"end"))     Symbol=S_END;     break;
-    case 256*'f'+'i': if(!SyStrcmp(Value,"fi"))      Symbol=S_FI;      break;
-    case 256*'f'+'r': if(!SyStrcmp(Value,"for"))     Symbol=S_FOR;     break;
-    case 256*'f'+'n': if(!SyStrcmp(Value,"function"))Symbol=S_FUNCTION;break;
-    case 256*'i'+'f': if(!SyStrcmp(Value,"if"))      Symbol=S_IF;      break;
-    case 256*'i'+'n': if(!SyStrcmp(Value,"in"))      Symbol=S_IN;      break;
-    case 256*'l'+'l': if(!SyStrcmp(Value,"local"))   Symbol=S_LOCAL;   break;
-    case 256*'m'+'d': if(!SyStrcmp(Value,"mod"))     Symbol=S_MOD;     break;
-    case 256*'m'+'h': if(!SyStrcmp(Value,"meth"))    Symbol=S_METHOD;  break;
-    case 256*'n'+'t': if(!SyStrcmp(Value,"not"))     Symbol=S_NOT;     break;
-    case 256*'o'+'d': if(!SyStrcmp(Value,"od"))      Symbol=S_OD;      break;
-    case 256*'o'+'r': if(!SyStrcmp(Value,"or"))      Symbol=S_OR;      break;
-    case 256*'r'+'t': if(!SyStrcmp(Value,"repeat"))  Symbol=S_REPEAT;  break;
-    case 256*'r'+'n': if(!SyStrcmp(Value,"return"))  Symbol=S_RETURN;  break;
-    case 256*'t'+'n': if(!SyStrcmp(Value,"then"))    Symbol=S_THEN;    break;
-    case 256*'u'+'l': if(!SyStrcmp(Value,"until"))   Symbol=S_UNTIL;   break;
-    case 256*'w'+'e': if(!SyStrcmp(Value,"while"))   Symbol=S_WHILE;   break;
-    case 256*'q'+'t': if(!SyStrcmp(Value,"quit"))    Symbol=S_QUIT;    break;
-    case 256*'d'+'l': if(!SyStrcmp(Value,"dbl"))     {
+    case 256*'a'+'d': if(!strcmp(Value,"and"))     Symbol=S_AND;     break;
+    case 256*'d'+'o': if(!strcmp(Value,"do"))      Symbol=S_DO;      break;
+    case 256*'e'+'f': if(!strcmp(Value,"elif"))    Symbol=S_ELIF;    break;
+    case 256*'e'+'e': if(!strcmp(Value,"else"))    Symbol=S_ELSE;    break;
+    case 256*'e'+'d': if(!strcmp(Value,"end"))     Symbol=S_END;     break;
+    case 256*'f'+'i': if(!strcmp(Value,"fi"))      Symbol=S_FI;      break;
+    case 256*'f'+'r': if(!strcmp(Value,"for"))     Symbol=S_FOR;     break;
+    case 256*'f'+'n': if(!strcmp(Value,"function"))Symbol=S_FUNCTION;break;
+    case 256*'i'+'f': if(!strcmp(Value,"if"))      Symbol=S_IF;      break;
+    case 256*'i'+'n': if(!strcmp(Value,"in"))      Symbol=S_IN;      break;
+    case 256*'l'+'l': if(!strcmp(Value,"local"))   Symbol=S_LOCAL;   break;
+    case 256*'m'+'d': if(!strcmp(Value,"mod"))     Symbol=S_MOD;     break;
+    case 256*'m'+'h': if(!strcmp(Value,"meth"))    Symbol=S_METHOD;  break;
+    case 256*'n'+'t': if(!strcmp(Value,"not"))     Symbol=S_NOT;     break;
+    case 256*'o'+'d': if(!strcmp(Value,"od"))      Symbol=S_OD;      break;
+    case 256*'o'+'r': if(!strcmp(Value,"or"))      Symbol=S_OR;      break;
+    case 256*'r'+'t': if(!strcmp(Value,"repeat"))  Symbol=S_REPEAT;  break;
+    case 256*'r'+'n': if(!strcmp(Value,"return"))  Symbol=S_RETURN;  break;
+    case 256*'t'+'n': if(!strcmp(Value,"then"))    Symbol=S_THEN;    break;
+    case 256*'u'+'l': if(!strcmp(Value,"until"))   Symbol=S_UNTIL;   break;
+    case 256*'w'+'e': if(!strcmp(Value,"while"))   Symbol=S_WHILE;   break;
+    case 256*'q'+'t': if(!strcmp(Value,"quit"))    Symbol=S_QUIT;    break;
+    case 256*'d'+'l': if(!strcmp(Value,"dbl"))     {
         /* read in a double. This dirty way seems to be the only plausible
            solution in this kind of a scanner. This scanner must be ported
            to use flex, then it would be nicer */
@@ -710,54 +641,6 @@ void            GetStr (void)
 
 /****************************************************************************
 **
-*F  GetChar() . . . . . . . . . . . . . . . . . get a single character, local
-**
-**  'GetChar' reads the next  character from the current input file  into the
-**  variable 'Value' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
-**  '\'' of the character is the current character pointed to by 'In'.
-**
-**  A  character is  a  single character delimited by single quotes '\''.  It
-**  must not  be '\'' or <newline>, but  the escape  sequences '\\\'' or '\n'
-**  can be used instead.
-*/
-void            GetChar (void)
-{
-
-    /* skip '\''                                                           */
-    GET_CHAR();
-
-    /* handle escape equences                                              */
-    if ( *In == '\\' ) {
-        GET_CHAR();
-        if ( *In == 'n'  )       Value[0] = '\n';
-        else if ( *In == 't'  )  Value[0] = '\t';
-        else if ( *In == 'r'  )  Value[0] = '\r';
-        else if ( *In == 'b'  )  Value[0] = '\b';
-        else if ( *In == 'c'  )  Value[0] = '\03';
-        else                     Value[0] = *In;
-    }
-
-    /* put normal chars into 'Value'                                       */
-    else {
-        Value[0] = *In;
-    }
-
-    /* read the next character                                             */
-    GET_CHAR();
-
-    /* check for terminating single quote                                  */
-    if ( *In != '\'' )
-        SyntaxError("missing single quote in character constant");
-
-    /* skip the closing quote                                              */
-    Symbol = S_CHAR;
-    if ( *In == '\'' )  GET_CHAR();
-
-}
-
-
-/****************************************************************************
-**
 *F  GetSymbol() . . . . . . . . . . . . . . . . .  get the next symbol, local
 **
 **  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
@@ -768,95 +651,12 @@ void            GetChar (void)
 **  After reading  a  symbol the current  character   is the first  character
 **  beyond that symbol.
 */
-#ifdef USE_FLEX
+
 extern int yylex();
-#endif
+
 void            GetSymbol (void)
 {
-#ifndef USE_FLEX
-
-    /* if no character is available then get one                           */
-    if ( *In == '\0' )
-        GET_CHAR();
-
-    /* skip over <spaces>, <tabs>, <newlines> and comments                 */
-    while (*In==' '||*In=='\t'||*In=='\n'||*In=='\r'||*In=='\f'||*In=='#') {
-        if ( *In == '#' ) {
-#define COMMENT_BUF_SIZ 255
-            char buf[COMMENT_BUF_SIZ];
-            int pos = 0;
-            while ( *In != '\n' && *In != '\r' && *In != '\377' ) {
-                GET_CHAR();
-                buf[pos++] = *In;
-                if(pos == COMMENT_BUF_SIZ) {
-                    AppendCommentBuffer(buf, pos);
-                    pos = 0;
-                }
-            }
-            if(pos > 0)
-                AppendCommentBuffer(buf, pos);
-        }
-        GET_CHAR();
-    }
-
-    /* switch according to the character                                   */
-    switch ( *In ) {
-
-    case '.':   Symbol = S_DOT;                         GET_CHAR();
-                if ( *In == '.' ) { Symbol = S_DOTDOT;  GET_CHAR();  break; }
-                break;
-    case '[':   Symbol = S_LBRACK;                      GET_CHAR();  break;
-    case ']':   Symbol = S_RBRACK;                      GET_CHAR();  break;
-    case '{':   Symbol = S_LBRACE;                      GET_CHAR();  break;
-    case '}':   Symbol = S_RBRACE;                      GET_CHAR();  break;
-    case '(':   Symbol = S_LPAREN;                      GET_CHAR();  break;
-    case ')':   Symbol = S_RPAREN;                      GET_CHAR();  break;
-    case ',':   Symbol = S_COMMA;                       GET_CHAR();  break;
-
-    case ':':   Symbol = S_ILLEGAL;                     GET_CHAR();
-                if ( *In == '=' ) { Symbol = S_ASSIGN;  GET_CHAR();  break; }
-                break;
-    case ';':   Symbol = S_SEMICOLON;                   GET_CHAR();  break;
-
-    case '=':   Symbol = S_EQ;                          GET_CHAR();
-                if( *In == '>'){ Symbol = S_ASSIGN_MAP; GET_CHAR(); break; }
-                break;
-    case '<':   Symbol = S_LT;                          GET_CHAR();
-                if ( *In == '=' ) { Symbol = S_LE;      GET_CHAR();  break; }
-                if ( *In == '>' ) { Symbol = S_NE;      GET_CHAR();  break; }
-                break;
-    case '>':   Symbol = S_GT;                          GET_CHAR();
-                if ( *In == '=' ) { Symbol = S_GE;      GET_CHAR();  break; }
-                if ( *In == '>' ) { Symbol = S_MAPTO_METH; GET_CHAR();  break; }
-                break;
-
-    case '+':   Symbol = S_PLUS;                        GET_CHAR();  break;
-    case '$':   Symbol = S_BACKQUOTE;                   GET_CHAR();  break;
-    case '-':   Symbol = S_MINUS;                       GET_CHAR();
-                if ( *In == '>' ) { Symbol=S_MAPTO;     GET_CHAR();  break; }
-                break;
-    case '*':   Symbol = S_MULT;                        GET_CHAR();  break;
-    case '/':   Symbol = S_DIV;                         GET_CHAR();  break;
-    case '^':   Symbol = S_POW;                         GET_CHAR();  break;
-
-    case '"':                                           GetStr();    break;
-    case '\'':                                          GetChar();   break;
-    case '\\':                                          GetIdent();  break;
-    case '_':                                           GetIdent();  break;
-    case '~':   Value[0] = '~';  Value[1] = '\0';
-                Symbol = S_IDENT;                       GET_CHAR();  break;
-
-    case '0': case '1': case '2': case '3': case '4':
-    case '5': case '6': case '7': case '8': case '9':   GetInt();    break;
-
-    case '\377': Symbol = S_EOF;                        *In = '\0';  break;
-
-    default :   if ( IsAlpha(*In) || *In=='@')        { GetIdent();  break; }
-                Symbol = S_ILLEGAL;                     GET_CHAR();  break;
-    }
-#else
     Symbol = yylex();
-#endif
 }
 
 
@@ -890,7 +690,7 @@ void            GetSymbol (void)
 void            SyntaxError (char *msg)
 {
     Int                i;
-    Int                isStdIn = (SyStrcmp( "*stdin*", Input->name ) == 0 );
+    Int                isStdIn = (strcmp( "*stdin*", Input->name ) == 0 );
     static Int         launchedEdit = 0;
 
     /* one more error                                                      */
@@ -980,9 +780,9 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
     /* else generate an error message and skip to a symbol in <skipto>     */
     else {
         errmsg[0] ='\0';
-        SyStrncat( errmsg, msg, sizeof(errmsg)-1 );
-        SyStrncat( errmsg, " expected",
-                  (Int)(sizeof(errmsg)-1-SyStrlen(errmsg)) );
+        strncat( errmsg, msg, sizeof(errmsg)-1 );
+        strncat( errmsg, " expected",
+                  (Int)(sizeof(errmsg)-1-strlen(errmsg)) );
         SyntaxError( errmsg );
         while ( ! IS_IN( Symbol, skipto ) )
             GetSymbol();
@@ -1009,69 +809,60 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
 **  Finally 'PutLine' checks whether the user has hit '<ctr>-C' to  interrupt
 **  the printing.
 */
-void            PutLine (void)
+void            PutLine(void)
 {
 	Int 	plen, i, k;
 	Bag	hd;
-	char	*str;
+	char* str;
 	Int	slen;
-    /* if in test mode and the next input line matches print nothing       */
-    if ( TestInput != -1 && TestOutput == Output->file
-      && (TestLine[0]!='\0' || SyFgets(TestLine,sizeof(TestLine),TestInput))
-      && TestLine[0]=='#' && TestLine[1]=='>'
-      && ! SyStrcmp( TestLine+2, Output->line ) ) {
-            TestLine[0] = '\0';
-    }
 
-    /* otherwise output this line                                          */
-    else {
-        if (Output->file == -5) {
+	if (Output->file == -5) {
 
-		str = malloc((SyStrlen(Output->line)+1)*sizeof(char));
+		str = malloc((strlen(Output->line) + 1) * sizeof(char));
 		i = 0;
-		while(Output->line[i++] == ' ');
+		while (Output->line[i++] == ' ');
 		--i;
-		for(k = 0; (i < SyStrlen(Output->line)) && (Output->line[i] != '\n'); ++i, ++k) {
+		for (k = 0; (i < strlen(Output->line)) && (Output->line[i] != '\n'); ++i, ++k) {
 			str[k] = Output->line[i];
 		}
 		str[k] = '\0';
 
-		slen = SyStrlen(str);
+		slen = strlen(str);
 
-                hd = NewBag( T_STRING, slen + 1 );
+		hd = NewBag(T_STRING, slen + 1);
 
-                *( (char*) PTR_BAG( hd ) ) = '\0';
-                SyStrncpy( (char*) PTR_BAG( hd ), str, slen );
+		*((char*)PTR_BAG(hd)) = '\0';
+		strncpy((char*)PTR_BAG(hd), str, slen);
 
-		plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(Output->hdList) );
-		Resize( Output->hdList, SIZE_PLEN_PLIST( plen + 1 ) );
-		SET_LEN_PLIST( Output->hdList, plen + 1 );
-                SET_BAG( Output->hdList ,  plen + 1 ,  hd );
+		plen = PLEN_SIZE_PLIST(GET_SIZE_BAG(Output->hdList));
+		Resize(Output->hdList, SIZE_PLEN_PLIST(plen + 1));
+		SET_LEN_PLIST(Output->hdList, plen + 1);
+		SET_BAG(Output->hdList, plen + 1, hd);
 
 		free(str);
 	}
-        else if (Output->file) {
-            SyFputs( Output->line, Output->file );
+	else if (Output->file) {
+		SyFputs(Output->line, Output->file);
 	}
-        else if (Output->mem){
-            /* write to memory */
-            UInt len = SyStrlen(Output->line);
-            UInt mem_sz = ((UInt*)(Output->mem))[0];
-            UInt mem_chrs = ((UInt*)(Output->mem))[1];
-            if (mem_sz+len+1>mem_chrs) {
-                /* no error handling */
-                mem_sz = (mem_sz>len) ? mem_sz*2 : (mem_sz+len+1);
-                Output->mem = realloc(Output->mem,  2*sizeof(UInt) + mem_sz);
-                ((UInt*)(Output->mem))[0] = mem_sz;
-            }
-            SyStrncpy(Output->mem + 2*sizeof(UInt) + mem_chrs, Output->line, len+1);
-            ((UInt*)(Output->mem))[1] = mem_chrs + len;
-        }
-    }
+	else if (Output->mem) {
+		/* write to memory */
+		UInt len = strlen(Output->line);
+		UInt mem_sz = ((UInt*)(Output->mem))[0];
+		UInt mem_chrs = ((UInt*)(Output->mem))[1];
+		if (mem_sz + len + 1 > mem_chrs) {
+			/* no error handling */
+			mem_sz = (mem_sz > len) ? mem_sz * 2 : (mem_sz + len + 1);
+			Output->mem = realloc(Output->mem, 2 * sizeof(UInt) + mem_sz);
+			((UInt*)(Output->mem))[0] = mem_sz;
+		}
+		strncpy(Output->mem + 2 * sizeof(UInt) + mem_chrs, Output->line, len + 1);
+		((UInt*)(Output->mem))[1] = mem_chrs + len;
+	}
 
-    /* if neccessary echo it to the logfile                                */
-    if ( Logfile != -1 && (Output->file == 1 || Output->file == 3))
-        SyFputs( Output->line, Logfile );
+
+	/* if neccessary echo it to the logfile                                */
+	if (Logfile != -1 && (Output->file == 1 || Output->file == 3))
+		SyFputs(Output->line, Logfile);
 }
 
 
@@ -1411,10 +1202,6 @@ Int            OpenInput (char *filename)
     if ( Input+1 == InputFiles+(sizeof(InputFiles)/sizeof(InputFiles[0])) )
         return 0;
 
-    /* in test mode keep reading from test input file for break loop input */
-    if ( TestInput != -1 && ! SyStrcmp( filename, "*errin*" ) )
-        return 1;
-
     /**/HookBeforeOpenInput();/**/
 
     /* try to open the input file                                          */
@@ -1430,7 +1217,7 @@ Int            OpenInput (char *filename)
     Input++;
     Input->file = file;
     Input->name[0] = '\0';
-    SyStrncat( Input->name, filename, sizeof(Input->name) );
+    strncat( Input->name, filename, sizeof(Input->name) );
 
     /* start with an empty line and no symbol                              */
     In = Input->line;
@@ -1472,10 +1259,6 @@ Int            CloseInput (void)
 {
     /* refuse to close the initial input file                              */
     if ( Input == InputFiles )
-        return 0;
-
-    /* refuse to close the test input file                                 */
-    if ( Input->file == TestInput )
         return 0;
 
     /**/HookBeforeCloseInput();/**/
@@ -1533,12 +1316,12 @@ Bag		GReadFile()
 	hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
 
 	while(SyFgets(Input->line, 2048, Input->file)) {
-		slen = SyStrlen(Input->line);
+		slen = strlen(Input->line);
 		Input->line[slen-1] = '\0';
 		hd = NewBag( T_STRING, slen );
 
                 *( (char*) PTR_BAG( hd ) ) = '\0';
-                SyStrncpy( (char*) PTR_BAG( hd ), Input->line, slen );
+                strncpy( (char*) PTR_BAG( hd ), Input->line, slen );
 
                 plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(hdList) );
                 Resize( hdList, SIZE_PLEN_PLIST( plen + 1 ) );
@@ -1586,10 +1369,6 @@ Int            OpenOutput (char *filename)
     if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
         return 0;
 
-    /* in test mode keep printing to test output file for breakloop output */
-    if ( TestInput != -1 && ! SyStrcmp( filename, "*errout*" ) )
-        return 1;
-
     /* try to open the file                                                */
     file = SyFopen( filename, "w" );
     if ( file == -1 )
@@ -1634,9 +1413,6 @@ Int            CloseOutput (void)
     if ( Output == OutputFiles )
         return 0;
 
-    /* refuse to close the test output file                                */
-    if ( Output->file == TestOutput )
-        return 0;
 
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0 );
@@ -1664,21 +1440,21 @@ extern Bag            ReturnStringOutput ()
 	if (Output->pos > 0) {
 		Output->line[Output->pos] = '\0';
 
-		str = malloc((SyStrlen(Output->line)+1)*sizeof(char));
+		str = malloc((strlen(Output->line)+1)*sizeof(char));
 		i = 0;
 		while(Output->line[i++] == ' ');
 		--i;
-		for(k = 0; i < SyStrlen(Output->line); ++i, ++k) {
+		for(k = 0; i < strlen(Output->line); ++i, ++k) {
 			str[k] = Output->line[i];
 		}
 		str[k] = '\0';
 
-		slen = SyStrlen(str);
+		slen = strlen(str);
 
 	        hd = NewBag( T_STRING, slen + 1 );
 
        		*( (char*) PTR_BAG( hd ) ) = '\0';
-	        SyStrncpy( (char*) PTR_BAG( hd ), str, slen );
+	        strncpy( (char*) PTR_BAG( hd ), str, slen );
 
         	plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(Output->hdList) );
 	        Resize( Output->hdList, SIZE_PLEN_PLIST( plen + 1 ) );
@@ -1698,9 +1474,6 @@ extern Int            CloseStringOutput (void)
     if ( Output == OutputFiles )
         return 0;
 
-    /* refuse to close the test output file                                */
-    if ( Output->file == TestOutput )
-        return 0;
 
     /* revert to previous output file and indicate success                 */
     Output->file = 0;
@@ -1733,10 +1506,6 @@ Int            OpenMemory ()
     /* fail if we can not handle another open output file                  */
     if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
         return 0;
-
-    /* in test mode keep printing to test output file for breakloop output */
-    if ( TestInput != -1 )
-        return 1;
 
     /* alloc buffer, first UInt there is buffer size without two UInts     */
     /* second UInt is number of number of characters in the buffer         */
@@ -1782,7 +1551,7 @@ Int            CloseMemory(Obj* hdStr) {
         /* grab memory to string                                           */
         hd = NewBag( T_STRING, SIZEBAG_STRINGLEN(mem_chars)); 
         SET_LEN_STRING(hd, mem_chars);
-        SyStrncpy(CHARS_STRING(hd), Output->mem + 2*sizeof(UInt), mem_chars+1 );
+        strncpy(CHARS_STRING(hd), Output->mem + 2*sizeof(UInt), mem_chars+1 );
         *hdStr = hd;
     } else {
         *hdStr = NewBag( T_STRING, SIZEBAG_STRINGLEN(0)); 
@@ -1808,10 +1577,6 @@ Int            OpenAppend (char *filename)
     /* fail if we can not handle another open output file                  */
     if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
         return 0;
-
-    /* in test mode keep printing to test output file for breakloop output */
-    if ( TestInput != -1 && ! SyStrcmp( filename, "*errout*" ) )
-        return 1;
 
     /* try to open the file                                                */
     file = SyFopen( filename, "a" );
@@ -1952,111 +1717,6 @@ Int            CloseInputLog (void)
 }
 
 
-/****************************************************************************
-**
-*F  OpenTest( <filename> )  . . . . . . . .  open an input file for test mode
-**
-**  'OpenTest'  opens the file with the  name <filename> as current input for
-**  test mode.  All subsequent input will  be taken  from that file, until it
-**  is closed   again with  'CloseTest'   or another  file is   opened   with
-**  'OpenInput'.   'OpenTest' will  not  close the   current file,  i.e.,  if
-**  <filename> is  closed again, input will be  taken again from  the current
-**  input file.
-**
-**  Test mode works as follows.  If the scanner  is about to  print a line to
-**  the  current output file  (or to be more precise  to the output file that
-**  was current when  'OpenTest' was called) this line  is  compared with the
-**  next line from the test input  file, i.e., the  one opened by 'OpenTest'.
-**  If this line starts with '#>' and the rest of it  matches the output line
-**  the output line is  not printed and the input  comment line is discarded.
-**  Otherwise the  scanner prints the output line   and does not  discard the
-**  input line.
-**
-**  On the other hand if an input line is encountered on  the test input that
-**  starts with '#>' the scanner assumes that this is an expected output line
-**  that did not appear and echoes this line to the current output file.
-**
-**  The upshot is that  you can write  test files that consist of alternating
-**  input and,  as  '#>' test  comment  lines the  expected  output.   If GAP
-**  behaves normal and produces the expected  output then nothing is printed.
-**  But if something  goes wrong you see  what actually was printed  and what
-**  was expected instead.
-**
-**  As a convention GAP test files should end with a  print  statement  like:
-**
-**    Print("prime   3.002   06-Jul-90 ",417000000/Runtime()," GAPstones\n");
-**
-**  without a matching '#>' comment line.  This tells the user that the  test
-**  file completed and also how much time it took.  The  constant  should  be
-**  such that a VAX 11/780 gets roughly 1000 GAPstones.
-**
-**  'OpenTest' returns 1 if it could successfully open <filename> for reading
-**  and  0 to indicate failure.  'OpenTest'  will fail if   the file does not
-**  exist or if you have no permissions to read it.  'OpenTest' may also fail
-**  if you have too many files open at once.  It is system dependent how many
-**  are too may, but 16 files shoule work everywhere.
-**
-**  Directely after the 'OpenTest'  call the variable  'Symbol' has the value
-**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
-**  The first symbol is read by 'Read' in the first call to 'Match' call.
-*/
-Int            OpenTest (char *filename)
-{
-    /* do not allow to nest test files                                     */
-    if ( TestInput != -1 )
-        return 0;
-
-    /* try to open the file as input file                                  */
-    if ( ! OpenInput( filename ) )
-        return 0;
-
-    /* remember this is a test input                                       */
-    TestInput   = Input->file;
-    TestOutput  = Output->file;
-    TestLine[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseTest() . . . . . . . . . . . . . . . . . . close the test input file
-**
-**  'CloseTest'  closes the  current test  input  file and ends  test   mode.
-**  Subsequent  input   will again be taken   from  the previous  input file.
-**  Output will no longer be compared with  comment lines from the test input
-**  file.  'CloseTest' will return 1 to indicate success.
-**
-**  'CloseTest' will not close a non test input file and returns 0 if such an
-**  attempt is made.
-*/
-Int            CloseTest (void)
-{
-    /* refuse to a non test file                                           */
-    if ( TestInput != Input->file )
-        return 0;
-
-    /* close the input file                                                */
-    SyFclose( Input->file );
-
-    /* revert to last file                                                 */
-    Input--;
-    In = Input->ptr;
-
-    /* indicate that the next symbol has not yet been read                 */
-    Symbol = S_ILLEGAL;
-
-    /* we are no longer in test mode                                       */
-    TestInput   = -1;
-    TestOutput  = -1;
-    TestLine[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
 
 /****************************************************************************
 **
@@ -2080,12 +1740,12 @@ void            InitScanner (void)
         OutputFiles[i].spos = 0;
         OutputFiles[i].mem = 0;
     }
-    TestLine = (char*) malloc(sizeof(char)*OutputLineLen);
 
     Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
     Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
 
-    Logfile = -1;  InputLogfile = -1;  TestInput = -1;  TestOutput = -1;
+    Logfile = -1;  
+    InputLogfile = -1;
 }
 
 

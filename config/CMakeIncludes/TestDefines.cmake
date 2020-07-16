@@ -28,16 +28,18 @@ endif ()
 function (my_add_test_target testname subdir)
     file (TO_NATIVE_PATH ${TESTS_SOURCE_DIR}/${subdir}/${testname}.g _scrpt)
     if (BASH)
-	    add_test (NAME ${testname}
-		  COMMAND ${BASH} -c "${TEST_GAP_EXEC_NAME} < ${_scrpt}"
-	    )
-		SET_TESTS_PROPERTIES(${testname} PROPERTIES SKIP_RETURN_CODE 86)
+        add_test (NAME ${testname}
+          COMMAND ${BASH} -c "${TEST_GAP_EXEC_NAME} < ${_scrpt}"
+        )
+        SET_TESTS_PROPERTIES(${testname} PROPERTIES SKIP_RETURN_CODE 86)
     else ()
         if (WIN32)
-	        add_test (NAME ${testname} 
-		      COMMAND ${TEST_GAP_EXEC_NAME} < ${_scrpt}
-    	    )
-			SET_TESTS_PROPERTIES(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST FAILED")
+            add_test (NAME ${testname} 
+              COMMAND ${TEST_GAP_EXEC_NAME} < ${_scrpt}
+            )
+            SET_TESTS_PROPERTIES(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST FAILED")
+            SET_TESTS_PROPERTIES(${testname} PROPERTIES SKIP_REGULAR_EXPRESSION "Skipping test")
+            SET_TESTS_PROPERTIES(${testname} PROPERTIES SKIP_RETURN_CODE 86)
         else ()
             message(FATAL_ERROR "Unknown shell command for ${CMAKE_HOST_SYSTEM_NAME}")
         endif ()

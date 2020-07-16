@@ -112,7 +112,7 @@ Int         DbgInBreakLoop = 0;
 */
 int             main (int argc, char **argv)
 {
-    extern void         InitGap (int *pargc, char ***pargv);
+    extern void         InitGap (int argc, char **argv, int *stackBase);
     exc_type_t          e;
 
    
@@ -128,10 +128,12 @@ int             main (int argc, char **argv)
 	/* strcpy(p, "1234567890ABCDEF FEDCBA0987654321");						 */
 	/* printf("# bytes allocated = %d, ptr = %X, value = %s\n", n, p, p);	 */
 	/*************************************************************************/
+
+	GapRunTime.gap_start = clock();
 	
     Try {
 		/* initialize everything                                             */
-		InitGap( &argc, &argv );
+		InitGap( argc, argv, &argc );
     }
 	Catch(e) {
 		exc_show();
@@ -177,6 +179,9 @@ int             main (int argc, char **argv)
 		}
     }
 
+	//  GapRunTime.gap_end = clock();
+	//  PrintRuntimeStats(&GapRunTime);
+	
      /* exit to the operating system, the return is there to please lint    */
     if (NrHadSyntaxErrors && (LAST_INTERFACE == ID_BATCH)) 
         SyExit(SYEXIT_WITH_SYNTAX_ERRORS);
@@ -618,9 +623,9 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 		/* open the standard error output file                                */
 		/*if ( ! InError )*/
 		isBreakpoint = 0;
-		if (SyStrcmp(msg, "GapBreakpoint")==0) isBreakpoint = 1; 
-		if (SyStrcmp(msg, "GapBreakpointRd")==0) isBreakpoint = 2;
-		if (SyStrcmp(msg, "GapBreakpointWr")==0) isBreakpoint = 3;
+		if (strcmp(msg, "GapBreakpoint")==0) isBreakpoint = 1; 
+		if (strcmp(msg, "GapBreakpointRd")==0) isBreakpoint = 2;
+		if (strcmp(msg, "GapBreakpointWr")==0) isBreakpoint = 3;
 		if ( DbgInBreakLoop==0 ) {
 			ignore = OpenOutput( "*errout*" );
 			if (!isBreakpoint)
@@ -635,7 +640,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			}
 		} else {
 			/* print the error message, special if called from 'FunError'      */
-			if ( SyStrcmp( msg, "FunError" ) != 0 ) {
+			if ( strcmp( msg, "FunError" ) != 0 ) {
 				Pr("Error, ",0,0);  Pr( msg, arg1, arg2 );
 			} else {
 				Pr("Error, ",0,0);  FunPrint( (Bag)arg1 );
@@ -646,14 +651,14 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 		if ( HdExec != 0 && DbgInBreakLoop==0 ) {
 			/* we have to do something about this as we have more detailed
 			call stack now
-			if ( HdStat != 0 && SyStrcmp( msg, "FunError" ) != 0 ) {
+			if ( HdStat != 0 && strcmp( msg, "FunError" ) != 0 ) {
 			Pr(" at\n%s", (long)StrStat, 0 );
 			Print( HdStat );
 			Pr(" ...",0,0);
 			}
 			Pr(" in\n",0,0);
 			*/
-			if (DbgEvalStackTop>0 && SyStrcmp( msg, "FunError" ) != 0) {
+			if (DbgEvalStackTop>0 && strcmp( msg, "FunError" ) != 0) {
 				Pr(" at\n", 0, 0 );
 				Print( EvalStack[DbgEvalStackTop] );
 				Pr(" ...",0,0);
@@ -703,7 +708,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 					} else {
 						Prompt = BrkPrompt;
 					}
-					EnterKernel();
 					NrError = 0;
 					hd = ReadIt();
 					/* if there we no syntax error evaluate the expression         */
@@ -718,7 +722,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 						if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn ) {
 							LeaveDbgStack(); 
 							SET_BAG(HdTilde, 0,  hdTilde ); /* restore ~ */
-							ExitKernel( hd );
 							ignore = CloseInput();
 							ignore = CloseOutput();
 							/*InError = 0;*/
@@ -740,7 +743,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 							}
 						}
 					}
-					ExitKernel( (Bag)0 );
 				}
 				/* remove function definitions from the stack and close "*errin*"  */
 				LeaveDbgStack();
@@ -752,8 +754,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				}
 			}
 
-			/* call ExitKernel(2) to clear new handles bag                         */
-			ExitKernel( (Bag)2 );
 			while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
 			while ( EvalStackTop > 0 ) EVAL_STACK_POP;
 
@@ -863,7 +863,7 @@ Bag	FunWindowCmd (Bag hdCall)
     *ptr   = '\0';
 
     /* first the command name                                              */
-    SyStrncat( ptr, (char*)PTR_BAG(ELM_LIST(hdCmd,1)), 3 );
+    strncat( ptr, (char*)PTR_BAG(ELM_LIST(hdCmd,1)), 3 );
     ptr += 3;
 
     /* and at last the arguments                                           */
@@ -900,7 +900,7 @@ Bag	FunWindowCmd (Bag hdCall)
 
     /* now call the window front end with the argument string              */
     ptr = SyWinCmd( qtr, len );
-    len = SyStrlen(ptr);
+    len = strlen(ptr);
 
     /* now convert result back into a list                                 */
     hdLst = NewBag( T_LIST, SIZE_PLEN_PLIST(11) );
@@ -926,7 +926,7 @@ Bag	FunWindowCmd (Bag hdCall)
 	    hdTmp = NewBag( T_STRING, n+1 );
 	    *(char*)PTR_BAG(hdTmp) = '\0';
 	    ptr += 8;
-	    SyStrncat( (char*)PTR_BAG(hdTmp), ptr, n );
+	    strncat( (char*)PTR_BAG(hdTmp), ptr, n );
 	    ptr += n;
 	    len -= n+9;
 	    AssPlist( hdLst, i, hdTmp );
@@ -940,7 +940,7 @@ Bag	FunWindowCmd (Bag hdCall)
     if ( ELM_LIST(hdLst,1) == INT_TO_HD(1) )
     {
 	hdStr = NewBag( T_STRING, 30 );
-	SyStrncat( (char*) PTR_BAG(hdStr), "window system: ", 15 );
+	strncat( (char*) PTR_BAG(hdStr), "window system: ", 15 );
 	SET_ELM_PLIST( hdLst, 1, hdStr );
 	Resize( hdLst, i*SIZE_HD );
 	return Error( "FunError", (Int)hdLst, 0 );
@@ -1015,7 +1015,6 @@ Bag       FunREAD (Bag hdCall)
     /* now comes a read-eval-noprint loop, similar to the one in 'main'    */
 	Try {
         while ( Symbol != S_EOF ) {
-            EnterKernel();
             hd = ReadIt();
 			if ( hd != 0 ) { 
 				hd = EVAL( hd );
@@ -1024,7 +1023,6 @@ Bag       FunREAD (Bag hdCall)
 				return Error("READ: 'return' must not be used here",0,0);
 			else if ( hd == HdReturn )
 				return Error("READ: 'quit' must not be used here",0,0);
-            ExitKernel( (Bag)0 );
         }
     } Catch(e) {
         if ( hdPkg ) EndPackage();
@@ -1479,99 +1477,6 @@ Bag       FunLogInputTo (Bag hdCall)
 }
 
 
-/****************************************************************************
-**
-*F  FunReadTest( <hdCall> ) . . . . . . . . . .  internal function 'ReadTest'
-**
-**  'FunReadTest' implements the internal function 'ReadTest'.
-**
-**  'ReadTest( <filename> )'
-**
-**  'ReadTest' instructs GAP to  read test input from the  file with the name
-**  <filename>.   If it is  not found or could not  be  opened for reading an
-**  error is raised.  If  the  file is found  GAP  reads all expressions  and
-**  statements  from this  file  and  evaluates  respectively executes  them.
-**  After  that GAP continues  evaluation or  execution of  what it was doing
-**  before.  'ReadTest' can be not nested, i.e., it is not legal to execute a
-**  'ReadTest' function call in a file that is read with 'ReadTest'.
-**
-**  Test mode works as follows.  If GAP is about  to  print  a  line  to  the
-**  current  output  file  (or  to  be  more precise  to the output file that
-**  was current when  'ReadTest' was called) this line  is  compared with the
-**  next line from the test input  file, i.e., the  one opened by 'ReadTest'.
-**  If this line starts with '#>' and the rest of it  matches the output line
-**  the output line is  not printed and the input  comment line is discarded.
-**  Otherwise GAP prints the output line and does not discard the input line.
-**
-**  On the other hand if an input line is encountered on  the test input that
-**  starts with '#>' the GAP assumes that this is  an  expected  output  line
-**  that did not appear and echoes this line to the current output file.
-**
-**  The upshot is that  you can write  test files that consist of alternating
-**  input and,  as  '#>' test  comment  lines the  expected  output.   If GAP
-**  behaves normal and produces the expected  output then nothing is printed.
-**  But if something  goes wrong you see  what actually was printed  and what
-**  was expected instead.
-**
-**  As a convention GAP test files should end with a  print  statement  like:
-**
-**    Print("prime   3.002   06-Jul-90 ",Quo(417000000,time)," GAPstones\n");
-**
-**  without a matching '#>' comment line.  This tells the user that the  test
-**  file completed and also how much time it took.  The  constant  should  be
-**  such that a VAX 11/780 gets roughly 1000 GAPstones.
-**
-**  If a syntax error is found 'ReadTest' continues reading a next expression
-**  or statement, just  as  GAP  would  in  the  main  read-eval-print  loop.
-**  If an evaluation error occurs, 'ReadTest' enters a break  loop,  but  the
-**  input for this break loop is taken from the test input file.
-*/
-Bag       FunReadTest (Bag hdCall)
-{
-    Bag           hd,  hdName;
-    UInt       start;
-    extern char         * In;
-
-    /* check the number and type of arguments                              */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: ReadTest( <filename> )",0,0);
-    hdName = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hdName) )
-        return Error("usage: ReadTest( <filename> )",0,0);
-
-    /* try to open the given file, if the file is not found return 'false' */
-    if ( ! OpenTest( (char*)PTR_BAG(hdName) ) )
-        return Error("ReadTest: file '%s' must exist and be readable\n",
-                     (Int)PTR_BAG(hdName), 0 );
-    start = SyTime();
-
-    /* now comes a read-eval-print loop, similar to the one in 'main'      */
-    while ( Symbol != S_EOF ) {
-        EnterKernel();
-        hd = ReadIt();
-        if ( hd != 0 ) {
-            hd = EVAL( hd );
-            if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
-                return Error("ReadTest: 'return' must not be used",0,0);
-            else if ( hd == HdReturn )
-                return Error("ReadTest: 'quit' must not be used",0,0);
-            SET_BAG(HdTime, 0,  INT_TO_HD( SyTime() - start ) );
-            if ( GET_TYPE_BAG(hd) != T_VOID ) {
-                if ( *In != ';' ) {
-                    IsString( hd );
-                    Print( hd );
-                    Pr("\n",0,0);
-                }
-            }
-        }
-        ExitKernel( (Bag)0 );
-    }
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseTest() )
-        Error("ReadTest: can not close input, this should not happen",0,0);
-    return HdVoid;
-}
 
 
 /****************************************************************************
@@ -1765,9 +1670,9 @@ Bag	FunTmpName (Bag hdCall)
     str = SyTmpname();
     if ( str == (char*)0 )
 	return HdFalse;
-    hdStr = NewBag( T_STRING, SyStrlen(str)+1 );
+    hdStr = NewBag( T_STRING, strlen(str)+1 );
     *((char*)PTR_BAG(hdStr)) = 0;
-    SyStrncat( (char*)PTR_BAG(hdStr), str, SyStrlen(str) );
+    strncat( (char*)PTR_BAG(hdStr), str, strlen(str) );
     return hdStr;
 }
 
@@ -1872,13 +1777,13 @@ Bag       FunTYPE (Bag hdCall)
     hdObj  = EVAL( PTR_BAG(hdCall)[1] );
     if ( hdObj == 0 ) {
         hdType = NewBag( T_STRING, 5 );
-        SyStrncat( (char*)PTR_BAG(hdType), "null", 4 );
+        strncat( (char*)PTR_BAG(hdType), "null", 4 );
     }
     else {
 		char *objtyp = InfoBags[GET_TYPE_BAG(hdObj)].name;
-        hdType = NewBag( T_STRING, SyStrlen( objtyp ) + 1 );
-        SyStrncat( (char*)PTR_BAG(hdType), objtyp,
-                   SyStrlen( objtyp ) + 1 );
+        hdType = NewBag( T_STRING, strlen( objtyp ) + 1 );
+        strncat( (char*)PTR_BAG(hdType), objtyp,
+                   strlen( objtyp ) + 1 );
     }
 
    return hdType;
@@ -1964,23 +1869,22 @@ Bag       FunSIZE (Bag hdCall)
 }
 
 
-extern BagPtr_t *	MptrBags;
-extern BagPtr_t *	EndBags;
-
 /****************************************************************************
 **
 *F  FunGASMAN( <hdCall> ) . . . . . . . . . . . . .  expert function 'GASMAN'
 **
 **  'FunGASMAN' implements the internal function 'GASMAN'
 **
-**  'GASMAN( "display" | "clear" | "collect" | "message" | "traceON" | "traceOFF" )'
+**  'GASMAN( "display" | "clear" | "collect" | "message" | "messageSTAT"
+**           "traceON" | "traceOFF" | "traceSTAT" )'
 */
 Bag       FunGASMAN (Bag hdCall)
 {
-    Bag           hdCmd;          /* handle of an argument           */
-    UInt       i,  k;          /* loop variables                  */
+    Bag     hdCmd;				        // handle of an argument
+    UInt    i,  k;						// loop variables
+	Bag     hdRet = HdVoid;				// return value
 	char *usageMessage =
-		"usage: GASMAN( \"display\"|\"clear\"|\"collect\"|\"message\"|\"traceON\"|\"traceOFF\" )";
+		"usage: GASMAN( \"display\"|\"clear\"|\"collect\"|\"message\"|\"messageSTAT\"|\"traceON\"|\"traceOFF\"|\"traceSTAT\" )";
 
     /* check the argument                                                  */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
@@ -1995,7 +1899,7 @@ Bag       FunGASMAN (Bag hdCall)
            return Error(usageMessage, 0, 0);
 
         /* if request display the statistics                               */
-        if ( SyStrcmp( (char*)PTR_BAG(hdCmd), "display" ) == 0 ) {
+        if ( strcmp( (char*)PTR_BAG(hdCmd), "display" ) == 0 ) {
             Int sumNrLive = 0;
             Int sumSizeLive = 0;
             Int sumNrAll = 0;
@@ -2025,7 +1929,7 @@ Bag       FunGASMAN (Bag hdCall)
             }
         } 
 
-        else if ( SyStrcmp( (char*)PTR_BAG(hdCmd), "display1" ) == 0 ) { // vvv
+        else if ( strcmp( (char*)PTR_BAG(hdCmd), "display1" ) == 0 ) { // vvv
             Int sumNrLive = 0;
             Int sumSizeLive = 0;
             Int sumNrAll = 0;
@@ -2066,7 +1970,7 @@ Bag       FunGASMAN (Bag hdCall)
         }
 
         /* if request clear the statistics                               */
-        else if ( SyStrcmp( (char*)PTR_BAG(hdCmd), "clear" ) == 0 ) {
+        else if ( strcmp( (char*)PTR_BAG(hdCmd), "clear" ) == 0 ) {
             for ( k = T_VOID; k < T_ILLEGAL; k++ ) {
                 InfoBags[k].nrAll   = InfoBags[k].nrLive;
                 InfoBags[k].sizeAll = InfoBags[k].sizeLive;
@@ -2074,31 +1978,44 @@ Bag       FunGASMAN (Bag hdCall)
         }
 
         /* or collect the garbage                                          */
-        else if ( SyStrcmp( (char*)PTR_BAG(hdCmd), "collect" ) == 0 ) {
-            UInt usedpc;
+        else if ( strcmp( (char*)PTR_BAG(hdCmd), "collect" ) == 0 ) {
+            float usedpc;
             CollectGarb();
-			usedpc = (100 * SizeLiveBags) / ((UInt)EndBags - (UInt)MptrBags);
-			if (SyMsgsFlagBags)
-				Pr("%dk live bags, %d percent of total memory pool\n", SizeLiveBags / 1024, usedpc);
-			return INT_TO_HD( SizeLiveBags >> 10 );
-
+			usedpc = (float)(100 * SizeLiveBags) / SizeAllArenas;
+			if (SyMsgsFlagBags) {
+				fprintf(stderr, "%dk live bags, %.1f%% of total Memory Arenas (%dk)\n",
+						SizeLiveBags / 1024, usedpc, SizeAllArenas / 1024);
+				fflush(stderr);
+			}
+			hdRet = INT_TO_HD( SizeLiveBags / 1024 ); // return value is size of bags in Kbytes
         }
 
         /* or toggle Gasman messages                               */
-        else if ( SyStrcmp( (char*)PTR_BAG(hdCmd), "message" ) == 0 ) {
-	    if(SyMsgsFlagBags==0)
+        else if ( strcmp( (char*)PTR_BAG(hdCmd), "message" ) == 0 ) {
+			if(SyMsgsFlagBags==0)
                 SyMsgsFlagBags = 2;
-	    else SyMsgsFlagBags = 0;
+			else
+				SyMsgsFlagBags = 0;
         }
 
+		// get the current state (value) of GC summary message printing
+		else if ( strcmp( (char*)PTR_BAG(hdCmd), "messageSTAT" ) == 0 ) {
+			hdRet = INT_TO_HD (SyMsgsFlagBags);
+		}
+
 		// turn memory manager tracing messages and statistics ON
-		else if ( SyStrcmp( (char*)PTR_BAG(hdCmd), "traceON" ) == 0 ) {
+		else if ( strcmp( (char*)PTR_BAG(hdCmd), "traceON" ) == 0 ) {
 			SyMemMgrTrace = 1;
 		}
 
 		// turn memory manager tracing messages and statistics OFF
-		else if ( SyStrcmp( (char*)PTR_BAG(hdCmd), "traceOFF" ) == 0 ) {
+		else if ( strcmp( (char*)PTR_BAG(hdCmd), "traceOFF" ) == 0 ) {
 			SyMemMgrTrace = 0;
+		}
+
+		// get the current state (value) of Memory Manager tracing
+		else if ( strcmp( (char *)PTR_BAG(hdCmd), "traceSTAT" ) == 0 ) {
+			hdRet = INT_TO_HD (SyMemMgrTrace);
 		}
 
         /* otherwise complain                                              */
@@ -2108,7 +2025,7 @@ Bag       FunGASMAN (Bag hdCall)
     }
 
     /* return nothing, this function is a procedure                        */
-    return HdVoid;
+    return hdRet;
 }
 
 
@@ -2248,11 +2165,6 @@ Bag     FunTabToList(Bag hdCall) {
     return TableToList(hd);
 }
 
-void InitWeakPtrs() 
-{
-
-}
-
 
 /****************************************************************************
 **
@@ -2260,13 +2172,11 @@ void InitWeakPtrs()
 **
 **  'InitGap' initializes GAP.
 */
-void            InitGap ( int * pargc, char *** pargv ) {
+void            InitGap (int argc, char** argv, int* stackBase) {
     Bag           hd;
     Int                i;
     Int                ignore;
     char *              version;
-    int                 argc = *pargc;
-    char **             argv = *pargv;
     exc_type_t          e;
     char*		prompt;
     /* Initialize all subpackages of GAP.                                  */
@@ -2279,7 +2189,7 @@ void            InitGap ( int * pargc, char *** pargv ) {
 	
     InitSystem( argc, argv );
     InitScanner();
-    InitGasman(pargc, argv);
+    InitGasman(argc, argv, stackBase);
     InitIdents();
     InitCommentBuffer();
     InitEval();
@@ -2297,8 +2207,8 @@ void            InitGap ( int * pargc, char *** pargv ) {
     InitGlobalBag(&HdDbgStackRoot, "HdDbgStackRoot");
     
     hd = FindIdent( "LIBNAME" );
-    SET_BAG(hd, 0,  NewBag( T_STRING, (UInt)(SyStrlen(SyLibname)+1) ) );
-    SyStrncat( (char*)PTR_BAG(PTR_BAG(hd)[0]), SyLibname, SyStrlen(SyLibname) );
+    SET_BAG(hd, 0,  NewBag( T_STRING, (UInt)(strlen(SyLibname)+1) ) );
+    strncat( (char*)PTR_BAG(PTR_BAG(hd)[0]), SyLibname, strlen(SyLibname) );
 
     hd = FindIdent( "QUIET" );
     if ( SyQuiet )  SET_BAG(hd, 0,  HdTrue );
@@ -2329,7 +2239,6 @@ void            InitGap ( int * pargc, char *** pargv ) {
     InstIntFunc( "AppendTo",   FunAppendTo   );
     InstIntFunc( "LogTo",      FunLogTo      );
     InstIntFunc( "LogInputTo", FunLogInputTo );
-    InstIntFunc( "ReadTest",   FunReadTest   );
 
     InstIntFunc( "Help",        FunHelp        );
     InstIntFunc( "Exec",        FunExec        );
@@ -2352,6 +2261,8 @@ void            InitGap ( int * pargc, char *** pargv ) {
     /*N  15-Jan-91 martin this function should not be here                 */
     InstIntFunc( "CoefficientsInt", FunCoefficients );
 
+	InitMemMgrFuncs();
+	
     /**/ EndPackage(); /**/
 
     /* read all init files, stop doing so after quiting from Error         */
@@ -2363,14 +2274,12 @@ void            InitGap ( int * pargc, char *** pargv ) {
 		/*Pr("Reading %s...\n", file, 0);*/
                 if ( OpenInput( file ) ) {
                     while ( Symbol != S_EOF ) {
-                        EnterKernel();
                         hd = ReadIt();
                         if ( hd != 0 )  hd = EVAL( hd );
                         if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
                             Error("Read: 'return' must not be used",0,0);
                         else if ( hd == HdReturn )
                              Error("Read: 'quit' must not be used",0,0);
-                        ExitKernel( (Bag)0 );
 		    }		    
 		    pkg = Input->package;
                     ignore = CloseInput();
@@ -2386,23 +2295,23 @@ void            InitGap ( int * pargc, char *** pargv ) {
 	hd = GetPromptString(PROMPT_FIELD_DBG);
 	if (hd) {
 	    prompt = HD_TO_STRING(hd);
-	    if (SyStrlen(prompt)<sizeof(DbgPrompt))
-		SyStrncpy(DbgPrompt, prompt, SyStrlen(prompt)+1);
+	    if (strlen(prompt)<sizeof(DbgPrompt))
+		strncpy(DbgPrompt, prompt, strlen(prompt)+1);
 	}
 	hd = GetPromptString(PROMPT_FIELD_BRK);
 	if (hd) {
 	    prompt = HD_TO_STRING(hd);
-	    if (SyStrlen(prompt)<sizeof(BrkPrompt))
-		SyStrncpy(BrkPrompt, prompt, SyStrlen(prompt)+1);
+	    if (strlen(prompt)<sizeof(BrkPrompt))
+		strncpy(BrkPrompt, prompt, strlen(prompt)+1);
 	}
         /* read prompts from environment */
 	prompt = getenv("SPIRAL_DBG_PROMPT");
-	if (prompt != NULL && SyStrlen(prompt)<sizeof(DbgPrompt)) {
-	    SyStrncpy(DbgPrompt, prompt, SyStrlen(prompt)+1);
+	if (prompt != NULL && strlen(prompt)<sizeof(DbgPrompt)) {
+	    strncpy(DbgPrompt, prompt, strlen(prompt)+1);
 	}
 	prompt = getenv("SPIRAL_BRK_PROMPT");
-	if (prompt != NULL && SyStrlen(prompt)<sizeof(BrkPrompt)) {
-	    SyStrncpy(BrkPrompt, prompt, SyStrlen(prompt)+1);
+	if (prompt != NULL && strlen(prompt)<sizeof(BrkPrompt)) {
+	    strncpy(BrkPrompt, prompt, strlen(prompt)+1);
 	}
 
     }

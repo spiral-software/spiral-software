@@ -72,8 +72,8 @@ void            InitLibName (char *progname, char *SyLibname, int maxLen)
 		else
 			path_sep = "";
 
-        SyStrncat( SyLibname, lib_ptr, maxLen - SyStrlen(SyLibname)-2 );
-        SyStrncat( SyLibname, path_sep, maxLen - SyStrlen(SyLibname)-2 );
+        strncat( SyLibname, lib_ptr, maxLen - strlen(SyLibname)-2 );
+        strncat( SyLibname, path_sep, maxLen - strlen(SyLibname)-2 );
     }
 }
 
@@ -394,8 +394,8 @@ Bag       FunNameOf (Bag hdCall)
     hdVar = INJECTION_D(EVAL(PTR_BAG(hdCall)[1]));
     if( GET_TYPE_BAG(hdVar) != T_VAR && GET_TYPE_BAG(hdVar) != T_VARAUTO) return Error(usage,0,0);
 
-    hdRes = NEW_STRING(SyStrlen(VAR_NAME(hdVar)));
-    strncpy(CHARS_STRING(hdRes), VAR_NAME(hdVar), SyStrlen(VAR_NAME(hdVar))+1);
+    hdRes = NEW_STRING(strlen(VAR_NAME(hdVar)));
+    strncpy(CHARS_STRING(hdRes), VAR_NAME(hdVar), strlen(VAR_NAME(hdVar))+1);
     return hdRes;
 }
 
@@ -665,7 +665,9 @@ Obj  FunBagFromAddr ( Obj hdCall ) {
 }
 
 
-extern Bag FreeMptrBags;
+extern ArenaBag_t    MemArena[];
+extern int           actAR;
+
 
 Obj  FunBagBounds ( Obj hdCall ) {
     char * usage = "usage: BagBounds( ). Returns triple [first, last, freebags].\n"
@@ -678,11 +680,11 @@ Obj  FunBagBounds ( Obj hdCall ) {
     if ( GET_SIZE_BAG(hdCall) != SIZE_HD )  return Error(usage, 0,0);
 
     nfreebags = 0;
-    fst = FreeMptrBags;
+    fst = MemArena[actAR].FreeHandleChain;
     while(fst != 0) { ++nfreebags; fst = *(Bag*)(fst); }
 
     freebags = NewList((int)nfreebags);
-    fst = FreeMptrBags; i = 1;
+    fst = MemArena[actAR].FreeHandleChain; i = 1;
     while(fst != 0) {
         addr = PROD(INT_TO_HD(4), INT_TO_HD(((UInt)fst) >> 2));
         SET_BAG(freebags, i,  addr );
@@ -691,9 +693,9 @@ Obj  FunBagBounds ( Obj hdCall ) {
     }
 
     res = NewList(3);
-    addr = PROD(INT_TO_HD(4), INT_TO_HD(((UInt)MptrBags) >> 2));
+    addr = PROD(INT_TO_HD(4), INT_TO_HD(((UInt)MemArena[actAR].BagHandleStart) >> 2));
     SET_BAG(res, 1,  addr );
-    addr = PROD(INT_TO_HD(4), INT_TO_HD(((UInt)(OldBags-1)) >> 2));
+    addr = PROD(INT_TO_HD(4), INT_TO_HD(((UInt)(MemArena[actAR].OldBagStart-1)) >> 2));
     SET_BAG(res, 2,  addr );
 
     SET_BAG(res, 3,  freebags );
@@ -716,8 +718,8 @@ Obj  FunBagsOfType ( Obj hdCall ) {
     }
 
     cnt = 0;
-    mptr = (UInt)MptrBags;
-    mptrEnd = (UInt)OldBags - 1;
+    mptr = (UInt)MemArena[actAR].BagHandleStart;
+    mptrEnd = (UInt)MemArena[actAR].OldBagStart - 1;
     while (mptr<mptrEnd) {
         if (*(UInt*)mptr >= mptrEnd) {
             if (GET_TYPE_BAG((Obj)mptr)==type)
@@ -733,8 +735,8 @@ Obj  FunBagsOfType ( Obj hdCall ) {
     res = NewList((int)cnt);
     if (cnt>0) {
         i = 1;
-        mptr = (UInt)MptrBags;
-        mptrEnd = (UInt)OldBags - 1;
+        mptr = (UInt)MemArena[actAR].BagHandleStart;
+        mptrEnd = (UInt)MemArena[actAR].OldBagStart - 1;
         while (mptr<mptrEnd) {
             if (*(UInt*)mptr >= mptrEnd) {
                 if (GET_TYPE_BAG((Obj)mptr)==type && (UInt)mptr != (UInt)res)

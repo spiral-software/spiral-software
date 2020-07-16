@@ -9,8 +9,6 @@ Package(spiral);
 
 Include(config);
 Include(trace);
-Include(lisp);
-Include(isabelle);
 
 Load(spiral.rewrite);
 Load(spiral.code);     #ProtectNamespace(code);

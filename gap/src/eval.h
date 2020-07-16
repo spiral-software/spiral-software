@@ -108,7 +108,14 @@ static inline Bag    EVAL(Bag hd) {
     else {        
         Bag   Result = 0;
         EVAL_STACK_PUSH(hd);
+#ifdef _DEBUG
+        ObjType bagtype = GET_TYPE_BAG(hd);
+        Obj(*func) (Obj hd);
+        func = EvTab[bagtype];
+        Result = func(hd);
+#else
 		Result = (* EvTab[GET_TYPE_BAG( hd )])(hd);
+#endif
         EVAL_STACK_POP;
         return Result;
     }

@@ -61,13 +61,13 @@ int execute(char *input, char *output)
   }
   if (hd) {
     prompt = HD_TO_STRING(hd);
-    if (SyStrlen(prompt)<sizeof(spiralPrompt))
-	SyStrncpy(spiralPrompt, prompt, SyStrlen(prompt)+1);
+    if (strlen(prompt)<sizeof(spiralPrompt))
+	strncpy(spiralPrompt, prompt, strlen(prompt)+1);
   }
   /* read prompts from environment */
   prompt = getenv("SPIRAL_PROMPT");
-  if (prompt != NULL && SyStrlen(prompt)<sizeof(spiralPrompt)) {
-     SyStrncpy(spiralPrompt, prompt, SyStrlen(prompt)+1);
+  if (prompt != NULL && strlen(prompt)<sizeof(spiralPrompt)) {
+     strncpy(spiralPrompt, prompt, strlen(prompt)+1);
   }
 	
   /* clear the output buffer */
@@ -80,7 +80,6 @@ int execute(char *input, char *output)
   Try {
     /* read an expression                                              */
     Prompt = spiralPrompt;
-    //EnterKernel();
     NrError = 0;
     
     hd = ReadIt();
@@ -129,7 +128,6 @@ int execute(char *input, char *output)
   }
   
   interface_read_output_nolist(output);
-  ExitKernel( (Bag)0 );
   return EXEC_SUCCESS;
 }
 

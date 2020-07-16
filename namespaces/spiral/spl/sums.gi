@@ -25,15 +25,6 @@ Declare(RC);
 Class(SumsBase, rec(
     isSums := true,
     area := self >> Sum(self.children(), x->x.area()),
-#MRT (13-04-09): the current hierarchical visitor checks whether it chooses the
-#   same visitor recursively as is given by the .visitAs field. Daniel had some
-#   code which failed this check. "SumsBase" <> "Buf".
-#
-#   The visitAs field is depracated, so I took this out. Hope it works.
-#
-#   visitAs := "SumsBase",
-#
-
     sums := meth(self)
        local children, i, res;
        res := Copy(self);
@@ -299,8 +290,11 @@ Class(Blk, SumsBase, Mat, rec(
 # Blk1(<val>) - 1x1 block
 # ==========================================================================
 Class(Blk1, SumsBase, BaseMat, rec(
-    new := (self, val) >> SPL(WithBases(self, rec(dimensions:=[1,1], element:=val))),
-    toAMat := self >> AMatMat([[EvalScalar(Eval(self.element))]]),
+    # Compare mathematically Blks disregarding differences in way to express code-level elements.
+#    new := (self, val) >> SPL(WithBases(self, rec(dimensions:=[1,1], element:=val))),
+#    toAMat := self >> AMatMat([[EvalScalar(Eval(self.element))]]),
+    new := (self, val) >> SPL(WithBases(self, rec(dimensions:=[1,1], element:=EvalScalar(Eval(val))))),
+    toAMat := self >> AMatMat([[self.element]]),
     transpose := self >> self,
     conjTranspose := self >> CopyFields(self, rec(element := Global.Conjugate(self.element))),
     inverse := self >> CopyFields(self, rec(element := 1 / self.element)),

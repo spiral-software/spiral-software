@@ -753,7 +753,7 @@ Bag       FunSetCollectorAgWord (Bag hdCall)
 
     /** Try to find  the new collector <string> in 'Collectors.name'. ******/
     for ( i = 0; i <= COMBI_COLLECTOR; i++ )
-        if ( ! SyStrcmp( Collectors[ i ].name, (char*) PTR_BAG( hdStr ) ) )
+        if ( ! strcmp( Collectors[ i ].name, (char*) PTR_BAG( hdStr ) ) )
             break;
 
     /** As 'COMBI_COLL' has the highst number,  we  have  not  found  the **/
@@ -2167,9 +2167,9 @@ Bag       FunInformationAgWord(Bag hdCall)
             str = NAME_AW( hdGrp, i );
 
             /** Copy the name, rember we need one more byte for the end. ***/
-            hd = NewBag( T_STRING, SyStrlen( str ) + 1 );
+            hd = NewBag( T_STRING, strlen( str ) + 1 );
             *( (char*) PTR_BAG( hd ) ) = '\0';
-            SyStrncat( (char*) PTR_BAG( hd ), str, SyStrlen( str ) );
+            strncat( (char*) PTR_BAG( hd ), str, strlen( str ) );
             SET_BAG( hdTmp ,  i + 1 ,  hd );
         }
         SET_BAG( hdRec ,  5 ,  hdTmp );
@@ -2189,9 +2189,9 @@ Bag       FunInformationAgWord(Bag hdCall)
         str = Collectors[ COLLECTOR( hdGrp ) ].name;
 
         /** Do the copy promised above, bind the string to <hdRec>. ********/
-        hd = NewBag( T_STRING, SyStrlen( str ) + 1 );
+        hd = NewBag( T_STRING, strlen( str ) + 1 );
         *( (char*) PTR_BAG( hd ) ) = '\0';
-        SyStrncat( (char*) PTR_BAG( hd ), str, SyStrlen( str ) );
+        strncat( (char*) PTR_BAG( hd ), str, strlen( str ) );
         SET_BAG( hdRec ,  7 ,  hd );
 
         /** Some collector have a upper bound for the stored triples  and **/

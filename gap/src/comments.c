@@ -80,7 +80,7 @@ void ClearCommentBuffer(void) {
 }
 
 void AppendCommentBuffer(char *text, int tlen) {
-    int buflen = SyStrlen(CSTR_STRING(HdCommentBuffer));
+    int buflen = strlen(CSTR_STRING(HdCommentBuffer));
     int bagsize = GET_SIZE_BAG(HdCommentBuffer);
     if (tlen >=3 && text[1]=='@' && text[2]=='P') {
         if ( Input->package != 0 )
@@ -95,7 +95,7 @@ void AppendCommentBuffer(char *text, int tlen) {
         }
         if ( tlen >= 2 && text[0] == '#' && text[1] == ' ') { tlen-=2; text+=2; }
 
-	SyStrncpy(CSTR_STRING(HdCommentBuffer) + buflen, text, tlen);
+	strncpy(CSTR_STRING(HdCommentBuffer) + buflen, text, tlen);
         CSTR_STRING(HdCommentBuffer)[tlen+buflen+1] = '\0';
         /*printf("append: %d (%d/%d)\n", tlen, buflen, bagsize);*/
     }

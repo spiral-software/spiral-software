@@ -669,7 +669,7 @@ Bag       RdFunc (TypSymbolSet follow)
     SET_BAG(hdFun,  nrArg + nrLoc + 2,  hdLoc );
 
     /* function ( arg ) takes a variable number of arguments               */
-    if ( nrArg == 1 && ! SyStrcmp("arg", VAR_NAME(PTR_BAG(hdFun)[nrArg])) )
+    if ( nrArg == 1 && ! strcmp("arg", VAR_NAME(PTR_BAG(hdFun)[nrArg])) )
         nrArg = -1;
     NUM_ARGS_FUNC(hdFun) = nrArg;
     NUM_LOCALS_FUNC(hdFun) = nrLoc;
@@ -795,17 +795,17 @@ Bag       RdAtom (TypSymbolSet follow)
     }
 
     /* 'rec(' [ <Ident> ':=' <Expr> {',' <Ident> ':=' <Expr> } ] ')'       */
-    else if ( Symbol == S_IDENT && SyStrcmp( Value, "rec" ) == 0 ) {
+    else if ( Symbol == S_IDENT && strcmp( Value, "rec" ) == 0 ) {
         hdAt = RdRec( follow );
     }
 
     /* 'tab(' [ <Ident> ':=' <Expr> {',' <Ident> ':=' <Expr> } ] ')'       */
-    else if ( Symbol == S_IDENT && SyStrcmp( Value, "tab" ) == 0 ) {
+    else if ( Symbol == S_IDENT && strcmp( Value, "tab" ) == 0 ) {
         hdAt = RdTab( follow );
     }
 
     /* 'tab(' [ <Ident> ':=' <Expr> {',' <Ident> ':=' <Expr> } ] ')'       */
-    else if ( Symbol == S_IDENT && SyStrcmp( Value, "let" ) == 0 ) {
+    else if ( Symbol == S_IDENT && strcmp( Value, "let" ) == 0 ) {
         hdAt = RdLet( follow );
     }
 
@@ -818,8 +818,8 @@ Bag       RdAtom (TypSymbolSet follow)
 
     /* <String>                                                            */
     else if ( Symbol == S_STRING ) {
-        hdAt = NewBag( T_MAKESTRING, (UInt)(SyStrlen(Value)+1) );
-        SyStrncat( (char*)(PTR_BAG(hdAt)), Value, SyStrlen(Value) );
+        hdAt = NewBag( T_MAKESTRING, (UInt)(strlen(Value)+1) );
+        strncat( (char*)(PTR_BAG(hdAt)), Value, strlen(Value) );
         Match( S_STRING, "", NUM_TO_UINT(0) );
     }
 
@@ -1138,7 +1138,7 @@ Bag       RdExpr (TypSymbolSet follow)
             SET_BAG(hdFun, 1,  hdTmp );
 
             /* function ( arg ) takes a variable number of arguments           */
-            if ( SyStrcmp("arg", VAR_NAME(hdTmp)) == 0 )
+            if ( strcmp("arg", VAR_NAME(hdTmp)) == 0 )
                 numArgs = -1;
         }
 

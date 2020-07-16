@@ -110,7 +110,7 @@
 **
 **  'TNUM_OBJ' returns the type of the object <obj>.
 */
-#define TNUM_OBJ(obj)   (IS_INTOBJ( obj ) ? T_INT :  TNUM_BAG( obj ))
+#define TNUM_OBJ(obj)   (IS_INTOBJ( obj ) ? T_INT :  GET_TYPE_BAG( obj ))
 
 
 /****************************************************************************

@@ -16,6 +16,8 @@ set (TESTS_ALL_TESTS
 	basic_test
 	break-me
 	integers_test
+	Memmgr-test
+	profiler-test
     )
 
 ##  call function my_add_test_target() to add a target for each test

@@ -37,19 +37,19 @@ extern Obj Props(Obj);
 */
 Obj  MakeIdent ( char name [] ) {
     UInt i;
-    Bag hd = NewBag( T_VAR, SIZE_HD * OFS_IDENT + SyStrlen(name) + 1 );
+    Bag hd = NewBag( T_VAR, SIZE_HD * OFS_IDENT + strlen(name) + 1 );
     for ( i = 0; i < OFS_IDENT; ++i )
         SET_BAG(hd, i,  0 );
-    SyStrncpy( VAR_NAME(hd), name, SyStrlen(name)+1  );
+    strncpy( VAR_NAME(hd), name, strlen(name)+1  );
     return hd;
 }
 
 Obj  MakeIdentSafe ( Obj hdNam, UInt ofs ) {
-    UInt i, len = SyStrlen((char*)(PTR_BAG(hdNam)+ofs));
+    UInt i, len = strlen((char*)(PTR_BAG(hdNam)+ofs));
     Bag hd = NewBag( T_VAR, SIZE_HD * OFS_IDENT + len + 1 );
     for ( i = 0; i < OFS_IDENT; ++i )
         SET_BAG(hd, i,  0 );
-    SyStrncpy( VAR_NAME(hd), (char*)(PTR_BAG(hdNam)+ofs), len+1  );
+    strncpy( VAR_NAME(hd), (char*)(PTR_BAG(hdNam)+ofs), len+1  );
     return hd;
 }
 
@@ -289,9 +289,9 @@ Bag       _FindIdent ( char name [], fi_mode_t mode ) {
         /* for GlobalPackage() */
         else {
             char n[MAX_IDENT_SIZE];  
-            UInt len = SyStrlen(name);
+            UInt len = strlen(name);
             /* name might disappear during garbage collection */
-            SyStrncpy(n, name, len+1);
+            strncpy(n, name, len+1);
 
             if(Input->package == 0) GlobalPackageSpec(GlobalIdent(Input->name));
     

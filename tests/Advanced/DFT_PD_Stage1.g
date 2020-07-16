@@ -1,3 +1,17 @@
+comment("");
+comment("DFT PD Stage 1 Test");
+
+##  if CheckBasicProfilerTest() ==> profiler tests passed
+
+if not CheckBasicProfilerTest() then
+    PrintLine("Basic Profiler test NOT PASSED, skipping test");
+    if FileExists(".") then
+        TestSkipExit();
+    else
+        TestFailExit();
+    fi;
+fi;
+
 Import(realdft);
 Import(filtering);
 Import(paradigms.smp);
@@ -136,7 +150,7 @@ opts := SpiralDefaults;
 opts.breakdownRules.PRDFT := [ PRDFT1_Base2, PRDFT_PD, PRDFT_PD_loop]; #PRDFT1_Base1, PRDFT1_CT, PRDFT1_PF, PRDFT_Rader
 opts.breakdownRules.IPRDFT := [ IPRDFT1_Base1, IPRDFT1_Base2, IPRDFT1_CT, IPRDFT_PD, IPRDFT_Rader];
 opts.breakdownRules.IPRDFT2 := [ IPRDFT2_Base1, IPRDFT2_Base2, IPRDFT2_CT];
-opts.breakdownRules.PRDFT3 := [ ]; # PRDFT3_Base1, PRDFT3_Base2, PRDFT3_CT, PRDFT3_OddToPRDFT1];
+opts.breakdownRules.PRDFT3 := [ ]; # PRDFT3_Base1, PRDFT3_Base2, PRDFT3_CT, PRDFT3_OddToPRDFT1;
 opts.breakdownRules.URDFT := [ URDFT1_Base1, URDFT1_Base2, URDFT1_Base4, URDFT1_CT ];
 opts.breakdownRules.DFT := [ DFT_Base, DFT_PD,  DFT_PD_loop];
 opts.breakdownRules.PrunedPRDFT := [ PrunedPRDFT_base, PrunedPRDFT_CT_rec_block ];
@@ -374,14 +388,14 @@ rt1 := RuleTreeMid(t1, opts);
 c1 := CodeRuleTree(rt1, opts);
 
 if not IsBound(c1) then
-    Print("CodeRuleTree failed\n");
-    #TestFailExit();
+    Print("DFT_PD_Stage1: CodeRuleTree failed\n");
+    TestFailExit();
 fi;
 
 cm1 := CMatrix(c1, opts);
 
 if not IsBound(cm1) then
-    Print("CMatrix failed\n");
+    Print("DFT_PD_Stage1: CMatrix failed\n");
     TestFailExit();
 fi;
 
@@ -389,8 +403,8 @@ inorm := 2;
 inorm := InfinityNormMat(cm1 - tm1);
 
 if inorm > 1 then
-    Print("InfinityNormMat failed\n");
-	TestExitFail();
+    Print("DFT_PD_Stage1: InfinityNormMat failed\n");
+    TestExitFail();
 fi;
 
 PrintLine("InfinityNormMat: ", inorm);

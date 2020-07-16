@@ -2,6 +2,17 @@ comment("");
 comment("WarpX 1D");
 comment("");
 
+##  if CheckBasicProfilerTest() ==> profiler tests passed
+
+if not CheckBasicProfilerTest() then
+    PrintLine("Basic Profiler test NOT PASSED, skipping test");
+    if FileExists(".") then
+        TestSkipExit();
+    else
+        TestFailExit();
+    fi;
+fi;
+
 opts := SpiralDefaults;
 
 ni:= 4;
@@ -75,4 +86,14 @@ rt := RandomRuleTree(tvipop, opts);
 c := CodeRuleTree(rt, opts);
 
 cm := CMatrix(c, opts);
-InfinityNormMat(rvipopm - cm);
+if not IsList(cm) then
+    Print("CMatrix failed -- returned: ", cm, "\n");
+    TestFailExit();
+fi;
+
+inorm := 1;
+inorm := InfinityNormMat(rvipopm - cm);
+if inorm > 1e-5 then
+    Print("InfinityNormMat failed -- max diff: ", inorm, "\n");
+    TestFailExit();
+fi;

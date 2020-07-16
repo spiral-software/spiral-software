@@ -750,7 +750,6 @@ Bag       MakeList (Bag hdDst, Int ind, Bag hdLiteral)
     /* evaluate all entries and put them in the list                       */
     for ( i = 1; i <= len; i++ ) {
         if ( ELM_PLIST( hdLiteral, i ) != 0 ) {
-            EnterKernel();
             if ( GET_TYPE_BAG( ELM_PLIST( hdLiteral, i ) ) == T_MAKELIST ) {
                 MakeList( hdList, i, ELM_PLIST( hdLiteral, i ) );
             }
@@ -766,7 +765,6 @@ Bag       MakeList (Bag hdDst, Int ind, Bag hdLiteral)
                 }
                 SET_ELM_PLIST( hdList, i, hd );
             }
-            ExitKernel(0);
         }
     }
 

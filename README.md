@@ -121,7 +121,7 @@ cmake --build . --config Release --target install
 SPIRAL is released with a suite of self-tests.  The tests are automatically
 configured and made available when **CMake** configures the installation.
 Normally, all tests are configured; however, if a platform does not provide
-required support for a tests it will not be configured (e.g., X86/SIMD tests
+required support for a test it will not be configured (e.g., X86/SIMD tests
 are not configured for ARM processor).
 
 ### Running Tests on Linux/Unix
@@ -182,7 +182,8 @@ ctest -C Release                   # Run all tests on Release build
 Should a test fail you can view the complete test inputs/outputs generated
 during the test run.  Beneath the `<build>` folder is a **Testing/Temporary**
 folder where **ctest** logs all the generated information.  The data for the
-last test run is contained in the file **LastTest.log**.
+last test run is contained in the file **LastTest.log**.  A record of failed
+tests is available in the file **LastTestFailed.log**.
 
 Spiral Profiler
 --------------
@@ -192,3 +193,15 @@ mechanisms for asynchronously measuring code performance.  Refer to the **README
 the **profiler** directory.
 
 The interface from SPIRAL to the profiler is in **namespaces/spiral/profiler**.
+
+Several tests rely in the **profiler** to build and measure performance in order
+to arrive at a "good" solution.  A basic functionality test for the **profiler**
+is run as par tof the basic tests.  If this test is not successful then later,
+more advanced, tsets depening on **profiler** will be skipped.
+
+NOTE: linux differentiates between *skipped* and *failed* tests and summarizes
+those results appropriately.  However, **Windows** does not and reports *skipped*
+tests as *passed*.  In order to avoid skipped tests being reported as passed,
+the convention is to output a message indicating *skipping test* and then mark
+it *failed*.  An inspection of the file **LastTest.log** will identify those
+tests that were skipped vs failed.

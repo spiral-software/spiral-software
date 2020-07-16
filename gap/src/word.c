@@ -818,7 +818,7 @@ Bag       LtAgen (Bag hdL, Bag hdR)
         }
 
         /** Compare the names of the generators. ***************************/
-        c = SyStrcmp( (char*)(PTR_BAG(hdL)+1)+1, (char*)(PTR_BAG(hdR)+1)+1 );
+        c = strcmp( (char*)(PTR_BAG(hdL)+1)+1, (char*)(PTR_BAG(hdR)+1)+1 );
         if ( c < 0 )
             return HdTrue;
         else if ( c > 0 )
@@ -1104,14 +1104,14 @@ Bag       FunAbstractGenerator (Bag hdCall)
     /** a word as a^-1 * b^2. See 'PrWord' for details.                   **/
     hdAgn = NewBag( T_AGEN, SIZE_HD + GET_SIZE_BAG( hdStr ) + 1 );
     *(char*)( PTR_BAG( hdAgn ) + 1 ) = '\0';
-    SyStrncat( (char*) ( PTR_BAG( hdAgn ) + 1 ), "+", 1 );
-    SyStrncat( (char*) ( PTR_BAG( hdAgn ) + 1 ),
+    strncat( (char*) ( PTR_BAG( hdAgn ) + 1 ), "+", 1 );
+    strncat( (char*) ( PTR_BAG( hdAgn ) + 1 ),
                (char*) PTR_BAG( hdStr ),
                GET_SIZE_BAG( hdStr ) - 1 );
     hdInv = NewBag( T_AGEN, SIZE_HD + GET_SIZE_BAG( hdStr ) + 1 );
     *(char*)( PTR_BAG( hdInv ) + 1 ) = '\0';
-    SyStrncat( (char*) ( PTR_BAG( hdInv ) + 1 ), "-", 1 );
-    SyStrncat( (char*) ( PTR_BAG( hdInv ) + 1 ),
+    strncat( (char*) ( PTR_BAG( hdInv ) + 1 ), "-", 1 );
+    strncat( (char*) ( PTR_BAG( hdInv ) + 1 ),
                (char*) PTR_BAG( hdStr ),
                GET_SIZE_BAG( hdStr ) - 1 );
 
@@ -1156,21 +1156,21 @@ Bag       Words (Bag hdStr, Int n)
             *--p = j % 10 + '0';
             j   /= 10;
         }
-        j = SyStrlen( p );
+        j = strlen( p );
         hdAgn = NewBag( T_AGEN, SIZE_HD + GET_SIZE_BAG( hdStr ) + j + 1 );
         *(char*)( PTR_BAG( hdAgn ) + 1 ) = '\0';
-        SyStrncat( (char*) ( PTR_BAG( hdAgn ) + 1 ), "+", 1 );
-        SyStrncat( (char*) ( PTR_BAG( hdAgn ) + 1 ),
+        strncat( (char*) ( PTR_BAG( hdAgn ) + 1 ), "+", 1 );
+        strncat( (char*) ( PTR_BAG( hdAgn ) + 1 ),
                    (char*) PTR_BAG( hdStr ),
                    GET_SIZE_BAG( hdStr ) - 1 );
-        SyStrncat( (char*) ( PTR_BAG( hdAgn ) + 1 ), p, j );
+        strncat( (char*) ( PTR_BAG( hdAgn ) + 1 ), p, j );
         hdInv = NewBag( T_AGEN, SIZE_HD + GET_SIZE_BAG( hdStr ) + j + 1 );
         *(char*)( PTR_BAG( hdInv ) + 1 ) = '\0';
-        SyStrncat( (char*) ( PTR_BAG( hdInv ) + 1 ), "-", 1 );
-        SyStrncat( (char*) ( PTR_BAG( hdInv ) + 1 ),
+        strncat( (char*) ( PTR_BAG( hdInv ) + 1 ), "-", 1 );
+        strncat( (char*) ( PTR_BAG( hdInv ) + 1 ),
                    (char*) PTR_BAG( hdStr ),
                    GET_SIZE_BAG( hdStr ) - 1 );
-        SyStrncat( (char*) ( PTR_BAG( hdInv ) + 1 ), p, j );
+        strncat( (char*) ( PTR_BAG( hdInv ) + 1 ), p, j );
         SET_BAG( hdAgn ,  0 ,  hdInv );
         SET_BAG( hdInv ,  0 ,  hdAgn );
         SET_BAG( hdLst ,  i ,  hdAgn );

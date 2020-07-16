@@ -9,7 +9,7 @@
 
 CC              ?= gcc
 CFLAGS          ?= -O2
-LDFLAGS         ?= -lm
+LDFLAGS         ?= -lgomp -lpthread -lm
 OUTDIR          ?= .
 GAP             ?= $(OUTDIR)/testcode.c
 ADDSRC          ?=
@@ -17,6 +17,7 @@ STUB            ?= $(OUTDIR)/testcode.h
 TIMER           ?= ../common/rdtsc_time.c
 TIMER_OPTS      ?= -n 100
 MATRIX          ?= ../common/matrix.c
+VECTOR          ?= ../common/cvector.c
 
 COUT   ?= $(OUTDIR)/cout.txt
 CERR   ?= $(OUTDIR)/cerr.txt
@@ -28,11 +29,12 @@ export RANLIB  = ranlib
 
 export CC
 
-override CFLAGS += -w -I. -I.. -I../common -I../conf -I../../.. -include $(STUB) -DHAVE_UNISTD_H -DINSIDE_SPIRAL
+override CFLAGS += -w -fopenmp -I. -I.. -I../common -I../conf -I../../.. -include $(STUB) -DHAVE_UNISTD_H -DINSIDE_SPIRAL
 
 # this is our executable.
 TIMEREXE = $(OUTDIR)/$(notdir $(subst .c,,$(TIMER)))
 MATRIXEXE = $(OUTDIR)/$(notdir $(subst .c,,$(MATRIX)))
+VECTOREXE = $(OUTDIR)/$(notdir $(subst .c,,$(VECTOR)))
 
 # some defines for source and object files.
 ######
@@ -56,6 +58,9 @@ test: testTimer
 .PHONY: matrix
 matrix: clean buildMatrix testMatrix
 
+.PHONY: vector
+vector: clean buildVector testVector
+
 
 # internals of this Makefile
 .PHONY: buildTimer
@@ -63,6 +68,9 @@ buildTimer: $(TIMEREXE)
 
 .PHONY: buildMatrix
 buildMatrix: $(MATRIXEXE)
+
+.PHONY: buildVector
+buildVector: $(VECTOREXE)
 
 .PHONY: testTimer
 testTimer: buildTimer
@@ -72,11 +80,18 @@ testTimer: buildTimer
 testMatrix: buildMatrix
 	@-$(MATRIXEXE)
 
+.PHONY: testVector
+testVector: buildVector
+	@-$(VECTOREXE)
+
 # the link command, mashes all objects together.
 $(TIMEREXE): $(TIMER) $(OBJ) libconf.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(MATRIXEXE): $(MATRIX) $(OBJ) libconf.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+$(VECTOREXE): $(VECTOR) $(OBJ) libconf.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # makes the libconf library in the ../conf dir.
@@ -101,6 +116,7 @@ endef
 $(foreach src,$(SRC),$(eval $(call C_TO_OBJ, $(src))))
 $(foreach src,$(TIMER),$(eval $(call C_TO_OBJ, $(src))))
 $(foreach src,$(MATRIX),$(eval $(call C_TO_OBJ, $(src))))
+$(foreach src,$(VECTOR),$(eval $(call C_TO_OBJ, $(src))))
 
 # implicit rules that build .h file dependecy information using the gcc -MM feature of gcc. the .d files are then
 # included in the makefile.
@@ -115,6 +131,7 @@ ifeq (,$(findstring $(CC),"icc gcc"))
 
 -include $(TIMER:.c=.d)
 -include $(MATRIX:.c=.d)
+-include $(VECTOR:.c=.d)
 -include $(SRC:.c=.d)
 endif
 
@@ -122,15 +139,17 @@ endif
 
 $(OUTDIR)/$(notdir $(TIMER:.c=.o)): $(STUB)
 $(OUTDIR)/$(notdir $(MATRIX:.c=.o)): $(STUB)
+$(OUTDIR)/$(notdir $(VECTOR:.c=.o)): $(STUB)
 
 # cleanup
 ###########
 
 TIMEREXECLEAN = $(TIMEREXE)
 MATRIXEXECLEAN = $(MATRIXEXE)
+VECTOREXECLEAN = $(VECTOREXE)
 
 .PHONY: clean
 clean: 
 	$(MAKE) -C ../conf -f Makefile.linux CONFDIR=$(CURDIR) clean
-	-$(RM) $(SRC:.c=.d) $(TIMER:.c=.d) $(OBJ) $(TIMEROBJ) $(MATRIXOBJ) $(TIMEREXECLEAN) $(MATRIXEXECLEAN)
+	-$(RM) $(SRC:.c=.d) $(TIMER:.c=.d) $(OBJ) $(TIMEROBJ) $(MATRIXOBJ) $(VECTOROBJ) $(TIMEREXECLEAN) $(MATRIXEXECLEAN) $(VECTOREXECLEAN)
 

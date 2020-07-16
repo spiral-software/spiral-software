@@ -83,10 +83,11 @@ Class(nth, Loc, rec(
 	Cond(IsBound(e.v), e.v, e)),
 
     eval := self >> let(loc := self.loc.eval(), idx := self.idx.eval(),
+        evself := CopyFields(self, rec(loc := loc, idx := idx)), # Simply return expression in case value cannot be returned (although it appears this wasn't desired originally?)
         Cond(idx _is funcExp,
                  self.t.value(idx.args[1]),
              not IsValue(idx),
-                 self,
+                 evself, # self,
              idx.v < 0,
                  errExp(self.t),
              loc _is apack,
@@ -95,7 +96,7 @@ Class(nth, Loc, rec(
                  Cond(idx.v >= Length(loc.v), errExp(self.t), V(loc.v[idx.v+1])),
              IsVar(loc) and IsBound(loc.value),
                  Cond(idx.v >= Length(loc.value.v), errExp(self.t), V(loc.value.v[idx.v+1])),
-             self)),
+             evself)), # self)),
 
     computeType := self >> Cond(
 	IsPtrT(self.loc.t) or IsArrayT(self.loc.t) or IsListT(self.loc.t), self.loc.t.t,
@@ -455,7 +456,8 @@ Class(add, AutoFoldExp, rec(
     # __sum is overriden in descendant 'adds' (saturated addition)
     __sum := (self, a, b) >> self.t.value(self.t.sum(_stripval(a), _stripval(b))),
 
-    ev := self >> FoldL(self.args, (acc, e)->self.__sum(acc, e.ev()), self.t.zero()).ev(),
+#    ev := self >> FoldL(self.args, (acc, e)->self.__sum(acc, e.ev()), self.t.zero()).ev(),
+    ev := self >> let(fe := FoldL(self.args, (acc, e)->self.__sum(acc, e.ev()), self.t.zero()), When(self = fe, self, fe.ev()) ),
 
     # the intricate logic below is for computing the new alignment when dealing
     # with pointer types
@@ -554,7 +556,7 @@ Class(sub,  AutoFoldExp, rec(
     # __sub is overriden in descendant 'subs' (saturated substraction)
     __sub := (self, a, b) >> let(type := self.computeType(), type.value(a - b)),
 
-    ev := self >> self.__sub(self.args[1].ev(), self.args[2].ev()).ev(),
+    ev := self >> let(eve := self.__sub(self.args[1].ev(), self.args[2].ev()), When(self = eve, self, eve.ev()) ),
 
     computeType := meth(self)
         local a, b, isptr_a, isptr_b;
@@ -585,7 +587,7 @@ Class(subs,  sub, rec(
 ));
 
 Class(mul,  AutoFoldExp, rec(
-    ev := self >> FoldL(self.args, (z, x) -> self.t.product(_stripval(z), x.ev()), self.t.one()),
+    ev := self >> let(eve := FoldL(self.args, (z, x) -> self.t.product(_stripval(z), x.ev()), self.t.one()), When(self = eve, self, V(eve).ev())),
 
     _ptrMul := function(ptr_t, mult)
         local t;

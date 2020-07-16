@@ -18,9 +18,11 @@ GAP    		= $(OUTDIR)\testcode.c
 STUB   		= $(OUTDIR)\testcode.h
 TIMERSRC  	= rdtsc_time.c
 MATRIXSRC	= matrix.c
+VECTORSRC	= cvector.c
 COMMONDIR	= ..\..\targets\common
 TIMER		= $(COMMONDIR)\$(TIMERSRC)
 MATRIX		= $(COMMONDIR)\$(MATRIXSRC)
+VECTOR		= $(COMMONDIR)\$(VECTORSRC)
 COUT   		= $(OUTDIR)\cout.txt
 CERR   		= $(OUTDIR)\cerr.txt
 LLOG		= $(OUTDIR)\llog.txt
@@ -33,13 +35,15 @@ CONFDIR 	= ..\..\targets\win-x86-vcc
 
 TIMEREXE=$(OUTDIR)\$(TIMERSRC:.c=.exe)
 MATRIXEXE=$(OUTDIR)\$(MATRIXSRC:.c=.exe)
+VECTOREXE=$(OUTDIR)\$(VECTORSRC:.c=.exe)
 
 # object files are always placed into the local directory.
 OBJ=$(GAP:.c=.obj)
 TIMEROBJ=$(TIMEREXE:.exe=.obj)
 MATRIXOBJ=$(MATRIXEXE:.exe=.obj)
+VECTOROBJ=$(VECTOREXE:.exe=.obj)
 
-ALLSRC = $(TIMER) $(MATRIX) $(GAP)
+ALLSRC = $(TIMER) $(MATRIX) $(VECTOR) $(GAP)
 
 # the make commands: all, build, test
 .PHONY: all
@@ -62,12 +66,25 @@ buildMatrix: delMatrixBinFiles $(MATRIXEXE)
 testMatrix: buildMatrix
 	@-$(MATRIXEXE)
 
+.PHONY: vector
+vector: delVectorBinFiles buildVector testVector
+
+.PHONY: buildVector
+buildVector: delVectorBinFiles $(VECTOREXE)
+
+.PHONY: testVector
+testVector: buildVector
+	@-$(VECTOREXE)
+
 # the link command, mashes all objects together.
 $(TIMEREXE): $(TIMEROBJ) $(OBJ) libconf.lib
 	$(LINK) $(LFLAGS) /out:$@ $(TIMEROBJ) $(OBJ) $(CONFDIR)\libconf.lib
 
 $(MATRIXEXE): $(MATRIXOBJ) $(OBJ) libconf.lib
 	$(LINK) $(LFLAGS) /out:$@ $(MATRIXOBJ) $(OBJ) $(CONFDIR)\libconf.lib
+
+$(VECTOREXE): $(VECTOROBJ) $(OBJ) libconf.lib
+	$(LINK) $(LFLAGS) /out:$@ $(VECTOROBJ) $(OBJ) $(CONFDIR)\libconf.lib
 
 # make sure that timed code always up-to-date
 delTimerBinFiles:
@@ -77,6 +94,10 @@ delTimerBinFiles:
 delMatrixBinFiles:
 	-$(RM) $(OBJ) $(MATRIXOBJ) 2> nul
 	-$(RM) $(MATRIXEXE) 2> nul
+
+delVectorBinFiles:
+	-$(RM) $(OBJ) $(VECTOROBJ) 2> nul
+	-$(RM) $(VECTOREXE) 2> nul
 
 libconf.lib:
 	$(MAKE) /C /S /f ..\..\targets\conf\Makefile.win CONFDIR=$(CONFDIR) all
@@ -103,6 +124,9 @@ $(TIMEROBJ): $(TIMER)
 $(MATRIXOBJ):$(MATRIX)
 	$(CC) $(CFLAGS) /c /Fo$@ $(MATRIX) >$(COUT) 2>$(CERR)
 
+$(VECTOROBJ):$(VECTOR)
+	$(CC) $(CFLAGS) /c /Fo$@ $(VECTOR) >$(COUT) 2>$(CERR)
+
 
 # hardcoded dependency information. this is required such that the timer is rebuilt when the stub changes.
 $(TIMEREXE:.exe=.obj): $(STUB)
@@ -112,5 +136,5 @@ $(TIMEREXE:.exe=.obj): $(STUB)
 #########
 
 .PHONY: clean
-clean: delTimerBinFiles delMatrixBinFiles
-	$(MAKE) /C /S /f ..\..\target\conf\Makefile.win CONFDIR=$(CONFDIR) clean
+clean: delTimerBinFiles delMatrixBinFiles delVectorBinFiles
+	$(MAKE) /C /S /f ..\..\targets\conf\Makefile.win CONFDIR=$(CONFDIR) clean

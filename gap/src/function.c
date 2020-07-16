@@ -198,7 +198,7 @@ void            ChangeEnv (Bag hdEnv, int flag)
             }
         }
         ptUndo[1] = HdFalse;
-        CHANGED_BAG(hdUndo);
+        //  CHANGED_BAG(hdUndo);
         hdUndo    = ptUndo[0];
     }
 
@@ -222,7 +222,7 @@ void            ChangeEnv (Bag hdEnv, int flag)
         hdTmp   = ptDo[0];
         ptDo[0] = hdComm;
         hdComm  = hdDo;
-        CHANGED_BAG(hdDo);
+        //  CHANGED_BAG(hdDo);
         hdDo    = hdTmp;
     }
 

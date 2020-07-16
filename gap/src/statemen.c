@@ -284,12 +284,10 @@ Bag       EvWhile (Bag hdWhile)
     while ( hdRes == HdTrue ) {
 
         /* execute the <statements>                                        */
-        EnterKernel();
         if ( GET_TYPE_BAG(hdSSeq) == T_STATSEQ ) {
             for ( k = 0; k < GET_SIZE_BAG(hdSSeq)/SIZE_HD; ++k ) {
                 hdRes = EVAL( PTR_BAG(hdSSeq)[k] );
                 if ( hdRes == HdReturn ) {
-                    ExitKernel( hdRes );
                     return hdRes;
                 }
                 hdRes = 0;
@@ -298,7 +296,6 @@ Bag       EvWhile (Bag hdWhile)
         else {
             hdRes = EVAL( hdSSeq );
             if ( hdRes == HdReturn ) {
-                ExitKernel( hdRes );
                 return hdRes;
             }
             hdRes = 0;
@@ -310,7 +307,6 @@ Bag       EvWhile (Bag hdWhile)
             hdRes=Error("while: <expr> must evaluate to 'true' or 'false'",
                         0,0);
         if ( SyIsIntr() )  DbgBreak("user interrupt", 0, 0);
-        ExitKernel( (Bag)0 );
 
     }
 
@@ -346,12 +342,10 @@ Bag       EvRepeat (Bag hdRep)
     /* repeat the <statements> until the <condition> is 'true'             */
     do {
         /* execute the <statements>                                        */
-        EnterKernel();
         if ( GET_TYPE_BAG(hdSSeq) == T_STATSEQ ) {
             for ( k = 0; k < GET_SIZE_BAG(hdSSeq)/SIZE_HD; ++k ) {
                 hdRes = EVAL( PTR_BAG(hdSSeq)[k] );
                 if ( hdRes == HdReturn ) {
-                    ExitKernel( hdRes );
                     return hdRes;
                 }
                 hdRes = 0;
@@ -360,7 +354,6 @@ Bag       EvRepeat (Bag hdRep)
         else {
             hdRes = EVAL( hdSSeq );
             if ( hdRes == HdReturn ) {
-                ExitKernel( hdRes );
                 return hdRes;
             }
             hdRes = 0;
@@ -372,7 +365,6 @@ Bag       EvRepeat (Bag hdRep)
             hdRes=Error("repeat: <expr> must evaluate to 'true' or 'false'",
                         0,0);
         if ( SyIsIntr() )  DbgBreak("user interrupt", 0, 0);
-        ExitKernel( (Bag)0 );
 
     } while ( hdRes != HdTrue );
 

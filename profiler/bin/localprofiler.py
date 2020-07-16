@@ -11,12 +11,14 @@ import shutil
 import platform
 import subprocess
 
-
+MinPythonVersion    = (3, 6)
 ProfilerName        = 'spiralprofiler'
 ProfilerVersion     = '1.0.0'
 
 def filesForRequest(request):
 	if request == 'time':
+		return ['testcode.c', 'testcode.h']
+	if request == 'vector':
 		return ['testcode.c', 'testcode.h']
 	else:
 		# TODO make this scalable/portable/configurable
@@ -28,6 +30,8 @@ def cleanup():
 		os.chdir(workdir)
 		shutil.rmtree(tempworkdir, ignore_errors=True)
 
+if sys.version_info < MinPythonVersion:
+	sys.exit('Error: Python %s.%s or later is required.\n' % MinPythonVersion)
 
 
 bindir  = os.path.dirname(os.path.realpath(__file__))

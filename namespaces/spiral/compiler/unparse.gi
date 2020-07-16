@@ -170,37 +170,6 @@ Class(LayeredUnparser, rec(
 ));
 
 
-Class(LISPUnparser, Unparser, rec(
-    Lambda := (self,o,i,is)  >> ConcatenationString("(lambda (",vec2lisp(List(o.vars,i->i.id)),") ", Unparse(o.expr,self,i,is),")"),
-    atomic  := (self,o,i,is) >> String(o),
-    var   := (self,o,i,is) >> o.id,
-    nth := (self,o,i,is) >> "(velem " :: self(o.idx,i,is) :: " " :: self(o.loc,i,is) :: ")",
-    max := (self,o,i,is) >> "(max " :: self._unparseList(o.args,i,is) :: ")",
-    mul := (self,o,i,is) >> "(* " :: self._unparseList(o.args,i,is) :: ")",
-    add := (self,o,i,is) >> "(+ " :: self._unparseList(o.args,i,is) :: ")",
-    abs := (self,o,i,is) >> Checked(Length(o.args)=1,"(abs " :: self(o.args[1],i,is):: ")"),
-    sub := (self,o,i,is) >> Checked(Length(o.args)=2,"(- " :: self._unparseList(o.args,i,is) :: ")"),
-    geq := (self, o, i, is) >> Checked(Length(o.args)=2,"(>= " :: self._unparseList(o.args,i,is) :: ")"),
-    lt    := (self, o, i, is) >> Checked(Length(o.args)=2,"(< " :: self._unparseList(o.args,i,is) :: ")"),
-    Value := (self,o,i,is) >>
-        Cond(
-        o.t = TComplex, let(c:=Complex(o.v), re:=ReComplex(c), im:=ImComplex(c),
-            String(re) :: "+" :: String(im) :: "i"
-        ),
-        o.t = TReal, String(o.v),
-        o.t = TUInt, String(o.v),
-        IsArray(o.t), "'(" ::  vec2lisp(List(o.v, j->self(j,i,is))) :: ")",
-
-        o.t = TBool, When(o.v in [true, 1], Print("#t"), Print("#f")),
-        String(o.v)
-    ),
-
-    _unparseList := (self,l,i,is) >> vec2lisp(List(l, j->self(j,i,is)))
-));
-
-
-LISPUnparse := (ex) -> Unparse(ex,LISPUnparser,0,0);
-
 Loc.unparse     := "Loc";
 Exp.unparse     := "Exp";
 Command.unparse := "Command";

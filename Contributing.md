@@ -13,7 +13,7 @@ The public version of the SPIRAL software repository is available [**here**](htt
 
 1.  On GitHub navigate to the [SPIRAL repository](https://github.com/spiral-software/spiral-software.git).
 2.  In the top-right corner of the page click the **Fork** button.  This will create a private repository for your use, called: <br>*github.com/\<your_username\>/spiral-software.git*, where **\<your_username\>** is your GitHub username.
-3.  Clone the new repository to your machine so you can develop, e.g., use git as follows: <br>*git clone github.com/\<your_username\>/spiral-software.git*
+3.  Clone the new repository to your machine so you can develop, e.g., use **git** as follows: <br>*git clone github.com/\<your_username\>/spiral-software.git*
 4.  It is good practice to regularly sync your fork with the upstream repository.  Using the command line:
 ```
    cd \<folder you created when cloning above\>
@@ -29,7 +29,7 @@ The public version of the SPIRAL software repository is available [**here**](htt
       > upstream	https://github.com/spiral-software/spiral-software.git (push)
 ```
 
-Now, you can keep your fork synced with the upstream repository, using git:
+Now, you can keep your fork synced with the upstream repository, using **git**:
 ```
 git fetch upstream                    ## pulls any updates from upstream to local branch called upstream/master
 git branch <your_branch>              ## create a unique branch for your changes
@@ -42,6 +42,11 @@ git merge upstream/master             ## merges any changes from the upstream to
 When making changes or adding bug fixes please limit each set of changes to **one** feature or **one** bug fix.  Doing so will greatly ease the task of reviewing and incorporating your changes into the main product.  You *must* include with your changes test(s) that demonstrate the correct functioning of the feature or bug fix (in the case of bug fixes it'll also help to have a test or script demonstrating the bug in the original version).
 
 Please create a unique branch for your changes:  It'll help if the branch is named something descriptive, e.g., **bug_memory_leak**.  Using a named branch leaves the master pure as you develop.  Before submitting your changes to the SPIRAL team you should run *and pass all* the tests available with SPIRAL.  Changes which break existing features or which cannot pass the existing test suite **will be rejected**.
+
+When your changes are complete, add changed or new files and commit the changes in the normal manner.  When you are ready to push <your_branch> for the first time you need to let **git** know about the upstream branch: use this command:
+```
+git push --set-upstream origin <your_branch>
+```
 
 ### Create the Pull Request (PR)
 

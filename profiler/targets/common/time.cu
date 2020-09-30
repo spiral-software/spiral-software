@@ -1,0 +1,109 @@
+/*
+ *  Copyright (c) 2018-2020, Carnegie Mellon University
+ *  See LICENSE for details
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <time.h>
+
+#ifdef WIN64
+#include <winsock.h>			// defines struct timeval -- go figure?
+#include <sys/timeb.h>
+#endif							// WIN64
+
+#include <cufft.h>
+#include <cufftXt.h>
+
+#include <helper_cuda.h>
+
+#ifndef DESTROYFUNC
+#define DESTROYFUNC destroy_sub
+#endif
+
+// ===  Test SPIRAL ===
+
+void setup_spiral_test()
+{
+    checkCudaErrors(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared));
+    // printf("Running SPIRAL Hello World CUDA example...\n");
+
+    INITFUNC();
+}
+
+void teardown_spiral_test()
+{
+    DESTROYFUNC();
+}
+
+void test_spiral(double* in, double* out)
+{
+
+    FUNC(out, in);
+    checkCudaErrors(cudaGetLastError());
+}
+
+
+int main(int argc, char** argv)
+{
+	cufftDoubleReal  *out, *in;
+	cufftDoubleReal  *dev_out, *dev_in;
+	cudaEvent_t      begin, end;
+
+#ifdef WIN64
+    struct timeb     start, finish;
+    ftime(&start);
+#else
+	struct timespec  start, finish;
+	clock_gettime(CLOCK_MONOTONIC, &start);
+#endif					 // WIN64
+
+	cudaEventCreate ( &begin );
+	cudaEventCreate ( &end );
+	cudaMallocHost  ( &in,      sizeof(cufftDoubleReal) * ROWS );
+	cudaMallocHost  ( &out,     sizeof(cufftDoubleReal) * ROWS );
+	cudaMalloc      ( &dev_in,  sizeof(cufftDoubleReal) * ROWS );
+	cudaMalloc      ( &dev_out, sizeof(cufftDoubleReal) * ROWS );
+
+	for (int i = 0; i < ROWS; i++)
+		in[i] = i;
+
+	setup_spiral_test();
+	cudaMemcpy ( dev_in, in,   sizeof(cufftDoubleReal) * ROWS, cudaMemcpyHostToDevice);
+	
+	checkCudaErrors( cudaEventRecord(begin) );
+	test_spiral(reinterpret_cast<double*>(in), reinterpret_cast<double*>(out));
+	checkCudaErrors( cudaEventRecord(end) );
+	cudaDeviceSynchronize();
+	cudaMemcpy ( out, dev_out, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyDeviceToHost);
+
+	teardown_spiral_test();
+
+	float milli = 0.0;
+	checkCudaErrors ( cudaEventElapsedTime ( &milli, begin, end ) );
+	printf("%f;\t\t##  CuFFT-based execution [ms]\n", milli);
+
+#ifdef WIN64
+    ftime(&finish);
+    double elapsed = (1000.0 * (finish.time - start.time)) + (finish.millitm - start.millitm);
+	printf("%f;\t\t##  elapsed time [ms]\n", elapsed);
+#else
+	// time for non-Windows systems
+	clock_gettime(CLOCK_MONOTONIC, &finish);
+	double elapsed = ( ( (double)finish.tv_sec * 1e9 + (double)finish.tv_nsec) -
+					   ( (double)start.tv_sec  * 1e9 + (double)start.tv_nsec ) );
+	printf("%f;\t\t##  elapsed time [ms]\n", elapsed * 1e-6 );
+#endif // WIN64
+
+	fflush(stdout);
+	
+	cudaFreeHost  ( in );
+	cudaFreeHost  ( out );
+	cudaFree      ( dev_in );
+	cudaFree      ( dev_out );
+	
+	return EXIT_SUCCESS;
+}
+						 

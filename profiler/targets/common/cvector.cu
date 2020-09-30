@@ -14,12 +14,10 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "sys.h"
-#include "conf.h"
-#include "vector.h"
-#include "opt_macros.h"
-#include "xmalloc.h"
-#include "vector_def.h" /* data_type */
+#include <cufft.h>
+#include <cufftXt.h>
+
+#include <helper_cuda.h>
 
 #ifndef MIN
 #define MIN(a,b) (((a)<(b))?(a):(b))
@@ -32,34 +30,42 @@
 #error COLUMNS must be defined
 #endif
 
-vector_t * Input;
-vector_t * Output;
+cufftDoubleReal  *Input, *Output;
+cufftDoubleReal  *dev_in, *dev_out;
 
 
 void initialize(int argc, char **argv) {
-	scalar_type_t *t = scalar_find_type(DATATYPE);
 
-	Output = vector_create_zero(t, ROWS);
-	Input  = vector_create_zero(t, ROWS);
+	cudaMallocHost ( &Input,  sizeof(cufftDoubleReal) * ROWS );
+	cudaMallocHost ( &Output, sizeof(cufftDoubleReal) * ROWS );
+
+	cudaMalloc     ( &dev_in,  sizeof(cufftDoubleReal) * ROWS );
+	cudaMalloc     ( &dev_out, sizeof(cufftDoubleReal) * ROWS );
 
 	INITFUNC();
 }
 
 void finalize() {
-	vector_destroy(Output);
-	vector_destroy(Input);
+	cudaFreeHost (Output);
+	cudaFreeHost (Input);
+	cudaFree     (dev_out);
+	cudaFree     (dev_in);
 }
 
-void compute_vector(scalar_type_t *t)
+void compute_vector()
 {
-	int x;
+	int indx;
 	printf("[ ");
-	FUNC(Output->data, Input->data);
-	for (x = 0; x < ROWS; x++) {
-		if (x != 0) {
+
+	cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyHostToDevice);
+	FUNC(dev_out, dev_in);
+	cudaMemcpy ( Output, dev_out, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyDeviceToHost);
+
+	for (indx = 0; indx < ROWS; indx++) {
+		if (indx != 0) {
 			printf(", ");
-			}
-		t->fprint_gap(t, stdout, NTH(Output, x));
+		}
+		printf("FloatString(\"%.18g\")", Output[indx]);
 	}
 	printf("];\n");
 }
@@ -67,16 +73,16 @@ void compute_vector(scalar_type_t *t)
 
 
 int main(int argc, char** argv) {
+
 	initialize(argc, argv);
-	
-	scalar_type_t *t = scalar_find_type(DATATYPE);
+
 	int tlen = sizeof(testvector) / sizeof(testvector[0]);
 	
 	for (int i = 0; i < MIN(tlen, ROWS); i++) {
-        SET(t, NTH(Input, i), &testvector[i]);
+		Input[i] = (cufftDoubleReal)testvector[i];
 	}
 	
-	compute_vector(t);
+	compute_vector();
 	finalize();
 	return EXIT_SUCCESS;
 }

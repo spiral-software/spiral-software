@@ -14,12 +14,10 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "sys.h"
-#include "conf.h"
-#include "vector.h"
-#include "opt_macros.h"
-#include "xmalloc.h"
-#include "vector_def.h" /* data_type */
+#include <cufft.h>
+#include <cufftXt.h>
+
+#include <helper_cuda.h>
 
 #ifndef ROWS
 #error ROWS must be defined
@@ -28,33 +26,47 @@
 #error COLUMNS must be defined
 #endif
 
-vector_t * Input;
-vector_t * Output;
-
+cufftDoubleReal  *Input, *Output;
+cufftDoubleReal  *dev_in, *dev_out;
 
 void initialize(int argc, char **argv) {
-	scalar_type_t *t = scalar_find_type(DATATYPE);
+	cudaMallocHost ( &Input,  sizeof(cufftDoubleReal) * COLUMNS );
+	cudaMallocHost ( &Output, sizeof(cufftDoubleReal) * ROWS );
 
-	Output = vector_create_zero(t, ROWS);
-	Input = vector_create_zero(t, COLUMNS);
+	cudaMalloc     ( &dev_in,  sizeof(cufftDoubleReal) * COLUMNS );
+	cudaMalloc     ( &dev_out, sizeof(cufftDoubleReal) * ROWS );
 
 	INITFUNC();
 }
 
 void finalize() {
-	vector_destroy(Output);
-	vector_destroy(Input);
+	cudaFreeHost (Output);
+	cudaFreeHost (Input);
+	cudaFree     (dev_out);
+	cudaFree     (dev_in);
+}
+
+void set_value_in_vector(cufftDoubleReal *arr, int elem)
+{
+	// Zero array and put '1' in the location indicated by element
+	int idx;
+	for (idx = 0; idx < COLUMNS; idx++)
+		arr[idx] = (idx == elem) ? 1.0 : 0.0;
+
+	return;
 }
 
 void compute_matrix()
 {
-	scalar_type_t *t = scalar_find_type(DATATYPE);
-
 	int x, y;
 	printf("[ ");
 	for (x = 0; x < COLUMNS; x++) {
-		vector_basis(Input, x);
-		FUNC(Output->data, Input->data);
+		set_value_in_vector(Input, x);
+
+		cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
+		FUNC(dev_out, dev_in);
+		cudaMemcpy ( Output, dev_out, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyDeviceToHost);
+		
 		if (x != 0) {
 			printf(",\n  [ ");
 		}
@@ -65,13 +77,12 @@ void compute_matrix()
 			if (y != 0) {
 				printf(", ");
 			}
-			t->fprint_gap(t, stdout, NTH(Output, y));
+			printf("FloatString(\"%.18g\")", Output[y]);
 		}
 		printf(" ]");
 	}
 	printf("\n];\n");
 }
-
 
 
 int main(int argc, char** argv) {

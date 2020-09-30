@@ -384,7 +384,7 @@ end;
 
 #F ApplicableTable - mapping from non-terminal names to applicable rules
 #F
-ApplicableTable := tab(
+ApplicableTable := rec(
     @ := [ @_Base ]
 );
 

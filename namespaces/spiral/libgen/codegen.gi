@@ -10,18 +10,24 @@
 #F to the new dynamically allocated pointer-typed variables.
 #F
 #F if opts.zeroallocate is true, the buffers are zeroed out
+#F if opts.buffPrefixExtra is set, it's appended to pfx
 AllocBuffersSMP := function(pfx, code, map, opts)
-    local newbuffers, buffers, b, bufmap, v, nthreads, tid, newv, alloc_code;
+    local nameprefix, newbuffers, buffers, b, bufmap, v, nthreads, tid, newv, alloc_code;
     ## Pull out the buffer declarations
     [buffers, code] := PullBuffersSMP(code, IsArrayT);
     alloc_code := [];
     newbuffers := [];
+	if IsBound(opts.buffPrefixExtra) then
+		nameprefix := Concat(pfx, String(opts.buffPrefixExtra));
+	else
+		nameprefix := pfx;
+	fi;
     for b in buffers do
         [v, nthreads, tid] := b;
         if nthreads = 1 then
-            newv := var.fresh_t(pfx, TPtr(v.t.t));
+            newv := var.fresh_t(nameprefix, TPtr(v.t.t));
         else
-            newv := var.fresh_t(Concat("thr", pfx), TPtr(v.t.t));
+            newv := var.fresh_t(Concat("thr", nameprefix), TPtr(v.t.t));
         fi;
         if IsBound(v.value) then
             newv.value := v.value;
@@ -58,7 +64,7 @@ end;
 
 Class(RecCodegen, RecCodegenMixin, SMPCodegenMixin, DefaultCodegen, rec(
     Formula := meth(self, o, y, x, opts)
-        local code, datas, prog, params, init_code, codelet_codes, codelet_recs,
+        local code, datas, prog, params, init_code, destroy_code, codelet_codes, codelet_recs,
           datvars, dalloc, bufvars, bufalloc, map, ignore, num_threads, smp, io, _data, v;
 
         [x, y] := self.initXY(x, y, opts);
@@ -91,6 +97,7 @@ Class(RecCodegen, RecCodegenMixin, SMPCodegenMixin, DefaultCodegen, rec(
     [datvars, dalloc, ignore] := AllocBuffersSMP("dat", decl(datas, skip()), map, opts);
     init_code := func(TVoid, "init", [],
         chain(bufalloc, dalloc, List(datas, x -> SReduce(x.init, opts))));
+	destroy_code := func(TVoid, "destroy", [], skip());
 
     for v in bufvars do Add(v.t.qualifiers, "static"); od;
     for v in datvars do Add(v.t.qualifiers, "static"); od;
@@ -100,7 +107,7 @@ Class(RecCodegen, RecCodegenMixin, SMPCodegenMixin, DefaultCodegen, rec(
         codelet_codes,
         decl(Concatenation(datvars, bufvars),
         _data(var("NUM_THREADS", TInt), V(num_threads),
-            SubstVars(chain(init_code, code), map))));
+            SubstVars(chain(init_code, code, destroy_code), map))));
     prog.dimensions := o.dimensions;
     return prog;
     end,

@@ -2,7 +2,6 @@
 # Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
-
 Import(paradigms.distributed);
 
 # local functions and variables are prefixed with an underscore.
@@ -20,6 +19,7 @@ _WriteStub := function(code, outdir, opts)
         PAGESIZE := 4096,
         INITFUNC := "init_sub",
         FUNC := "sub",
+        DESTROYFUNC := "destroy_sub",
         DATATYPE_SIZEINBYTES := Cond(DeriveScalarType(opts) = "float", 4, Cond(DeriveScalarType(opts) = "double", 8, 0)),
         OUTDIR := Concat("\"", outdir, "\""),
         NUMTHREADS := When(IsBound(opts.smp) and IsInt(opts.smp.numproc), opts.smp.numproc, 1),
@@ -51,7 +51,12 @@ _WriteStub := function(code, outdir, opts)
     od;
 
     PrintTo(outfile, outstr);
-	
+
+    ##  add extern function declarations ... required for cuda
+    AppendTo(outfile, "\nextern void INITFUNC();\n");
+    AppendTo(outfile, "extern void DESTROYFUNC();\n");
+    AppendTo(outfile, "extern void FUNC( ", DeriveScalarType(opts), " *out, ", DeriveScalarType(opts), " *in );\n");
+    
 	#add testvector if specified in opts
 	
 	if IsBound(opts.testvector) then

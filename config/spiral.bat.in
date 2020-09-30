@@ -14,7 +14,7 @@ if "x%SPIRAL_PROFILER_WORKDIR_PATH%" == "x" (
 REM  --debug and --keeptemp output debug/trace information and preserve temporary files
 REM --target @PROFILER_TARGET@
 
-if ("x%PROFILER_LOCAL_ARGS%" == "x" (
+if "x%PROFILER_LOCAL_ARGS%" == "x" (
     set PROFILER_LOCAL_ARGS=--debug --workdir %SP_WORKDIR%
 )
 

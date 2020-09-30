@@ -13,7 +13,8 @@ export SPIRAL_CONFIG_EXEC_DIR="/usr/local/bin"
 export SPIRAL_CONFIG_PATH_SEP="/"
 
 ##  Setup PROFILER_LOCAL_ARGS with the target used for CMeasure & CMatrix measurements
-export PROFILER_LOCAL_ARGS="--target @PROFILER_TARGET@"
+##  Don't specify target so can set target in script options:  --target @PROFILER_TARGET@"
+export PROFILER_LOCAL_ARGS=""
 
 ##  Append these flags to PROFILER_LOCAL_ARGS to enable debugging or retain temporary files
 ##  --debug --keeptemp

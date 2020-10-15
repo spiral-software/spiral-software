@@ -65,7 +65,7 @@ void compute_matrix()
 
 		cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
 		FUNC(dev_out, dev_in);
-		cudaMemcpy ( Output, dev_out, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyDeviceToHost);
+		cudaMemcpy ( Output, dev_out, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyDeviceToHost);
 		
 		if (x != 0) {
 			printf(",\n  [ ");

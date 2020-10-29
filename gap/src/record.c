@@ -1172,13 +1172,8 @@ Bag      FunRecName (Bag hdCall)
         return Error("RecName: <%g> must be a string",
                      (Int)hdObjUneval, 0);
     else {
-        /* the only safe way of doing indirect FindRecname with current garbage
-           collector */
-		/* why?? -- makes no sense --  */
-        // char * st = strdup((char*)PTR_BAG(hdObj));
 		char * st = (char*)PTR_BAG(hdObj);
         Bag hd = FindRecname(st);
-        // free(st);
         return hd;
     }
 }

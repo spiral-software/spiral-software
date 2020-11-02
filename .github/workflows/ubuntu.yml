@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build_gcc:
-    name: Build FFTX on Linux
+    name: Build SPIRAL on Linux
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

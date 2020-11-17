@@ -12,12 +12,12 @@ set ( CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, Mi
 
 project ( SPIRAL_CUDA
          VERSION 1.0.1
-                DESCRIPTION "Profile SPIRAL/Cuda code, timing test"
+                DESCRIPTION "Profile SPIRAL/Cuda code, matrix/vector/time test"
                 LANGUAGES C CXX CUDA )
 
-# set project:  should only make one of: time, cvector, or cmatrix
-
-set ( PROJECT time )
+##  PROJECT is undefined, it must be specified on the command line to cmake and
+##  should be one of: { matrix | time | cvector }
+##  set ( PROJECT )
 
 set ( PROF_TARGETS ${CMAKE_SOURCE_DIR}/../../targets )
 set ( PROF_COMMON  ${PROF_TARGETS}/common )
@@ -30,11 +30,11 @@ include_directories ( ${CMAKE_SOURCE_DIR} ${PROF_TARGETS} ${PROF_COMMON} ${PROF_
 
 if ( WIN32 )
     set ( CUDA_COMPILE_FLAGS -DWIN64 -rdc=false --pre-include testcode.h )
-    set ( GPU_COMPILE_DEFNS )			##  -Xptxas -v
+    set ( GPU_COMPILE_DEFNS )			##   -Xptxas -v
     set ( LIBS_FOR_CUDA cufft )
 else ()
     set ( CUDA_COMPILE_FLAGS -m64 -rdc=true --pre-include testcode.h )
-    set ( GPU_COMPILE_DEFNS -dc )		##  -Xptxas -v
+    set ( GPU_COMPILE_DEFNS -dc )		##   -Xptxas -v
     set ( LIBS_FOR_CUDA cufft_static culibos )
 endif ()
 

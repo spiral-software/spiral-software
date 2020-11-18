@@ -343,11 +343,6 @@ Class(CUnparserBase, Unparser, rec(
             ");\n"
     ),
 
-#    PRINT := meth(self,o, i, is)
-#     Print("printf(", self.infix(o.args, ",") ,")");
-#         Print("printf(", DoForAllButLast(o.args, x-> self(x, i, is) and Print(",")), self(Last(o.args), i, is) ,")");
-#    end,
-
     multi_if := meth(self,o,i,is)
         local j, conds;
     conds := o.args { [1..Int(Length(o.args)/2)]*2 - 1 };
@@ -954,6 +949,7 @@ Class(CUnparser, CUnparserBase, rec(
         local oo;
         self.opts := CopyFields(opts, rec(subName := subname));
         oo := self.preprocess(o);
+		self.checkPrintRuleTree(o, opts);
         Print(self.header(subname, oo), Unparse(oo, self, 0, 4), self.footer(subname, oo));
     end,
 
@@ -967,6 +963,14 @@ Class(CUnparser, CUnparserBase, rec(
         DoForAll(self.includes, inc -> Print("#include ", inc, "\n")),
         DoForAll(self.opts.includes, inc -> Print("#include ", inc, "\n"))
     ),
+	
+	checkPrintRuleTree := meth(self, o, opts)
+		if IsBound(opts.printRuleTree) and opts.printRuleTree and IsBound(o.ruletree) then
+			Print("/* RuleTree:\nrt :=\n");
+			Print(o.ruletree);
+			Print("\n;\n*/\n\n");
+		fi;
+	end,
 
     footer := Ignore,
 

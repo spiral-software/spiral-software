@@ -1062,8 +1062,8 @@ Obj FunBuildInfo(Obj hdCall) {
 	Pr("GitHash : %s\n", SPIRAL_GIT_COMMIT_HASH, 0);
 	Pr("GitRemote : %s\n", SPIRAL_GIT_REMOTE_URL, 0);
 	Pr("GitBranch : %s\n", SPIRAL_GIT_COMMIT_BRANCH, 0);
-	Pr("DateTimeUTC : %s %s\n", SPIRAL_BUILD_DATE_UTC, SPIRAL_BUILD_TIME_UTC, 0);
-	Pr("Compiler : %s %s\n", SPIRAL_C_COMPILER_ID, SPIRAL_C_COMPILER_VERSION, 0);
+	Pr("DateTimeUTC : %s %s\n", SPIRAL_BUILD_DATE_UTC, SPIRAL_BUILD_TIME_UTC);
+	Pr("Compiler : %s %s\n", SPIRAL_C_COMPILER_ID, SPIRAL_C_COMPILER_VERSION);
     return HdVoid;
 }
 

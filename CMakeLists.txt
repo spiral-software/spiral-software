@@ -12,10 +12,10 @@ set(CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, MinS
 
 project(SPIRAL
         VERSION 8.2.1
-                DESCRIPTION "SPIRAL Project"
-                LANGUAGES C CXX)
-                
-set(PROJECT_VERSION_TAG "a03")
+        DESCRIPTION "SPIRAL Project"
+        LANGUAGES C CXX)
+
+set(PROJECT_VERSION_TAG "a04")
 
 ##  Prevent building directly into the source tree
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" SPIRAL_COMPILE_INPLACE)
@@ -51,15 +51,30 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
         execute_process(COMMAND ${GIT_EXECUTABLE} log --pretty=format:%H -n 1
                         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
                         OUTPUT_VARIABLE   SPIRAL_GIT_HASH)
+		execute_process(COMMAND ${GIT_EXECUTABLE} branch --show-current
+                        OUTPUT_VARIABLE   SPIRAL_GIT_BRANCH)
+		execute_process(COMMAND ${GIT_EXECUTABLE} config --get remote.origin.url
+                        OUTPUT_VARIABLE   SPIRAL_GIT_REMOTE)
     endif()
 endif()
 if (NOT SPIRAL_GIT_HASH)
-   set(SPIRAL_GIT_HASH "Not found")
+   set(SPIRAL_GIT_HASH "<Unknown>")
 endif()
+if (NOT SPIRAL_GIT_BRANCH)
+   set(SPIRAL_GIT_BRANCH "<Unknown>")
+endif()
+if (NOT SPIRAL_GIT_REMOTE)
+   set(SPIRAL_GIT_REMOTE "<Unknown>")
+endif()
+string(STRIP ${SPIRAL_GIT_BRANCH} SPIRAL_GIT_BRANCH)
+string(STRIP ${SPIRAL_GIT_REMOTE} SPIRAL_GIT_REMOTE)
 
 if ((NOT DEFINED CMAKE_BUILD_TYPE) OR (NOT CMAKE_BUILD_TYPE))
     set(CMAKE_BUILD_TYPE Release)
 endif()
+
+string(TIMESTAMP SPIRAL_BUILD_DATE_UTC "%m/%d/%Y" UTC)
+string(TIMESTAMP SPIRAL_BUILD_TIME_UTC "%H:%M:%S" UTC)
 
 configure_file (
     ${SPIRAL_CONFIG_DIR}/spiral_build_info.h.in

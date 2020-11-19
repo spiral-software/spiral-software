@@ -1050,6 +1050,24 @@ Obj FunVersion(Obj hdCall) {
 }
 
 
+/****************************************************************************
+**
+*F  BuildInfo()
+**
+** Prints name:value pairs of build info
+*/
+
+Obj FunBuildInfo(Obj hdCall) {
+	Pr("Version : %s\n", SPIRAL_VERSION_STRING, 0);
+	Pr("GitHash : %s\n", SPIRAL_GIT_COMMIT_HASH, 0);
+	Pr("GitRemote : %s\n", SPIRAL_GIT_REMOTE_URL, 0);
+	Pr("GitBranch : %s\n", SPIRAL_GIT_COMMIT_BRANCH, 0);
+	Pr("DateTimeUTC : %s %s\n", SPIRAL_BUILD_DATE_UTC, SPIRAL_BUILD_TIME_UTC);
+	Pr("Compiler : %s %s\n", SPIRAL_C_COMPILER_ID, SPIRAL_C_COMPILER_VERSION);
+    return HdVoid;
+}
+
+
 
 /****************************************************************************
 **
@@ -1351,6 +1369,7 @@ void            InitSPIRAL (void) {
     InstIntFunc( "Reachability",              FunReachability);
     InstIntFunc( "PathRelativeToSPIRAL",  FunPathRelativeToSPIRAL );
 	InstIntFunc( "Version", FunVersion);
+	InstIntFunc( "BuildInfo", FunBuildInfo);
     IdentAssign( "NULL", HdVoid);
     IdentAssign( "HdStack", HdStack);
     InstIntFunc( "HdExec",  FunHdExec);

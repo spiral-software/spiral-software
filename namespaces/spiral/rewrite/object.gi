@@ -18,12 +18,6 @@ Class(RewritableObjectOps, PrintOps, rec(
 	_isclass(s1) and _isclass(s2), BagAddr(s1) < BagAddr(s2), 
         _oid(s1) <> _oid(s2),        _oid(s1) < _oid(s2),
         s1.rChildren() < s2.rChildren())
-
-#     \= := (s1,s2) -> ObjId(s1) = ObjId(s2) and s1.rChildren() = s2.rChildren(),
-
-#     \< := (s1,s2) -> Cond(
-#         ObjId(s1) <> ObjId(s2), ObjId(s1) < ObjId(s2), 
-#         [ ObjId(s1), s1.rChildren() ] < [ ObjId(s2), s2.rChildren() ])
 ));
 
 #F RewritableObject - convenient base class for objects to be used
@@ -43,6 +37,7 @@ Class(RewritableObjectOps, PrintOps, rec(
 #F To do error checking and validation on .params, redefine .updateParams
 #F in subclasses. It is also called after updates in .rSetChild
 #F
+
 Class(RewritableObject, rec(
     __call__ := meth(arg)
         local self, params, res;
@@ -73,7 +68,7 @@ Class(RewritableObject, rec(
 
     # Compatibility interface for Print, supports standard print() and
     # print(s, i, is).
-    # NOTE: Unfortunately, doesn't propagate it to childrens
+    # NOTE: doesn't propagate it to children
     print := meth(arg)
         local self;
         self := arg[1];

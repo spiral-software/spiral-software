@@ -36,11 +36,20 @@ cufftDoubleReal  *dev_in, *dev_out;
 
 void initialize(int argc, char **argv) {
 
-	cudaMallocHost ( &Input,  sizeof(cufftDoubleReal) * ROWS );
+	// In many case ROWS & COLUMNS are equal; however, when they are not it is
+	// important to use the correct one when allocating memory for the in/out
+	// buffers.  The *input* buffer should be dimensioned by COLUMNS, while the
+	// *output* buffer should be dimensioned by ROWS
+	
+	cudaMallocHost ( &Input,  sizeof(cufftDoubleReal) * COLUMNS );
+	checkCudaErrors(cudaGetLastError());
 	cudaMallocHost ( &Output, sizeof(cufftDoubleReal) * ROWS );
+	checkCudaErrors(cudaGetLastError());
 
-	cudaMalloc     ( &dev_in,  sizeof(cufftDoubleReal) * ROWS );
+	cudaMalloc     ( &dev_in,  sizeof(cufftDoubleReal) * COLUMNS );
+	checkCudaErrors(cudaGetLastError());
 	cudaMalloc     ( &dev_out, sizeof(cufftDoubleReal) * ROWS );
+	checkCudaErrors(cudaGetLastError());
 
 	INITFUNC();
 }
@@ -57,9 +66,15 @@ void compute_vector()
 	int indx;
 	printf("[ ");
 
-	cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyHostToDevice);
+	cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
+	checkCudaErrors(cudaGetLastError());
+
 	FUNC(dev_out, dev_in);
+	checkCudaErrors(cudaGetLastError());
+	cudaDeviceSynchronize();
+
 	cudaMemcpy ( Output, dev_out, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyDeviceToHost);
+	checkCudaErrors(cudaGetLastError());
 
 	for (indx = 0; indx < ROWS; indx++) {
 		if (indx != 0) {

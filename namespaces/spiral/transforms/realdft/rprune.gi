@@ -394,7 +394,8 @@ NewRulesFor(IOPrunedMDRConv, rec(
                                     pp := Tensor(L(ns3*n2*nfreq, n2*nfreq), I(2)) * Tensor(I(ns3), L(2*nfreq*n2, nfreq)),
                                     ppi := Tensor(I(nd3), L(2*nfreq*n2, 2*n2)) * Tensor(L(nd3*n2*nfreq, nd3), I(2)),
                                     stage543 := ppi * IDirSum(i, RC(iopconv)) * pp,
-                                    stage76 := Tensor(L(nd2*nd1, nd1), I(nd3)) * Tensor((Tensor(I(nd2), iprdft1d * L(2*nfreq, nfreq)) * Tensor(RC(ipdft1d), I(nfreq))), I(nd3)) * L(2*nfreq*nd3*n2, 2*nfreq*n2),
+                                    stage76 := Tensor(L(nd2*nd1, nd1), I(nd3)) * Grp(Tensor((Tensor(I(nd2), iprdft1d * L(2*nfreq, nfreq)) *
+                                        Tensor(RC(ipdft1d), I(nfreq))), I(nd3)) * L(2*nfreq*nd3*n2, 2*nfreq*n2)),
                                     conv3dr := stage76 * stage543 * stage2 * stage1,
                                     conv3dr
                             ),

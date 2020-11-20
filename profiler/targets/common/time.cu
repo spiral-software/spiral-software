@@ -60,24 +60,31 @@ int main(int argc, char** argv)
 	clock_gettime(CLOCK_MONOTONIC, &start);
 #endif					 // WIN64
 
+	// In many case ROWS & COLUMNS are equal; however, when they are not it is
+	// important to use the correct one when allocating memory for the in/out
+	// buffers.  The *input* buffer should be dimensioned by COLUMNS, while the
+	// *output* buffer should be dimensioned by ROWS
+	
 	cudaEventCreate ( &begin );
 	cudaEventCreate ( &end );
-	cudaMallocHost  ( &in,      sizeof(cufftDoubleReal) * ROWS );
+	cudaMallocHost  ( &in,      sizeof(cufftDoubleReal) * COLUMNS );
 	cudaMallocHost  ( &out,     sizeof(cufftDoubleReal) * ROWS );
-	cudaMalloc      ( &dev_in,  sizeof(cufftDoubleReal) * ROWS );
+	cudaMalloc      ( &dev_in,  sizeof(cufftDoubleReal) * COLUMNS );
 	cudaMalloc      ( &dev_out, sizeof(cufftDoubleReal) * ROWS );
 
-	for (int i = 0; i < ROWS; i++)
+	for (int i = 0; i < /* ROWS */ COLUMNS; i++)
 		in[i] = i;
 
 	setup_spiral_test();
-	cudaMemcpy ( dev_in, in,   sizeof(cufftDoubleReal) * ROWS, cudaMemcpyHostToDevice);
+	cudaMemcpy ( dev_in, in,   sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
+	checkCudaErrors(cudaGetLastError());
 	
 	checkCudaErrors( cudaEventRecord(begin) );
-	test_spiral(reinterpret_cast<double*>(in), reinterpret_cast<double*>(out));
+	test_spiral(dev_in, dev_out);
 	checkCudaErrors( cudaEventRecord(end) );
 	cudaDeviceSynchronize();
 	cudaMemcpy ( out, dev_out, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyDeviceToHost);
+	checkCudaErrors(cudaGetLastError());
 
 	teardown_spiral_test();
 

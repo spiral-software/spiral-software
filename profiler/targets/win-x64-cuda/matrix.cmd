@@ -9,9 +9,9 @@ REM  Taking a simple approach here: copy CMakeLists.txt from win-x64-nvcc
 REM  target to the temp directory; run cmake to configure then build the
 REM  target and finally, if successful, execute the target.
 
-COPY ..\..\targets\common\CMakeLists-matrix.txt %SGBETEMPDIR%\CMakeLists.txt
+COPY ..\..\targets\common\CMakeLists.txt %SGBETEMPDIR%\CMakeLists.txt
 RENAME testcode.c testcode.cu
-cmake .
+cmake -DPROJECT:STRING=matrix .
 cmake --build . --config Release --target install
 
 IF EXIST .\matrix.exe (

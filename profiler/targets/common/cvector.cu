@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 
 	int tlen = sizeof(testvector) / sizeof(testvector[0]);
 	
-	for (int i = 0; i < MIN(tlen, ROWS); i++) {
+	for (int i = 0; i < MIN(tlen, COLUMNS); i++) {
 		Input[i] = (cufftDoubleReal)testvector[i];
 	}
 	

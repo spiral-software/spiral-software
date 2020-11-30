@@ -167,6 +167,23 @@ foreach ( dir ${_pkg_names} )
     endif ()
 endforeach ()
 
+##  Find python3 -- may be used by spiral-packages to marshall/run examples
+
+find_package (Python3 COMPONENTS Interpreter)
+if (${Python3_FOUND})
+    ##  It exists, executable is ${Python3_EXECUTABLE}
+    message ( STATUS "Found Python3: Version = ${Python3_VERSION}, Executable = ${Python3_EXECUTABLE}")
+else ()
+    message ( SEND_ERROR "Python3 NOT FOUND: Python is required to run tests")
+endif ()
+
+##  Python script to run tests -- allow any package to access test from ${CMAKE_BINARY_DIR}/bin
+
+set     ( PYTHON_COMMAND ${SPIRAL_SOURCE_DIR}/config/CMakeIncludes/exectest.py )
+set     ( INSTALL_DIR_LOCATION ${CMAKE_BINARY_DIR}/bin )
+install ( FILES ${PYTHON_COMMAND} DESTINATION ${INSTALL_DIR_LOCATION} )
+
+
 add_subdirectory(tests)                ## holds test scripts
 
 enable_testing()

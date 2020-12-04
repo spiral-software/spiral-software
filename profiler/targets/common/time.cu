@@ -80,7 +80,10 @@ int main(int argc, char** argv)
 	checkCudaErrors(cudaGetLastError());
 	
 	checkCudaErrors( cudaEventRecord(begin) );
-	test_spiral(dev_in, dev_out);
+	int iters = 1 * 100 ;
+	for (int i = 0; i < iters; i++ ) {
+		test_spiral(dev_in, dev_out);
+	}
 	checkCudaErrors( cudaEventRecord(end) );
 	cudaDeviceSynchronize();
 	cudaMemcpy ( out, dev_out, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyDeviceToHost);
@@ -90,18 +93,18 @@ int main(int argc, char** argv)
 
 	float milli = 0.0;
 	checkCudaErrors ( cudaEventElapsedTime ( &milli, begin, end ) );
-	printf("%f;\t\t##  CuFFT-based execution [ms]\n", milli);
+	printf("%f;\t\t##  SPIRAL GPU kernel execution [ms], averaged over %d iterations ##PICKME##\n", milli / iters, iters );
 
 #ifdef WIN64
     ftime(&finish);
     double elapsed = (1000.0 * (finish.time - start.time)) + (finish.millitm - start.millitm);
-	printf("%f;\t\t##  elapsed time [ms]\n", elapsed);
+	printf("%f;\t\t##  Timing test elapsed time [ms], completed %d iterations ##PICKME##\n", elapsed, iters);
 #else
 	// time for non-Windows systems
 	clock_gettime(CLOCK_MONOTONIC, &finish);
 	double elapsed = ( ( (double)finish.tv_sec * 1e9 + (double)finish.tv_nsec) -
 					   ( (double)start.tv_sec  * 1e9 + (double)start.tv_nsec ) );
-	printf("%f;\t\t##  elapsed time [ms]\n", elapsed * 1e-6 );
+	printf("%f;\t\t##  Timing test elapsed time [ms], completed %d iterations ##PICKME##\n", elapsed * 1e-6 / iters, iters );
 #endif // WIN64
 
 	fflush(stdout);

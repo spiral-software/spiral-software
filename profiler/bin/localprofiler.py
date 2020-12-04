@@ -44,7 +44,10 @@ def_workdir = basedir
 if sys.platform == 'win32':
 	def_target  = 'win-x86-vcc'
 elif sys.platform == 'linux':
-	def_target  = 'linux-x86'
+        if os.uname().machine == 'ppc64le':
+                def_target = 'linux-ppc64le-gcc'
+        else:
+                def_target  = 'linux-x86'
 elif sys.platform == 'darwin':
 	def_target  = 'darwin-x86'
 else:

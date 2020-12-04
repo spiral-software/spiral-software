@@ -47,7 +47,7 @@ function (create_source_file input target)
 	endif ()
     endif ()
 
-    add_custom_target ( NAME.${target} ALL
+    add_custom_target ( NAME.${PROJECT_NAME}.${target} ALL
      	DEPENDS ${input}
 	VERBATIM )
 

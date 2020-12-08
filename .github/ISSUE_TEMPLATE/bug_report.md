@@ -25,7 +25,8 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
- - Version Info:  Please include the output from the "BuildInfo();" SPIRAL command (that provides version, compiler, and other info).
+ - Version Info:  Please include the output from the "BuildInfo();" SPIRAL
+   	   	  command (that provides version, compiler, and other info).
 
 **Additional context**
 Add any other context about the problem here.

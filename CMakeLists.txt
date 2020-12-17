@@ -151,6 +151,8 @@ install (FILES ${SPIRAL_STARTUP_FILES}
 
 add_subdirectory(gap)
 
+add_subdirectory ( support )
+
 ##  Find any subdirectories in namespaces/packages -- these will be the names
 ##  of spiral packages.  Add subdirectory entries for any names found *if* they
 ##  have a CMakeLists.txt file present.
@@ -176,12 +178,6 @@ if (${Python3_FOUND})
 else ()
     message ( SEND_ERROR "Python3 NOT FOUND: Python is required to run tests")
 endif ()
-
-##  Python script to run tests -- allow any package to access test from ${CMAKE_BINARY_DIR}/bin
-
-set     ( PYTHON_COMMAND ${SPIRAL_SOURCE_DIR}/config/CMakeIncludes/exectest.py )
-set     ( INSTALL_DIR_LOCATION ${CMAKE_BINARY_DIR}/bin )
-install ( FILES ${PYTHON_COMMAND} DESTINATION ${INSTALL_DIR_LOCATION} )
 
 
 add_subdirectory(tests)                ## holds test scripts

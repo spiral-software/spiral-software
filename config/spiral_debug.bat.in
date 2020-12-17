@@ -6,15 +6,15 @@ set SPIRAL_DIR=%~dp0
 set GAP_MEM=@SPIRAL_MEMORY_POOL@
 
 if "x%SPIRAL_PROFILER_WORKDIR_PATH%" == "x" (
-    set SP_WORKDIR=%SPIRAL_DIR%profiler
+    set SPIRAL_WORKDIR=%SPIRAL_DIR%profiler
 ) else (
-    set SP_WORKDIR=%SPIRAL_PROFILER_WORKDIR_PATH%
+    set SPIRAL_WORKDIR=%SPIRAL_PROFILER_WORKDIR_PATH%
 )
 
 REM  --debug and --keeptemp output debug/trace information and preserve temporary files
 
-if ("x%PROFILER_LOCAL_ARGS%" == "x" (
-    set PROFILER_LOCAL_ARGS=--debug --keeptemp --workdir %SP_WORKDIR%
+if "x%PROFILER_LOCAL_ARGS%" == "x" (
+    set PROFILER_LOCAL_ARGS=--debug --keeptemp --workdir %SPIRAL_WORKDIR%
 )
 
 set SPIRAL_CONFIG_SPIRAL_DIR=%SPIRAL_DIR%
@@ -23,6 +23,12 @@ set SPIRAL_CONFIG_PATH_SEP=\
 set OLDPATH=%PATH%
 set PATH=%PATH%;%SPIRAL_DIR%profiler\bin
 
-"%SPIRAL_DIR%gap\bin\gapd.exe" -m %GAP_MEM% -x 1000 -l "%SPIRAL_DIR%gap\lib" "%SPIRAL_DIR%_spiral_win.g"
+IF EXIST "%SPIRAL_DIR%gap\bin\gapd.exe" (
+    set GAP_EXE="%SPIRAL_DIR%gap\bin\gapd.exe"
+) else (
+    set GAP_EXE="%SPIRAL_DIR%gap\bin\gap.exe"
+)
+
+%GAP_EXE% -m %GAP_MEM% -x 1000 -l "%SPIRAL_DIR%gap\lib" "%SPIRAL_DIR%_spiral_win.g"
 
 set PATH=%OLDPATH%

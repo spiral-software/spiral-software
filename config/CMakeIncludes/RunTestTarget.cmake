@@ -19,12 +19,12 @@ endif ()
 ##  directory and a set of one or more input files.  The input files are handled
 ##  as optional arguments, but there must be at least 1.
 
-function (RunTestTarget testname exdir)
+function (RunTestTarget _gpu_reqd testname exdir)
     ##  message ("number of arguments sent to function: ${ARGC}")
     ##  message ("all function arguments:               ${ARGV}")
     ##  message ("all arguments beyond defined:         ${ARGN}")
 
-    if ( ${ARGC} GREATER 2 )
+    if ( ${ARGC} GREATER 3 )
 	##  received at least one input file
 	set ( _cat_fils "" )
 	foreach ( _fil ${ARGN} )
@@ -39,15 +39,16 @@ function (RunTestTarget testname exdir)
     if (BASH)
         add_test (NAME ${testname}
 	    ##           COMMAND ${BASH} -c "cat ${_cat_fils} | ${TEST_GAP_EXEC_NAME}"
-	    COMMAND ${Python3_EXECUTABLE} ${CMAKE_BINARY_DIR}/bin/exectest.py
-	            ${TEST_GAP_EXEC_NAME} ${_cat_fils}
+	    COMMAND ${Python3_EXECUTABLE} ${SPIRAL_SOURCE_DIR}/gap/bin/exectest.py
+	            ${_gpu_reqd} ${TEST_GAP_EXEC_NAME} ${_cat_fils}
         )
         SET_TESTS_PROPERTIES(${testname} PROPERTIES SKIP_RETURN_CODE 86)
+	SET_TESTS_PROPERTIES(${testname} PROPERTIES SKIP_REGULAR_EXPRESSION "Skipping test")
     else ()
         if (WIN32)
             add_test (NAME ${testname}
-		COMMAND ${Python3_EXECUTABLE} ${CMAKE_BINARY_DIR}/bin/exectest.py
-		        ${TEST_GAP_EXEC_NAME} ${_cat_fils}
+		COMMAND ${Python3_EXECUTABLE} ${SPIRAL_SOURCE_DIR}/gap/bin/exectest.py
+		        ${_gpu_reqd} ${TEST_GAP_EXEC_NAME} ${_cat_fils}
             )
             SET_TESTS_PROPERTIES(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST FAILED")
             SET_TESTS_PROPERTIES(${testname} PROPERTIES SKIP_REGULAR_EXPRESSION "Skipping test")

@@ -195,6 +195,7 @@ if (!WIN32)
 endif()
 
 add_executable(${PROJECT} ${SOURCES})
+set_property ( TARGET ${PROJECT} PROPERTY CUDA_ARCHITECTURES OFF)
 target_compile_definitions(${PROJECT} PRIVATE ${SPIRAL_COMPILE_DEFNS})
 target_compile_options    (${PROJECT} PRIVATE ${SPIRAL_COMPILE_FLAGS})
 

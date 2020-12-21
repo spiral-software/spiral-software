@@ -7,6 +7,12 @@ INSTALL_PFX="$SPIRAL/gap"
 GAP_DIR=$SPIRAL/gap
 GAP_MEM=@SPIRAL_MEMORY_POOL@
 
+GAP_EXE="$INSTALL_PFX/bin/gapd"
+if [ ! -f "$GAP_EXE" ]; then
+    ##  gapd executable doesn't exist (probably not built), default to gap
+    GAP_EXE="$INSTALL_PFX/bin/gap"
+fi
+
 export SPIRAL_CONFIG_TMP_DIR="/tmp/spiraltmp"
 export SPIRAL_CONFIG_SPIRAL_DIR="$SPIRAL"
 export SPIRAL_CONFIG_EXEC_DIR="/usr/local/bin"
@@ -22,7 +28,7 @@ export PROFILER_LOCAL_ARGS="--target @PROFILER_TARGET@"
 export PATH="$PATH:$SPIRAL/profiler/bin"
 
 #== start SPIRAL in debugger -- don't automatically "run", to permit setting breakpoints, etc.
-@SPIRAL_DEBUGGER_NAME@ "$INSTALL_PFX/bin/gapd" @SPIRAL_CMD_ARGS_FLAG@ -m $GAP_MEM -x 1000 -l "$GAP_DIR/lib/" -h "$GAP_DIR/doc/"  $SPIRAL/_spiral.g
+@SPIRAL_DEBUGGER_NAME@ "$GAP_EXE" @SPIRAL_CMD_ARGS_FLAG@ -m $GAP_MEM -x 1000 -l "$GAP_DIR/lib/" -h "$GAP_DIR/doc/"  $SPIRAL/_spiral.g
 
 # /gap/lib is being added using -l "$GAP_DIR/lib/" but it can also be added using
 # export SPIRAL_GAP_LIB_DIR=*input_path_to_gap/lib*

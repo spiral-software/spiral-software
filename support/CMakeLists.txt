@@ -7,39 +7,60 @@
 
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
+##  Check the code generation option ...
+
+if ( "X${_codegen}" STREQUAL "X" )
+    message ( STATUS "_codegen is undefined, GPU assumed" )
+    set ( _codegen GPU )
+else ()
+    message ( STATUS "_codegen = ${_codegen}" )
+endif ()
+
+if ( ${_codegen} STREQUAL "GPU" )
+    set ( _lang_add CUDA )
+    set ( _suffix cu )
+else ()
+    set ( _suffix c )
+endif ()
+
 project ( SPIRAL_SUPPORT_UTILS
           DESCRIPTION "Utility tools for running SPIRAL in toolschain"
-	  LANGUAGES C CXX CUDA )
+	  LANGUAGES C CXX ${_lang_add} )
       
 set ( PROJECT checkforGpu )
-set ( SOURCES ${PROJECT}.cu )
+set ( SOURCES ${PROJECT}.${_suffix} )
 
 include_directories ( ${CMAKE_SOURCE_DIR} ${SPIRAL_SOURCE_DIR}/profiler/targets/include )
 
 ##  Setup compilation flags
 
-if (WIN32)
-    set ( CUDA_COMPILE_FLAGS -rdc=false )
-    set ( GPU_COMPILE_DEFNS )
-    set ( LIBS_FOR_CUDA cufft )
-    set ( ADDL_COMPILE_FLAGS -DWIN64 )
-else ()
-    set ( CUDA_COMPILE_FLAGS -m64 -rdc=true )
-    set ( GPU_COMPILE_DEFNS -dc )
-    set ( LIBS_FOR_CUDA cufft_static culibos )
-    set ( ADDL_COMPILE_FLAGS )
+if ( ${_codegen} STREQUAL "GPU" )
+    if (WIN32)
+	set ( CUDA_COMPILE_FLAGS -rdc=false )
+	set ( GPU_COMPILE_DEFNS )
+	set ( LIBS_FOR_CUDA cufft )
+	set ( ADDL_COMPILE_FLAGS -DWIN64 )
+    else ()
+	set ( CUDA_COMPILE_FLAGS -m64 -rdc=true )
+	set ( GPU_COMPILE_DEFNS -dc )
+	set ( LIBS_FOR_CUDA cufft_static culibos )
+	set ( ADDL_COMPILE_FLAGS )
+    endif ()
+
+    ##  set ( CMAKE_CUDA_ARCHITECTURES 60 61 62 70 72 75 )
+    set ( CMAKE_CUDA_ARCHITECTURES 70 )
+    set ( GPU_EXTRAS _CUDAGEN )
 endif ()
 
-##  set ( CMAKE_CUDA_ARCHITECTURES 60 61 62 70 72 75 )
-set ( CMAKE_CUDA_ARCHITECTURES 70 )
-set ( GPU_EXTRAS _CUDAGEN )
-
 add_executable		   ( ${PROJECT} ${SOURCES} )
-target_compile_definitions ( ${PROJECT} PRIVATE ${GPU_EXTRAS} )
+
 target_compile_definitions ( ${PROJECT} PRIVATE ${ADDL_COMPILE_FLAGS} )
-target_compile_options     ( ${PROJECT} PRIVATE ${CUDA_COMPILE_FLAGS} ${GPU_COMPILE_DEFNS} )
-set_property        ( TARGET ${PROJECT} PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON )
-target_link_libraries	   ( ${PROJECT} ${LIBS_FOR_CUDA} )
+if ( ${_codegen} STREQUAL "GPU" )
+    target_compile_definitions ( ${PROJECT} PRIVATE ${GPU_EXTRAS} )
+    target_compile_options     ( ${PROJECT} PRIVATE ${CUDA_COMPILE_FLAGS} ${GPU_COMPILE_DEFNS} )
+    set_property        ( TARGET ${PROJECT} PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON )
+    target_link_libraries	   ( ${PROJECT} ${LIBS_FOR_CUDA} )
+endif ()
 
 set     ( INSTALL_DIR_LOCATION ${SPIRAL_SOURCE_DIR}/gap/bin )
 install ( TARGETS ${PROJECT} DESTINATION ${INSTALL_DIR_LOCATION} )

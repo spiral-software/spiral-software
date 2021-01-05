@@ -20,6 +20,6 @@ jobs:
     - name: build SPIRAL
       run: |
         mkdir build && cd build
-        cmake .. 
+        cmake -D_codegen=CPU ..
         make -j 2 install
         make test

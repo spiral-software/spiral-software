@@ -281,7 +281,7 @@ Class(TraceLog, rec(
 # Global variable. Will be moved to 'opts' eventually.
 trace_log := TraceLog();
 
-# Convinience functions
+# Convenience functions
 
 TraceToConsole := function() 
     trace_log.addPlugin(TraceLogPrinter()); 
@@ -295,6 +295,10 @@ trace_collector := TraceLogCollector();
 TraceToMemory := function() 
     trace_log.addPlugin(trace_collector);
     return(trace_collector);
+end;
+
+TraceNote := function(note)
+	trace_log.addNote(note);
 end;
 
   

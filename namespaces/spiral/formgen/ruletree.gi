@@ -649,30 +649,36 @@ _AllRuleTrees := function ( S, cutoff, memohash, opts )
     local L, L1, T, Lc, i, cs, T1, lkup;
 
     # check cutoff, baseHashes, and our memoization hash
-    if cutoff(S) then return [S]; fi;
+    if cutoff(S) then
+		return [S];
+	fi;
     lkup := MultiHashLookup(opts.baseHashes, S);
-    if lkup <> false then return [lkup[1].ruletree]; fi;
+    if lkup <> false then
+		return [lkup[1].ruletree];
+	fi;
 
     lkup := HashLookup(memohash, S);
-    if lkup <> false then return lkup; fi;
+    if lkup <> false
+		then return lkup;
+	fi;
 
     L := ExpandSPL(S, opts);
     if ForAll(L, r -> r.children = [ ]) then
-    HashAdd(memohash, S, L);
-    return L;
+		HashAdd(memohash, S, L);
+		return L;
     fi;
 
     L1 := [ ];
     for T in L do
         Lc := [ ];
-    for i in [1..Length(T.children)] do
+		for i in [1..Length(T.children)] do
             Lc[i] := _AllRuleTrees(T.children[i], cutoff, memohash, opts);
-    od;
-    for cs in Cartesian(Lc) do
+		od;
+		for cs in Cartesian(Lc) do
             T1 := ShallowCopy(T);
-        T1.children := cs;
-        Add(L1, T1);
-    od;
+			T1.children := cs;
+			Add(L1, T1);
+		od;
     od;
 
     HashAdd(memohash, S, L1);
@@ -708,7 +714,7 @@ AllRuleTreesCutoff := (S, cutoff_func, opts) -> _AllRuleTrees(S, cutoff_func, Ha
 
 
 _NofRuleTrees := function ( S, cutoff, memohash, opts, level, trace )
-    local p, Cs, St, n, lkup, indentstr, i;
+    local p, Cs, Cst, St, n, lkup, indentstr, i;
     Constraint(IsSPL(S));
     Constraint(IsRec(opts));
 
@@ -744,9 +750,20 @@ _NofRuleTrees := function ( S, cutoff, memohash, opts, level, trace )
 
     # first apply rules as they are
     Cs := List(AllApplicableRulesDirect(S, opts.breakdownRules), r -> _allChildren(r,S, opts));
+	if trace then
+        Print(indentstr, "   Cs: ", Cs, "\n");
+    fi;
     # now transposed if applicable
-    St := TransposedSPL(S);
-    Append(Cs, List(AllApplicableRulesForTransposition(St, opts.breakdownRules), r -> _allChildren(r,St,opts)));
+	if (S.transposed) then
+        St := TransposedSPL(S);
+    else
+        St := S;
+    fi;
+ 	Cst := List(AllApplicableRulesForTransposition(St, opts.breakdownRules), r -> _allChildren(r,St,opts));
+	if trace then
+        Print(indentstr, "   Cst: ", Cst, "\n");
+    fi;
+    Cs := List(Set(Cs::Cst));
 
     if Cs = [ [ ] ] then
         n := 1;

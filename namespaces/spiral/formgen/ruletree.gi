@@ -130,21 +130,6 @@ RuleTreeNC := function ( R, S, C )
     );
 end;
 
-# RuleTreeTNC( <rule>, <non-terminal spl>, <children> )
-#   returns the corresponding transposed ruletree without any checking.
-
-RuleTreeTNC := function ( R, S, C )
-	return WithBases(RuleTreeClass,
-		rec(
-		    isRuleTree := true,
-		    operations := RuleTreeOps,
-		    node       := S,
-		    transposed := true,
-		    rule       := R,
-		    children   := C
-		)
-	);
-end;
 
 #F RuleTree(
 #F   <rule>,
@@ -213,7 +198,7 @@ RuleTree := function ( arg )
         Error("<C> must be a list of ruletrees or non-terminal spls");
     fi;
 
-    RT := When(t, RuleTreeTNC(R, S, C), RuleTreeNC(R, S, C));
+    RT := RuleTreeNC(R, S, C);
     if u <> [ ]
 	    then RT.splOptions := u;
 	fi;
@@ -535,11 +520,9 @@ RandomRuleTreeDP := (t, opts) -> let(res := spiral.search.DP(t, rec(measureFunct
 #F
 SemiRandomRuleTree := (spl, top_rule, opts) -> _SemiRandomRuleTree(spl, top_rule, s->false, opts);
 
-SRRDebug1 := Ignore;
-SRRDebug2 := Ignore;
 
 _SemiRandomRuleTree := function(spl, top_rule, cutoff_func, opts)
-    local splT, ch, i, R, rules, rulesT, rule, rand, candidates, ch, children, ch_candidates;
+    local ch, i, R, rules, rule, rand, candidates, ch, children, ch_candidates;
 
     if not (IsSPL(spl)) then
         Error("usage: SemiRandomRuleTree( <spl>, <top_rule>, <cutoff>, <opts> )");
@@ -548,33 +531,19 @@ _SemiRandomRuleTree := function(spl, top_rule, cutoff_func, opts)
     elif MultiHashLookup(opts.baseHashes, spl) <> false then
         return MultiHashLookup(opts.baseHashes, spl)[1].ruletree;
     else
-        if (spl.transposed) then
-            splT := TransposedSPL(spl);
-        else
-            splT := spl;
-        fi;
-
         if top_rule <> false then
             rules := [top_rule];
-            rulesT := []; # check top_rule
         else
             rules  := AllApplicableRulesDirect(spl, opts.breakdownRules);
-            rulesT := AllApplicableRulesForTransposition(splT, opts.breakdownRules);
-            if rules = [ ] and rulesT = [ ] then
+            if rules = [ ] then
                 return false;
             fi;
         fi;
 
-        # next line for debugging
-        SRRDebug1("spl: ", spl, ". rules: ", rules);
-
-        candidates := Set([1..(Length(rules)+Length(rulesT))]);
+        candidates := Set([1..(Length(rules))]);
         while candidates <> [] do
             rand := RandomList(candidates);
             RemoveSet(candidates, rand);
-
-            # Do not remove the next line. Used for debugging.
-            SRRDebug2("Chosen rand: ", rand);
 
             if rand <= Length(rules) then
                 rule := rules[rand];
@@ -586,14 +555,7 @@ _SemiRandomRuleTree := function(spl, top_rule, cutoff_func, opts)
                         return RuleTreeNC( rule, spl, children );
                     fi;
                 od;
-            else
-                rule := rulesT[rand-Length(rules)];
-                children := RandomChildrenRule( rule, splT, opts.breakdownRules );
-                children := List( children, s->_SemiRandomRuleTree(TransposedSPL(s), false, cutoff_func, opts) );
-                if not ForAny(children, c -> IsBool(c) and c=false) then
-                    return RuleTreeTNC( rule, spl, children );
-                fi;
-             fi;
+            fi;
         od;
         return false;
    fi;
@@ -605,7 +567,7 @@ end;
 #F
 #ExpandSPLRules := function( S, ruleset )
 ExpandSPLRules := function( arg )
-    local i, L, St, R, S, ruleset, opts;
+    local i, L, R, S, ruleset, opts;
     S := arg[1];
     ruleset := arg[2];
     Constraint(IsSPL(S));
@@ -619,14 +581,6 @@ ExpandSPLRules := function( arg )
     L  := [ ];
     for R in AllApplicableRulesDirect(S, ruleset) do
         Append(L, List(_allChildren(R,S,opts), c -> RuleTreeNC(R, S, c)));
-    od;
-
-    # now transposed if applicable
-    St := TransposedSPL(S);
-
-    for R in AllApplicableRulesForTransposition(St, ruleset) do
-        Append(L, List(_allChildren(R, St, opts),
-            c -> RuleTreeTNC(R, S, List(c, TransposedSPL))));
     od;
 
     return L;
@@ -714,7 +668,7 @@ AllRuleTreesCutoff := (S, cutoff_func, opts) -> _AllRuleTrees(S, cutoff_func, Ha
 
 
 _NofRuleTrees := function ( S, cutoff, memohash, opts, level, trace )
-    local p, Cs, Cst, St, n, lkup, indentstr, i;
+    local p, Cs, n, lkup, indentstr, i;
     Constraint(IsSPL(S));
     Constraint(IsRec(opts));
 
@@ -753,17 +707,6 @@ _NofRuleTrees := function ( S, cutoff, memohash, opts, level, trace )
 	if trace then
         Print(indentstr, "   Cs: ", Cs, "\n");
     fi;
-    # now transposed if applicable
-	if (S.transposed) then
-        St := TransposedSPL(S);
-    else
-        St := S;
-    fi;
- 	Cst := List(AllApplicableRulesForTransposition(St, opts.breakdownRules), r -> _allChildren(r,St,opts));
-	if trace then
-        Print(indentstr, "   Cst: ", Cst, "\n");
-    fi;
-    Cs := List(Set(Cs::Cst));
 
     if Cs = [ [ ] ] then
         n := 1;
@@ -940,7 +883,6 @@ end;
 
 # helper functions/arrays for _ruleTreeN and _ruleTree1
 
-_rtNC := [RuleTreeNC, RuleTreeTNC];
 _getNumTrees := (s, memohash, opts) -> let(
     n := HashLookup(memohash, s), 
     When(n = false,
@@ -1015,7 +957,7 @@ Declare(_ruleTreeMid);
 RuleTreeMid := (spl, opts) -> _ruleTreeMid(spl, HashTableSPL(), opts);
 
 _ruleTreeMid := function(spl, memohash, opts)
-    local h, R, r, j, C, c, ch, npc, idx, idxlist, ridx, ridxlist;
+    local h, R, r, C, c, ch, npc, idx, idxlist, ridx, ridxlist;
 
     h := MultiHashLookup(opts.baseHashes, spl);
 
@@ -1030,28 +972,23 @@ _ruleTreeMid := function(spl, memohash, opts)
 			ridxlist := _foldedMidFirst(ridxlist);
 		fi;
 	fi;
-    for j in [1..2] do
-        for ridx in ridxlist do
-			r := R[ridx];
-			C := _allChildren(r, spl, opts);
-			idxlist := _foldedMidFirst([1..Length(C)]);
-			for idx in idxlist do 
-				c := C[idx];
-				npc := Product(c, e -> _getNumTrees(e, memohash, opts));
-				if npc > 0 then
-					ch := List(c, e -> _ruleTreeMid(e, memohash, opts));
-					if not ForAny(ch, e -> IsBool(e) and e=false) then
-						return _rtNC[j](r, spl, ch);
-					fi;
+    for ridx in ridxlist do
+		r := R[ridx];
+		C := _allChildren(r, spl, opts);
+		idxlist := _foldedMidFirst([1..Length(C)]);
+		for idx in idxlist do 
+			c := C[idx];
+			npc := Product(c, e -> _getNumTrees(e, memohash, opts));
+			if npc > 0 then
+				ch := List(c, e -> _ruleTreeMid(e, memohash, opts));
+				if not ForAny(ch, e -> IsBool(e) and e=false) then
+					return RuleTreeNC(r, spl, ch);
 				fi;
+			fi;
 
-            od;
         od;
-
-        spl := TransposedSPL(spl);
-        R := AllApplicableRulesForTransposition(spl, opts.breakdownRules);
     od;
-
+	# no tree, return original spl
     return spl;
 end;
 
@@ -1073,7 +1010,7 @@ Declare(_ruleTree1);
 RuleTree1 := (spl, opts) -> _ruleTree1(spl, HashTableSPL(), opts);
 
 _ruleTree1 := function(spl, memohash, opts)
-    local h, R, r, i, j, c, ch, npc;
+    local h, R, r, i, c, ch, npc;
 
     h := MultiHashLookup(opts.baseHashes, spl);
 
@@ -1082,25 +1019,18 @@ _ruleTree1 := function(spl, memohash, opts)
     fi;
 
     R := AllApplicableRulesDirect(spl, opts.breakdownRules);
-
-    for j in [1..2] do
-        for r in R do
-			for c in _allChildren(r, spl, opts) do 
-				npc := Product(c, e -> _getNumTrees(e, memohash, opts));
-				if npc > 0 then
-					ch := List(c, e -> _ruleTree1(e, memohash, opts));
-					if not ForAny(ch, e -> IsBool(e) and e=false) then
-						return _rtNC[j](r, spl, ch);
-					fi;
+    for r in R do
+		for c in _allChildren(r, spl, opts) do 
+			npc := Product(c, e -> _getNumTrees(e, memohash, opts));
+			if npc > 0 then
+				ch := List(c, e -> _ruleTree1(e, memohash, opts));
+				if not ForAny(ch, e -> IsBool(e) and e=false) then
+					return RuleTreeNC(r, spl, ch);
 				fi;
-
-            od;
+			fi;
         od;
-
-        spl := TransposedSPL(spl);
-        R := AllApplicableRulesForTransposition(spl, opts.breakdownRules);
     od;
-
+	# no tree, return original spl
     return spl;
 end;
     
@@ -1112,7 +1042,7 @@ end;
 #F   else in SPIRAL, which is 1-based.
 #F 
 _ruleTreeN := function(spl, num, memohash, opts)
-    local R, rtNC, h, r, c, npc, off, ch, i, n, p, j, offset;
+    local R, rtNC, h, r, c, npc, off, ch, i, n, p, offset;
 
     # lookup stuff like SSE base cases.
     h := MultiHashLookup(opts.baseHashes, spl);
@@ -1123,54 +1053,45 @@ _ruleTreeN := function(spl, num, memohash, opts)
 
     # get list of normal rules
     R := AllApplicableRulesDirect(spl, opts.breakdownRules);
-
-    SRRDebug1("spl: ", spl, ". rules: ", R);
     offset := 0;
-    
-    # two iterations, one for normal rules, one for the transposed.
-    for j in [1..2] do
-        for r in R do
-            for c in _allChildren(r, spl, opts) do 
-                # figure out which group of children we should be looking at.
-                npc := Product(c, e -> _getNumTrees(e, memohash, opts));
 
-                # is this the correct group?
-                if num < offset + npc then
-                    off := npc;
-                    ch := [];
+    for r in R do
+        for c in _allChildren(r, spl, opts) do 
+            # figure out which group of children we should be looking at.
+            npc := Product(c, e -> _getNumTrees(e, memohash, opts));
 
-                    # step through the kids, and push down the ruletree number
-                    for i in [1..Length(c)] do
-                        n := _getNumTrees(c[i], memohash, opts);
+            # is this the correct group?
+            if num < offset + npc then
+                off := npc;
+                ch := [];
 
-                        off := When(n > 0, off / n, off);
+                # step through the kids, and push down the ruletree number
+                for i in [1..Length(c)] do
+                    n := _getNumTrees(c[i], memohash, opts);
 
-                        p := When(n <= 0 or num <= offset, 
-                            0, 
-                            RemInt(QuoInt(num - offset, off), n)
-                        );
+                    off := When(n > 0, off / n, off);
 
-                        # all the kids get evaluated
-                        Add(ch, _ruleTreeN(c[i], p, memohash, opts));
-                    od;
+                    p := When(n <= 0 or num <= offset, 
+                        0, 
+                        RemInt(QuoInt(num - offset, off), n)
+                    );
 
-                    # no kids should be false, but just in case.
-                    if not ForAny(ch, e -> IsBool(e) and e=false) then
-                        return _rtNC[j](r, spl, ch);
-                    fi;
+                    # all the kids get evaluated
+                    Add(ch, _ruleTreeN(c[i], p, memohash, opts));
+                od;
+
+                # no kids should be false, but just in case.
+                if not ForAny(ch, e -> IsBool(e) and e=false) then
+                    return RuleTreeNC(r, spl, ch);
                 fi;
+            fi;
 
-                # fixup offset
-                offset := offset + npc;
-            od;
+            # fixup offset
+            offset := offset + npc;
         od;
-
-        # setup vars for the transposed rules.
-        spl := TransposedSPL(spl);
-        R := AllApplicableRulesForTransposition(spl, opts.breakdownRules);
-        SRRDebug1("splT: ", spl, ". rules: ", R);
     od;
 
+	# no tree, return original spl
     return spl;
 end;
 
@@ -1208,21 +1129,7 @@ _ruleTreeGetN := function(rt, memohash, opts, offset)
         return offset;
     fi;
 
-    # if we're dealing with a transposed tree -- skip past (and update offset)
-    # past all the direct breakdowns.
-    if rt.transposed = true then
-        # re-transpose the node to get all the normal rules we missed
-        R := AllApplicableRulesDirect(TransposedSPL(rt.node), opts.breakdownRules);
-        offset :=  offset + Sum(R, r -> 
-            Sum(_allChildren(r, rt.node, opts), C ->  
-                Product(C, c -> _getNumTrees(c, memohash, opts))
-            )
-        );
-        # ok now use the transpose rules for the subsequent search
-        R := AllApplicableRulesForTransposition(rt.node, opts.breakdownRules);
-    else
-        R := AllApplicableRulesDirect(rt.node, opts.breakdownRules);
-    fi;
+    R := AllApplicableRulesDirect(rt.node, opts.breakdownRules);
 
     for r in R do
         # does rule match?

@@ -32,7 +32,10 @@ endif()
 ##  Could be 64 bit system but building for 32 bit; test sizeof(void_p) instead
 
 if (${CMAKE_SIZEOF_VOID_P} EQUAL "8")
-    set(SPIRAL_COMPILE_DEFNS SYS_IS_64_BIT WIN64)
+    set(SPIRAL_COMPILE_DEFNS SYS_IS_64_BIT )
+    if ( WIN32 )
+	list ( APPEND SPIRAL_COMPILE_DEFNS WIN64 )
+    endif ()
 else()
     set(SPIRAL_COMPILE_DEFNS )
 endif()

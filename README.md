@@ -27,9 +27,13 @@ From the top directory of the SPIRAL source tree:
 ```
 mkdir build
 cd build
-cmake ..
+cmake ..				# build for GPU, *OR*
+cmake -D_codegen=CPU ..			# build for CPU, *OR*
+cmake -D_codegen=GPU ..			# build for GPU
 make install
 ```
+
+If the system you are building for has GPU support use either the default method (i.e., cmake ..) or explicity specify _codegen=GPU.  if your system does *not* have GPU support then specify _codegen=CPU so that no tests ar eperformed looking for GPU support or trying to run GPU examples in the absense of such support.
 
 Use the **spiral** script in the top directory to start SPIRAL.  You can run it from that directory or set your path to include
 it and run **spiral** from elsewhere.  The actual executable is ```gap/bin/gap```, but it must be started

@@ -1,8 +1,8 @@
-## Release Notes for Spiral Version 8.3.0
+## Release Notes for Spiral Version 8.2.1
 
 ### Introduction
 
-These release notes for Spiral 8.3.0 provide an overview of the release and document the known issues.  For details of the changes applied since the last release, please see the **Change Summary** below.
+These release notes for Spiral 8.2.1 provide an overview of the release and document the known issues.  For details of the changes applied since the last release, please see the **Change Summary** below.
 
 ### Supported Platforms
 
@@ -12,7 +12,7 @@ Spiral is configured using **cmake** and is expected to run on most UNIX-like sy
 
 See the [**README**](./README.md) file for more information on how to build for a specific platform.
 
-### Get Spiral Version 8.3.0
+### Get Spiral Version 8.2.1
 
 You can download the lastest release from:
 
@@ -26,6 +26,7 @@ https://github.com/spiral-software/spiral-software.git
 Automatically search for and include in the build process anything implied (by the presence of CMakeLists.txt) for  installed spiral-packages (i.e., packages added to <spiral>/namespaces/packages/XXXX).  Any tests included with the package may then be run as part of Spiral testing.
 
 #### CUDA:
+First release to provide support for CUDA and generating GPU code. 
 Added support for CUDA compiler (nvcc).
 Added support and revised breakdown rules to provide CUDA support.
 

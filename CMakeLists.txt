@@ -15,7 +15,7 @@ project(SPIRAL
         DESCRIPTION "SPIRAL Project"
         LANGUAGES C CXX)
 
-set(PROJECT_VERSION_TAG "a04")
+set(PROJECT_VERSION_TAG "RC1")
 
 ##  Prevent building directly into the source tree
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" SPIRAL_COMPILE_INPLACE)

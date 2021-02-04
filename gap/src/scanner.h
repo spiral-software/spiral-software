@@ -413,7 +413,7 @@ typedef struct {
     Bag		hdList;
 }       TypOutputFile;
 
-TypOutputFile   * Output;
+extern TypOutputFile   * Output;
 
 /****************************************************************************
 **

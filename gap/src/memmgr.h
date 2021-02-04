@@ -326,7 +326,7 @@ typedef struct {
  *  data when the code section or operation is complete.
  */
 
-UInt        bagCodeMarker;
+extern  UInt        bagCodeMarker;
 
 /* 
 **  With the definition of BagStruct_t we don't assume aspecific order/place for

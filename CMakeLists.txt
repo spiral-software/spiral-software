@@ -50,11 +50,11 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     if (Git_FOUND)
         execute_process(COMMAND ${GIT_EXECUTABLE} log --pretty=format:%H -n 1
                         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-                        OUTPUT_VARIABLE   SPIRAL_GIT_HASH)
-		execute_process(COMMAND ${GIT_EXECUTABLE} branch --show-current
-                        OUTPUT_VARIABLE   SPIRAL_GIT_BRANCH)
-		execute_process(COMMAND ${GIT_EXECUTABLE} config --get remote.origin.url
-                        OUTPUT_VARIABLE   SPIRAL_GIT_REMOTE)
+                        OUTPUT_VARIABLE SPIRAL_GIT_HASH ERROR_QUIET)
+        execute_process(COMMAND ${GIT_EXECUTABLE} branch --show-current
+                        OUTPUT_VARIABLE SPIRAL_GIT_BRANCH ERROR_QUIET)
+        execute_process(COMMAND ${GIT_EXECUTABLE} config --get remote.origin.url
+                        OUTPUT_VARIABLE SPIRAL_GIT_REMOTE ERROR_QUIET)
     endif()
 endif()
 if (NOT SPIRAL_GIT_HASH)

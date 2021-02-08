@@ -186,31 +186,23 @@ IsApplicableRule := (R, nt, ruleset) -> When(IsAlternativeRewriteRule(R),
 #F   returns result of application of <rule> to <non-terminal>, if
 #F   it is non-applicable an error is reported
 #F
-ApplyRuleSPL := (R, nt) -> Checked(IsRule(R), IsSPL(nt), 
-    let(c := _allChildren(R,nt)[1],
-	_apply(R, nt, c, c))
-);
-
-AllApplicableRulesForTransposition := (splT, ruleset) -> 
-    Concatenation(
-	When(not IsBound(ruleset.(splT.__name__)), [ ],
-	    Filtered(ruleset.(splT.__name__), 
-		r -> r.forTransposition and _applicable(r, splT, ruleset))),
-	Filtered([@_Base], 
-	    r -> r.forTransposition and _applicable(r, splT, ruleset)));
+ApplyRuleSPL := (R, nt) -> 
+	Checked(IsRule(R), IsSPL(nt), 
+		let(c := _allChildren(R,nt)[1],	_apply(R, nt, c, c))
+	);
 
 AllApplicableRulesDirect := (spl, ruleset) -> 
     Concatenation(
-	When(not IsBound(ruleset.(spl.__name__)), [ ],
-	    Filtered(ruleset.(spl.__name__), r -> not r.forTranspositionOnly and _applicable(r, spl, ruleset))),
-	Filtered([@_Base], r ->not r.forTranspositionOnly and _applicable(r, spl, ruleset)));
+		When(not IsBound(ruleset.(spl.__name__)), [ ],
+			Filtered(ruleset.(spl.__name__), r -> not r.forTranspositionOnly and _applicable(r, spl, ruleset))),
+		Filtered([@_Base], r ->not r.forTranspositionOnly and _applicable(r, spl, ruleset))
+	);
 
 #F AllApplicableRules( <non-terminal>, <ruleset> )
 #F   returns list of all rules applicable to a non-terminal
 #F
-AllApplicableRules := (nt, ruleset) -> Checked(IsSPL(nt),
-	Set(Concatenation(AllApplicableRulesDirect(nt, ruleset), 
-	              AllApplicableRulesForTransposition(nt.transpose(), ruleset))));
+AllApplicableRules := (nt, ruleset) -> 
+	Checked(IsSPL(nt), Set(AllApplicableRulesDirect(nt, ruleset)));
 
 #F RandomChildrenRule( <rule>, <non-terminal>, <ruleset> )
 #F   returns a random set of children for <rule> applied to <spl>.
@@ -306,7 +298,7 @@ Class(BreakdownRule, rec(
     isRule := true,
     operations := RuleOps,
     info             := "-not specified-",
-    forTransposition := true,
+    forTransposition := false,
     forTranspositionOnly := false,
     switch           := true,
     transposed       := false,
@@ -384,7 +376,7 @@ end;
 
 #F ApplicableTable - mapping from non-terminal names to applicable rules
 #F
-ApplicableTable := tab(
+ApplicableTable := rec(
     @ := [ @_Base ]
 );
 

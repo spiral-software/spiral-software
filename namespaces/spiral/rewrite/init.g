@@ -4,12 +4,9 @@
 
 # Rewriting Engine
 # ----------------
-# This package contains function that deal with pattern matching,
-# and tree transformations and rewriting rules.
-#
-# In the future, the rewrite rule compiler should be implemented
-# here.
-#@P
+# This module contains function that deal with pattern matching,
+# tree transformations, and rewrite rules.
+
 
 Declare(RuleTrace, RuleStatus, @, Rule, IsRewriteRule, map_children_safe);
 

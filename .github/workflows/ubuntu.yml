@@ -1,0 +1,25 @@
+name: Ubuntu build
+
+on: [push, pull_request]
+
+jobs:
+  build_gcc:
+    name: Build SPIRAL on Linux
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run: |
+        export DEBIAN_FRONTEND=noninteractive
+        sudo apt-get -qqq update
+        sudo apt-get install -y build-essential ca-certificates cmake pkg-config wget
+        sudo apt-get install python3.8
+        sudo curl -L -o /usr/local/bin/cmake-easyinstall https://git.io/JvLxY
+        sudo chmod a+x /usr/local/bin/cmake-easyinstall
+        export CEI_SUDO="sudo"
+    - name: build SPIRAL
+      run: |
+        mkdir build && cd build
+        cmake ..
+        make -j 2 install
+        make test

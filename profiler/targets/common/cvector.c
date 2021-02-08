@@ -32,9 +32,6 @@
 #error COLUMNS must be defined
 #endif
 
-extern void INITFUNC(void);
-extern void FUNC(void *Y, void *X);
-
 vector_t * Input;
 vector_t * Output;
 
@@ -42,8 +39,13 @@ vector_t * Output;
 void initialize(int argc, char **argv) {
 	scalar_type_t *t = scalar_find_type(DATATYPE);
 
+    // In many case ROWS & COLUMNS are equal; however, when they are not it is
+    // important to use the correct one when allocating memory for the in/out
+    // buffers.  The *input* buffer should be dimensioned by COLUMNS, while the
+    // *output* buffer should be dimensioned by ROWS
+
 	Output = vector_create_zero(t, ROWS);
-	Input  = vector_create_zero(t, ROWS);
+    Input  = vector_create_zero(t, COLUMNS);
 
 	INITFUNC();
 }
@@ -75,7 +77,7 @@ int main(int argc, char** argv) {
 	scalar_type_t *t = scalar_find_type(DATATYPE);
 	int tlen = sizeof(testvector) / sizeof(testvector[0]);
 	
-	for (int i = 0; i < MIN(tlen, ROWS); i++) {
+	for (int i = 0; i < MIN(tlen, COLUMNS); i++) {
         SET(t, NTH(Input, i), &testvector[i]);
 	}
 	

@@ -33,7 +33,6 @@ function (create_source_file input target)
     if (WIN32)
 	add_custom_command (OUTPUT ${target}
 			    COMMAND ${SPIRAL_SCRIPT} < ${input}
-			    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 			    VERBATIM
 			    COMMENT "Generating code for ${target}"   )
     else ()
@@ -41,13 +40,16 @@ function (create_source_file input target)
 	if (BASH)
 	    add_custom_command (OUTPUT ${target}
 				COMMAND ${BASH} -c "${SPIRAL_SCRIPT} < ${input}"
-				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 				VERBATIM
 				COMMENT "Generating code for ${target}"   )
 	else ()
 	    message (FATAL_ERROR "Unknown shell: don't know how to build ${target}" )
 	endif ()
     endif ()
+
+    add_custom_target ( NAME.${PROJECT_NAME}.${target} ALL
+     	DEPENDS ${input}
+	VERBATIM )
 
 endfunction ()
 

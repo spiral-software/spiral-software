@@ -2,15 +2,12 @@
 # Copyright (c) 2018-2020, Carnegie Mellon University
 # See LICENSE for details
 
-
 Import(paradigms.distributed);
 
 # local functions and variables are prefixed with an underscore.
 
-_WriteStub := function(code, outdir, opts)
-    local outstr, s, stub, outfile, i, testvec, multiline;
-    
-    outfile := Concat(outdir, "/testcode.h");
+_WriteStub := function(code, opts)
+    local outstr, s, stub, i, testvec, multiline;
     
     # build the generic stub info
     stub := CopyFields(rec(
@@ -20,8 +17,8 @@ _WriteStub := function(code, outdir, opts)
         PAGESIZE := 4096,
         INITFUNC := "init_sub",
         FUNC := "sub",
+        DESTROYFUNC := "destroy_sub",
         DATATYPE_SIZEINBYTES := Cond(DeriveScalarType(opts) = "float", 4, Cond(DeriveScalarType(opts) = "double", 8, 0)),
-        OUTDIR := Concat("\"", outdir, "\""),
         NUMTHREADS := When(IsBound(opts.smp) and IsInt(opts.smp.numproc), opts.smp.numproc, 1),
         RADIX :=      When(IsBound(opts.smp) and IsInt(opts.smp.numproc) and IsBound(code.dimensions), (code.dimensions[1]/(2 * opts.smp.numproc)), 2),
         QUICKVERIFIER := When(IsBound(opts.quickverifier), opts.quickverifier, "nulltransform")
@@ -50,8 +47,13 @@ _WriteStub := function(code, outdir, opts)
         fi;
     od;
 
-    PrintTo(outfile, outstr);
-	
+    Print(outstr);
+
+    ##  add extern function declarations ... required for cuda
+    Print("\nextern void INITFUNC();\n");
+    Print("extern void DESTROYFUNC();\n");
+    Print("extern void FUNC( ", DeriveScalarType(opts), " *out, ", DeriveScalarType(opts), " *in );\n");
+    
 	#add testvector if specified in opts
 	
 	if IsBound(opts.testvector) then
@@ -60,24 +62,24 @@ _WriteStub := function(code, outdir, opts)
 		if not IsVector(testvec) then
 			Error("opts.testvector must be a valid vector");
 		fi;
-		AppendTo(outfile, "\n\nstatic ", DeriveScalarType(opts), " testvector[] = {");
+		Print("\n\nstatic ", DeriveScalarType(opts), " testvector[] = {");
 		if Length(testvec) > 10 then
-			AppendTo(outfile, "\n    ");
+			Print("\n    ");
 		fi;
 		for i in [1 .. Length(testvec)] do
 			if i > 1 then
-				AppendTo(outfile, ", ");
+				Print(", ");
 				if Mod(i, 10) = 1 then
-					AppendTo(outfile, "\n    ");
+					Print("\n    ");
 					multiline := true;
 				fi;
 			fi;
-			AppendTo(outfile, testvec[i]);
+			Print(testvec[i]);
 		od;
 		if multiline then
-			AppendTo(outfile, "\n");
+			Print("\n");
 		fi;
-		AppendTo(outfile, "};\n");
+		Print("};\n");
 	fi;
 	
 end;
@@ -145,7 +147,7 @@ _CallProfiler := function(request, code, opts)
     PrintTo(Concat(outdir, "/testcode.c"), opts.unparser.gen("sub", code, opts));
     
     # write testcode.h
-    _WriteStub(code, outdir, opts);
+    PrintTo(Concat(outdir, "/testcode.h"), _WriteStub(code, opts));
 
     target := When(IsBound(opts.target), opts.target, rec());
     outputFile := Concat(outdir, "/", request, ".txt");

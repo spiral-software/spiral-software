@@ -20,7 +20,6 @@
 #include        "record.h"              /* SetRecname                      */
 #include        "namespaces.h"
 #include        "tables.h"
-/* #include        "flags.h" */			// defns & decls moved to memmgr.h
 #include        "scanner.h"
 #include        "list.h"
 #include        "namespaces_bin.h"
@@ -44,6 +43,12 @@ Obj  MakeIdent ( char name [] ) {
     return hd;
 }
 
+
+// Make a new ident from a string that is already in a bag, for example,
+// the variable on the left-hand side of an assignment during parsing.
+//
+// 'ofs' is the offset to the actual source string in the particular instance
+
 Obj  MakeIdentSafe ( Obj hdNam, UInt ofs ) {
     UInt i, len = strlen((char*)(PTR_BAG(hdNam)+ofs));
     Bag hd = NewBag( T_VAR, SIZE_HD * OFS_IDENT + len + 1 );
@@ -58,7 +63,7 @@ Obj  MakeIdentSafe ( Obj hdNam, UInt ofs ) {
 *V  HdIdenttab  . . . . . . . . . . . . . . handle of identifier table, local
 **
 **  'HdIdenttab' is the handle of the identifier table bag.  The table  is  a
-**  list which contains all the variable bags.  The entries are  hashed  into
+**  list that contains all the variable bags.  The entries are  hashed  into
 **  this table, i.e., for an identifier we compute a hash value and  then  we
 **  put the variable bag for that identifier bag at this  position.  If  this
 **  entry is already used by another variable, a situation we call collision,
@@ -173,19 +178,7 @@ Bag       IdentAssign ( char name [] , Bag val ) {
     return hdIdent;
 }
 
-/* Obj _searchNSListReverse(char *name, Obj nslist) { */
-/*     UInt i, k; */
-/*     Obj hdNS, hdIdent; */
-/*     for ( i = LEN_LIST(nslist); i > 0; --i ) { */
-/*         hdNS = PTR_BAG(nslist)[i]; */
-/*         k = TableLookup(hdNS, name, OFS_IDENT); */
-/*         hdIdent = PTR_BAG(hdNS)[k]; */
-/*         if ( hdIdent != 0 ) return hdIdent; */
-/*     } */
-/*     return 0; */
-/* } */
 
-/* inBreakLoop from gap.c */
 extern Int     inBreakLoop();
 
 Bag       _FindIdent ( char name [], fi_mode_t mode ) {
@@ -193,14 +186,13 @@ Bag       _FindIdent ( char name [], fi_mode_t mode ) {
     UInt       i,  k;
     int                 mode_rd = (mode == FI_READ) ? 1 : 0;
 
-    /* horrible hack                                                       */
     IsUndefinedGlobal = 0;
 
-    /* Before search of the function stack we search private namespaces.	*/
+    /* search private namespaces before searching function stack */
 	hdIdent = FindInPrivatePackages(name, mode_rd);
 	if( hdIdent ) return hdIdent;
 
-    /* First search the local tables stored on the function stack.         */
+    /* Search the local tables stored on the function stack.         */
     for ( i = TopStack; i > 0; --i ) {
         int ptr_index;
         hd = PTR_BAG(HdStack)[i];
@@ -217,15 +209,15 @@ Bag       _FindIdent ( char name [], fi_mode_t mode ) {
         }
     }
 
-    /* Search the current packages                                          */
-    if ( mode_rd ) { /* XXX read only link to parent packages XXX */
-    for ( i = Input->packageTop; i > 0; --i ) {
-    	hd = PTR_BAG(Input->packages)[i];
-        k = TableLookup(hd, name, OFS_IDENT);
-        hdIdent = PTR_BAG(hd)[k];
-        if ( hdIdent != 0 ) return hdIdent;
-    }
-    }
+    /* Search the current packages                                */
+	if (mode_rd) {
+		for (i = Input->packageTop; i > 0; --i) {
+			hd = PTR_BAG(Input->packages)[i];
+			k = TableLookup(hd, name, OFS_IDENT);
+			hdIdent = PTR_BAG(hd)[k];
+			if (hdIdent != 0) return hdIdent;
+		}
+	}
 
     /* Next  search imported namespaces, only if variable is for reading   */
     if ( mode_rd ) {
@@ -326,11 +318,13 @@ Bag       _FindIdent ( char name [], fi_mode_t mode ) {
 *V  HdRectab  . . . . . . . . . . . . . .  handle of record name table, local
 **
 **  'HdRectab' is the handle of the record name table bag.  The  table  is  a
-**  list which contains all the record name bags. The entries are hashed into
-**  this table, i.e., for a record name we compute a hash value and  then  we
+**  list that contains all the record name bags. The entries are hashed into
+**  this table, i.e., for a record name compute a hash value and  then 
 **  put the record name bag for that record name bag  at  this  position.  If
-**  this entry is already used by another record name,  a situation  we  call
-**  collision, we take the next free entry.
+**  this entry is already used by another record name (hash collision), use the 
+**  next free entry.
+**
+**  Field names for both records (rec()) and tables (tab()) are in this table.
 **
 **  Note that we keep  the size of the table at least  twice as big as number
 **  of occupied elements to reduce the number of collisions.
@@ -339,13 +333,10 @@ Bag       HdRectab;
 
 /****************************************************************************
 **
-*F  FindRecname( <name> ) . . . .  find the record name bag for a record name
+*F  FindRecname( <name> ) . . . .  get bag for a record/table field name
 **
 **  'FindRecname' returns the record name bag for  the  record  name  <name>.
-**  Note that record names are always stored unique, i.e., for  every  string
-**  there is a unique record name bag for that string.  This makes it  easier
-**  to find a record element for a given record  name:  We  do  not  have  to
-**  compare strings, it is enough to compare handles.
+**  If none exists, it creates a new bag and adds it to HdRectab.
 */
 Bag       FindRecname (char *name)
 {
@@ -461,13 +452,3 @@ void            InitIdents (void)
 }
 
 
-/****************************************************************************
-**
-*E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
-**
-**  Local Variables:
-**  outline-regexp:     "*A\\|*F\\|*V\\|*T\\|*E"
-**  fill-column:        75
-**  fill-prefix:        "**  "
-**  End:
-*/

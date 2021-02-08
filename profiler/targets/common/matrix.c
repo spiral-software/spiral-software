@@ -28,9 +28,6 @@
 #error COLUMNS must be defined
 #endif
 
-extern void INITFUNC(void);
-extern void FUNC(void *Y, void *X);
-
 vector_t * Input;
 vector_t * Output;
 

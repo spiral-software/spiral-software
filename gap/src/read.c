@@ -804,7 +804,7 @@ Bag       RdAtom (TypSymbolSet follow)
         hdAt = RdTab( follow );
     }
 
-    /* 'tab(' [ <Ident> ':=' <Expr> {',' <Ident> ':=' <Expr> } ] ')'       */
+    /* 'let(' [ <Ident> ':=' <Expr> {',' <Ident> ':=' <Expr> } ] ')'       */
     else if ( Symbol == S_IDENT && strcmp( Value, "let" ) == 0 ) {
         hdAt = RdLet( follow );
     }

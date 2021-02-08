@@ -11,29 +11,29 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, MinSizeRel")
 
 project(SPIRAL
-        VERSION 8.2.0
-		DESCRIPTION "SPIRAL Project"
-		LANGUAGES C CXX)
-		
-set(PROJECT_VERSION_TAG "")
+        VERSION 8.2.1
+        DESCRIPTION "SPIRAL Project"
+        LANGUAGES C CXX)
+
+set(PROJECT_VERSION_TAG "RC1")
 
 ##  Prevent building directly into the source tree
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" SPIRAL_COMPILE_INPLACE)
 if (SPIRAL_COMPILE_INPLACE)
     if (WIN32)
-	message (FATAL_ERROR, "Building ${PROJECT_NAME} with CMake requires an out-of-source tree.  To proceed:
-		 rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_SOURCE_DIR}
-		 mkdir <build>
-		 cd <build>
-		 cmake ..
-		 then build the solution with VS")
+        message (FATAL_ERROR, "Building ${PROJECT_NAME} with CMake requires an out-of-source tree.  To proceed:
+                 rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_SOURCE_DIR}
+                 mkdir <build>
+                 cd <build>
+                 cmake ..
+                 then build the solution with VS")
     else()
-	message (FATAL_ERROR, "Building ${PROJECT_NAME} with CMake requires an out-of-source tree.  To proceed:
-		 rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_SOURCE_DIR}
-		 mkdir <build>
-		 cd <build>
-		 cmake ..
-		 make | make install")
+        message (FATAL_ERROR, "Building ${PROJECT_NAME} with CMake requires an out-of-source tree.  To proceed:
+                 rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_SOURCE_DIR}
+                 mkdir <build>
+                 cd <build>
+                 cmake ..
+                 make | make install")
     endif()
 endif()
   
@@ -50,16 +50,31 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     if (Git_FOUND)
         execute_process(COMMAND ${GIT_EXECUTABLE} log --pretty=format:%H -n 1
                         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-                        OUTPUT_VARIABLE   SPIRAL_GIT_HASH)
+                        OUTPUT_VARIABLE SPIRAL_GIT_HASH ERROR_QUIET)
+        execute_process(COMMAND ${GIT_EXECUTABLE} branch --show-current
+                        OUTPUT_VARIABLE SPIRAL_GIT_BRANCH ERROR_QUIET)
+        execute_process(COMMAND ${GIT_EXECUTABLE} config --get remote.origin.url
+                        OUTPUT_VARIABLE SPIRAL_GIT_REMOTE ERROR_QUIET)
     endif()
 endif()
 if (NOT SPIRAL_GIT_HASH)
-   set(SPIRAL_GIT_HASH "Not found")
+   set(SPIRAL_GIT_HASH "<Unknown>")
 endif()
+if (NOT SPIRAL_GIT_BRANCH)
+   set(SPIRAL_GIT_BRANCH "<Unknown>")
+endif()
+if (NOT SPIRAL_GIT_REMOTE)
+   set(SPIRAL_GIT_REMOTE "<Unknown>")
+endif()
+string(STRIP ${SPIRAL_GIT_BRANCH} SPIRAL_GIT_BRANCH)
+string(STRIP ${SPIRAL_GIT_REMOTE} SPIRAL_GIT_REMOTE)
 
 if ((NOT DEFINED CMAKE_BUILD_TYPE) OR (NOT CMAKE_BUILD_TYPE))
     set(CMAKE_BUILD_TYPE Release)
 endif()
+
+string(TIMESTAMP SPIRAL_BUILD_DATE_UTC "%m/%d/%Y" UTC)
+string(TIMESTAMP SPIRAL_BUILD_TIME_UTC "%H:%M:%S" UTC)
 
 configure_file (
     ${SPIRAL_CONFIG_DIR}/spiral_build_info.h.in
@@ -85,29 +100,29 @@ configure_file (
 include ("${SPIRAL_SOURCE_DIR}/config/CMakeIncludes/ScriptConfig.cmake")
 if (WIN32)
     configure_file (
-	${SPIRAL_CONFIG_DIR}/spiral.bat.in
-	${SPIRAL_BINARY_DIR}/gap/spiral.bat
+        ${SPIRAL_CONFIG_DIR}/spiral.bat.in
+        ${SPIRAL_BINARY_DIR}/gap/spiral.bat
     )
     configure_file (
-	${SPIRAL_CONFIG_DIR}/spiral_debug.bat.in
-	${SPIRAL_BINARY_DIR}/gap/spiral_debug.bat
+        ${SPIRAL_CONFIG_DIR}/spiral_debug.bat.in
+        ${SPIRAL_BINARY_DIR}/gap/spiral_debug.bat
     )
     configure_file (
-	${SPIRAL_CONFIG_DIR}/_spiral_win.g.in
-	${SPIRAL_BINARY_DIR}/gap/_spiral_win.g
+        ${SPIRAL_CONFIG_DIR}/_spiral_win.g.in
+        ${SPIRAL_BINARY_DIR}/gap/_spiral_win.g
     )
 else ()
     configure_file (
-	${SPIRAL_CONFIG_DIR}/spiral.in
-	${SPIRAL_BINARY_DIR}/gap/spiral
+        ${SPIRAL_CONFIG_DIR}/spiral.in
+        ${SPIRAL_BINARY_DIR}/gap/spiral
     )
     configure_file (
-	${SPIRAL_CONFIG_DIR}/spirald.in
-	${SPIRAL_BINARY_DIR}/gap/spirald
+        ${SPIRAL_CONFIG_DIR}/spirald.in
+        ${SPIRAL_BINARY_DIR}/gap/spirald
     )
     configure_file (
-	${SPIRAL_CONFIG_DIR}/_spiral.g.in
-	${SPIRAL_BINARY_DIR}/gap/_spiral.g
+        ${SPIRAL_CONFIG_DIR}/_spiral.g.in
+        ${SPIRAL_BINARY_DIR}/gap/_spiral.g
     )
 endif ()
 
@@ -115,28 +130,57 @@ endif ()
 
 if (WIN32)
     set (SPIRAL_STARTUP_FILES
-	    ${SPIRAL_BINARY_DIR}/gap/spiral.bat
-	    ${SPIRAL_BINARY_DIR}/gap/spiral_debug.bat
-	    ${SPIRAL_BINARY_DIR}/gap/_spiral_win.g
-	)
+            ${SPIRAL_BINARY_DIR}/gap/spiral.bat
+            ${SPIRAL_BINARY_DIR}/gap/spiral_debug.bat
+            ${SPIRAL_BINARY_DIR}/gap/_spiral_win.g
+        )
 else ()
     set (SPIRAL_STARTUP_FILES
-	    ${SPIRAL_BINARY_DIR}/gap/spiral
-	    ${SPIRAL_BINARY_DIR}/gap/spirald
-	    ${SPIRAL_BINARY_DIR}/gap/_spiral.g
-	)
+            ${SPIRAL_BINARY_DIR}/gap/spiral
+            ${SPIRAL_BINARY_DIR}/gap/spirald
+            ${SPIRAL_BINARY_DIR}/gap/_spiral.g
+        )
 endif ()
 
 install (FILES ${SPIRAL_STARTUP_FILES}
-	 DESTINATION ${SPIRAL_SOURCE_DIR}
-	 PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-		     GROUP_EXECUTE GROUP_READ
-		     WORLD_EXECUTE WORLD_READ
-	)
+         DESTINATION ${SPIRAL_SOURCE_DIR}
+         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+                     GROUP_EXECUTE GROUP_READ
+                     WORLD_EXECUTE WORLD_READ
+        )
 
 add_subdirectory(gap)
 
-add_subdirectory(tests)		## holds test scripts
+add_subdirectory ( support )
+
+##  Find any subdirectories in namespaces/packages -- these will be the names
+##  of spiral packages.  Add subdirectory entries for any names found *if* they
+##  have a CMakeLists.txt file present.
+
+set ( _pkg_folder "${CMAKE_SOURCE_DIR}/namespaces/packages" )
+file ( GLOB _pkg_names RELATIVE ${_pkg_folder} CONFIGURE_DEPENDS ${_pkg_folder}/* )
+message(STATUS "Found in namespaces/packages: = ${_pkg_names}" )
+
+foreach ( dir ${_pkg_names} )
+    if ( IS_DIRECTORY ${_pkg_folder}/${dir} AND EXISTS "${_pkg_folder}/${dir}/CMakeLists.txt" )
+        # subdirectory exists and contains a CMakeLists.txt file -- add subir
+        message ( STATUS "Added sub-directory ${dir} for spiral-package-${dir}" )
+        add_subdirectory ( "namespaces/packages/${dir}" )
+    endif ()
+endforeach ()
+
+##  Find python3 -- may be used by spiral-packages to marshall/run examples
+
+find_package (Python3 COMPONENTS Interpreter)
+if (${Python3_FOUND})
+    ##  It exists, executable is ${Python3_EXECUTABLE}
+    message ( STATUS "Found Python3: Version = ${Python3_VERSION}, Executable = ${Python3_EXECUTABLE}")
+else ()
+    message ( SEND_ERROR "Python3 NOT FOUND: Python is required to run tests")
+endif ()
+
+
+add_subdirectory(tests)                ## holds test scripts
 
 enable_testing()
 

@@ -45,7 +45,7 @@ CodeSums := function(sums, opts)
         fi;
     
         code := opts.codegen(Formula(sums), Y, X, opts);
-        code.ruletree := sums.ruletree;
+        code.ruletree := Cond(IsBound(sums.ruletree), sums.ruletree, rec());
         return code;
 end;
 

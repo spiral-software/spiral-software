@@ -149,6 +149,17 @@ default_profiles := rec(
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
     ),
 
+    linux_x86_cuda := rec(
+        name := "linux-cuda",
+        makeopts := rec(
+            CC := "nvcc",
+            CFLAGS := "-O2 ",
+        ),
+        outdir := "/tmp/spiral",
+        meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
+        verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
+    ),
+
     linux_x86_threads := rec(
         name := "linux-x86",
         makeopts := rec(
@@ -424,6 +435,18 @@ default_profiles := rec(
         meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
         verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
   ),
+
+    win_x64_cuda := rec (
+	name := "win-x64-cuda",
+	target := rec(name := "win-x64-cuda"),
+	makeopts := rec (
+	    CC := "nvcc",
+	    CFLAGS := "",
+	),
+        outdir := "/temp",
+        meas := (a,b) -> _StandardMeasureVerify(a,b, ""),
+        verify := (a,b) -> _StandardMeasureVerify(a,b, "verify")
+    ),
 
     # altivec profiles
     # ------------------------------------------------------------------------------

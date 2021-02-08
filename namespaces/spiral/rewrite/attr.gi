@@ -4,12 +4,8 @@
 
 
 _printattr := x->When((x=[] and TYPE(x)="string") or (x<>[] and IsString(x)), Print("\"", x, "\""), Print(x));
-_attr_recs := [];
-
-LocalAttrs := (r) -> Add(_attr_recs, r);
 
 attrTakeA  := (to, from) -> When(IsRec(to) and IsBound(to.takeAobj), to.takeAobj(from), to);
-listDropA  := (lst) -> List(lst, e -> e.dropA());
 
 Class(AttrMixin, rec(
     a := rec(),
@@ -46,7 +42,7 @@ Class(AttrMixin, rec(
     hasA := (self, attr) >> Cond(IsBound(self.a.(attr)), true, false),
     
     # getA(<attr>, <def> = false) - returns attribute value.
-    # Optional <def> parameter is value to return when attribute is not found.
+    #   Optional <def> parameter is value to return when attribute is not found.
 
     getA := (arg) >> let( self := arg[1], attr := arg[2],
                         def := When(Length(arg)>2, arg[3], false),
@@ -69,6 +65,7 @@ Class(AttrMixin, rec(
     attrs := ~.takeAobj,
 
     # testA( attr, v = true ) returns true if object has attribute <attr> with value equal to <v>
+	
     testA := (arg) >> let( self := arg[1], attr := arg[2],
         v := When(IsBound(arg[3]), arg[3], true),
         self.hasA(attr) and self.getA(attr) = v),
@@ -89,6 +86,7 @@ Class(AttrMixin, rec(
     end,
     
     # listA() returns list of attribute names and values in [[name, value],...] form.
+	
     listA := (self) >> List(Sort(UserRecFields(self.a)), e -> [e, self.a.(e)]),
 ));
 

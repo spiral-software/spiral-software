@@ -30,11 +30,11 @@ _SUM    := arg -> Tensor(Mat([Replicate(Length(arg), 1)]), I(Rows(arg[1]))) * VS
 Class(HStack, BaseOperation, rec(
     abbrevs := [ arg -> [Flat(arg)] ],
     new := (self, spls) >> Checked(
-	IsList(spls), Length(spls) >= 1, ForAll(spls, s->Rows(s)<=Rows(spls[1])),
-	SPL(WithBases(self, rec(_children := spls)).setDims())
+		IsList(spls), Length(spls) >= 1, 
+		SPL(WithBases(self, rec(_children := spls)).setDims())
     ),
 
-    dims := self >> [self.child(1).dims()[1], Sum(self._children, x->x.dims()[2])], 
+    dims := self >> [Maximum(List(self.children(), c->c.dims()[1])), Sum(self._children, x->x.dims()[2])], 
 
     isPermutation := self >> false,
     transpose := self >> CopyFields(self, VStack(List(self._children, x->x.transpose()))),
@@ -60,13 +60,11 @@ Class(VStack, BaseOperation, rec(
     abbrevs := [ arg -> [Flat(arg)] ],
 
     new := (self, spls) >> Checked(
-	IsList(spls), Length(spls) >= 1, 
-	    ForAll(spls, s -> 
-		IsSymbolic(Cols(s)) or IsSymbolic(Cols(spls[1])) or Cols(s) <= Cols(spls[1])),
-	SPL(WithBases(self, rec(_children := spls)).setDims())
+		IsList(spls), Length(spls) >= 1, 
+		SPL(WithBases(self, rec(_children := spls)).setDims())
     ),
 
-    dims := self >> [Sum(self._children, x->x.dims()[1]), self.child(1).dims()[2]], 
+    dims := self >> [Sum(self._children, x->x.dims()[1]), Maximum(List(self.children(), c->c.dims()[2]))], 
 
     isPermutation := self >> false,
     transpose := self >> CopyFields(self, HStack(List(self._children, x->x.transpose()))),

@@ -30,7 +30,7 @@ _AExpRight := () -> spiral.paradigms.cache.AExpRight;
 
 _AIO := () -> spiral.paradigms.common.AIO;
 
-_ABuf := () -> spiral.paradigms.scratchpad.ABuf;
+_ABuf := () -> spiral.paradigms.loops.ABuf;
 #
 ## _divisorCacheTags
 #

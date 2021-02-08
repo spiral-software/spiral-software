@@ -19,6 +19,7 @@ LocalConfig.osinfo := SupportedOSs.@SPIRAL_OS_NAME@;
 UseICC := @USE_COMPILER_ICC@;
 UseGCC := @USE_COMPILER_GCC@;
 UseLLVM := @USE_COMPILER_LLVM@;
+UseNVCC := @USE_COMPILER_NVCC@;
 
 if (UseICC) then
 	# ICC
@@ -38,6 +39,12 @@ elif (UseLLVM) then
 	SpiralDefaults.target := rec(name:="win-x86-llvm");
 	LocalConfig.compilerinfo := SupportedCompilers.Llvm_Clang;
 
+elif (UseNVCC) then
+	# NVCC - Cuda
+	SpiralDefaults.profile := spiral.profiler.default_profiles.win_x64_cuda;
+	SpiralDefaults.target := rec(name := "win-x64-cuda");
+	LocalConfig.compilerinfo := SupportedCompilers.NvidiaCuda;
+	
 else
 	# Visual Studio
 	SpiralDefaults.profile := spiral.profiler.default_profiles.win_x86_vcc;

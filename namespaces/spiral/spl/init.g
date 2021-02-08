@@ -86,7 +86,6 @@ Include(tags);
 ## hashing
 Include(hashspl);
 Include(vwrap);
-#Include(objhash_init); # global hash for objects
 # extensions
 Include(ext_bitperms);
 

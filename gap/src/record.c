@@ -441,12 +441,10 @@ Obj  MakeTab ( Obj hdLiteral ) {
         if ( hdVal == HdVoid )
             Error("Table: function must return a value",0,0);
 
-        // name = strdup(RECNAM_NAME(hdNam));
-		name = RECNAM_NAME(hdNam);		/* don't copy, just use the string */
+		name = RECNAM_NAME(hdNam);
         pos = TableLookup(hdTab, name, OFS_IDENT);
         hd = MakeIdent(name);
         SET_VAR_VALUE(hd, hdVal);
-        // free(name);
         TableAdd(hdTab, pos, hd);
     }
 
@@ -1174,13 +1172,8 @@ Bag      FunRecName (Bag hdCall)
         return Error("RecName: <%g> must be a string",
                      (Int)hdObjUneval, 0);
     else {
-        /* the only safe way of doing indirect FindRecname with current garbage
-           collector */
-		/* why?? -- makes no sense --  */
-        // char * st = strdup((char*)PTR_BAG(hdObj));
 		char * st = (char*)PTR_BAG(hdObj);
         Bag hd = FindRecname(st);
-        // free(st);
         return hd;
     }
 }

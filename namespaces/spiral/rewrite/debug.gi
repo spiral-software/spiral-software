@@ -3,7 +3,6 @@
 # See LICENSE for details
 
 
-# NOTE: color cannot be used in all circumstances. spiral._color fixes it for now.
 _dbgPrintRuleName := rule -> Cond(
     IsBound(rule.owner),   
         Print(spiral._color(Blue, rule.name), "   /  ", 
@@ -24,12 +23,14 @@ DebugRewriting := function(rsets)
         rewrite.RuleTrace := Ignore;
         rewrite.RuleStatus := Ignore;
     else
-	if not IsList(rsets) then rsets := [rsets]; fi;
+		if not IsList(rsets) then 
+			rsets := [rsets];
+		fi;
         rewrite.RuleTrace := rule -> 
-	    When(_dbgRuleBelongsTo(rule, rsets), _dbgPrintRuleName(rule));
+			When(_dbgRuleBelongsTo(rule, rsets), _dbgPrintRuleName(rule));
         rewrite.RuleStatus := (rule, hd, str) -> 
-	    When(_dbgRuleBelongsTo(rule, rsets), 
-		 Print(spiral._color(Yellow, hd), ApplyFunc(Print, str)));
+			When(_dbgRuleBelongsTo(rule, rsets), 
+		Print(spiral._color(Yellow, hd), ApplyFunc(Print, str)));
     fi;
 end;
 
@@ -38,11 +39,11 @@ DebugRuleStrategies := function(switch)
     if switch then
         rewrite.RuleTrace := rule -> _dbgPrintRuleName(rule); 
         rewrite.RuleStrategyTrace := (i, rset, expr) -> Print(
-	    spiral._color(Red, i), 
-	    spiral._color(Red, " ----------------\n"), 
-	    rset, "\n",
-	    Doc(rset), 
-	    expr, "\n"); 
+			spiral._color(Red, i), 
+			spiral._color(Red, " ----------------\n"), 
+			rset, "\n",
+			Doc(rset), 
+			expr, "\n"); 
     else
         rewrite.RuleTrace := Ignore;
         rewrite.RuleStrategyTrace := Ignore;

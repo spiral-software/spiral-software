@@ -11,24 +11,24 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, MinSizeRel")
 
 project(SPIRAL
-        VERSION 8.2.1
+        VERSION 8.2.2
         DESCRIPTION "SPIRAL Project"
         LANGUAGES C CXX)
 
-set(PROJECT_VERSION_TAG "RC1")
+set(PROJECT_VERSION_TAG "A01" )
 
 ##  Prevent building directly into the source tree
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" SPIRAL_COMPILE_INPLACE)
 if (SPIRAL_COMPILE_INPLACE)
     if (WIN32)
-        message (FATAL_ERROR, "Building ${PROJECT_NAME} with CMake requires an out-of-source tree.  To proceed:
+        message (FATAL_ERROR "Building ${PROJECT_NAME} with CMake requires an out-of-source tree.  To proceed:
                  rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_SOURCE_DIR}
                  mkdir <build>
                  cd <build>
                  cmake ..
                  then build the solution with VS")
     else()
-        message (FATAL_ERROR, "Building ${PROJECT_NAME} with CMake requires an out-of-source tree.  To proceed:
+        message (FATAL_ERROR "Building ${PROJECT_NAME} with CMake requires an out-of-source tree.  To proceed:
                  rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_SOURCE_DIR}
                  mkdir <build>
                  cd <build>

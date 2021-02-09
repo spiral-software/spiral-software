@@ -7,26 +7,32 @@ assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Description**
+
+(clear and concise description of what the bug is)
 
 **To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+Run the following script:
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+```
+add script here
+```
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Version Info:  Please include the output from the "BuildInfo();" SPIRAL
-   	   	  command (that provides version, compiler, and other info).
+**Expected Behavior**
 
-**Additional context**
-Add any other context about the problem here.
+(clear and concise description of what you expected to happen)
+
+**Output**
+
+(console output to help explain your problem)
+
+**Environment**
+
+OS: [e.g. iOS]
+
+(output from the Spiral ```BuildInfo();``` command)
+
+**Additional Context**
+
+(any other context about the problem)

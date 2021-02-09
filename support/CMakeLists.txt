@@ -7,19 +7,39 @@
 
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
-##  Check the code generation option ...
+##  Check the code generation ... look for CUDA toolkit
 
-if ( "X${_codegen}" STREQUAL "X" )
-    message ( STATUS "_codegen is undefined, GPU assumed" )
-    set ( _codegen GPU )
+set ( _version "${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" )  ## Actual running cmake version
+set ( _vers_cuda_toolkit "3.17" )              ##  Version when FindCUDAToolkit is available
+
+string ( COMPARE LESS ${_version} ${_vers_cuda_toolkit} _cuda_old )
+if ( ${_cuda_old} )
+    ##  FindCUDAToolkit not available -- cmake too old -- use FindCUDA instead
+    message ( STATUS "Cmake version = ${_version}, using FindCUDA module" )
+    find_package ( CUDA )
+    if ( ${CUDA_FOUND} )
+	message ( STATUS "CUDA Found : Version = ${CUDA_VERSION}" )
+	set ( _codegen GPU )
+    else ()
+	set ( _codegen CPU )
+    endif ()
 else ()
-    message ( STATUS "_codegen = ${_codegen}" )
+    ##  Cmake is >= version 3.17, FindCUDAToolkit module is available
+    message ( STATUS "Cmake version = ${_version}, using FindCUDAToolkit module" )
+    find_package ( CUDAToolkit )
+    if ( ${CUDAToolkit_FOUND} )
+	message ( STATUS "CUDA Toolkit Found : Version = ${CUDAToolkit_VERSION}" )
+	set ( _codegen GPU )
+    else ()
+	set ( _codegen CPU )
+    endif ()
 endif ()
 
 if ( ${_codegen} STREQUAL "GPU" )
     set ( _lang_add CUDA )
     set ( _suffix cu )
 else ()
+    message ( STATUS "CUDA toolkit NOT FOUND: No GPU code / tests will be performed" )
     set ( _suffix c )
 endif ()
 

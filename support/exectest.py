@@ -10,6 +10,7 @@ if len(sys.argv) < 4:
 
 gpu_flag = sys.argv[1]
 gap_exe = sys.argv[2]
+gap_dir = os.path.dirname(gap_exe)
 
 nscrpt = len(sys.argv) - 3
 fils = sys.argv[3:3+nscrpt]             ## all args after name and gap_exe
@@ -26,7 +27,7 @@ for val in fils:
 cmdstr = cmdstr + '| ' + gap_exe
 ##  print ( cmdstr )
 
-spiral_path = os.getenv('SPIRAL_HOME')
+spiral_path = os.getenv('SPIRAL_HOME', default=gap_dir)
 if sys.platform == 'win32':
     checkgpustr = spiral_path + '/gap/bin/checkforGpu.exe'
 else:

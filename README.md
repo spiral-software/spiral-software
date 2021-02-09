@@ -10,16 +10,18 @@ This is the source tree for SPIRAL.  It builds and runs on Windows, Linux, and m
 
 SPIRAL builds on Linux/Unix with **gcc** and **make**, on Windows it builds with **Visual Studio**.
 
-For macOS SPIRAL requires version 10.14 (Mojave) or later of macOS, with a compatible version of **Xcode** and
-and **Xcode Command Line Tools**. 
+For macOS SPIRAL requires version 10.14 (Mojave) or later of macOS, with a compatible version of
+**Xcode** and and **Xcode Command Line Tools**.
 
 #### CMake 3
 
-Use the most recent version of CMake 3 available for your platform.  You can download CMake from [cmake.org](http://cmake.org/download/).
+Use the most recent version of CMake 3 available for your platform.  You can download CMake from
+[cmake.org](http://cmake.org/download/).
 
 #### Python 3
 
-The SPIRAL Profiler requires **Python 3**, which you can get from [python.org](http://python.org/downloads/).
+The SPIRAL Profiler requires **Python 3**, which you can get from
+[python.org](http://python.org/downloads/).
 
 ### Building on Linux, macOS, and Other Unix-Like Systems
 
@@ -31,11 +33,20 @@ cmake ..
 make install
 ```
 
-Use the **spiral** script in the top directory to start SPIRAL.  You can run it from that directory or set your path to include
-it and run **spiral** from elsewhere.  The actual executable is ```gap/bin/gap```, but it must be started
-with the **spiral** script in order to intialize and run correctly.
+A number of the tests and examples in the release require a GPU in order to work.  If the system you
+are building for has no GPU support (i.e., no CUDA toolkit is installed) these examples/tests will
+be skipped.
 
-NOTE: The **spiral** script is automatically created, with deaults appropriate to your environment, during the build process, at the *install* step.
+NOTE: Even if your system has no CUDA support **spiral** can still generate CUDA code (it just
+cannot be compiled and tested).
+
+Use the **spiral** script in the top directory to start SPIRAL.  You can run it from that directory
+or set your path to include it and run **spiral** from elsewhere.  The actual executable is
+```gap/bin/gap```, but it must be started with the **spiral** script in order to intialize and run
+correctly.
+
+NOTE: The **spiral** script is automatically created, with deaults appropriate to your environment,
+during the build process, at the *install* step.
 
 #### Debug Version on Linux/Unix
 
@@ -47,13 +58,15 @@ cmake -DCMAKE_BUILD_TYPE=Debug ..
 make install
 ```
 
-This will put the executable, **gapd**, in ```gap/bin```.  Use the **spirald** script to run SPIRAL in **gdb**.
+This will put the executable, **gapd**, in ```gap/bin```.  Use the **spirald** script to run SPIRAL
+in **gdb**.
 
 ### Building on Windows
 
-In the top directory of the SPIRAL source tree, make a directory called **build**.  From a terminal window in the **build**
-directory enter one of the following commands, depending on your version of Visual Studio.  See the 
-[CMake documentation](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#visual-studio-generators)
+In the top directory of the SPIRAL source tree, make a directory called **build**.  From a terminal
+window in the **build** directory enter one of the following commands, depending on your version of
+Visual Studio.  See the [CMake
+documentation](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#visual-studio-generators)
 if your version isn't shown here.
 
 ```
@@ -68,20 +81,23 @@ When CMake is finished, the software can be built either using **cmake** or with
 
 #### Building with Visual Studio
 
-Open the new **SPIRAL.sln** in the **build** directory with Visual Studio.  Select the Release or Debug configuration,
-then right click on **INSTALL** in the Solution Explorer window and select **Build** from the popup menu.
+Open the new **SPIRAL.sln** in the **build** directory with Visual Studio.  Select the Release or
+Debug configuration, then right click on **INSTALL** in the Solution Explorer window and select
+**Build** from the popup menu.
 
-Use **spiral.bat** to launch Spiral.  You can create a shortcut to 
-it (right click -> Create shortcut) and move the shortcut to a convenient location, like the Desktop, 
-renaming it if you desire.  Then you can edit the shortcut's properties (right click -> Properties) and 
-set **Start in** to some directory other than the repository root.  The **Start in** directory is the 
-default location for SPIRAL to write generated files.  You can also add the top directory of the SPIRAL source tree
-to your path and run the batch script as **spiral** from a command window or script.
+Use **spiral.bat** to launch Spiral.  You can create a shortcut to it (right click -> Create
+shortcut) and move the shortcut to a convenient location, like the Desktop, renaming it if you
+desire.  Then you can edit the shortcut's properties (right click -> Properties) and set **Start
+in** to some directory other than the repository root.  The **Start in** directory is the default
+location for SPIRAL to write generated files.  You can also add the top directory of the SPIRAL
+source tree to your path and run the batch script as **spiral** from a command window or script.
 
-To debug SPIRAL on Windows, build and install the Debug version, use **spiral_debug.bat** to start SPIRAL, then in Visual Studio use
-**Debug->Attach to Process...** to connect the debugger to **gapd.exe**.
+To debug SPIRAL on Windows, build and install the Debug version, use **spiral_debug.bat** to start
+SPIRAL, then in Visual Studio use **Debug->Attach to Process...** to connect the debugger to
+**gapd.exe**.
 
-There are a few pre-requisites for Visual Studio to be able to correctly run the profiler from SPIRAL.  These may be checked/configured as follows:
+There are a few pre-requisites for Visual Studio to be able to correctly run the profiler from
+SPIRAL.  These may be checked/configured as follows:
 
 1. Start Visual Studio Installer
 2. Select **Modify** button
@@ -96,7 +112,9 @@ There are a few pre-requisites for Visual Studio to be able to correctly run the
 
 #### Building SPIRAL with cmake
 
-**cmake** can be used to start the toolchain to build the solution from a **cmd** window, instead of starting the Visual Studio IDE.  After running the cmake command to configure the build system (i.e., cmake .. or other variant as discussed above), run the following:
+**cmake** can be used to start the toolchain to build the solution from a **cmd** window, instead of
+starting the Visual Studio IDE.  After running the cmake command to configure the build system
+(i.e., cmake .. or other variant as discussed above), run the following:
 
 ```
 cmake --build <dir> [options] [--[native-options]]

@@ -201,7 +201,9 @@ Class(IOPrunedConv, TaggedNonTerminal, rec(
         ],
     dims      := self >> [self.params[3]*Length(self.params[4]), self.params[5]*Length(self.params[6])],
     terminate := self >> let(size := self.params[1],
-        taps := When(self.params[7], MatSPL(DFT(self.params[1], -1)) * When(IsList(self.params[2]), self.params[2], self.params[2].list), self.params[2]),
+        taps := When(self.params[7], MatSPL(DFT(self.params[1], -1)) * 
+               Cond(IsList(self.params[2]), self.params[2], IsLambda(self.params[2]), self.params[2].tolist(), IsBound(self.params[2].list), self.params[2].list), 
+           self.params[2]),
         oblk := self.params[3], opat := self.params[4], iblk := self.params[5], ipat := self.params[6],
         Tensor(Mat(List(opat, i->BasisVec(size/oblk, i))), I(oblk)).terminate() *
         spiral.transforms.filtering.Circulant(size, taps, -size).terminate() *
@@ -272,6 +274,8 @@ NewRulesFor(IOPrunedRConv, rec(
     ),
 ));
 
+_complexify := l -> List([1..Length(l)/2], i->l[2*i-1] + E(4) * l[2*i]);
+
 #=========================================================================================================================================================
 Declare(IOPrunedMDRConv);
 Class(IOPrunedMDRConv, TaggedNonTerminal, rec(
@@ -292,7 +296,8 @@ Class(IOPrunedMDRConv, TaggedNonTerminal, rec(
                                 nrem := Drop(nlist, 1),
                                 idft := Tensor(IPRDFT(n, -1), I(Product(nrem))) *
                                     Tensor(I(nfreq), L(2*Product(nrem), 2)) * Tensor(I(nfreq), RC(MDDFT(nrem, -1))),
-                                tlist := MatSPL(idft) * self.params[2].list,
+                                tlist := MatSPL(idft) * 
+                                    Cond(IsList(self.params[2]), self.params[2], IsLambda(self.params[2]), self.params[2].tolist(), IsBound(self.params[2].list), self.params[2].list),
                                 IOPrunedMDRConv(self.params[1], FList(TReal, tlist), self.params[3], self.params[4],
                                     self.params[5], self.params[6], false).terminate()
                             ),
@@ -306,7 +311,7 @@ Class(IOPrunedMDRConv, TaggedNonTerminal, rec(
 
                                 dft3dr := RC(MDDFT(nlist, -1)),
                                 idft3dr := RC(MDDFT(nlist, 1)),
-                                gfd := List(1/Product(nlist) * MatSPL(MDDFT(nlist, 1)) * self.params[2].list, ComplexAny),
+                                gfd := List(1/Product(nlist) * MatSPL(MDDFT(nlist, 1)) * self.params[2].list, i->ComplexAny(_unwrap(i))),
                                 gdiagr := RC(Diag(gfd)),
                                 t := gath3d * idft3dr * gdiagr * dft3dr * scat3d,
                                 t.terminate()
@@ -662,4 +667,66 @@ NewRulesFor(IOPrunedMDRConv, rec(
                                     conv3dr
                             ),
     ),
+#======================
+
+    IOPrunedMDRConv_2D_2trip_xy_freqdata := rec(
+       forTransposition := true,
+       applicable :=  (self, nt) >> not nt.hasTags() and Length(nt.params[1]) = 2 and nt.params[7],
+       children := nt -> let(nlist := nt.params[1],
+                            diag := nt.params[2],
+                            oblk := nt.params[3],
+                            opats := nt.params[4],
+                            iblk := nt.params[5],
+                            ipats := nt.params[6],
+                            nfreq := nlist[2]/2+1,
+                            i := Ind(nfreq),
+                            hfunc := Cond(ObjId(diag) = Lambda,
+                                let(j := Ind(nlist[1]),
+                                    pos := i + j*nfreq,
+                                    Lambda(j, cxpack(diag.at(2*pos), diag.at(2*pos+1)))
+                                ),
+                                ObjId(diag) = fUnk,
+                                fUnk(TComplex, nlist[1]),
+                                let(list := nt.params[1].list,  # here we assume FList(TReal, [...])
+                                    clist := List([1..Length(list)/2], i->Cplx(list[2*i-1], list[2*i])),
+                                    fc := FList(TComplex, clist),
+                                    gf := fTensor(fBase(i), fId(nlist[1])),
+                                    fCompose(fc, gf)
+                                )
+                            ),
+                            [[ PrunedPRDFT(nlist[2], -1, iblk, ipats[2]),  # stage 1: PRDFT x
+                                IOPrunedConv(nlist[1], hfunc, oblk, opats[1], iblk, ipats[1], true), # stage 2+3+4: complex conv in y
+                                PrunedIPRDFT(nlist[2], 1, oblk, opats[1]),   # stage 5: iPRDFT in x
+                                InfoNt(i)
+                            ]]),
+
+       apply := (nt, C, cnt) -> let(prdft1d := C[1],
+                                    iopconv := C[2],
+                                    iprdft1d := C[3],
+                                    i := cnt[4].params[1],
+                                    nlist := nt.params[1],
+                                    n1 := nlist[1],
+                                    nfreq := nlist[1]/2+1,
+                                    n2 := nlist[2],
+                                    oblk := nt.params[3],
+                                    opats := nt.params[4],
+                                    iblk := nt.params[5],
+                                    ipats := nt.params[6],
+                                    ns1 := iblk * Length(ipats[1]),
+                                    ns2 := iblk * Length(ipats[2]),
+                                    nd1 := oblk * Length(opats[1]),
+                                    nd2 := oblk * Length(opats[2]),
+ 
+                                    stage1 := Tensor(I(ns2), prdft1d),
+                                    pp := Tensor(L(ns2*nfreq, nfreq), I(2)),
+                                    ppi := Tensor(L(nd2*nfreq, nd2), I(2)),
+                                    stage432 := IDirSum(i, RC(iopconv)),
+                                    stage5 :=  Tensor(I(nd2), iprdft1d), 
+                                    
+                                    conv2dr := Grp(stage5 * ppi) * stage432 * Grp(pp * stage1),
+                                    conv2dr
+                            ),
+    ),
+
+    
 ));

@@ -1,3 +1,8 @@
+/*
+ **  Copyright (c) 2018-2021, Carnegie Mellon University
+ **  See LICENSE for details
+ */
+
 #include <stdio.h>
 
 int main ( int argc, char* argv[] )

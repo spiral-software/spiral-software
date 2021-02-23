@@ -1,7 +1,7 @@
 ##
 ## SPIRAL License
 ##
-## Copyright (c) 2020, Carnegie Mellon University
+## Copyright (c) 2021, Carnegie Mellon University
 ## All rights reserved.
 ## 
 ## See LICENSE file for full information

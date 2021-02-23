@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2018-2020, Carnegie Mellon University
+# Copyright (c) 2018-2021, Carnegie Mellon University
 # See LICENSE for details
 
 import argparse

@@ -1,3 +1,7 @@
+
+##  Copyright (c) 2018-2021, Carnegie Mellon University
+##  See LICENSE for details
+
 comment("");
 comment("Pruned 3D FFT from Planewave");
 comment("");

@@ -716,7 +716,15 @@ NewRulesFor(IOPrunedMDRConv, rec(
                                     ns2 := iblk * Length(ipats[2]),
                                     nd1 := oblk * Length(opats[1]),
                                     nd2 := oblk * Length(opats[2]),
- 
+                                    
+#                                    stage1 := L(2*nfreq*ns3*ns2, ns3) * Tensor(I(ns2), Tensor(L(2*nfreq, 2) * prdft1d, I(ns3))) * Tensor(L(ns2*ns1, ns2), I(ns3)),
+#                                    stage2 := Tensor(I(ns3), Tensor(RC(pdft1d), I(nfreq))),
+#                                    pp := Tensor(L(ns3*n2*nfreq, n2*nfreq), I(2)) * Tensor(I(ns3), L(2*nfreq*n2, nfreq)),
+#                                    ppi := Tensor(I(nd3), L(2*nfreq*n2, 2*n2)) * Tensor(L(nd3*n2*nfreq, nd3), I(2)),
+#                                    stage543 := ppi * IDirSum(i, RC(iopconv)) * pp,
+#                                    stage76 := Tensor(L(nd2*nd1, nd1), I(nd3)) * Grp(Tensor((Tensor(I(nd2), iprdft1d * L(2*nfreq, nfreq)) *
+#                                        Tensor(RC(ipdft1d), I(nfreq))), I(nd3)) * L(2*nfreq*nd3*n2, 2*nfreq*n2)),
+
                                     stage1 := Tensor(I(ns2), prdft1d),
                                     pp := Tensor(L(ns2*nfreq, nfreq), I(2)),
                                     ppi := Tensor(L(nd2*nfreq, nd2), I(2)),
@@ -727,6 +735,73 @@ NewRulesFor(IOPrunedMDRConv, rec(
                                     conv2dr
                             ),
     ),
-
+#     IOPrunedMDRConv_2D_2trip_yx_freqdata := rec(
+#       forTransposition := true,
+#       applicable :=  (self, nt) >> not nt.hasTags() and Length(nt.params[1]) = 2 and nt.params[7],
+#       children := nt -> let(nlist := nt.params[1],
+#                            diag := nt.params[2],
+#                            oblk := nt.params[3],
+#                            opats := nt.params[4],
+#                            iblk := nt.params[5],
+#                            ipats := nt.params[6],
+#                            nfreq := nlist[1]/2+1,
+#                            i := Ind(nfreq),
+#                            hfunc := Cond(ObjId(diag) = Lambda,
+#                                let(j := Ind(nlist[2]),
+#                                    pos := i + j*nfreq,
+#                                    Lambda(j, cxpack(diag.at(2*pos), diag.at(2*pos+1)))
+#                                ),
+#                                ObjId(diag) = fUnk,
+#                                fUnk(TComplex, nlist[2]),
+#                                let(list := nt.params[2].list,  # here we assume FList(TReal, [...])
+#                                    clist := List([1..Length(list)/2], i->Cplx(list[2*i-1], list[2*i])),
+#                                    fc := FList(TComplex, clist),
+#                                    gf := fTensor(fBase(i), fId(nlist[2])),
+#                                    fCompose(fc, gf)
+#                                )
+#                            ),
+#                            [[ PrunedPRDFT(nlist[1], -1, iblk, ipats[1]),  # stage 1: PRDFT y
+#                                IOPrunedConv(nlist[2], hfunc, oblk, opats[2], iblk, ipats[2], true), # stage 2+3+4: complex conv in x
+#                                PrunedIPRDFT(nlist[1], 1, oblk, opats[1]),   # stage 5: iPRDFT in y
+#                                InfoNt(i)
+#                            ]]),
+#
+#       apply := (nt, C, cnt) -> let(prdft1d := C[1],
+#                                    iopconv := C[2],
+#                                    iprdft1d := C[3],
+#                                    i := cnt[4].params[1],
+#                                    nlist := nt.params[1],
+#                                    n1 := nlist[1],
+#                                    nfreq := nlist[1]/2+1,
+#                                    n2 := nlist[2],
+#                                    oblk := nt.params[3],
+#                                    opats := nt.params[4],
+#                                    iblk := nt.params[5],
+#                                    ipats := nt.params[6],
+#                                    ns1 := iblk * Length(ipats[1]),
+#                                    ns2 := iblk * Length(ipats[2]),
+#                                    nd1 := oblk * Length(opats[1]),
+#                                    nd2 := oblk * Length(opats[2]),
+#                                    
+##                                    stage1 := L(2*nfreq*ns3*ns2, ns3) * Tensor(I(ns2), Tensor(L(2*nfreq, 2) * prdft1d, I(ns3))) * Tensor(L(ns2*ns1, ns2), I(ns3)),
+##                                    stage2 := Tensor(I(ns3), Tensor(RC(pdft1d), I(nfreq))),
+##                                    pp := Tensor(L(ns3*n2*nfreq, n2*nfreq), I(2)) * Tensor(I(ns3), L(2*nfreq*n2, nfreq)),
+##                                    ppi := Tensor(I(nd3), L(2*nfreq*n2, 2*n2)) * Tensor(L(nd3*n2*nfreq, nd3), I(2)),
+##                                    stage543 := ppi * IDirSum(i, RC(iopconv)) * pp,
+##                                    stage76 := Tensor(L(nd2*nd1, nd1), I(nd3)) * Grp(Tensor((Tensor(I(nd2), iprdft1d * L(2*nfreq, nfreq)) *
+##                                        Tensor(RC(ipdft1d), I(nfreq))), I(nd3)) * L(2*nfreq*nd3*n2, 2*nfreq*n2)),
+#
+#                                    stage1 := L(2*nfreq*ns3*ns2, ns3) * Tensor(I(ns2), Tensor(L(2*nfreq, 2) * prdft1d, I(ns3))) * Tensor(L(ns2*ns1, ns2), I(ns3)),
+#                                    pp := Tensor(L(ns3*n2*nfreq, n2*nfreq), I(2)) * Tensor(I(ns3), L(2*nfreq*n2, nfreq)),
+#                                    ppi := Tensor(I(nd3), L(2*nfreq*n2, 2*n2)) * Tensor(L(nd3*n2*nfreq, nd3), I(2)),
+#                                    stage432 := ppi * IDirSum(i, RC(iopconv)) * pp,
+#                                    stage5 := Tensor(L(nd2*nd1, nd1), I(nd3)) * Grp(Tensor((Tensor(I(nd2), iprdft1d * L(2*nfreq, nfreq)) *
+#                                        Tensor(RC(ipdft1d), I(nfreq))), I(nd3)) * L(2*nfreq*nd3*n2, 2*nfreq*n2)),
+#
+#                                    conv2dr := stage5 * stage432 * stage1,
+#                                    conv2dr
+#                            ),
+#    ),
+   
     
 ));

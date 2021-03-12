@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2020, Carnegie Mellon University
+# Copyright (c) 2018-2021, Carnegie Mellon University
 # See LICENSE for details
 
 Declare(VScat, VScat_sv, RCVScat_sv, VScat_pc, VScat_red, IxVScat_pc, IxRCVScat_pc, VStretchScat, RCVStretchScat, VScat_zero, VGath_u, VScat_u, vRCStretchGath, vRCStretchScat);

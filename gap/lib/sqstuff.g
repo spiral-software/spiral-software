@@ -5,11 +5,11 @@
 #A  sqstuff.g                   GAP library                  Alexander Wegner
 ##
 ##
-#Y  Copyright (C) 2018-2020, Carnegie Mellon University
+#Y  Copyright (C) 2018-2021, Carnegie Mellon University
 #Y  All rights reserved.  See LICENSE for details.
 #Y  
 #Y  This work is based on GAP version 3, with some files from version 4.  GAP is
-#Y  Copyright (C) (1987--2020) by the GAP Group (www.gap-system.org).
+#Y  Copyright (C) (1987--2021) by the GAP Group (www.gap-system.org).
 ##
 ##  All functions in this file will eventually be moved into "sq.g".
 ##

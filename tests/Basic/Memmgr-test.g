@@ -1,3 +1,7 @@
+
+##  Copyright (c) 2018-2021, Carnegie Mellon University
+##  See LICENSE for details
+
 ##  Build large lists where elements are complex numbers, create new lists by
 ##  multiplying them; repeatedly multiply, unbind and re-create.  At the end
 ##  print the memory stats to see how many GC's performed and average time

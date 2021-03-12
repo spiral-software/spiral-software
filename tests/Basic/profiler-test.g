@@ -1,3 +1,7 @@
+
+##  Copyright (c) 2018-2021, Carnegie Mellon University
+##  See LICENSE for details
+
 comment("");
 comment("A minimal test for the profiler... ");
 comment("Check CMeasure gives a valid result...");

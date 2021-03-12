@@ -4,11 +4,11 @@
 #A  solvable.grp                GAP group library          Hans Ulrich Besche
 ##
 ##
-#Y  Copyright (C) 2018-2020, Carnegie Mellon University
+#Y  Copyright (C) 2018-2021, Carnegie Mellon University
 #Y  All rights reserved.  See LICENSE for details.
 #Y  
 #Y  This work is based on GAP version 3, with some files from version 4.  GAP is
-#Y  Copyright (C) (1987--2020) by the GAP Group (www.gap-system.org).
+#Y  Copyright (C) (1987--2021) by the GAP Group (www.gap-system.org).
 ##
 ##  This file contains the  extraction, selection and example  functions  and
 ##  the  data for the library  of  solvable groups  of  order less  100.  The

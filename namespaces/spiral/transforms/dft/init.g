@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2020, Carnegie Mellon University
+# Copyright (c) 2018-2021, Carnegie Mellon University
 # See LICENSE for details
 
 _hhi := (N, n, b, s, spl) -> Scat(H(N,n,b,s)) * spl * Gath(H(N,n,b,s));

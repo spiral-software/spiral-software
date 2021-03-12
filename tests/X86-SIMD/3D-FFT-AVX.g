@@ -1,3 +1,7 @@
+
+##  Copyright (c) 2018-2021, Carnegie Mellon University
+##  See LICENSE for details
+
 comment("");
 comment("3D FFT with AVX");
 opts := SIMDGlobals.getOpts(AVX_4x64f);

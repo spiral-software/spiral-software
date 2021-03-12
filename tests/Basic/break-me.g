@@ -1,3 +1,7 @@
+
+##  Copyright (c) 2018-2021, Carnegie Mellon University
+##  See LICENSE for details
+
 #
 #  Enter incomplete or wrong information for GAP (i.e., garbage) to see if we can break it...
 #

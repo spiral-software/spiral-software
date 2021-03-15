@@ -4,7 +4,7 @@
 
 
 Import(platforms, profiler, code);
-Import(platforms.sse, platforms.intel);
+Import(platforms.sse, platforms.avx, platforms.intel);
 
 Class(OSInfo, rec(osname := "",
     is8Bit := False,
@@ -68,10 +68,16 @@ Class(CPUInfo, rec(
 
 Class(IntelCPU, CPUInfo, rec(
     vendor := "Intel",
-    getSimdIsa := dt -> Cond(
-        dt = T_Real(32), SSE_4x32f,
-        dt = T_Real(64), SSE_2x64f,
-        dt),
+    getSimdIsa := (self, dt) >> When(self.SIMD().hasAVX(), 
+        Cond(
+            dt = T_Real(32), AVX_8x32f,
+            dt = T_Real(64), AVX_4x64f,
+            dt),
+        Cond(
+            dt = T_Real(32), SSE_4x32f,
+            dt = T_Real(64), SSE_2x64f,
+            dt)
+    ),
     getOpts := arg >> IAGlobals.getOpts(Drop(arg, 1))
 ));
 

@@ -60,9 +60,13 @@ Class(IAGlobals, rec(
                 ),
                 
                 unparser := When(smpopts.api = "OpenMP", 
-                    When(IsBound(smpopts.OmpMode) and smpopts.OmpMode = "for", 
-                        spiral.libgen.OpenMP_SSEUnparser_ParFor, 
-                        spiral.libgen.OpenMP_SSEUnparser), 
+                    When(isa in [AVX_8x32f, AVX_4x64f], 
+                        When(IsBound(smpopts.OmpMode) and smpopts.OmpMode = "for", 
+                            spiral.libgen.OpenMP_AVXUnparser_ParFor, 
+                            spiral.libgen.OpenMP_AVXUnparser),
+                        When(IsBound(smpopts.OmpMode) and smpopts.OmpMode = "for", 
+                            spiral.libgen.OpenMP_SSEUnparser_ParFor, 
+                            spiral.libgen.OpenMP_SSEUnparser)),
                     spiral.libgen.SMP_SSEUnparser),
                 codegen := spiral.libgen.VecRecCodegen
             ));

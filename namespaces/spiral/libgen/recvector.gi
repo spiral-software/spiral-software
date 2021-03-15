@@ -162,6 +162,9 @@ Class(OpenMP_SSEUnparser_ParFor, paradigms.smp.OpenMP_UnparseMixin_ParFor, platf
 Class(SMP_SSEUnparser,    paradigms.smp.SMP_UnparseMixin,    platforms.sse.SSEUnparser);
 Class(SMP_NEONUnparser,    paradigms.smp.SMP_UnparseMixin,    platforms.neon.NEONUnparser);
 
+Class(OpenMP_AVXUnparser, paradigms.smp.OpenMP_UnparseMixin, platforms.avx.AVXUnparser);
+Class(OpenMP_AVXUnparser_ParFor, paradigms.smp.OpenMP_UnparseMixin_ParFor, platforms.avx.AVXUnparser);
+
 SMP_NEONUnparser.preprocess := x -> FixAssign0(x);
 SMP_SSEUnparser.preprocess := x -> FixAssign0(x);
 OpenMP_SSEUnparser.preprocess := x -> FixAssign0(x);

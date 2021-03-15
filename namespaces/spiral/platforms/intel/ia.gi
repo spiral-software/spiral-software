@@ -183,6 +183,7 @@ Class(IAGlobals, rec(
             opts.smp := smpopts;
         fi;
 
+        Add(opts.includes, "<include/mm_malloc.h>");
         if not IsBound(opts.globalUnrolling) then opts.globalUnrolling := optrec.globalUnrolling; fi;
         opts.operations := rec(Print := (s) -> Print("<IA options>"));
         return opts;

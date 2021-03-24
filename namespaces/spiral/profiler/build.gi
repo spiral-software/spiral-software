@@ -154,12 +154,8 @@ _CallProfiler := function(request, code, opts)
     fullcmd := Concat("spiralprofiler -d ", outdir);
     fullcmd := Concat(fullcmd, " -r ", request);
     
-    if IsBound(target.host) then
-        fullcmd := Concat(fullcmd, " -H ", String(target.host));
-    fi;
-    
-    if IsBound(target.port) then
-        fullcmd := Concat(fullcmd, " -p ", String(target.port));
+    if IsBound(target.forward) then
+        fullcmd := Concat(fullcmd, " -f ", String(target.forward));
     fi;
     
     if IsBound(target.name) then

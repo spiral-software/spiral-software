@@ -182,5 +182,7 @@ endif ()
 
 add_subdirectory(tests)                ## holds test scripts
 
+add_subdirectory (docs)
+
 enable_testing()
 

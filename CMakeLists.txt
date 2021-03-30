@@ -182,7 +182,18 @@ endif ()
 
 add_subdirectory(tests)                ## holds test scripts
 
-add_subdirectory (docs)
+##  Add the CMakeIncludes folder so the FindSphinx module is found
+set ( CMAKE_MODULE_PATH "${SPIRAL_SOURCE_DIR}/config/CMakeIncludes" ${CMAKE_MODULE_PATH} )
+
+##  initially no Doxygen extraction needed, skip for now
+##  find_package ( Doxygen REQUIRED )
+find_package ( Sphinx REQUIRED )
+if ( ${Sphinx_FOUND} )
+    message ( STATUS "Found Sphinx, add subdirectory 'docs' to build documentation" )
+    add_subdirectory (docs)
+else ()
+    message ( STATUS "Sphinx not found -- skipping 'docs', do NOT build documentation" )
+endif ()
 
 enable_testing()
 

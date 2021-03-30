@@ -7,13 +7,6 @@
 
 cmake_minimum_required ( VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION} )
 
-##  Add the CMakeIncludes folder so the FindSphinx module is found
-set ( CMAKE_MODULE_PATH "${SPIRAL_SOURCE_DIR}/config/CMakeIncludes" ${CMAKE_MODULE_PATH} )
-
-##  initially no Doxygen extraction needed, skip for now
-##  find_package(Doxygen REQUIRED)
-find_package(Sphinx REQUIRED)
-
 set (CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, MinSizeRel")
 
 ##  Find all the public files from which to extract documentation

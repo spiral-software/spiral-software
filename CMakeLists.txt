@@ -187,7 +187,7 @@ set ( CMAKE_MODULE_PATH "${SPIRAL_SOURCE_DIR}/config/CMakeIncludes" ${CMAKE_MODU
 
 ##  initially no Doxygen extraction needed, skip for now
 ##  find_package ( Doxygen REQUIRED )
-find_package ( Sphinx REQUIRED )
+find_package ( Sphinx )		##  REQUIRED
 if ( ${Sphinx_FOUND} )
     message ( STATUS "Found Sphinx, add subdirectory 'docs' to build documentation" )
     add_subdirectory (docs)

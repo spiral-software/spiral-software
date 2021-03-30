@@ -52,8 +52,8 @@ jobs:
         echo $SPIRAL_HOME
         cd $SPIRAL_HOME
         mkdir build && cd build
-        cmake .. 
         PATH=$PATH:/home/runner/.local/bin
+        cmake .. 
         make Sphinx
         "../docs/buildsite.sh"
       shell: bash

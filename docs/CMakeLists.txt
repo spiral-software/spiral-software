@@ -27,6 +27,7 @@ configure_file ( ${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY )
 ##  Doxygen won't create this for us
 file ( MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR} ) 
 
+##  Custom command to run Doxygen (activate if/when Doxygen info to be extracted)
 ##  Regenerate Doxygen when the Doxyfile or public headers change
 ##  add_custom_command ( OUTPUT ${DOXYGEN_INDEX_FILE}
 ##  		DEPENDS ${SPIRAL_PUBLIC_FILES}
@@ -62,9 +63,10 @@ add_custom_command ( OUTPUT ${SPHINX_INDEX_FILE}
 	COMMENT "Generating documentation with Sphinx")
 
 ##  Named target so we can run the job easily
-add_custom_target ( Sphinx ALL DEPENDS ${SPHINX_INDEX_FILE} )
+add_custom_target ( Sphinx ALL DEPENDS ${SPHINX_INDEX_FILE}
+                    COMMENT "Documentation is available in ${SPHINX_BUILD}" )
 
-include ( GNUInstallDirs )
-install ( DIRECTORY ${SPHINX_BUILD}
-	  DESTINATION ${CMAKE_INSTALL_DOCDIR} )
+##  include ( GNUInstallDirs )
+##  install ( DIRECTORY ${SPHINX_BUILD}
+##  	  DESTINATION ${CMAKE_INSTALL_DOCDIR} )
 

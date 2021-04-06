@@ -1,5 +1,8 @@
 # -*- Mode: shell-script -*- 
 
+##  Copyright (c) 2018-2021, Carnegie Mellon University
+##  See LICENSE for details
+
 GlobalPackage(gap.numbase);
 
 # Represent number <num> as a list of coefficients for powers of base

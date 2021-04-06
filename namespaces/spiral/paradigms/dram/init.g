@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2020, Carnegie Mellon University
+# Copyright (c) 2018-2021, Carnegie Mellon University
 # See LICENSE for details
 
 Import(paradigms.vector,paradigms.common, paradigms.stream, spl, sigma, rewrite, code, approx);

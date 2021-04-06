@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2020, Carnegie Mellon University
+# Copyright (c) 2018-2021, Carnegie Mellon University
 # See LICENSE for details
 
 ImportAll(paradigms.smp);
@@ -60,9 +60,13 @@ Class(IAGlobals, rec(
                 ),
                 
                 unparser := When(smpopts.api = "OpenMP", 
-                    When(IsBound(smpopts.OmpMode) and smpopts.OmpMode = "for", 
-                        spiral.libgen.OpenMP_SSEUnparser_ParFor, 
-                        spiral.libgen.OpenMP_SSEUnparser), 
+                    When(isa in [AVX_8x32f, AVX_4x64f], 
+                        When(IsBound(smpopts.OmpMode) and smpopts.OmpMode = "for", 
+                            spiral.libgen.OpenMP_AVXUnparser_ParFor, 
+                            spiral.libgen.OpenMP_AVXUnparser),
+                        When(IsBound(smpopts.OmpMode) and smpopts.OmpMode = "for", 
+                            spiral.libgen.OpenMP_SSEUnparser_ParFor, 
+                            spiral.libgen.OpenMP_SSEUnparser)),
                     spiral.libgen.SMP_SSEUnparser),
                 codegen := spiral.libgen.VecRecCodegen
             ));
@@ -179,6 +183,7 @@ Class(IAGlobals, rec(
             opts.smp := smpopts;
         fi;
 
+        Add(opts.includes, "<include/mm_malloc.h>");
         if not IsBound(opts.globalUnrolling) then opts.globalUnrolling := optrec.globalUnrolling; fi;
         opts.operations := rec(Print := (s) -> Print("<IA options>"));
         return opts;

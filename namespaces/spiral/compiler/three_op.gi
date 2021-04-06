@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2020, Carnegie Mellon University
+# Copyright (c) 2018-2021, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -12,9 +12,9 @@ Class(assign_cmd, ExpCommand, rec(
 
 Class(neg_cmd, assign_cmd);
 
-Class(fma_cmd,  assign_cmd);
-Class(fms_cmd,  assign_cmd);
-Class(nfma_cmd, assign_cmd);
+Class(fma_cmd,  assign_cmd, rec(exp_op := fma));
+Class(fms_cmd,  assign_cmd, rec(exp_op := fms));
+Class(nfma_cmd, assign_cmd, rec(exp_op := nfma));
 
 # Examples: 
 #   assign(t1, add(t1, t2)) == assign_add(t1, t2),

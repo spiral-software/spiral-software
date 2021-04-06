@@ -45,7 +45,7 @@ or set your path to include it and run **spiral** from elsewhere.  The actual ex
 ```gap/bin/gap```, but it must be started with the **spiral** script in order to intialize and run
 correctly.
 
-NOTE: The **spiral** script is automatically created, with deaults appropriate to your environment,
+NOTE: The **spiral** script is automatically created, with defaults appropriate to your environment,
 during the build process, at the *install* step.
 
 #### Debug Version on Linux/Unix
@@ -114,7 +114,7 @@ SPIRAL.  These may be checked/configured as follows:
 
 **cmake** can be used to start the toolchain to build the solution from a **cmd** window, instead of
 starting the Visual Studio IDE.  After running the cmake command to configure the build system
-(i.e., cmake .. or other variant as discussed above), run the following:
+(i.e., ``cmake ..`` or other variant as discussed above), run the following:
 
 ```
 cmake --build <dir> [options] [--[native-options]]
@@ -184,7 +184,7 @@ cmake command line, as follows:
 
 **make** is genarally not available on Windows, so we need to use **ctest** in
 order to run the tests.  For Windows **ctest** needs to be informed which
-confiuration was built, using the ` -C <config> ` option; where ` <config> `
+configuration was built, using the ` -C <config> ` option; where ` <config> `
 is typically ` Release ` or ` Debug `. Other than this caveat, tests are configured, run, or
 inhibited exactly the same on Windows as Linux/Unix.  For example:
 ```
@@ -214,8 +214,8 @@ The interface from SPIRAL to the profiler is in **namespaces/spiral/profiler**.
 
 Several tests rely in the **profiler** to build and measure performance in order
 to arrive at a "good" solution.  A basic functionality test for the **profiler**
-is run as par tof the basic tests.  If this test is not successful then later,
-more advanced, tsets depening on **profiler** will be skipped.
+is run as part of the basic tests.  If this test is not successful then later,
+more advanced, tests depening on **profiler** will be skipped.
 
 NOTE: linux differentiates between *skipped* and *failed* tests and summarizes
 those results appropriately.  However, **Windows** does not and reports *skipped*
@@ -223,3 +223,33 @@ tests as *passed*.  In order to avoid skipped tests being reported as passed,
 the convention is to output a message indicating *skipping test* and then mark
 it *failed*.  An inspection of the file **LastTest.log** will identify those
 tests that were skipped vs failed.
+
+### SPIRAL Documentation
+
+The SPIRAL user manual is online and may be found at [SPIRAL User
+Manual](https://spiral-software.github.io/spiral-software/). 
+
+The SPIRAL documentation is found in the docs folder of the **spiral-software** tree.  It is
+automatically pulled down whenever the repository is cloned or forked.  The documentation can be
+built by specifying ``SPIRAL_MAKE_DOCS`` to **cmake** when building and then making
+either the **Sphinx** or **install** target, e.g., by specifying:
+```
+cmake -DSPIRAL_MAKE_DOCS=True ..
+make Sphinx
+```
+or on Windows:
+```
+cmake -DSPIRAL_MAKE_DOCS=True ..
+cmake --build . --config Release --target Sphinx
+```
+There are however some pre-requisites before the documentation can be built.  Checks for
+these are made before attempting to build the documentation locally and building is
+skipped if any of the pre-requisites are missing.  The pre-requisites include **Sphinx**,
+**breathe**, and the read-the-docs theme **sphinx_rtd_theme** (all of which may be
+installed using **pip**).
+
+If the documentation is built locally it is available in the **build** folder at location:
+``<build>/docs/sphinx/index.html``.
+
+The online documentation pages are updated when a push is made to to **master** branch of
+SPIRAL (i.e., typically when a release is made).

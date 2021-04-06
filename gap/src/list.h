@@ -3,11 +3,11 @@
 *A  list.h                      GAP source                   Martin Schoenert
 **
 **
-*Y  Copyright (C) 2018-2020, Carnegie Mellon University
+*Y  Copyright (C) 2018-2021, Carnegie Mellon University
 *Y  All rights reserved.  See LICENSE for details.
 *Y  
 *Y  This work is based on GAP version 3, with some files from version 4.  GAP is
-*Y  Copyright (C) (1987--2020) by the GAP Group (www.gap-system.org).
+*Y  Copyright (C) (1987--2021) by the GAP Group (www.gap-system.org).
 **
 **  This file  declares  the  functions  and macros  that make it possible to
 **  access all various types of lists in a homogenous way.

@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2020, Carnegie Mellon University
+# Copyright (c) 2018-2021, Carnegie Mellon University
 # See LICENSE for details
 
 
@@ -161,6 +161,9 @@ Class(OpenMP_SSEUnparser, paradigms.smp.OpenMP_UnparseMixin, platforms.sse.SSEUn
 Class(OpenMP_SSEUnparser_ParFor, paradigms.smp.OpenMP_UnparseMixin_ParFor, platforms.sse.SSEUnparser);
 Class(SMP_SSEUnparser,    paradigms.smp.SMP_UnparseMixin,    platforms.sse.SSEUnparser);
 Class(SMP_NEONUnparser,    paradigms.smp.SMP_UnparseMixin,    platforms.neon.NEONUnparser);
+
+Class(OpenMP_AVXUnparser, paradigms.smp.OpenMP_UnparseMixin, platforms.avx.AVXUnparser);
+Class(OpenMP_AVXUnparser_ParFor, paradigms.smp.OpenMP_UnparseMixin_ParFor, platforms.avx.AVXUnparser);
 
 SMP_NEONUnparser.preprocess := x -> FixAssign0(x);
 SMP_SSEUnparser.preprocess := x -> FixAssign0(x);

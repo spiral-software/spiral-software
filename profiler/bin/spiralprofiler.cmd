@@ -1,6 +1,6 @@
 @echo off
 
-REM  Copyright (c) 2018-2020, Carnegie Mellon University
+REM  Copyright (c) 2018-2021, Carnegie Mellon University
 REM  See LICENSE for details
 
 set basepath=%~dp0

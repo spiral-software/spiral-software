@@ -1,3 +1,7 @@
+
+##  Copyright (c) 2018-2021, Carnegie Mellon University
+##  See LICENSE for details
+
 #F SmartComplete(a, str)
 #F  Get all the fields from Record or Namespace a and print only
 #F  those that start with the string str.

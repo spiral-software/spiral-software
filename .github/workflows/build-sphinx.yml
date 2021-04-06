@@ -1,0 +1,59 @@
+name: build-sphinx-to-gh-pages
+
+env:
+  GITHUB_ACTOR: spiral-software
+  GITHUB_REPOSITORY: spiral-software/spiral-software
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+##  For now only re-gen docs when push to "develop" branch; change to "master" when release is done
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build_sphinx_job:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout spiral-software
+      uses: actions/checkout@v2
+      with:
+        repository: spiral-software/spiral-software
+        ref: master
+        path: spiral
+
+    - name: install dependencies
+      ##  uses: actions/checkout@v2
+      run: |
+        set -x
+        echo "working dir = ${{ github.workspace }}"
+        ls -l spiral
+        export DEBIAN_FRONTEND=noninteractive
+        sudo apt-get -qqq update
+        sudo apt-get install -y build-essential ca-certificates cmake pkg-config wget
+        sudo apt-get install -y python3.8
+        sudo apt-get install -y python3-pip
+        pip install -U Sphinx 
+        PATH=$PATH:/home/runner/.local/bin
+        echo $PATH
+        pip install sphinx_rtd_theme 
+        pip install breathe
+        sudo apt-get install -y doxygen
+        sudo curl -L -o /usr/local/bin/cmake-easyinstall https://git.io/JvLxY
+        sudo chmod a+x /usr/local/bin/cmake-easyinstall
+        export CEI_SUDO="sudo"
+
+    - name: build SPIRAL documentation
+      env:
+        SPIRAL_HOME: ${{ github.workspace }}/spiral
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -x
+        echo $SPIRAL_HOME
+        cd $SPIRAL_HOME
+        mkdir build && cd build
+        PATH=$PATH:/home/runner/.local/bin
+        cmake -DSPIRAL_MAKE_DOCS=True .. 
+        make Sphinx
+        "../docs/buildsite.sh"
+      shell: bash

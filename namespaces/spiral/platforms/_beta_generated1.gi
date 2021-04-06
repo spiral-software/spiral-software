@@ -1,5 +1,5 @@
 
-# Copyright (c) 2018-2020, Carnegie Mellon University
+# Copyright (c) 2018-2021, Carnegie Mellon University
 # See LICENSE for details
 
 SIMD_ISA_DB.hashAdd(TL(32, 8, 2, 2).withTags([ AVecReg(LRB_16x32f) ]), [ rec(

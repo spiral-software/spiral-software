@@ -230,7 +230,7 @@ The SPIRAL user manual is online and may be found at [SPIRAL User
 Manual](https://spiral-software.github.io/spiral-software/). 
 
 The SPIRAL documentation is found in the docs folder of the **spiral-software** tree.  It is
-automatically pulled down whenever the repo is cloned or forked.  The documentation can be
+automatically pulled down whenever the repository is cloned or forked.  The documentation can be
 built by specifying ``SPIRAL_MAKE_DOCS`` to **cmake** when building and then making
 either the **Sphinx** or **install** target, e.g., by specifying:
 ```

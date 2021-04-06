@@ -28,7 +28,7 @@ as **fftx**.  For the reminder of this guide we'll use **fftx** as the example; 
 instructions are aplicable to all packages.
 
 1.  On GitHub navigate to the package repository [SPIRAL package:
-spiral-package-fftx]](https://github.com/spiral-software/spiral-package-fftx.git). 
+spiral-package-fftx](https://github.com/spiral-software/spiral-package-fftx.git). 
 2.  In the top-right corner of the page click the **Fork** button.  This will create a
 private repository for your use, called:
 ``github.com/<your_username>/spiral-package-fftx.git``, where **\<your_username\>** is

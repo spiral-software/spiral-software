@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>End to End, from Transform to C Code &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SPIRAL Infrastructure" href="../infrastructure/index.html" />
+    <link rel="prev" title="Abstract Code (icode)" href="icode.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">SPIRAL Objects and Data Types</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html">Packages and Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html">Values and Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ruletrees.html">Transforms and Rule Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html">SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html">Σ-SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html">Abstract Code (icode)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">End to End, from Transform to C Code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dft-8-to-c">DFT(8) to C</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-dp-and-coderuletree">Using DP and CodeRuleTree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#correctness-checks">Correctness Checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-examples">Other Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">SPIRAL Objects and Data Types</a> &raquo;</li>
+        
+      <li>End to End, from Transform to C Code</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/spiral_objects/end2end.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="end-to-end-from-transform-to-c-code">
+<span id="end2end"></span><h1>End to End, from Transform to C Code<a class="headerlink" href="#end-to-end-from-transform-to-c-code" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dft-8-to-c">
+<h2>DFT(8) to C<a class="headerlink" href="#dft-8-to-c" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>n := 8; k := -1;                # transform parameters
+opts := SpiralDefaults; # default options
+opts.useDeref := false; # prefer array[] over *(deref)
+t := DFT(n, k);         # transform
+rt := RandomRuleTree(t, opts);  # get rule tree
+spl := SPLRuleTree(rt); # Debug: SPL formula
+ss1 := spl.sums();      # Debug: SPL-&gt;Sigma-SPL w/o optimization
+ss := SumsRuleTree(rt, opts);   # Correct: from rt -&gt; Sigma-SPL
+c1 := CodeSums(ss, opts);       # Debug: Sigma-SPL-&gt;code
+c := CodeRuleTree(rt, opts);    # Correct: rt-&gt; code in one shot
+PrintCode(&quot;dft8&quot;, c, opts);     # final code
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-dp-and-coderuletree">
+<h2>Using DP and CodeRuleTree<a class="headerlink" href="#using-dp-and-coderuletree" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>n := 1024; k := -1;             # transform parameters
+opts := SpiralDefaults; # default options
+opts.globalUnrolling := 16;     # set smaller unrolling
+t := DFT(n, k);         # transform
+best := DP(t, rec(), opts);     # run search
+rt := best[1].ruletree;
+c := CodeRuleTree(rt, opts);    # Correct: rt-&gt; code in one shot
+PrintCode(&quot;dft&quot;::StringInt(n), c, opts);        # final code
+</pre></div>
+</div>
+</div>
+<div class="section" id="correctness-checks">
+<h2>Correctness Checks<a class="headerlink" href="#correctness-checks" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>tm := MatSPL(t);                # symbolic complex cyclotomic matrix
+tmr := MatSPL(RC(t));           # symbolic real cyclotomic matrix
+splm := MatSPL(spl);            # symbolic complex cyclotomic matrix
+tmr := MatSPL(RC(t));           # symbolic real cyclotomic matrix
+ssm := MatSPL(ss);              # symbolic double-precision matrix
+cm := CMatrix(c, opts); # symbolic double-precision matrix
+tm = splm;                      # symbolically equivalent
+InfinityNormMat(tmr - ssm);     # only equivalent up to rounding error
+InfinityNormMat(tmr - cm);      # only equivalent up to rounding error
+</pre></div>
+</div>
+</div>
+<div class="section" id="other-examples">
+<h2>Other Examples<a class="headerlink" href="#other-examples" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Import(dct_dst, realdft);       # load DCT/DST and Real DFT package
+opts := SpiralDefaults; # default options
+t1 := DFT(31);          # a larger prime size
+t2 := DCT3(32); # a larger cosine transform of type 3
+t3 := PRDFT(17);        # Real DFT in the &quot;pack&quot; format
+t4 := PrunedDFT(128, 16, [0,1,5,6,7]);
+
+ts := [t1, t2, t3, t4];
+rts := List(ts, tt-&gt;RandomRuleTree(tt, opts));
+cs := List(rts, rr-&gt;CodeRuleTree(rr,
+                  CopyFields(SpiralDefaults, rec(globalUnrolling := 64))));
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../infrastructure/index.html" class="btn btn-neutral float-right" title="SPIRAL Infrastructure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="icode.html" class="btn btn-neutral float-left" title="Abstract Code (icode)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

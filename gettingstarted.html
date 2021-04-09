@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Getting Started &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples/index.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-spiral">Installing SPIRAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gap-and-the-command-line">GAP and the Command Line</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-syntax">Basic Syntax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#batch-mode">Batch Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spiral-options-record">SPIRAL Options Record</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-configuration">Local Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Getting Started</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/gettingstarted.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="getting-started">
+<span id="gettingstarted"></span><h1><a class="toc-backref" href="#id1">Getting Started</a><a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#getting-started" id="id1">Getting Started</a></p>
+<ul>
+<li><p><a class="reference internal" href="#installing-spiral" id="id2">Installing SPIRAL</a></p></li>
+<li><p><a class="reference internal" href="#gap-and-the-command-line" id="id3">GAP and the Command Line</a></p>
+<ul>
+<li><p><a class="reference internal" href="#basic-syntax" id="id4">Basic Syntax</a></p></li>
+<li><p><a class="reference internal" href="#command-line" id="id5">Command Line</a></p></li>
+<li><p><a class="reference internal" href="#batch-mode" id="id6">Batch Mode</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#configuration" id="id7">Configuration</a></p>
+<ul>
+<li><p><a class="reference internal" href="#spiral-options-record" id="id8">SPIRAL Options Record</a></p></li>
+<li><p><a class="reference internal" href="#local-configuration" id="id9">Local Configuration</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="installing-spiral">
+<span id="installing"></span><h2><a class="toc-backref" href="#id2">Installing SPIRAL</a><a class="headerlink" href="#installing-spiral" title="Permalink to this headline">¶</a></h2>
+<p>SPIRAL source is <a class="reference external" href="https://github.com/spiral-software/spiral-software">available on GitHub</a>
+under a non-viral <a class="reference external" href="https://github.com/spiral-software/spiral-software/blob/master/LICENSE">BSD-style license</a>.  It builds and runs on several platforms,
+including Windows, Linux, macOS, and Raspberry Pi.</p>
+<p><a class="reference external" href="https://github.com/spiral-software/spiral-software">https://github.com/spiral-software/spiral-software</a></p>
+<p>See the <a class="reference external" href="https://github.com/spiral-software/spiral-software/blob/master/README.md">README on GitHub</a> for more information.</p>
+</div>
+<div class="section" id="gap-and-the-command-line">
+<h2><a class="toc-backref" href="#id3">GAP and the Command Line</a><a class="headerlink" href="#gap-and-the-command-line" title="Permalink to this headline">¶</a></h2>
+<p>The input language to SPIRAL is an extended version of <a class="reference external" href="http://www.gap-system.org/Gap3/gap3.html">GAP 3</a>.</p>
+<p>Chapters 1 and 2 of the <a class="reference external" href="https://www.spiral.net/doc/pdf/GAP_Manual.pdf">GAP Manual</a> cover most of what you need for SPIRAL.</p>
+<div class="section" id="basic-syntax">
+<h3><a class="toc-backref" href="#id4">Basic Syntax</a><a class="headerlink" href="#basic-syntax" title="Permalink to this headline">¶</a></h3>
+<p>In a nutshell:</p>
+<ul class="simple">
+<li><p>Whitespace is ignored</p></li>
+<li><p>Statements can span multiple lines and end with a semicolon (<strong>;</strong>)</p></li>
+<li><p>Blocks of statements are delineated with keywords, like do/od, if/then/else/fi</p></li>
+<li><p>Variable names are case sensitive and are declared implicitly by use</p></li>
+<li><p><strong>:=</strong> is the assignment operator and <strong>=</strong> is the boolean equals operator</p></li>
+</ul>
+</div>
+<div class="section" id="command-line">
+<h3><a class="toc-backref" href="#id5">Command Line</a><a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h3>
+<p>When you start SPIRAL in a terminal window (<code class="docutils literal notranslate"><span class="pre">&gt;</span> <span class="pre">spiral</span></code>), SPIRAL displays the <strong>spiral&gt;</strong> command
+prompt that lets you enter individual statements interactively.  To exit, enter <strong>quit;</strong>.</p>
+<p>The SPIRAL command line allows edits similar to the Linux terminal window and the Windows command window.</p>
+<ul class="simple">
+<li><p><strong>CTRL+E</strong> moves the cursor to the end of the line.</p></li>
+<li><p><strong>CTRL+A</strong> moves the cursor to the beginning of the line.</p></li>
+<li><p><strong>Left</strong> and <strong>Right</strong> arrows move the cursor one character on the current line.</p></li>
+<li><p><strong>Up</strong> and <strong>Down</strong> arrows scroll back and forth through previous entries.</p></li>
+</ul>
+<p>These have special meaning to SPIRAL:</p>
+<ul class="simple">
+<li><p><strong>CTRL+C</strong> interrupts a running statement</p></li>
+<li><p><strong>CTRL+D</strong> is equivalent to <strong>quit;</strong></p></li>
+<li><p><strong>TAB</strong> completes a command up to a point of ambiguity.  Pressing <strong>TAB</strong> again shows all choices.</p></li>
+<li><p><strong>CTRL+W</strong> shows all the field names for a record.</p></li>
+</ul>
+<p>SPIRAL stores entries from previous sessions, so work from previous sessions is available when you
+start SPIRAL.  Note that the history file is only saved if you exit SPIRAL with the <strong>quit;</strong> command.</p>
+</div>
+<div class="section" id="batch-mode">
+<h3><a class="toc-backref" href="#id6">Batch Mode</a><a class="headerlink" href="#batch-mode" title="Permalink to this headline">¶</a></h3>
+<p>You can start SPIRAL in batch mode by specifying an input file at startup using the standard I/O redirection syntax,
+for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spiral</span> <span class="o">&lt;</span> <span class="n">myscript</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>SPIRAL will run the script and exit.  Direct the output to a file to save it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spiral</span> <span class="o">&lt;</span> <span class="n">myscript</span><span class="o">.</span><span class="n">txt</span> <span class="o">&gt;</span> <span class="n">myresults</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="configuration">
+<h2><a class="toc-backref" href="#id7">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spiral-options-record">
+<h3><a class="toc-backref" href="#id8">SPIRAL Options Record</a><a class="headerlink" href="#spiral-options-record" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>opts := SpiralDefaults;
+opts.globalUnrolling;
+opts.arrayBufModifier;
+opts.includes;
+opts.unparser;
+opts.codegen;
+opts.useDeref;
+opts.Xtype;
+opts.compileStrategy;
+opts.breakdownRules;
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="local-configuration">
+<h3><a class="toc-backref" href="#id9">Local Configuration</a><a class="headerlink" href="#local-configuration" title="Permalink to this headline">¶</a></h3>
+<p>Set via _spiral.g</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>LocalConfig;
+LocalConfig.getOpts(SSE_4x32f);
+LocalConfig.cpuinfo;
+LocalConfig.gapinfo;
+LocalConfig.osinfo;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="examples/index.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

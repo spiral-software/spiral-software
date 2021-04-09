@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>SPL &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Σ-SPL" href="sigma_spl.html" />
+    <link rel="prev" title="Transforms and Rule Trees" href="ruletrees.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">SPIRAL Objects and Data Types</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html">Packages and Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html">Values and Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ruletrees.html">Transforms and Rule Trees</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SPL</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#matrices-and-symbolic-matrices">Matrices and Symbolic Matrices</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spl-objects">SPL Objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spl-operations">SPL Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operations-for-spl-objects">Operations for SPL Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#still-spl-but-towards-spl">Still SPL, But Towards Σ-SPL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#permutations">Permutations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#diagonals">Diagonals</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#more-spl-operators">More SPL Operators</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#various">Various</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iterative">Iterative</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#defining-spl-objects">Defining SPL Objects</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spl-matrices">SPL Matrices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spl-operator">SPL Operator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spl-permutation">SPL Permutation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#transforms-ruletrees-and-spl-formulas">Transforms, RuleTrees, and SPL Formulas</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#from-transform-to-spl">From Transform to SPL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conversions-transform-spl-gap-matrix">Conversions Transform/SPL/GAP Matrix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#symbolic-correctness">Symbolic Correctness</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html">Σ-SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html">Abstract Code (icode)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html">End to End, from Transform to C Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">SPIRAL Objects and Data Types</a> &raquo;</li>
+        
+      <li>SPL</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/spiral_objects/spl.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="spl">
+<span id="id1"></span><h1>SPL<a class="headerlink" href="#spl" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="matrices-and-symbolic-matrices">
+<h2>Matrices and Symbolic Matrices<a class="headerlink" href="#matrices-and-symbolic-matrices" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spl-objects">
+<h3>SPL Objects<a class="headerlink" href="#spl-objects" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s1 := I(4);                     # Identity matrix
+s2 := F(2);                     # Butterfly matrix
+s3 := L(8, 2);                  # Stride permutation matrix
+s4 := Mat([[1,2],[3,4]]);       # GAP Matrix as SPL object
+RowVec(4); ColVec(4);           # row and column vectors
+O(4); O(3, 4);                  # zero matrix, square and rectangular
+</pre></div>
+</div>
+</div>
+<div class="section" id="spl-operations">
+<h3>SPL Operations<a class="headerlink" href="#spl-operations" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s2 * s4; Compose(s2, s4);       # product of SPL
+DirectSum(s1, s2);              # matrix direct sum
+Tensor(s1, s2);         # Kronecker product of matrices
+HStack(s2, s4);         # [[s2,s4]]
+VStack(s2, s4);         # [[s2],[s4]]
+</pre></div>
+</div>
+</div>
+<div class="section" id="operations-for-spl-objects">
+<h3>Operations for SPL Objects<a class="headerlink" href="#operations-for-spl-objects" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pm(s1);                         # print as matrix
+MatSPL(s2);                     # convert to GAP matrix
+s3.transpose();         # symbolic transposition
+# List all SPL objects
+List(Filtered(Dir(spiral.spl), o-&gt;IsSPL(spiral.spl.(o))),
+         e-&gt;spiral.spl.(e));
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="still-spl-but-towards-spl">
+<h2>Still SPL, But Towards Σ-SPL<a class="headerlink" href="#still-spl-but-towards-spl" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="permutations">
+<h3>Permutations<a class="headerlink" href="#permutations" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s1 := L(8,4);           # The stride permutation...
+MatSPL(s1);             # ...is a matrix...
+s1.lambda();            # ...and a symbolic function
+L(8, 4) * L(8, 2);      # == I(8)
+Tensor(I(2), L(4,2)) * L(8,2);  # digit perm needs expression
+
+# other permutation matrices/functions
+J(4); Z(4,1); CRT(4,5); RR(13,3,2);
+Tensor(J(4), Z(4, 1));
+</pre></div>
+</div>
+</div>
+<div class="section" id="diagonals">
+<h3>Diagonals<a class="headerlink" href="#diagonals" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>d:= Diag(fConst(4,1.1));                # Diagonal matrix
+d.element;
+e:= RCDiag(FList(TReal, [1..16]));      # RC(Diag(...))
+e.element;
+f := DiagCpxSplit(FList(TReal, [1..16]));
+f.element;
+
+# diagonal matrix with dependency on free variable
+i := Ind(2);
+Diag(fCompose(FList(TReal, [1..4]), fTensor(fId(2), fBase(i))));
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="more-spl-operators">
+<h2>More SPL Operators<a class="headerlink" href="#more-spl-operators" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="various">
+<h3>Various<a class="headerlink" href="#various" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s1 := DFT(4).terminate();       # Get the complex DFT(4) matrix
+s2 := RC(s1);                   # convert it to a real 8x8 matrix
+s3 := COND(Ind(), I(2), F(2));  # conditional matrix
+s4:= Tensor(DFT(4), I(4));              # transforms are SPL objects
+MatSPL(DFT(4)) * [1..4];        # and support SPL and Matrix operations
+ConjLR(Tensor(I(2), F(2)), L(4,2), L(4,2));     # classical identity
+
+RowDirectSum(1, F(2), J(2));    # overlapped direct sum
+RowTensor(5, 1, F(2));          # overlapped tensor
+ColDirectSum(1, F(2), J(2));    # overlapped direct sum
+ColTensor(5, 1, F(2));          # overlapped tensor
+</pre></div>
+</div>
+</div>
+<div class="section" id="iterative">
+<h3>Iterative<a class="headerlink" href="#iterative" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>i := Ind(4);
+s5 := IterDirectSum(i, F(2));           # iterative direct sum
+s6 := IterDirectSum(i, Mat([[i+1, 2*i],[-3*i, 4*i+5]]));
+MatSPL(s6);
+
+s7 := IterHStack(i, F(2));              # iterative HStack
+s8 := IterVStack(i, F(2));              # iterative VStack
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="defining-spl-objects">
+<h2>Defining SPL Objects<a class="headerlink" href="#defining-spl-objects" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spl-matrices">
+<h3>SPL Matrices<a class="headerlink" href="#spl-matrices" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\spl\symbols.gi
+Class(F, Sym, rec(
+        def := size -&gt; Checked(IsPosInt(size),
+        Cond(size = 1, Mat([[1]]),
+                 size = 2, Mat([[1,1], [1,-1]]),
+                 Mat(Global.DFT(size)))),
+
+        isReal    := self &gt;&gt; self.params[1] &lt;= 2,
+        isPermutation := False,
+        transpose := self &gt;&gt; self,
+        conjTranspose := self &gt;&gt; self,
+        inverse := self &gt;&gt; let(n:=self.params[1],
+                Cond(n=1, self, n=2, 1/2*F(2),
+                Error(&quot;Inverse not supported&quot;))),
+        toAMat    := self &gt;&gt; DFTAMat(self.params[1]),
+        printlatex := (self) &gt;&gt; Print(&quot; F_{&quot;, self.params[1], &quot;} &quot;)
+));
+</pre></div>
+</div>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s := F(2);
+MatSPL(s);
+</pre></div>
+</div>
+</div>
+<div class="section" id="spl-operator">
+<h3>SPL Operator<a class="headerlink" href="#spl-operator" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\spl\Conjugate.gi
+Class(Conjugate, BaseOperation, rec(
+        new := (self, spl, conj) &gt;&gt; Checked(IsSPL(spl), IsSPL(conj),
+        When(Dimensions(conj) = [1,1], spl,
+                 SPL(WithBases( self,
+                         rec( _children := [spl, conj],
+                         dimensions := spl.dimensions ))))),
+        isPermutation := False,
+        dims := self &gt;&gt; self.dimensions,
+        toAMat := self &gt;&gt;
+                ConjugateAMat(AMatSPL(self._children[1]),
+                        AMatSPL(self._children[2])),
+        print := (self, i, is) &gt;&gt;
+                Print(&quot;(&quot;, self.child(1).print(i, is), &quot;) ^ (&quot;,
+                self.child(2).print(i+is, is), &quot;)&quot;, self.printA()),
+        transpose := self &gt;&gt; Inherit(self, rec(_children := [
+                TransposedSPL(self._children[1]), self._children[2] ],
+        dimensions := Reversed(self.dimensions))),
+        arithmeticCost := (self, costMul, costAddMul) &gt;&gt;
+                self._children[1].arithmeticCost(costMul, costAddMul)
+));
+</pre></div>
+</div>
+</div>
+<div class="section" id="spl-permutation">
+<h3>SPL Permutation<a class="headerlink" href="#spl-permutation" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\spl\perms.gi
+Class(L, PermClass, rec(
+        def := (n,str) -&gt; Checked(IsPosIntSym(n), IsPosIntSym(str),
+                (not (IsInt(n) and IsInt(str)) or n mod str = 0), rec()),
+
+        domain := self &gt;&gt; self.params[1],
+        range  := self &gt;&gt; self.params[1],
+
+        lambda := self &gt;&gt; let(
+                n := self.params[1], str := self.params[2], i := Ind(n),
+                Lambda(i, idiv(i, n/str) + str * imod(i, n/str))),
+
+        transpose := self &gt;&gt; self.__bases__[1](self.params[1],
+                self.params[1] / self.params[2]),
+        isSymmetric := self &gt;&gt; (self.params[1] = self.params[2]^2) or
+                (self.params[2] = 1) or (self.params[2] = self.params[1]),
+));
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="transforms-ruletrees-and-spl-formulas">
+<h2>Transforms, RuleTrees, and SPL Formulas<a class="headerlink" href="#transforms-ruletrees-and-spl-formulas" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="from-transform-to-spl">
+<h3>From Transform to SPL<a class="headerlink" href="#from-transform-to-spl" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># create the objects and lower them
+t := DFT(4);
+rt := RandomRuleTree(t, SpiralDefaults);
+s := SPLRuleTree(rt);
+</pre></div>
+</div>
+</div>
+<div class="section" id="conversions-transform-spl-gap-matrix">
+<h3>Conversions Transform/SPL/GAP Matrix<a class="headerlink" href="#conversions-transform-spl-gap-matrix" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>t.terminate();                  # transform -&gt; SPL
+tm := MatSPL(t);                # transform -&gt; GAP matrix
+sm := MatSPL(s);                # SPL formula -&gt; GAP matrix
+</pre></div>
+</div>
+</div>
+<div class="section" id="symbolic-correctness">
+<h3>Symbolic Correctness<a class="headerlink" href="#symbolic-correctness" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>tm = sm;                        # same, as GAP matrices
+InfinityNormMat(tm - sm);       # computes the matrix norm
+
+t1 := DFT(13);                  # for this we lose symbolic equivalency
+rt1 := RandomRuleTree(t1, SpiralDefaults);
+s1 := SPLRuleTree(rt1); # size 13 triggers Rader
+tm1 := MatSPL(t1);              # this is fully symbolic, but
+sm1 := MatSPL(s1);              # Rader requires the FFT
+tm1 = sm1;                      # thus floating-point matrix
+InfinityNormMat(tm1 - sm1);     # but equivalent wrt. floating-point
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="sigma_spl.html" class="btn btn-neutral float-right" title="Σ-SPL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ruletrees.html" class="btn btn-neutral float-left" title="Transforms and Rule Trees" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

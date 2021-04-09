@@ -1,0 +1,620 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Σ-SPL &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Abstract Code (icode)" href="icode.html" />
+    <link rel="prev" title="SPL" href="spl.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">SPIRAL Objects and Data Types</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html">Packages and Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html">Values and Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ruletrees.html">Transforms and Rule Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html">SPL</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Σ-SPL</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gather-and-scatter">Gather and Scatter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gather-and-scatter-matrices">Gather and Scatter Matrices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scatter-kernel-gather-pattern">Scatter/Kernel/Gather Pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tensor-product-and-gath-scat-isum">Tensor Product and Gath/Scat/ISum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#other-tensor-patterns">Other Tensor Patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-loops">Advanced Loops</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Tensor Product and Gath/Scat/ISum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#more-complex-example">More Complex Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gath-scat-diag-and-perms">Gath/Scat, Diag and Perms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gather-functions">Gather Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#diagonals">Diagonals</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#defining-spl-objects">Defining Σ-SPL Objects</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gather">Gather</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#spl-index-mapping-functions">Σ-SPL Index Mapping Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#definition">Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operations-on-functions">Operations on Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#function-properties-fields">Function Properties/Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#spl-diagonal-functions">Σ-SPL Diagonal Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Operations on Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Function Properties/Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#defining-spl-symbolic-functions">Defining Σ-SPL Symbolic Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fid-and-fbase">fId and fBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fcompose">fCompose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#domega-and-dlin-for-twiddle-diagonal">dOmega and dLin for Twiddle Diagonal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html">Abstract Code (icode)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html">End to End, from Transform to C Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">SPIRAL Objects and Data Types</a> &raquo;</li>
+        
+      <li>Σ-SPL</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/spiral_objects/sigma_spl.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="spl">
+<span id="sigma-spl"></span><h1><a class="toc-backref" href="#id5">Σ-SPL</a><a class="headerlink" href="#spl" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#spl" id="id5">Σ-SPL</a></p>
+<ul>
+<li><p><a class="reference internal" href="#gather-and-scatter" id="id6">Gather and Scatter</a></p>
+<ul>
+<li><p><a class="reference internal" href="#gather-and-scatter-matrices" id="id7">Gather and Scatter Matrices</a></p></li>
+<li><p><a class="reference internal" href="#scatter-kernel-gather-pattern" id="id8">Scatter/Kernel/Gather Pattern</a></p></li>
+<li><p><a class="reference internal" href="#tensor-product-and-gath-scat-isum" id="id9">Tensor Product and Gath/Scat/ISum</a></p></li>
+<li><p><a class="reference internal" href="#other-tensor-patterns" id="id10">Other Tensor Patterns</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#advanced-loops" id="id11">Advanced Loops</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id12">Tensor Product and Gath/Scat/ISum</a></p></li>
+<li><p><a class="reference internal" href="#more-complex-example" id="id13">More Complex Example</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#gath-scat-diag-and-perms" id="id14">Gath/Scat, Diag and Perms</a></p>
+<ul>
+<li><p><a class="reference internal" href="#gather-functions" id="id15">Gather Functions</a></p></li>
+<li><p><a class="reference internal" href="#diagonals" id="id16">Diagonals</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#defining-spl-objects" id="id17">Defining Σ-SPL Objects</a></p>
+<ul>
+<li><p><a class="reference internal" href="#gather" id="id18">Gather</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#spl-index-mapping-functions" id="id19">Σ-SPL Index Mapping Functions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#definition" id="id20">Definition</a></p></li>
+<li><p><a class="reference internal" href="#operations-on-functions" id="id21">Operations on Functions</a></p></li>
+<li><p><a class="reference internal" href="#function-properties-fields" id="id22">Function Properties/Fields</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#spl-diagonal-functions" id="id23">Σ-SPL Diagonal Functions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id24">Definition</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id25">Operations on Functions</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id26">Function Properties/Fields</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#defining-spl-symbolic-functions" id="id27">Defining Σ-SPL Symbolic Functions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#fid-and-fbase" id="id28">fId and fBase</a></p></li>
+<li><p><a class="reference internal" href="#fcompose" id="id29">fCompose</a></p></li>
+<li><p><a class="reference internal" href="#domega-and-dlin-for-twiddle-diagonal" id="id30">dOmega and dLin for Twiddle Diagonal</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="gather-and-scatter">
+<h2><a class="toc-backref" href="#id6">Gather and Scatter</a><a class="headerlink" href="#gather-and-scatter" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="gather-and-scatter-matrices">
+<h3><a class="toc-backref" href="#id7">Gather and Scatter Matrices</a><a class="headerlink" href="#gather-and-scatter-matrices" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>g1 := Gath(fId(2));                     # Gath(fId(.)) = I(.)
+g2 := Gath(fBase(4, 0));                # Gath(fBase(.,.)) = base vec
+g3 := Gath(fTensor(fBase(4, 0), fId(2)));       # standard pattern
+
+s1 := Scat(fId(2));                     # Scat(fId(.)) = I(.)
+s2 := Scat(fBase(4, 2));                # Scat(fBase(.,.)) = base vec
+s3 := Scat(fTensor(fId(2), fBase(4, 3)));       # standard pattern
+</pre></div>
+</div>
+</div>
+<div class="section" id="scatter-kernel-gather-pattern">
+<h3><a class="toc-backref" href="#id8">Scatter/Kernel/Gather Pattern</a><a class="headerlink" href="#scatter-kernel-gather-pattern" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A := F(2); j := 0;
+# iteration j of Tensor(I(4), F(2))
+sag1 := Scat(fTensor(fBase(4, j), fId(2))) * A *
+                Gath(fTensor(fBase(4, j), fId(2)));
+
+# iteration j of Tensor(F(2), I(4))
+sag2 := Scat(fTensor(fId(2), fBase(4, j))) * A *
+                Gath(fTensor(fId(2), fBase(4, j)));
+
+# iteration j of Tensor(I(4), F(2)) * L(8, 4)
+sag3 := Scat(fTensor(fBase(4, j), fId(2))) * A *
+                Gath(fTensor(fId(2), fBase(4, j)));
+pm(sag1); pm(sag2); pm(sag3);
+</pre></div>
+</div>
+</div>
+<div class="section" id="tensor-product-and-gath-scat-isum">
+<h3><a class="toc-backref" href="#id9">Tensor Product and Gath/Scat/ISum</a><a class="headerlink" href="#tensor-product-and-gath-scat-isum" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A := F(2);
+j := Ind(4);
+# Sigma-SPL for Tensor(I(4), F(2))
+sag1 := Scat(fTensor(fBase(j), fId(2))) * A *
+                Gath(fTensor(fBase(j), fId(2)));
+s1 := ISum(j, sag1);
+MatSPL(s1) = MatSPL(Tensor(I(4), F(2)));
+</pre></div>
+</div>
+</div>
+<div class="section" id="other-tensor-patterns">
+<h3><a class="toc-backref" href="#id10">Other Tensor Patterns</a><a class="headerlink" href="#other-tensor-patterns" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Sigma-SPL for Tensor(F(2), I(4))
+s2 := ISum(j, Scat(fTensor(fId(2), fBase(j))) * A *
+                Gath(fTensor(fId(2), fBase(j))));
+MatSPL(s2) = MatSPL(Tensor(F(2), I(4)));
+
+# Sigma-SPL for Tensor(I(4), F(2)) * L(8, 4)
+s3 := ISum(j, Scat(fTensor(fBase(j), fId(2))) * A *
+                Gath(fTensor(fId(2), fBase(j))));
+MatSPL(s3) = MatSPL(Tensor(I(4), F(2)) * L(8, 4));
+
+# Direct sum
+ISum(j, Scat(fTensor(fBase(j), fId(2))) * Mat([[j,-j],[j, j]]) *
+                Gath(fTensor(fBase(j), fId(2))));
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="advanced-loops">
+<h2><a class="toc-backref" href="#id11">Advanced Loops</a><a class="headerlink" href="#advanced-loops" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3><a class="toc-backref" href="#id12">Tensor Product and Gath/Scat/ISum</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A := F(2);
+j := Ind(4);
+k := Ind(2);
+
+# Sigma-SPL for Tensor(I(4), F(2), I(2))
+sag := Scat(fTensor(fBase(j), fId(2), fBase(k))) * A *
+                Gath(fTensor(fBase(j), fId(2), fBase(k)));
+s := ISum(k, ISum(j, sag));
+MatSPL(s) = MatSPL(Tensor(I(4), F(2), I(2)));
+</pre></div>
+</div>
+</div>
+<div class="section" id="more-complex-example">
+<h3><a class="toc-backref" href="#id13">More Complex Example</a><a class="headerlink" href="#more-complex-example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>i := Ind(8);
+j := Ind(4);
+k := Ind(2);
+A := Mat([[j+1,-2*j],[j*k, j+1]]); B := F(2);
+
+s := ISum(k, ISum(j, Scat(fTensor(fBase(j), fBase(k), fId(2))) * A *
+                                         Gath(fTensor(fId(2), fBase(k), fBase(j))))) *
+         ISum(i, Scat(fTensor(fBase(i), fId(2))) * B
+                   * Gath(fTensor(J(2), fCompose(Z(8,3), fBase(i)))));
+MatSPL(s);
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="gath-scat-diag-and-perms">
+<h2><a class="toc-backref" href="#id14">Gath/Scat, Diag and Perms</a><a class="headerlink" href="#gath-scat-diag-and-perms" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="gather-functions">
+<h3><a class="toc-backref" href="#id15">Gather Functions</a><a class="headerlink" href="#gather-functions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># use Lambda functions directly in Gath/Scat
+i := Ind(8);
+f1 := Lambda(i, imod(5*i+7, 32)).setRange(32);
+g := Gath(f1);
+
+# Use indirection tables in Gath/Scat. By default not supported
+f2 := CopyFields(FData(List([0..7], j-&gt;V(Mod(5*j+7, 32)))),
+                                 rec(range := self &gt;&gt; 32));
+s := Scat(f2);
+</pre></div>
+</div>
+</div>
+<div class="section" id="diagonals">
+<h3><a class="toc-backref" href="#id16">Diagonals</a><a class="headerlink" href="#diagonals" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># the true Twiddle diagonal in DFT(8)
+d := Diag(fPrecompute(fCompose(dOmega(8, 1),
+                  diagTensor(dLin(V(4), 1, 0, TInt), dLin(2, 1, 0, TInt)))));
+MatSPL(d);
+e:= RCDiag(fCompose(FData(List([1..32], u-&gt;Value(TReal, u))),
+                   fTensor(fId(4), fBase(i))));
+# print out the function values
+e.element.tolist();
+# access the indirection table
+e.element.children()[1].var.value;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="defining-spl-objects">
+<h2><a class="toc-backref" href="#id17">Defining Σ-SPL Objects</a><a class="headerlink" href="#defining-spl-objects" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="gather">
+<h3><a class="toc-backref" href="#id18">Gather</a><a class="headerlink" href="#gather" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\spl\sums.gi
+Class(Gath, SumsBase, BaseMat, rec(
+        rChildren := self &gt;&gt; [self.func],
+        rSetChild := rSetChildFields(&quot;func&quot;),
+        new := (self, func) &gt;&gt; SPL(WithBases(self, rec(func :=
+          Checked(IsFunction(func) or IsFuncExp(func), func)))).setDims(),
+        dims := self &gt;&gt; [self.func.domain(), self.func.range()],
+        sums := self &gt;&gt; self,
+        area := self &gt;&gt; Sum(Flat([self.func.domain()])),
+        isReal := self &gt;&gt; true,
+        transpose := self &gt;&gt; Scat(self.func),
+        conjTranspose := self &gt;&gt; self.transpose(),
+        inverse := self &gt;&gt; self.transpose(),
+        toAMat := self &gt;&gt; let(
+          n := EvalScalar(self.func.domain()),
+          N := EvalScalar(self.func.range()),
+          func := self.func.lambda(),
+          AMatMat(List([0..n-1], row -&gt; let(idx:=evalScalar(func.at(row)),
+                Cond(idx _is funcExp, When(idx.args[1]=0, Replicate(N, 0),
+                         Error(&quot;... &quot;)),
+                 BasisVec(N, idx)))))),
+));
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="spl-index-mapping-functions">
+<h2><a class="toc-backref" href="#id19">Σ-SPL Index Mapping Functions</a><a class="headerlink" href="#spl-index-mapping-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="definition">
+<h3><a class="toc-backref" href="#id20">Definition</a><a class="headerlink" href="#definition" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>f := fId(4);                    # I4-&gt;I4: i-&gt;i
+j := Ind(4);                    # variable with range
+g := fBase(j);                  # I1-&gt;I4: i-&gt;j
+h := fAdd(4,2,1);               # I2-&gt;I4: i-&gt;i+1
+u := L(16, 4);                  # permutation i -&gt; \ell(16,4)(i)
+</pre></div>
+</div>
+</div>
+<div class="section" id="operations-on-functions">
+<h3><a class="toc-backref" href="#id21">Operations on Functions</a><a class="headerlink" href="#operations-on-functions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>f.at(0);                        # evaluate function
+f.tolist();                     # create table for function
+f.lambda();                     # convert to Lambda function
+r := fTensor(f, g);             # tensor product of functions
+s := fCompose(r, u);            # function composition
+</pre></div>
+</div>
+</div>
+<div class="section" id="function-properties-fields">
+<h3><a class="toc-backref" href="#id22">Function Properties/Fields</a><a class="headerlink" href="#function-properties-fields" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>f.domain();
+f.range();
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="spl-diagonal-functions">
+<h2><a class="toc-backref" href="#id23">Σ-SPL Diagonal Functions</a><a class="headerlink" href="#spl-diagonal-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id24">Definition</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>f := fConst(4, 1.1);            # I4-&gt;R: i-&gt;1.1
+g := dOmega(8, 2);              # f_N,k : N -&gt; C : i -&gt; omega(N, k*i)
+h := FList(TReal, [1.1, 1.2, 1.4, 1.4]);        # table lookup
+u := FData([V(1.1), V(1.2), V(1.3), V(1.4)]);   # table lookup w/var
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id25">Operations on Functions</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>g.at(3);                        # evaluate function
+g.at(3).ev();                   # simplify the result
+f.tolist();                     # create table for function
+g.lambda();                     # convert to Lambda function
+r := diagTensor(f, u);          # tensor product of functions
+r.tolist();                     # what does diagTensor do?
+s := fCompose(r, L(16,4));      # composition of permutation and
+s.tolist();                     #   tensor product of functions
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id26">Function Properties/Fields</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>f.domain();
+f.range();
+u.var;
+u.var.t;
+u.var.value;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="defining-spl-symbolic-functions">
+<h2><a class="toc-backref" href="#id27">Defining Σ-SPL Symbolic Functions</a><a class="headerlink" href="#defining-spl-symbolic-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="fid-and-fbase">
+<h3><a class="toc-backref" href="#id28">fId and fBase</a><a class="headerlink" href="#fid-and-fbase" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\spl\perms2.gi
+Class(fId, PermClass, rec(
+        domain := self &gt;&gt; self.params[1],
+        range  := self &gt;&gt; self.params[1],
+        def    := size -&gt; Checked(IsPosInt0Sym(size), rec(size := size)),
+        lambda := self &gt;&gt; let(i := Ind(self.params[1]), Lambda(i,i)),
+        transpose := self &gt;&gt; self,
+        isIdentity := True
+));
+
+Class(fBase, FuncClass, rec(
+        abbrevs := [ var -&gt; Checked(IsVar(var) or
+                                 ObjId(var)=ind, [var.range, var]) ],
+        def    := (N, pos) -&gt; rec(),
+        domain := self &gt;&gt; 1,
+        range  := self &gt;&gt; self.params[1],
+        print  := (self, i, is) &gt;&gt; Print(self.name, &quot;(&quot;,
+                When(ObjId(self.params[2]) in [var, ind],
+                        Print(self.params[2]), PrintCS(self.params)), &quot;)&quot;),
+        lambda := self &gt;&gt; let(i := Ind(1), Lambda(i, self.params[2]))
+));
+</pre></div>
+</div>
+</div>
+<div class="section" id="fcompose">
+<h3><a class="toc-backref" href="#id29">fCompose</a><a class="headerlink" href="#fcompose" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\spl\perms2.gi
+Class(fCompose, FuncClassOper, rec(
+        domain := self &gt;&gt; Last(self._children).domain(),
+        range := self &gt;&gt; self._children[1].range(),
+
+        lambda := self &gt;&gt;
+                FoldL1(List(self.children(), z-&gt;z.lambda()),
+                        _rankedLambdaCompose),
+
+        transpose := self &gt;&gt; self.__bases__[1](
+                List(Reversed(self.children()), c-&gt;c.transpose())),
+
+        isIdentity := self &gt;&gt; ForAll(self._children, IsIdentity),
+));
+</pre></div>
+</div>
+</div>
+<div class="section" id="domega-and-dlin-for-twiddle-diagonal">
+<h3><a class="toc-backref" href="#id30">dOmega and dLin for Twiddle Diagonal</a><a class="headerlink" href="#domega-and-dlin-for-twiddle-diagonal" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Class(dLin, DiagFunc, rec(
+        checkParams := (self, params) &gt;&gt; Checked(Length(params)=4,
+        IsPosInt0Sym(params[1]), IsType(params[4]), params),
+        lambda := self &gt;&gt; let(i:=Ind(self.params[1]),
+                a := self.params[2], b := self.params[3],
+                Lambda(i, a*i+b).setRange(self.params[4])),
+        range := self &gt;&gt; self.params[4],
+        domain := self &gt;&gt; self.params[1]
+));
+
+Class(dOmega, DiagFunc, rec(
+        checkParams := (self, params) &gt;&gt; Checked(Length(params)=2,
+        IsPosIntSym(params[1]), IsIntSym(params[2]), params),
+        lambda := self &gt;&gt; let(i:=Ind(), Lambda(i,
+                omega(self.params[1], self.params[2]*i)).setRange(TComplex)),
+        range := self &gt;&gt; TComplex,
+        domain := self &gt;&gt; TInt
+));
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="icode.html" class="btn btn-neutral float-right" title="Abstract Code (icode)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="spl.html" class="btn btn-neutral float-left" title="SPL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

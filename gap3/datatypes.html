@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Data Types &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Control Flow" href="control.html" />
+    <link rel="prev" title="GAP3 Language" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">GAP3 Language</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scalars">Scalars</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#basic-arithmetic-logical-operations">Basic Arithmetic/Logical Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transcendental-functions">Transcendental Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#assignments">Assignments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gap-functions">GAP Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#strings">Strings</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#syntax">Syntax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operations">Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#lists">Lists</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Syntax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sets">Sets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Syntax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#vectors-and-matrices">Vectors and Matrices</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Syntax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#records">Records</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Syntax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="control.html">Control Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io.html">File I/O</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">GAP3 Language</a> &raquo;</li>
+        
+      <li>Data Types</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/gap3/datatypes.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <blockquote>
+<div></div></blockquote>
+<div class="section" id="data-types">
+<span id="gap-data-types"></span><h1><a class="toc-backref" href="#id9">Data Types</a><a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#data-types" id="id9">Data Types</a></p>
+<ul>
+<li><p><a class="reference internal" href="#scalars" id="id10">Scalars</a></p></li>
+<li><p><a class="reference internal" href="#basic-arithmetic-logical-operations" id="id11">Basic Arithmetic/Logical Operations</a></p></li>
+<li><p><a class="reference internal" href="#transcendental-functions" id="id12">Transcendental Functions</a></p></li>
+<li><p><a class="reference internal" href="#assignments" id="id13">Assignments</a></p></li>
+<li><p><a class="reference internal" href="#gap-functions" id="id14">GAP Functions</a></p></li>
+<li><p><a class="reference internal" href="#strings" id="id15">Strings</a></p></li>
+<li><p><a class="reference internal" href="#lists" id="id16">Lists</a></p></li>
+<li><p><a class="reference internal" href="#sets" id="id17">Sets</a></p></li>
+<li><p><a class="reference internal" href="#vectors-and-matrices" id="id18">Vectors and Matrices</a></p></li>
+<li><p><a class="reference internal" href="#records" id="id19">Records</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="scalars">
+<h2><a class="toc-backref" href="#id10">Scalars</a><a class="headerlink" href="#scalars" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1; -1;                  # integer
+1.1; -1.543;            # IEEE floating point (GAP/Spiral specific)
+3/4;                    # rational number
+Double(3/4);            # typecast to floating-point
+true; false;            # logical values
+Cplx(1, 1);             # complex number: 1 + i
+E(4);                   # Cyclotomic numbers: complex root of unity
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-arithmetic-logical-operations">
+<h2><a class="toc-backref" href="#id11">Basic Arithmetic/Logical Operations</a><a class="headerlink" href="#basic-arithmetic-logical-operations" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1 + 2; 1 + 2.0; 1 + 3/4;
+1.1 * Cplx(1, 1);
+true and false;
+Log2Int(8192);
+Re(E(4)); Im(E(4));     # Real and imaginary parts
+True; False;            # function returning true/false
+</pre></div>
+</div>
+</div>
+<div class="section" id="transcendental-functions">
+<h2><a class="toc-backref" href="#id12">Transcendental Functions</a><a class="headerlink" href="#transcendental-functions" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SinPi(1.5);             # sin(1.5 * M_PI) -&gt; floating-point number
+CosPi(3/4);             # cos(3/4*\pi) -&gt; cyclotomic number
+Sqrt(2);
+Sqrt(2.0);
+</pre></div>
+</div>
+</div>
+<div class="section" id="assignments">
+<h2><a class="toc-backref" href="#id13">Assignments</a><a class="headerlink" href="#assignments" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>x := 1;                 # assign a &lt;- 1
+x = 1;                  # check equality
+x &lt; 2; x &gt; 0; x &lt;&gt; 7;   # inequalities
+
+Unbind(x);              # delete symbol
+let(a := 5, a+3);       # local symbol
+last;                   # last result
+last2; last3;           # and even farther back
+</pre></div>
+</div>
+</div>
+<div class="section" id="gap-functions">
+<h2><a class="toc-backref" href="#id14">GAP Functions</a><a class="headerlink" href="#gap-functions" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>a -&gt; 1;                 # maps a to 1
+a -&gt; a + 1;             # maps a to a+1
+() -&gt; 1;                # no argument, returns 1
+(a, b) -&gt; a + b;        # adds the two arguments a and b
+f := (n) -&gt; When(n = 1, 1, n * f(n - 1));       # recursive function
+ApplyFunc(f, [3]);      # apply function to parameter list
+</pre></div>
+</div>
+</div>
+<div class="section" id="strings">
+<h2><a class="toc-backref" href="#id15">Strings</a><a class="headerlink" href="#strings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="syntax">
+<h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
+<p>GAP strings are similar to C strings.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&quot;&quot;;                             # empty string
+&#39;a&#39;;                            # char
+&quot;abc&quot;;                          # string
+&quot;a\tb\nc&quot;;                      # control characters
+</pre></div>
+</div>
+</div>
+<div class="section" id="operations">
+<h3>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&quot;abc&quot;::&quot;abc&quot;;                   # concatenation
+Concat(&quot;abc&quot;, &quot;abc&quot;);           # concatenation
+StringList(&quot;abc&quot;);              # string -&gt; list of char
+StringToUpper(&quot;abc&quot;);           # -&gt; upper case
+StringToLower(&quot;aBc&quot;);           # -&gt; lower case
+StringInt(5);                   # integer -&gt; string
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="lists">
+<h2><a class="toc-backref" href="#id16">Lists</a><a class="headerlink" href="#lists" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Syntax<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[];                             # empty list
+[1..4];                         # dense list
+[1, 3, 4000];                   # sparse list
+[[1, 2], [3, 4]];               # matrix = list of lists
+[[[1, 2], [3, 4]], [[5, 6], [7, 8]]];           # rank 3 tensor
+[1, rec(), Set([]), ()-&gt;3];     # mixed data type lists
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Operations<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[1, 2]::[4..7];         # concatenation
+Concat([1, 2], [4..7]); # concatenation
+List([1, 2, 4, 8], Log2Int);    # apply function to list elements
+Map([1, 2, 4, 8], Log2Int);     # apply function to list elements
+Length([1..5]);         # length of list
+1 + [2..5];                     # pointwise arithmetic
+FoldL([1..3], (a,b)-&gt;a+b, 0);   # Fold left operation
+FoldR([1..3], (a,b)-&gt;a-b, 0);   # Fold right operation
+Cartesian([1..4], [3, 4]);      # Cartesian product
+ForAll([1..4], IsInt);          # Apply function, then reduce with AND
+ForAny([1..4], IsInt);          # Apply function, then reduce with OR
+Filtered([1..50], IsPrime);     # Apply filter function, drop if false
+1 in [1..5];                    # membership test
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="sets">
+<h2><a class="toc-backref" href="#id17">Sets</a><a class="headerlink" href="#sets" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>Syntax<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Set([]);                        # empty set
+Set([1, 2, 2, 3, 4]);           # Elements in sets are unique
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>Operations<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s := Set([]);
+AddSet(s, 3);
+AddSet(s, 3);
+AddSet(s, 4);
+s;
+SubtractSet(s, [3]);
+s;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="vectors-and-matrices">
+<h2><a class="toc-backref" href="#id18">Vectors and Matrices</a><a class="headerlink" href="#vectors-and-matrices" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>Syntax<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>v := [1..3];                            # list is a vector
+m := [[ 1..3], [2..4], [3..5]]; # matrix
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>Operations<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>m * v;                                  # matrix * vector
+v * m;                                  # vector * matrix
+TransposedMat(m);                       # transpose matrix
+m * [[1],[2],[3]];                      # column vector
+[[1..3]] * m;                           # row vector
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="records">
+<h2><a class="toc-backref" href="#id19">Records</a><a class="headerlink" href="#records" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h3>Syntax<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rec();                                  # empty record
+rec(key1 := 2, key2 := 17);             # key/value pairs
+r := rec(a := 1, b := &quot;2&quot;,              # record of records
+                 c := rec(a := 1), d:= []);
+r.a;                                    # direct access
+i := &quot;a&quot;;                               # record field name
+r.(i);                                  # indirect access
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>Operations<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>RecFields(r);                           # List of record fields
+IsSystemRecField(&quot;__doc__&quot;);            # Some are system fields
+CopyFields(rec(a := 1, b := 2), # merge records
+   rec(b := 3, c := 4));
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="control.html" class="btn btn-neutral float-right" title="Control Flow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="GAP3 Language" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

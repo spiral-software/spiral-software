@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Abstract Code (icode) &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="End to End, from Transform to C Code" href="end2end.html" />
+    <link rel="prev" title="Σ-SPL" href="sigma_spl.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">SPIRAL Objects and Data Types</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html">Packages and Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html">Values and Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ruletrees.html">Transforms and Rule Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html">SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html">Σ-SPL</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Abstract Code (icode)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basics">Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#internal-fields">Internal Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#arrays-and-pointers">Arrays and Pointers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#constants">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#expressions-and-commands">Expressions and Commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#find-all-icode-expressions-types-commands-etc">Find All icode Expressions, Types, Commands, Etc.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html">End to End, from Transform to C Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">SPIRAL Objects and Data Types</a> &raquo;</li>
+        
+      <li>Abstract Code (icode)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/spiral_objects/icode.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="abstract-code-icode">
+<span id="icode"></span><h1>Abstract Code (icode)<a class="headerlink" href="#abstract-code-icode" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>program(
+   chain(
+          func(TVoid, &quot;init&quot;, [  ],
+                 chain()
+          ),
+          func(TVoid, &quot;transform&quot;, [ Y, X ],
+                 decl([ t57, t58, t59, t60, t61, t62, t63, t64 ],
+                        chain(
+                           assign(t57, add(deref(X), deref(add(X, V(4))))),
+                           assign(t58, add(deref(add(X, V(1))), deref(add(X, V(5))))),
+                           assign(t59, sub(deref(X), deref(add(X, V(4))))),
+                           assign(t60, sub(deref(add(X, V(1))), deref(add(X, V(5))))),
+                           assign(t61, add(deref(add(X, V(2))), deref(add(X, V(6))))),
+                           assign(t62, add(deref(add(X, V(3))), deref(add(X, V(7))))),
+                           assign(t63, sub(deref(add(X, V(2))), deref(add(X, V(6))))),
+                           assign(t64, sub(deref(add(X, V(3))), deref(add(X, V(7))))),
+                           assign(deref(Y), add(t57, t61)),
+                           assign(deref(add(Y, V(1))), add(t58, t62)),
+                           assign(deref(add(Y, V(4))), sub(t57, t61)),
+                           assign(deref(add(Y, V(5))), sub(t58, t62)),
+                           assign(deref(add(Y, V(2))), sub(t59, t64)),
+                           assign(deref(add(Y, V(3))), add(t60, t63)),
+                           assign(deref(add(Y, V(6))), add(t59, t64)),
+                           assign(deref(add(Y, V(7))), sub(t60, t63))
+                        )
+                 )
+          )
+   )
+)
+</pre></div>
+</div>
+<div class="section" id="basics">
+<h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>c1 := skip();                           # NOP
+a := var.fresh_t(&quot;j&quot;, TInt);            # create a &quot;fresh&quot; variable
+c2 := assign(a, V(0));                  # assignment
+c3 := assign(a, fcall(&quot;foo&quot;));  # call to foo()
+c4 := chain(c1, c2, c3);                # basic block
+i := Ind(4);                            # loop index
+c5 := loop(i, 4, c4);                   # loop
+c6 := decl([a], c5);                    # declare a variable
+
+PrintCode(&quot;&quot;, c6, SpiralDefaults);      # pretty print as C code
+</pre></div>
+</div>
+</div>
+<div class="section" id="internal-fields">
+<h2>Internal Fields<a class="headerlink" href="#internal-fields" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>a.id; a.t;
+c2.exp; c2.loc;
+c3.cmds;
+c4.var; c4.range; c4.cmd;
+c5.vars; c5.cmd;
+</pre></div>
+</div>
+</div>
+<div class="section" id="arrays-and-pointers">
+<h2>Arrays and Pointers<a class="headerlink" href="#arrays-and-pointers" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>X;                                      # default input
+Y;                                      # default output
+X.t; Y.t;                               # they are pointers
+deref(X + V(4));                        # *(X+4)
+t := var.fresh_t(&quot;t&quot;, TArray(TReal, 4));        # double[4]
+nth(t, V(2));                           # T[2]
+tcast(TInt, deref(X + V(4)));           # typecast
+</pre></div>
+</div>
+</div>
+<div class="section" id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>d := var.fresh_t(&quot;D&quot;, TReal);           # data variable
+v := V(1.1);                            # value
+c := data(d, v,                         # declare constant
+                  assign(nth(X, 0), nth(X, 0) * d)
+         );
+</pre></div>
+</div>
+</div>
+<div class="section" id="expressions-and-commands">
+<h2>Expressions and Commands<a class="headerlink" href="#expressions-and-commands" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\code\ir.gi
+Class(neg, AutoFoldExp, rec(
+        ev := self &gt;&gt; -self.args[1].ev(),
+        computeType := self &gt;&gt; let(t := self.args[1].t,
+        Cond(IsPtrT(t),
+                 t.aligned([t.alignment[1],
+                         -t.alignment[2] mod t.alignment[1]]), t)),
+));
+
+Class(chain, multiwrap, rec(
+   isChain := true,
+   flatten := self &gt;&gt; let(cls := self.__bases__[1],
+           CopyFields(self, rec(cmds := ConcatList(self.cmds,
+                   c -&gt; Cond(IsChain(c) and not IsBound(c.doNotFlatten),
+                                         c.cmds, ObjId(c) = skip, [], [c]))))),
+   __call__ := meth(arg)
+           local self, cmds;
+           [self, cmds] := [arg[1], Flat(Drop(arg, 1))];
+           return WithBases(self, rec(
+                   operations := CmdOps,
+                   cmds       := Checked(ForAll(cmds, IsCommand), cmds)));
+   end
+));
+</pre></div>
+</div>
+</div>
+<div class="section" id="find-all-icode-expressions-types-commands-etc">
+<h2>Find All icode Expressions, Types, Commands, Etc.<a class="headerlink" href="#find-all-icode-expressions-types-commands-etc" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># all objects defined in spiral.code
+allobs := Dir(spiral.code);
+
+# filter function, checking that base classes are in a given list
+flt := bl -&gt; (o -&gt; (ForAny(bl, b -&gt; b in let(ob := spiral.code.(o),
+        When(IsRec(ob) and IsBound(ob.__bases__), ob.__bases__, [])))));
+
+# list all expressions
+Filtered(allobs, flt([Exp, AutoFoldExp]));
+
+# list all types
+Filtered(allobs, flt([AtomicTyp]));
+
+# list all commands
+Filtered(allobs, flt([Command]));
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="end2end.html" class="btn btn-neutral float-right" title="End to End, from Transform to C Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="sigma_spl.html" class="btn btn-neutral float-left" title="Σ-SPL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Breakdown Rules &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Search" href="search.html" />
+    <link rel="prev" title="SPIRAL Infrastructure" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">SPIRAL Infrastructure</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Breakdown Rules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-rules">Base Rules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#definition">Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#twiddle-function-for-dft">Twiddle Function for DFT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rule-methods">Rule Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cooley-tukey-rule">Cooley-Tukey Rule</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#applicability">Applicability</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#children-algorithmic-choices">Children: Algorithmic Choices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#expand-dft-8-by-hand">Expand DFT(8) by Hand</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ruletrees-and-spl-revisited">Ruletrees and SPL Revisited</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#from-transform-to-spl-formula">From Transform to SPL Formula</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#impact-of-configuration">Impact of Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="search.html">Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rewrite.html">Rewriting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compiler.html">Compiler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">SPIRAL Infrastructure</a> &raquo;</li>
+        
+      <li>Breakdown Rules</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/infrastructure/breakdown.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="breakdown-rules">
+<span id="breakdown"></span><h1>Breakdown Rules<a class="headerlink" href="#breakdown-rules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="base-rules">
+<h2>Base Rules<a class="headerlink" href="#base-rules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="definition">
+<h3>Definition<a class="headerlink" href="#definition" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># In spiral-core\namespaces\spiral\transforms\dft\dft_rules.gi
+ DFT_Base := rec(
+        forTransposition := false,
+        applicable       := nt -&gt; nt.params[1] = 2 and not nt.hasTags(),
+        apply            := (nt, C, cnt) -&gt; F(2)
+)
+</pre></div>
+</div>
+</div>
+<div class="section" id="twiddle-function-for-dft">
+<h3>Twiddle Function for DFT<a class="headerlink" href="#twiddle-function-for-dft" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tw1 := (n,d,k) -&gt; Checked(
+        IsPosIntSym(n), IsPosIntSym(d), IsIntSym(k),
+        fCompose(dOmega(n,k),
+                diagTensor(dLin(div(n,d), 1, 0, TInt),
+                        dLin(d, 1, 0, TInt))));
+</pre></div>
+</div>
+</div>
+<div class="section" id="rule-methods">
+<h3>Rule Methods<a class="headerlink" href="#rule-methods" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>PrintActiveRules(DFT);          # rules for DFT currently active
+DFT_Base.switch;                # filed in rule to determine active
+t := DFT(2);
+DFT_Base.applicable(t); # is the rule applicable
+DFT_Base.children(t);           # all possible Algorithmic choices
+DFT_Base.apply(t, [], []);      # t-&gt;spl for a particular choice
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="cooley-tukey-rule">
+<h2>Cooley-Tukey Rule<a class="headerlink" href="#cooley-tukey-rule" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Definition<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># In spiral-core\namespaces\spiral\transforms\dft\dft_rules.gi
+DFT_CT := rec(
+        maxSize       := false,
+        forcePrimeFactor := false,
+        applicable := (self, nt) &gt;&gt; nt.params[1] &gt; 2
+                and not nt.hasTags()
+                and (self.maxSize=false or nt.params[1] &lt;= self.maxSize)
+                and not IsPrime(nt.params[1])
+                and When(self.forcePrimeFactor, not
+                                 DFT_GoodThomas.applicable(nt), true),
+        children  := nt -&gt; Map2(DivisorPairs(nt.params[1]),
+                        (m,n) -&gt; [ DFT(m, nt.params[2] mod m),
+                                           DFT(n, nt.params[2] mod n) ]),
+        apply := (nt, C, cnt) -&gt; let(mn := nt.params[1],
+                                m := Rows(C[1]), n := Rows(C[2]),
+                        Tensor(C[1], I(n)) *
+                        Diag(fPrecompute(Tw1(mn, n, nt.params[2]))) *
+                        Tensor(I(m), C[2]) *
+                        L(mn, m)
+                )
+        )
+</pre></div>
+</div>
+</div>
+<div class="section" id="applicability">
+<h3>Applicability<a class="headerlink" href="#applicability" title="Permalink to this headline">¶</a></h3>
+<p>Cooley Tukey requires a non-prime size.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>t := DFT(2);
+t1 := DFT(4);
+t2 := DFT(8);
+t3 := DFT(20);
+
+DFT_CT.applicable(t);           # see for which sized DFT_CT
+DFT_CT.applicable(DFT(5));      # is applicable
+DFT_CT.applicable(t1);
+DFT_CT.applicable(t2);
+DFT_CT.applicable(t3);
+</pre></div>
+</div>
+</div>
+<div class="section" id="children-algorithmic-choices">
+<h3>Children: Algorithmic Choices<a class="headerlink" href="#children-algorithmic-choices" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>c1 := DFT_CT.children(t2);      # enumerate all algorithmic choices
+c2 := DFT_CT.children(t2);
+c3 := DFT_CT.children(t3);
+</pre></div>
+</div>
+</div>
+<div class="section" id="expand-dft-8-by-hand">
+<h3>Expand DFT(8) by Hand<a class="headerlink" href="#expand-dft-8-by-hand" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s := DFT_Base.apply(t, [], []); # expand DFT(2) -&gt; F(2)
+s1 := DFT_CT.apply(t1, [s, s], [t, t]);         # DFT(4) -&gt; SPL
+s2 := DFT_CT.apply(t2, [s1, s], [t1, t]);       # DFT(8) -&gt; SPL
+MatSPL(t2) = MatSPL(s2);
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="ruletrees-and-spl-revisited">
+<h2>Ruletrees and SPL Revisited<a class="headerlink" href="#ruletrees-and-spl-revisited" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="from-transform-to-spl-formula">
+<h3>From Transform to SPL Formula<a class="headerlink" href="#from-transform-to-spl-formula" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>n := 8; k := -1;                        # transform parameters
+opts := CopyFields(SpiralDefaults,      # local configuration
+        rec(breakdownRules := rec(
+                DFT := [DFT_Base,
+                CopyFields(DFT_CT, rec(maxSize := 20))])));
+t := DFT(n, k);                 # transform
+rt := RandomRuleTree(t, opts);  # get rule tree
+spl := SPLRuleTree(rt);         # SPL formula
+</pre></div>
+</div>
+</div>
+<div class="section" id="impact-of-configuration">
+<h3>Impact of Configuration<a class="headerlink" href="#impact-of-configuration" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>PrintActiveRules(DFT);
+opts.breakdownRules.DFT;
+DFT_CT.maxSize;         # global configuration unchanged
+ct := Filtered(opts.breakdownRules.DFT, i-&gt;i.name =  DFT_CT.name)[1];
+ct.maxSize;                     # access local configuration
+t2 := DFT(21);                  # works with global but not local opts
+rt := RandomRuleTree(t2, SpiralDefaults);
+rt2 := RandomRuleTree(t2, opts);
+FindUnexpandableNonterminal(t2, opts);  # Where do we fail?
+ct.maxSize := false;                            # remove guard in DFT_CT
+rt2 := RandomRuleTree(t2, opts);                # try again
+FindUnexpandableNonterminal(t2, opts);  # Where do we fail now?
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="search.html" class="btn btn-neutral float-right" title="Search" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="SPIRAL Infrastructure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

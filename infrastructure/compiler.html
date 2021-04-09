@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Compiler &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Special Hardware" href="../hardware/index.html" />
+    <link rel="prev" title="Rewriting" href="rewrite.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">SPIRAL Infrastructure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="breakdown.html">Breakdown Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="search.html">Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rewrite.html">Rewriting</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Compiler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#compiling-from-spl-to-icode">Compiling from Σ-SPL to icode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#top-level-flow">Top-Level Flow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#basic-block-compilation">Basic Block Compilation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#basic-block-compiler">Basic Block Compiler</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Top-Level Flow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#basic-block-compilation-stage-by-stage">Basic Block Compilation, Stage by Stage</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#a-closer-look-at-compiler-stages">A Closer Look at Compiler Stages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#implementation-of-important-stages">Implementation of Important Stages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">SPIRAL Infrastructure</a> &raquo;</li>
+        
+      <li>Compiler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/infrastructure/compiler.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="compiler">
+<span id="id1"></span><h1>Compiler<a class="headerlink" href="#compiler" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="compiling-from-spl-to-icode">
+<h2>Compiling from Σ-SPL to icode<a class="headerlink" href="#compiling-from-spl-to-icode" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="top-level-flow">
+<h3>Top-Level Flow<a class="headerlink" href="#top-level-flow" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>opts := SpiralDefaults;
+s := SumsRuleTree(RandomRuleTree(DFT(4), opts), opts);
+c := CodeSums(s, opts);
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-block-compilation">
+<h3>Basic Block Compilation<a class="headerlink" href="#basic-block-compilation" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># the actual code generator is a configuration option
+opts.codegen;
+# What happens in CodeSums
+DefaultCodegen(Formula(s), Y, X, opts);
+
+# without Formula() the basic block compiler is not run
+c := DefaultCodegen(s, Y, X, opts);
+# invoke the basic block compiler
+Compile(c, opts);
+
+# Compile calls a number of compile strategies
+opts.compileStrategy;
+for i  in [ 1 .. Length(opts.compileStrategy) ] do
+        c := let(stage := opts.compileStrategy[i],
+                When(IsCallableN(stage, 2), stage(c, opts), stage(c)));
+od;
+c;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="basic-block-compiler">
+<h2>Basic Block Compiler<a class="headerlink" href="#basic-block-compiler" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>Top-Level Flow<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>opts := SpiralDefaults;
+s := SumsRuleTree(RandomRuleTree(DFT(8), opts), opts);
+c := DefaultCodegen(s, Y, X, opts);
+Compile(c, opts);
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-block-compilation-stage-by-stage">
+<h3>Basic Block Compilation, Stage by Stage<a class="headerlink" href="#basic-block-compilation-stage-by-stage" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>c := Compile.pullDataDeclsRefs(c);
+c := Compile.fastScalarize(c);
+c := UnrollCode(c);
+c := FlattenCode(c);
+c := UntangleChain(c);
+c := CopyPropagate.initial(c, opts);
+c := HashConsts(c, opts);
+c := MarkDefUse(c);
+c := BinSplit(c, opts);
+c := MarkDefUse(c);
+c := CopyPropagate(c, opts);
+c := BinSplit(c, opts);
+c := FixValueTypes(c);
+c := Compile.declareVars(c);
+PrintCode(&quot;dft8&quot;, c, opts);
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="a-closer-look-at-compiler-stages">
+<h2>A Closer Look at Compiler Stages<a class="headerlink" href="#a-closer-look-at-compiler-stages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="implementation-of-important-stages">
+<h3>Implementation of Important Stages<a class="headerlink" href="#implementation-of-important-stages" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Print(Compile.pullDataDeclsRefs);
+Print(Compile.fastScalarize);
+UnrollCode;
+FlattenCode;
+UntangleChain;
+Print(CopyPropagate.copyProp);
+Print(CSE.__call__);
+Print(HashConsts);
+Print(_MarkDefUse);
+Print(BinSplit.__call__);
+FixValueTypes;
+Compile.declareVars;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../hardware/index.html" class="btn btn-neutral float-right" title="Special Hardware" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="rewrite.html" class="btn btn-neutral float-left" title="Rewriting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

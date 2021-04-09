@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Introduction &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="gettingstarted.html" />
+    <link rel="prev" title="SPIRAL User Manual" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-spiral">What is SPIRAL?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-spiral">Why SPIRAL?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#citation">Citation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<span id="id1"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="what-is-spiral">
+<h2>What is SPIRAL?<a class="headerlink" href="#what-is-spiral" title="Permalink to this headline">¶</a></h2>
+<p>SPIRAL is a program generation system for linear transforms and other mathematical functions that produces very high performance code for a
+wide spectrum of hardware platforms.  The input to SPIRAL is high level mathematical algorithm specifications along with selected architectural
+and micro-architectural parameters. The output is performance-optimized code in a language such as C, possibly augmented with vector
+intrinsics and threading instructions.  It is a mature system embodying over two decades of research and development at Carnegie Mellon University,
+with a long pedigree of publications, large successful projects and commercial use for vendor math libraries, and it continues to be an active
+focal point for research at CMU.</p>
+<p>SPIRAL focuses on the components of a software system that generally do not port well between different platforms – computationally intensive
+algorithms that traditionally require expert platform-specific tuning to achieve good performance.  SPIRAL lets a developer express algorithms
+at a mathematical abstraction above the code level, and it generates the appropriate code for a given target.  Similar to how high-level programming
+languages replaced assembly language for most coding tasks, the higher level mathematical abstractions can replace standard source code for
+performance-sensitive kernels.</p>
+</div>
+<div class="section" id="why-spiral">
+<h2>Why SPIRAL?<a class="headerlink" href="#why-spiral" title="Permalink to this headline">¶</a></h2>
+<p>The central motivator behind SPIRAL is that modern computational platforms are so complex, both in depth and breadth, that
+manually writing critical high-performance software for those systems has become an increasingly impractical, if not intractable,
+undertaking.  And even if successfully written and tuned for one platform, the performance probably doesn’t carry over as machines
+are replaced every few years.  Every new combination of nodes, cores, threads, memory speeds, cache hierarchies, instruction sets,
+registers, and so on has its own idiosyncrasies.  A popular and dependable numerically intensive package may move several times
+in its lifetime, often having to perform well below its potential because of prohibitive costs to rework it.</p>
+<p>For someone who hasn’t had to fine tune production high-performance code for a modern hardware platform there are a lot
+of non-obvious gotchas that make the problem much messier than it looks from the outside.  A well written overview of the issues,
+<a class="reference internal" href="bibliography.html#fastnumericalcode"><span class="std std-ref">How To Write Fast Numerical Code: A Small Introduction</span></a>, is a valuable introduction to the many-faceted problem.</p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>SPIRAL is a fully open source project publicly available under a BSD-style license.  This means you are free to use SPIRAL for whatever you like, be it academic, commercial,
+creating forks or derivatives, as long as you copy the license statement if you redistribute it (see the <a class="reference external" href="https://github.com/spiral-software/spiral-software/blob/master/LICENSE">LICENSE</a> file for details).</p>
+<p>Though not required by the SPIRAL license, if it is convenient for you, please cite SPIRAL when using it in your work and also consider contributing
+your changes back to the main SPIRAL project.</p>
+</div>
+<div class="section" id="citation">
+<h2>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
+<p>To cite SPIRAL in publications use</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Franz Franchetti, Tze Meng Low, Doru Thom Popovici, Richard M. Veras, Member,</div>
+<div class="line">Daniele G. Spampinato, Jeremy R. Johnson, Markus Püschel, James C. Hoe, José M. F. Moura:</div>
+<div class="line"><strong>SPIRAL: Extreme Performance Portability</strong>.</div>
+<div class="line">Proceedings of the IEEE, Special Issue on <em>From High Level Specifications to High Performance Code</em>, 2018</div>
+</div>
+</div></blockquote>
+<p>A BibTeX entry for LaTeX users is</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@ARTICLE{Franchetti:18,
+ AUTHOR = {Franz Franchetti and Tze-Meng Low and Thom Popovici and Richard Veras and Daniele G. Spampinato and Jeremy Johnson and Markus P{\&quot;u}schel and James C. Hoe and Jos{\&#39;e} M. F. Moura},
+ TITLE = {{SPIRAL}: Extreme Performance Portability},
+ JOURNAL = {Proceedings of the IEEE, special issue on ``From High Level Specification to High Performance Code&#39;&#39;},
+ VOLUME = {106},
+ NUMBER = {11},
+ YEAR = {2018}
+}
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="gettingstarted.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="SPIRAL User Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

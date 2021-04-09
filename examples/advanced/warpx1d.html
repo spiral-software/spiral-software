@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>WarpX 1D &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="HCOL Hello World" href="hcolhello.html" />
+    <link rel="prev" title="3D Pruned Convolution from Hockney" href="prconv3d.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#basic-ffts">Basic FFTs</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#advanced-examples-from-fftx">Advanced Examples from FFTX</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="prunedmddft.html">Pruned 3D FFT from Planewave</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prconv3d.html">3D Pruned Convolution from Hockney</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">WarpX 1D</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#advanced-examples-from-darpa-brass-demonstrating-hcol">Advanced Examples from DARPA BRASS Demonstrating HCOL</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Examples</a> &raquo;</li>
+        
+      <li>WarpX 1D</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/examples/advanced/warpx1d.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="warpx-1d">
+<h1>WarpX 1D<a class="headerlink" href="#warpx-1d" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>opts := SpiralDefaults;
+
+ni:= 4;
+n := 8;
+no := 6;
+
+## 1D case -- getting started
+padg := fAdd(n, no, (n-no)/2);
+pads := fAdd(n, ni, (n-ni)/2);
+
+scat := Scat(pads);
+gath := Gath(padg);
+dft := DFT(n, 1);
+idft := DFT(n, -1);
+krn := Diag(List([0..n-1], i-&gt;i+1));
+
+op := gath * idft * krn * dft * scat;
+
+## pruned DFT
+sl := [(n-ni)/2 .. n - (n-ni)/2 - 1];
+gl := [(n-no)/2 .. n - (n-no)/2 - 1];
+
+pdft := PrunedDFT(n, 1, 1, sl);
+pidft := PrunedIDFT(n, -1, 1, gl);
+InfinityNormMat(MatSPL(gath * idft) - MatSPL(pidft));
+InfinityNormMat(MatSPL(dft * scat) - MatSPL(pdft));
+
+krn := Diag(List([0..n-1], i-&gt;i+1));
+pop := pidft * krn * pdft;
+
+InfinityNormMat(MatSPL(op) - MatSPL(pop));
+
+## constant vector field
+vi := 3;
+vo := 2;
+
+vpdft := Tensor(pdft, I(vi));
+vpidft := Tensor(pidft, I(vo));
+
+cmat := Mat([[1,2,3], [4,5,6]]);
+vkrn := Tensor(I(n), cmat);
+
+vpop := vpidft * vkrn * vpdft;
+
+## location dependent vector field
+nnz := 4;
+mf := FData(List([0..nnz * n-1], i-&gt; Complex(i+E(4))));
+i := Ind(n);
+cimat := Mat([[mf.at(nnz*i),0,mf.at(nnz*i+1)], [0,mf.at(nnz*i+2),mf.at(nnz*i+3)]]);
+
+vikrn := IterDirectSum(i, cimat);
+vipop := vpidft * vikrn * vpdft;
+
+## real arithmetic
+rvipop := RC(vipop);
+rvipopm := List(MatSPL(rvipop), r-&gt;List(r, ReComplex));
+
+# SPL Matrix
+rt := RandomRuleTree(rvipop, opts);
+spl := SPLRuleTree(rt);
+splm := List(MatSPL(spl), r-&gt;List(r, ReComplex));
+InfinityNormMat(rvipopm - splm);
+
+# CMatrix
+tvpdft := TTensorI(pdft, vi, AVec, AVec);
+tvpidft := TTensorI(pidft, vo, AVec, AVec);
+tvikrn := TTensorInd(cimat,i, APar, APar);
+tvipop := TRC(TCompose([tvpidft, tvikrn, tvpdft]));
+
+rt := RandomRuleTree(tvipop, opts);
+c := CodeRuleTree(rt, opts);
+
+cm := CMatrix(c, opts);
+InfinityNormMat(rvipopm - cm);
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="hcolhello.html" class="btn btn-neutral float-right" title="HCOL Hello World" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="prconv3d.html" class="btn btn-neutral float-left" title="3D Pruned Convolution from Hockney" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

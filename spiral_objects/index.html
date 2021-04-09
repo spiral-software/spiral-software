@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>SPIRAL Objects and Data Types &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Classes" href="classes.html" />
+    <link rel="prev" title="File I/O" href="../gap3/io.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">SPIRAL Objects and Data Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html">Packages and Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html">Values and Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ruletrees.html">Transforms and Rule Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html">SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html">Σ-SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html">Abstract Code (icode)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html">End to End, from Transform to C Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>SPIRAL Objects and Data Types</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/spiral_objects/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="spiral-objects-and-data-types">
+<span id="spiral-objects"></span><h1>SPIRAL Objects and Data Types<a class="headerlink" href="#spiral-objects-and-data-types" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classes.html#class-definition">Class Definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes.html#class-operations">Class Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="namespaces.html">Packages and Namespaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#load-tree">Load Tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#packages-and-namespace-commands">Packages and Namespace Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="values.html">Values and Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="values.html#value-wrapper-and-object">Value Wrapper and Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html#scalar-data-types">Scalar Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html#array-data-types">Array Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html#pointers">Pointers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html#variables">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html#expressions">Expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html#comparisons">Comparisons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html#lambda-functions">Lambda Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ruletrees.html">Transforms and Rule Trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ruletrees.html#non-terminals-transforms">Non-Terminals (Transforms)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ruletrees.html#rule-trees">Rule Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ruletrees.html#non-terminal-example-dft">Non-Terminal Example: DFT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="spl.html">SPL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="spl.html#matrices-and-symbolic-matrices">Matrices and Symbolic Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html#still-spl-but-towards-spl">Still SPL, But Towards Σ-SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html#more-spl-operators">More SPL Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html#defining-spl-objects">Defining SPL Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html#transforms-ruletrees-and-spl-formulas">Transforms, RuleTrees, and SPL Formulas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sigma_spl.html">Σ-SPL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html#gather-and-scatter">Gather and Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html#advanced-loops">Advanced Loops</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html#gath-scat-diag-and-perms">Gath/Scat, Diag and Perms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html#defining-spl-objects">Defining Σ-SPL Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html#spl-index-mapping-functions">Σ-SPL Index Mapping Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html#spl-diagonal-functions">Σ-SPL Diagonal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html#defining-spl-symbolic-functions">Defining Σ-SPL Symbolic Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="icode.html">Abstract Code (icode)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="icode.html#basics">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html#internal-fields">Internal Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html#arrays-and-pointers">Arrays and Pointers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html#expressions-and-commands">Expressions and Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html#find-all-icode-expressions-types-commands-etc">Find All icode Expressions, Types, Commands, Etc.</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="end2end.html">End to End, from Transform to C Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html#dft-8-to-c">DFT(8) to C</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html#using-dp-and-coderuletree">Using DP and CodeRuleTree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html#correctness-checks">Correctness Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html#other-examples">Other Examples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="classes.html" class="btn btn-neutral float-right" title="Classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../gap3/io.html" class="btn btn-neutral float-left" title="File I/O" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

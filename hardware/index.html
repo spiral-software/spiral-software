@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Special Hardware &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SMP/OpenMP" href="smp.html" />
+    <link rel="prev" title="Compiler" href="../infrastructure/compiler.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Special Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="smp.html">SMP/OpenMP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html">SIMD</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Special Hardware</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/hardware/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="special-hardware">
+<span id="hardware"></span><h1>Special Hardware<a class="headerlink" href="#special-hardware" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="smp.html">SMP/OpenMP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="smp.html#smp-tagged-code-objects">SMP Tagged Code Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="smp.html#parallel-loop-smp-for">Parallel Loop == smp_for</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="smp.html#smp-code-objects-and-code-generator">SMP Code Objects and Code Generator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="smp.html#thread-id">Thread ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="smp.html#barrier">Barrier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="smp.html#smp-codegenerator">SMP Codegenerator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="smp.html#openmp-unparser">OpenMP Unparser</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="smp.html#parallel-for">Parallel For</a></li>
+<li class="toctree-l3"><a class="reference internal" href="smp.html#parallel-region">Parallel Region</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="avx.html">SIMD</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#targeting-simd-vector-instructions">Targeting SIMD Vector Instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#simple-example-intel-avx-4-way-double-precision">Simple Example: Intel AVX 4-way Double Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#stepwise-code-generation">Stepwise Code Generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#complex-vectorization-example">Complex Vectorization Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#tags">Tags</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#real-vectorization">Real Vectorization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#complex-vectorization">Complex Vectorization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#vectorization-rules">Vectorization Rules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#simple-vectorization-rule-example">Simple Vectorization Rule Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#formula-rewrite">Formula Rewrite</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#wrapping">Wrapping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#vwrap-transformation">VWrap Transformation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#vwrap-in-context-of-search">VWrap in Context of Search</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#special-role-of-stride-permutations">Special Role of Stride Permutations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#tl-lift-stride-permutation-to-non-terminal-level">TL: Lift Stride Permutation to Non-Terminal Level</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#tl-in-context-of-search">TL in Context of Search</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#architecture-specific-permutations">Architecture Specific Permutations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#looking-up-vectorized-implementations-for-tl">Looking up vectorized Implementations for TL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#simd-isa-database-and-bootstrapping-a-vector-architecture">SIMD ISA Database and Bootstrapping a Vector Architecture</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#isa-database-and-hashed-breakdowns">ISA Database and Hashed Breakdowns</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#generic-breakdown-rules-to-look-up-architecture-specific-code">Generic Breakdown Rules to Look Up Architecture Specific Code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#stride-permutatiopn-identities-as-rules">Stride Permutatiopn Identities as Rules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#id2">Generic Breakdown Rules to Look Up Architecture Specific Code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#spl-and-spl-vector-objects">SPL And Σ-SPL Vector Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#generate-the-example">Generate The Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#inspecting-the-vector-objects">Inspecting the Vector Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#vector-spl-objects">Vector SPL Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#vector-tensor-spl-object">Vector Tensor SPL Object</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#id3">Vector Σ-SPL Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#vector-gather">Vector Gather</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#vector-rc-objects-manage-data-layout">Vector RC Objects: Manage Data Layout</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#vector-rc-class">Vector RC Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#vrc-vrcl-vrcr-vrclr">VRC, VRCL, VRCR, VRCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#terminate-vrc-vrcl-vrcr-vrclr">Terminate VRC, VRCL, VRCR, VRCLR</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#vector-sumsgen-and-rewriting">Vector SumsGen and Rewriting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#default-sumsgen-handles-vector-spl-to-spl">Default Sumsgen Handles Vector SPL to Σ-SPL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#rewrite-rule-strategies">Rewrite Rule Strategies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="avx.html#compile-strategies">Compile Strategies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#vector-codegen">Vector CodeGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#vector-instructions">Vector Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#vector-strength-reduction-and-fixup-rules">Vector Strength Reduction and Fixup Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#vector-unparser">Vector Unparser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#isa-definition">ISA Definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html#vector-benchmarking-infrastructure">Vector Benchmarking Infrastructure</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="smp.html" class="btn btn-neutral float-right" title="SMP/OpenMP" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../infrastructure/compiler.html" class="btn btn-neutral float-left" title="Compiler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

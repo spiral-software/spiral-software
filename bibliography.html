@@ -1,0 +1,581 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Further Reading &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Contributing to SPIRAL" href="contribute.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Further Reading</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#about-spiral-in-general">About SPIRAL in General</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spiral-extreme-performance-portability-2018">SPIRAL: Extreme Performance Portability (2018)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spiral-2011">SPIRAL (2011)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spiral-computer-generation-of-performance-libraries-2011">Spiral: Computer Generation of Performance Libraries (2011)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spiral-code-generation-for-dsp-transforms-2005">SPIRAL: Code Generation for DSP Transforms (2005)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ffts-and-related-transforms">FFTs and Related Transforms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fast-fourier-transform-2011">Fast Fourier Transform (2011)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-high-performance-pruned-fft-implementations-2009">Generating High Performance Pruned FFT Implementations (2009)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-write-fast-numerical-code-a-small-introduction-2007">How To Write Fast Numerical Code: A Small Introduction (2007)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-internal-functionality">Key Internal Functionality</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a-rewriting-system-for-the-vectorization-of-signal-transforms-2006">A Rewriting System for the Vectorization of Signal Transforms (2006)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formal-loop-merging-for-signal-transforms-2005">Formal Loop Merging for Signal Transforms (2005)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#vector-instructions-and-other-parallelism">Vector Instructions and Other Parallelism</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ffte-on-sve-spiral-generated-kernels-2020">FFTE on SVE: SPIRAL-Generated Kernels (2020)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#large-bandwidth-efficient-ffts-on-multicore-and-multi-socket-systems-2018">Large Bandwidth-Efficient FFTs on Multicore and Multi-Socket Systems (2018)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-optimized-fourier-interpolation-routines-for-density-functional-theory-using-spiral-2015">Generating Optimized Fourier Interpolation Routines for Density Functional Theory Using SPIRAL (2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#when-polyhedral-transformations-meet-simd-code-generation-2013">When Polyhedral Transformations Meet SIMD Code Generation (2013)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#automatic-generation-of-the-hpc-challenges-global-fft-benchmark-for-bluegene-p-2012">Automatic Generation of the HPC Challenges Global FFT Benchmark for BlueGene/P (2012)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#automatic-simd-vectorization-of-fast-fourier-transforms-for-the-larrabee-and-avx-instruction-sets-2011">Automatic SIMD Vectorization of Fast Fourier Transforms for the Larrabee and AVX Instruction Sets (2011)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discrete-fourier-transform-on-multicores-algorithms-and-automatic-implementation-2009">Discrete Fourier Transform on Multicores: Algorithms and Automatic Implementation (2009)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-non-transform-kernels">Generating Non-Transform Kernels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#high-assurance-spiral-end-to-end-guarantees-for-robot-and-car-control-2017">High-Assurance SPIRAL:  End-to-End Guarantees for Robot and Car Control (2017)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#computer-generation-of-efficient-software-viterbi-decoders">Computer Generation of Efficient Software Viterbi Decoders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operator-language-a-program-generation-framework-for-fast-kernels-2009">Operator Language: A Program Generation Framework for Fast Kernels (2009)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#high-performance-synthetic-aperture-radar-image-formation-on-commodity-architectures-2009">High Performance Synthetic Aperture Radar Image Formation On Commodity Architectures (2009)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Further Reading</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/bibliography.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="further-reading">
+<span id="bibliography"></span><h1>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h1>
+<p>This is a short annotated list of papers and presentations about SPIRAL.  For a comprehensive list
+see Carnegie Mellon’s <a class="reference external" href="http://spiral.ece.cmu.edu:8080/pub-spiral">SPIRAL Publications</a> page.</p>
+<div class="section" id="about-spiral-in-general">
+<h2>About SPIRAL in General<a class="headerlink" href="#about-spiral-in-general" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spiral-extreme-performance-portability-2018">
+<span id="spiraliee18"></span><h3>SPIRAL: Extreme Performance Portability (2018)<a class="headerlink" href="#spiral-extreme-performance-portability-2018" title="Permalink to this headline">¶</a></h3>
+<p>This is the most recent major paper about SPIRAL.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Franz Franchetti, Tze Meng Low, Doru Thom Popovici, Richard M. Veras,</div>
+<div class="line">Daniele G. Spampinato, Jeremy R. Johnson, Markus Püschel, James C. Hoe, José M. F. Moura:</div>
+<div class="line"><strong>SPIRAL: Extreme Performance Portability</strong>.</div>
+<div class="line">Proceedings of the IEEE, Special Issue on <em>From High Level Specifications to High Performance Code</em>, 2018</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/SPIRAL_IEEE_2018.pdf">[ PDF ]</a>  <a class="reference external" href="http://spiral.ece.cmu.edu:8080/pub-spiral/bibtextFile/bibtext_299.html">[ BibTeX ]</a></div>
+</div>
+</div>
+<div class="section" id="spiral-2011">
+<span id="spiralenc11"></span><h3>SPIRAL (2011)<a class="headerlink" href="#spiral-2011" title="Permalink to this headline">¶</a></h3>
+<p>If you are only going to read one article about SPIRAL, this is the one to read.  It walks
+through the major concepts and components of SPIRAL with lots of illustrations and examples.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Markus Püschel, Franz Franchetti, Yevgen Voronenko:</div>
+<div class="line"><strong>Spiral</strong>.</div>
+<div class="line">Encyclopedia of Parallel Computing 2011: 1920-1933</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/spiral-enc11.pdf">[ PDF ]</a> <a class="reference external" href="http://spiral.ece.cmu.edu:8080/pub-spiral/bibtextFile/bibtext_146.html">[ BibTeX ]</a></div>
+</div>
+</div>
+<div class="section" id="spiral-computer-generation-of-performance-libraries-2011">
+<span id="spiral10slides"></span><h3>Spiral: Computer Generation of Performance Libraries (2011)<a class="headerlink" href="#spiral-computer-generation-of-performance-libraries-2011" title="Permalink to this headline">¶</a></h3>
+<p>This short slide presentation illustrates the key points about SPIRAL.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">José M. F. Moura, Markus Püschel, Franz Franchetti:</div>
+<div class="line"><strong>Spiral: Computer Generation of Performance Libraries</strong></div>
+<div class="line">Carnegie Mellon University 2011</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/slides/spiral-10slides.pdf">[ Slides ]</a></div>
+</div>
+</div>
+<div class="section" id="spiral-code-generation-for-dsp-transforms-2005">
+<span id="spiraliee05"></span><h3>SPIRAL: Code Generation for DSP Transforms (2005)<a class="headerlink" href="#spiral-code-generation-for-dsp-transforms-2005" title="Permalink to this headline">¶</a></h3>
+<p>Though several papers about SPIRAL predate it, this 2005 deep dive is SPIRAL’s historical debut on the main stage.  SPIRAL has grown a lot since then,
+but this article covers most of major components, particularly <em>Signal Processing Language (SPL)</em> and <em>Breakdown Rules</em>.  As a bonus, it has photos of
+the (young) authors/team.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Markus Püschel, José M. F. Moura, Jeremy R. Johnson, David A. Padua, Manuela M. Veloso, Bryan Singer,</div>
+<div class="line">Jianxin Xiong, Franz Franchetti, Aca Gacic, Yevgen Voronenko, Kang Chen, Robert W. Johnson, Nicholas Rizzolo:</div>
+<div class="line"><strong>SPIRAL: Code Generation for DSP Transforms</strong>.</div>
+<div class="line">Proceedings of the IEEE 93(2): 232-275 (2005)</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/IEEE_2005.pdf">[ PDF ]</a> <a class="reference external" href="http://spiral.ece.cmu.edu:8080/pub-spiral/bibtextFile/bibtext_1.html">[ BibTeX ]</a></div>
+</div>
+</div>
+</div>
+<div class="section" id="ffts-and-related-transforms">
+<h2>FFTs and Related Transforms<a class="headerlink" href="#ffts-and-related-transforms" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="fast-fourier-transform-2011">
+<span id="fftenc11"></span><h3>Fast Fourier Transform (2011)<a class="headerlink" href="#fast-fourier-transform-2011" title="Permalink to this headline">¶</a></h3>
+<p>This well-written and illustrated article is a must-read for someone wanting to learn about SPIRAL.  It explains the linear algebra
+representation of FFTs foundational to SPIRAL in the context of several FFT algorithms.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Franz Franchetti, Markus Püschel:</div>
+<div class="line"><strong>FFT (Fast Fourier Transform)</strong>.</div>
+<div class="line">Encyclopedia of Parallel Computing 2011: 658-671</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/fft-enc11.pdf">[ PDF ]</a></div>
+</div>
+</div>
+<div class="section" id="generating-high-performance-pruned-fft-implementations-2009">
+<span id="prunedfft09"></span><h3>Generating High Performance Pruned FFT Implementations (2009)<a class="headerlink" href="#generating-high-performance-pruned-fft-implementations-2009" title="Permalink to this headline">¶</a></h3>
+<p>This short paper is an interesting example of a specific adaption of SPIRAL.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Franz Franchetti, Markus Püschel:</div>
+<div class="line"><strong>Generating High Performance Pruned FFT Implementations</strong>.</div>
+<div class="line">ICASSP 2009: 549-552</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/icassp09_PrunedDFT.pdf">[ PDF ]</a> <a class="reference external" href="https://www.spiral.net/doc/slides/icassp09.pdf">[ Slides ]</a></div>
+</div>
+</div>
+<div class="section" id="how-to-write-fast-numerical-code-a-small-introduction-2007">
+<span id="fastnumericalcode"></span><h3>How To Write Fast Numerical Code: A Small Introduction (2007)<a class="headerlink" href="#how-to-write-fast-numerical-code-a-small-introduction-2007" title="Permalink to this headline">¶</a></h3>
+<p>This practical tutorial introduces a set of techniques to improve numerical code performance, focusing
+on optimizations for memory hierarchy.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">S. Chellappa, F. Franchetti, and M. Püschel</div>
+<div class="line"><strong>How To Write Fast Numerical Code: A Small Introduction</strong></div>
+<div class="line">Proceedings of the Generative and Transformational Techniques in Software Engineering (GTTSE) 2007</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/FastNumericalCode.pdf">[ PDF ]</a></div>
+</div>
+</div>
+</div>
+<div class="section" id="key-internal-functionality">
+<h2>Key Internal Functionality<a class="headerlink" href="#key-internal-functionality" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="a-rewriting-system-for-the-vectorization-of-signal-transforms-2006">
+<span id="rewriting06"></span><h3>A Rewriting System for the Vectorization of Signal Transforms (2006)<a class="headerlink" href="#a-rewriting-system-for-the-vectorization-of-signal-transforms-2006" title="Permalink to this headline">¶</a></h3>
+<p>Understanding SPIRAL requires understanding its layers of rewriting.  This paper shows how SPIRAL
+uses rewrite rules to map signal transforms to vector instructions.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">F. Franchetti, Y. Voronenko, M. Püschel</div>
+<div class="line"><strong>A Rewriting System for the Vectorization of Signal Transforms</strong></div>
+<div class="line">Proceedings High Performance Computing for Computational Science (VECPAR) 2006, LNCS 4395, pages 363-377</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/vecpar06.pdf">[ PDF ]</a> <a class="reference external" href="https://www.spiral.net/doc/slides/vecpar06-franchetti.pdf">[ Slides ]</a></div>
+</div>
+</div>
+<div class="section" id="formal-loop-merging-for-signal-transforms-2005">
+<span id="pldi05"></span><h3>Formal Loop Merging for Signal Transforms (2005)<a class="headerlink" href="#formal-loop-merging-for-signal-transforms-2005" title="Permalink to this headline">¶</a></h3>
+<p>This key paper introduces <strong>Sigma SPL</strong>, which was a new level of abstraction added to SPIRAL in 2005.  Another
+must-read, this paper and its companion slide deck are well worth careful study.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Franz Franchetti, Yevgen Voronenko, Markus Püschel:</div>
+<div class="line"><strong>Formal Loop Merging for Signal Transforms</strong>.</div>
+<div class="line">PLDI 2005: 315-326</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/Formal_Loop_Merging_pldi05.pdf">[ PDF ]</a> <a class="reference external" href="https://www.spiral.net/doc/slides/Formal_Loop_Merging_Slides_pldi05.pdf">[ Slides ]</a></div>
+</div>
+</div>
+</div>
+<div class="section" id="vector-instructions-and-other-parallelism">
+<h2>Vector Instructions and Other Parallelism<a class="headerlink" href="#vector-instructions-and-other-parallelism" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ffte-on-sve-spiral-generated-kernels-2020">
+<span id="ffte-spiral"></span><h3>FFTE on SVE: SPIRAL-Generated Kernels (2020)<a class="headerlink" href="#ffte-on-sve-spiral-generated-kernels-2020" title="Permalink to this headline">¶</a></h3>
+<p>Using SPIRAL to generate vectorized FFT kernels for
+ARM Scalable Vector Extension (SVE) produced significant
+speedups over automatic vectorization at compile time.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Daisuke Takahashi, Franz Franchetti</div>
+<div class="line"><strong>FFTE on SVE: SPIRAL-Generated Kernels</strong></div>
+<div class="line">International Conference on High Performance Computing in Asia-Pacific Region (HPCAsia), 2020</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/ffte-spiral.pdf">[ PDF ]</a></div>
+</div>
+</div>
+<div class="section" id="large-bandwidth-efficient-ffts-on-multicore-and-multi-socket-systems-2018">
+<span id="ipdps18"></span><h3>Large Bandwidth-Efficient FFTs on Multicore and Multi-Socket Systems (2018)<a class="headerlink" href="#large-bandwidth-efficient-ffts-on-multicore-and-multi-socket-systems-2018" title="Permalink to this headline">¶</a></h3>
+<p>This paper illustrates SPIRAL’s state of the art for exploiting multiple levels of
+parallelism in new generation processors, including splitting compute and memory
+access functions to different hardware threads.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">D. T. Popovici, T. M. Low, F. Franchetti</div>
+<div class="line"><strong>Large Bandwidth-Efficient FFTs on Multicore and Multi-Socket Systems</strong></div>
+<div class="line">IEEE International Parallel &amp; Distributed Processing Symposium (IPDPS), 2018</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/ipdps2018_dtp.pdf">[ PDF ]</a></div>
+</div>
+</div>
+<div class="section" id="generating-optimized-fourier-interpolation-routines-for-density-functional-theory-using-spiral-2015">
+<span id="ipdps15"></span><h3>Generating Optimized Fourier Interpolation Routines for Density Functional Theory Using SPIRAL (2015)<a class="headerlink" href="#generating-optimized-fourier-interpolation-routines-for-density-functional-theory-using-spiral-2015" title="Permalink to this headline">¶</a></h3>
+<p>This is a detailed example of using a collection of techniques in SPIRAL for big performance gains in
+upsampling large multi-dimensional data sets.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">D. A. Popovici, F. Russell, K. Wilkinson, C-K. Skylaris, P. H. J. Kelly, F. Franchetti</div>
+<div class="line"><strong>Generating Optimized Fourier Interpolation Routines for Density Functional Theory Using SPIRAL</strong></div>
+<div class="line">29th International Parallel &amp; Distributed Processing Symposium (IPDPS), 2015</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/ipdps15.pdf">[ PDF ]</a></div>
+</div>
+</div>
+<div class="section" id="when-polyhedral-transformations-meet-simd-code-generation-2013">
+<span id="pldi13"></span><h3>When Polyhedral Transformations Meet SIMD Code Generation (2013)<a class="headerlink" href="#when-polyhedral-transformations-meet-simd-code-generation-2013" title="Permalink to this headline">¶</a></h3>
+<p>Looking at the general problem of loop optimization, this paper shows how SPIRAL’s SIMD code generation
+can work together with a polyhedral framework.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">M. Kong, R. Veras, K. Stock, F. Franchetti, L.-N. Pouchet, and P. Sadayappan</div>
+<div class="line"><strong>When Polyhedral Transformations Meet SIMD Code Generation</strong></div>
+<div class="line">ACM SIGPLAN PLDI, 2013</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/pldi13.pdf">[ PDF ]</a></div>
+</div>
+</div>
+<div class="section" id="automatic-generation-of-the-hpc-challenges-global-fft-benchmark-for-bluegene-p-2012">
+<span id="hpcgc12"></span><h3>Automatic Generation of the HPC Challenges Global FFT Benchmark for BlueGene/P (2012)<a class="headerlink" href="#automatic-generation-of-the-hpc-challenges-global-fft-benchmark-for-bluegene-p-2012" title="Permalink to this headline">¶</a></h3>
+<p>In 2010 code generated by SPIRAL was part of IBM’s winning submission for the
+2010 HPC Challenge Class II.  SPIRAL generated a single giant 1D FFT that
+spanned up to 128K cores.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">F. Franchetti, Y. Voronenko, and G. Almasi</div>
+<div class="line"><strong>Automatic Generation of the HPC Challenges Global FFT Benchmark for BlueGene/P</strong></div>
+<div class="line">In Proceedings of High Performance Computing for Computational Science (VECPAR) 2012</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/AGofHPC.pdf">[ PDF ]</a> <a class="reference external" href="https://www.spiral.net/doc/slides/vecpar2012.pdf">[ Slides ]</a></div>
+</div>
+</div>
+<div class="section" id="automatic-simd-vectorization-of-fast-fourier-transforms-for-the-larrabee-and-avx-instruction-sets-2011">
+<span id="ics11"></span><h3>Automatic SIMD Vectorization of Fast Fourier Transforms for the Larrabee and AVX Instruction Sets (2011)<a class="headerlink" href="#automatic-simd-vectorization-of-fast-fourier-transforms-for-the-larrabee-and-avx-instruction-sets-2011" title="Permalink to this headline">¶</a></h3>
+<p>This paper on the successful inclusion of AVX support in SPIRAL was written the same year that the AVX
+instruction set became available.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Daniel McFarlin, Volodymyr Arbatov, Franz Franchetti and Markus Püschel</div>
+<div class="line"><strong>Automatic SIMD Vectorization of Fast Fourier Transforms for the Larrabee and AVX Instruction Sets</strong></div>
+<div class="line">Proc. International Conference on Supercomputing (ICS), 2011</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/ics2011.pdf">[ PDF ]</a></div>
+</div>
+</div>
+<div class="section" id="discrete-fourier-transform-on-multicores-algorithms-and-automatic-implementation-2009">
+<span id="spmag09"></span><h3>Discrete Fourier Transform on Multicores: Algorithms and Automatic Implementation (2009)<a class="headerlink" href="#discrete-fourier-transform-on-multicores-algorithms-and-automatic-implementation-2009" title="Permalink to this headline">¶</a></h3>
+<p>This paper discusses problems and solutions to splitting an FFT implementation across
+multiple cores.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">F. Franchetti, Y. Voronenko, S. Chellappa, J. M. F. Moura, and M. Püschel</div>
+<div class="line"><strong>Discrete Fourier Transform on Multicores: Algorithms and Automatic Implementation</strong></div>
+<div class="line">IEEE Signal Processing Magazine, special issue on “Signal Processing on Platforms with Multiple Cores”, 2009.</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/spmag09.pdf">[ PDF ]</a></div>
+</div>
+</div>
+</div>
+<div class="section" id="generating-non-transform-kernels">
+<h2>Generating Non-Transform Kernels<a class="headerlink" href="#generating-non-transform-kernels" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="high-assurance-spiral-end-to-end-guarantees-for-robot-and-car-control-2017">
+<span id="has17"></span><h3>High-Assurance SPIRAL:  End-to-End Guarantees for Robot and Car Control (2017)<a class="headerlink" href="#high-assurance-spiral-end-to-end-guarantees-for-robot-and-car-control-2017" title="Permalink to this headline">¶</a></h3>
+<p>This feature article showcases a novel application of SPIRAL in the DARPA
+High Assurance Cyber Military Systems (HACMS) program.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">F. Franchetti, T. M. Low, S. Mitsch, J. P. Mendoza, L. Gui, A. Phaosawasdi, D. Padua, S. Kar, J. M. F. Moura, M. Franusich, J. Johnson, A. Platzer, and M. Veloso</div>
+<div class="line"><strong>High-Assurance SPIRAL:  End-to-End Guarantees for Robot and Car Control</strong></div>
+<div class="line">IEEE Control Systems Magazine, 2017, pages 82-103.</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/has2017.pdf">[ PDF ]</a> <a class="reference external" href="https://www.spiral.net/doc/slides/hacms-overview.pdf">[ Slides ]</a></div>
+</div>
+</div>
+<div class="section" id="computer-generation-of-efficient-software-viterbi-decoders">
+<span id="viterbi10"></span><h3>Computer Generation of Efficient Software Viterbi Decoders<a class="headerlink" href="#computer-generation-of-efficient-software-viterbi-decoders" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="line-block">
+<div class="line">F. de Mesmay, S. Chellappa, F. Franchetti and M. Püschel</div>
+<div class="line"><strong>Computer Generation of Efficient Software Viterbi Decoders</strong></div>
+<div class="line">Proceedings of International Conference on High-Performance Embedded Architectures and Compilers (HIPEAC), 2010</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/hipeac2010.pdf">[ PDF ]</a> <a class="reference external" href="https://www.spiral.net/doc/slides/hipeac2010.pdf">[ Slides ]</a></div>
+</div>
+</div>
+<div class="section" id="operator-language-a-program-generation-framework-for-fast-kernels-2009">
+<span id="ol09"></span><h3>Operator Language: A Program Generation Framework for Fast Kernels (2009)<a class="headerlink" href="#operator-language-a-program-generation-framework-for-fast-kernels-2009" title="Permalink to this headline">¶</a></h3>
+<p>Winning a <em>Best Paper Award</em>, this describes <strong>Operator Language</strong>, which empowers
+SPIRAL to generate non-transform code.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Franz Franchetti, Frédéric de Mesmay, Daniel S. McFarlin, Markus Püschel:</div>
+<div class="line"><strong>Operator Language: A Program Generation Framework for Fast Kernels</strong>.</div>
+<div class="line">DSL 2009: 385-409</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/OperatorLanguage.pdf">[ PDF ]</a> <a class="reference external" href="https://www.spiral.net/doc/slides/dslwc09.pdf">[ Slides ]</a></div>
+</div>
+</div>
+<div class="section" id="high-performance-synthetic-aperture-radar-image-formation-on-commodity-architectures-2009">
+<span id="sar09"></span><h3>High Performance Synthetic Aperture Radar Image Formation On Commodity Architectures (2009)<a class="headerlink" href="#high-performance-synthetic-aperture-radar-image-formation-on-commodity-architectures-2009" title="Permalink to this headline">¶</a></h3>
+<p>In 2009 the SPIRAL folks at CMU figured out how to generate really good Synthetic Aperture Radar (SAR)
+code.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">D. McFarlin, F. Franchetti, M. Püschel and J.M.F. Moura</div>
+<div class="line"><strong>High Performance Synthetic Aperture Radar Image Formation On Commodity Architectures</strong>.</div>
+<div class="line">Proceedings of SPIE Conference on Defense, Security, and Sensing, 2009</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://www.spiral.net/doc/papers/SAR-spie09.pdf">[ PDF ]</a> <a class="reference external" href="https://www.spiral.net/doc/slides/spiesar09.pdf">[ Slides ]</a></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<p><em>Copyrights to many of the above papers are held by the publishers.
+The attached PDF files are preprints. It is understood that all persons
+copying this information will adhere to the terms and constraints invoked
+by each author’s copyright. These works may not be reposted without the explicit
+permission of the copyright holder.</em></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="contribute.html" class="btn btn-neutral float-left" title="Contributing to SPIRAL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

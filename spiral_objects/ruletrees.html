@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Transforms and Rule Trees &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SPL" href="spl.html" />
+    <link rel="prev" title="Values and Types" href="values.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">SPIRAL Objects and Data Types</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html">Packages and Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="values.html">Values and Types</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Transforms and Rule Trees</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#non-terminals-transforms">Non-Terminals (Transforms)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#definitions">Definitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operations-on-functions">Operations on Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#rule-trees">Rule Trees</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#expand-non-terminals">Expand Non-Terminals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exploring-a-rule-tree">Exploring a Rule Tree</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#non-terminal-example-dft">Non-Terminal Example: DFT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#definition">Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#base-class">Base Class</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html">SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html">Σ-SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html">Abstract Code (icode)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html">End to End, from Transform to C Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">SPIRAL Objects and Data Types</a> &raquo;</li>
+        
+      <li>Transforms and Rule Trees</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/spiral_objects/ruletrees.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="transforms-and-rule-trees">
+<span id="ruletrees"></span><h1>Transforms and Rule Trees<a class="headerlink" href="#transforms-and-rule-trees" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="non-terminals-transforms">
+<h2>Non-Terminals (Transforms)<a class="headerlink" href="#non-terminals-transforms" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="definitions">
+<h3>Definitions<a class="headerlink" href="#definitions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>t1 := DFT(4);           # complex DFT of size 4
+t2 := MDDFT([4,4]);     # 2D DFT
+t3 := DFT(5);           # non 2-power DFT
+Import(dct_dst);        # load DCT/DST package
+t4 := DCT3(8);          # cosine transform of type 3, size 8
+Import(filtering);      # load package filtering
+t5 := Filt(4, [1,2,3,4]); # FIR filter with constant taps
+Import(wht);            # load Walsh-Hadamard Transform
+t6 := WHT(3);           # WHT of size 8
+</pre></div>
+</div>
+</div>
+<div class="section" id="operations-on-functions">
+<h3>Operations on Functions<a class="headerlink" href="#operations-on-functions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DoForAll([t1,t2,t3,t4,t5,t6], # print them all as matrices
+        t-&gt;Print(pm(t), &quot;\n&quot;));
+t1.terminate();         # translate into matrix
+t4.transpose();         # transposed transform
+t1.conjTranspose();     # conjugated transposed transform
+t3.inverse();           # inverse transform transform
+t2.dims();              # transforms have a size
+
+SpiralDefaults.breakdownRules; # all transforms known to the system
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="rule-trees">
+<h2>Rule Trees<a class="headerlink" href="#rule-trees" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="expand-non-terminals">
+<h3>Expand Non-Terminals<a class="headerlink" href="#expand-non-terminals" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>opts := SpiralDefaults;
+t1 := DFT(4);                           # complex DFT of size 4
+rt1 := RandomRuleTree(t1, opts);        # create a random rule tree
+t2 := DFT(80);                          # complex DFT of size 80
+rt2 := RandomRuleTree(t2, opts);        # create a random rule tree
+</pre></div>
+</div>
+</div>
+<div class="section" id="exploring-a-rule-tree">
+<h3>Exploring a Rule Tree<a class="headerlink" href="#exploring-a-rule-tree" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rt1.node;                               # this node
+rt1.rule;                               # rule applied at node
+rt1.transposed;                         # rule applied transposed ?
+rt1.children;                           # a level down in the tree
+rt1.children[1];                        # first child node
+rt1.children[1].node;                   # same as root node
+rt1.children[1].rule;
+rt1.children[1].children;
+rt1.children[1].transposed;
+rt1.children[2];                        # second child node
+rt1.children[2].node;                   # again tree node structure
+rt1.children[2].rule;
+rt1.children[2].children;
+rt1.children[2].transposed;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="non-terminal-example-dft">
+<h2>Non-Terminal Example: DFT<a class="headerlink" href="#non-terminal-example-dft" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="definition">
+<h3>Definition<a class="headerlink" href="#definition" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># In spiral-core\namespaces\spiral\transforms\dft\dft.gi
+Class(DFT, DFT_NonTerm, rec(
+        transpose     := self &gt;&gt; DFT(self.params[1],
+                                         self.params[2]).withTags(self.getTags()),
+        conjTranspose := self &gt;&gt; DFT(self.params[1],
+                                         -self.params[2]).withTags(self.getTags()),
+        inverse := self &gt;&gt; self.conjTranspose(),
+        omega4pow := (r,c) -&gt; 4*r*c,
+));
+</pre></div>
+</div>
+</div>
+<div class="section" id="base-class">
+<h3>Base Class<a class="headerlink" href="#base-class" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Class(DFT_NonTerm, TaggedNonTerminal, rec(
+        abbrevs := [(n) -&gt; Checked(IsPosIntSym(n), [_unwrap(n), 1]),...],
+        hashAs := ...,
+        dims := ...,
+        terminate := ...,
+        isReal := ...,
+        SmallRandom := () -&gt; Random([2..16]),
+        LargeRandom := () -&gt; 2 ^ Random([6..15]),
+        normalizedArithCost := ...
+        TType := T_Complex(TUnknown)
+));
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="spl.html" class="btn btn-neutral float-right" title="SPL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="values.html" class="btn btn-neutral float-left" title="Values and Types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

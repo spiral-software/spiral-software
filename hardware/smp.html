@@ -1,0 +1,409 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>SMP/OpenMP &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SIMD" href="avx.html" />
+    <link rel="prev" title="Special Hardware" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Special Hardware</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SMP/OpenMP</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#smp-tagged-code-objects">SMP Tagged Code Objects</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parallel-loop-smp-for">Parallel Loop == smp_for</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#smp-code-objects-and-code-generator">SMP Code Objects and Code Generator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#thread-id">Thread ID</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#barrier">Barrier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#smp-codegenerator">SMP Codegenerator</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#openmp-unparser">OpenMP Unparser</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parallel-for">Parallel For</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#parallel-region">Parallel Region</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="avx.html">SIMD</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Special Hardware</a> &raquo;</li>
+        
+      <li>SMP/OpenMP</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/hardware/smp.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="smp-openmp">
+<h1><a class="toc-backref" href="#id3">SMP/OpenMP</a><a class="headerlink" href="#smp-openmp" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#smp-openmp" id="id3">SMP/OpenMP</a></p>
+<ul>
+<li><p><a class="reference internal" href="#smp-tagged-code-objects" id="id4">SMP Tagged Code Objects</a></p>
+<ul>
+<li><p><a class="reference internal" href="#parallel-loop-smp-for" id="id5">Parallel Loop == smp_for</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#smp-code-objects-and-code-generator" id="id6">SMP Code Objects and Code Generator</a></p>
+<ul>
+<li><p><a class="reference internal" href="#thread-id" id="id7">Thread ID</a></p></li>
+<li><p><a class="reference internal" href="#barrier" id="id8">Barrier</a></p></li>
+<li><p><a class="reference internal" href="#smp-codegenerator" id="id9">SMP Codegenerator</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#openmp-unparser" id="id10">OpenMP Unparser</a></p>
+<ul>
+<li><p><a class="reference internal" href="#parallel-for" id="id11">Parallel For</a></p>
+<ul>
+<li><p><a class="reference internal" href="#definition" id="id12">Definition</a></p></li>
+<li><p><a class="reference internal" href="#mixin" id="id13">Mixin</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#parallel-region" id="id14">Parallel Region</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id15">Definition</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id16">Mixin</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="smp-tagged-code-objects">
+<h2><a class="toc-backref" href="#id4">SMP Tagged Code Objects</a><a class="headerlink" href="#smp-tagged-code-objects" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="parallel-loop-smp-for">
+<h3><a class="toc-backref" href="#id5">Parallel Loop == smp_for</a><a class="headerlink" href="#parallel-loop-smp-for" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\paradigms\smp\code.gi
+Class(smp_loop, loop_base, rec(
+   __call__ := meth(self, nthreads, tidvar, tidexp,
+                                        loopvar, range, cmd)
+                local result;
+                range := toRange(range);
+                loopvar.setRange(range);
+                loopvar.isLoopIndex := true;
+                return WithBases(self, rec(
+                        operations := CmdOps,
+                        nthreads := nthreads,
+                        cmd := cmd,
+                        var := loopvar,
+                        tidvar := Checked(IsLoc(tidvar), tidvar),
+                        tidexp := toExpArg(tidexp),
+                        range := range));
+        end,
+        print := (self, i, is) &gt;&gt; Print(self.name,&quot;(&quot;,self.nthreads,&quot;, &quot;,
+           self.tidvar, &quot;, &quot;, self.tidexp, &quot;, &quot;, self.var, &quot;, &quot;,
+           self.range, &quot;,\n&quot;, Blanks(i+is),
+           self.cmd.print(i+is, is),
+           Print(&quot;\n&quot;, Blanks(i), &quot;)&quot;)),
+));
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="smp-code-objects-and-code-generator">
+<h2><a class="toc-backref" href="#id6">SMP Code Objects and Code Generator</a><a class="headerlink" href="#smp-code-objects-and-code-generator" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="thread-id">
+<h3><a class="toc-backref" href="#id7">Thread ID</a><a class="headerlink" href="#thread-id" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\paradigms\smp\sigmaspl.gi
+Class(threadId, Exp, rec(computeType := self &gt;&gt; TInt));
+</pre></div>
+</div>
+</div>
+<div class="section" id="barrier">
+<h3><a class="toc-backref" href="#id8">Barrier</a><a class="headerlink" href="#barrier" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Class(barrier, call, rec(visitAs := call));
+</pre></div>
+</div>
+</div>
+<div class="section" id="smp-codegenerator">
+<h3><a class="toc-backref" href="#id9">SMP Codegenerator</a><a class="headerlink" href="#smp-codegenerator" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Class(SMPCodegenMixin, Codegen, rec(
+        SMPBarrier := (self, o, y, x, opts) &gt;&gt; chain(
+                self(o.child(1), y, x, opts),
+                barrier(o.nthreads, o.tid, &quot;&amp;GLOBAL_BARRIER&quot;)),
+        SMPSum := (self, o, y, x, opts) &gt;&gt; let(
+                outer_tid     := When(IsBound(opts._tid), opts._tid, 0),
+                outer_num_thr := When(IsBound(opts._tid), opts._tid.range, 1),
+                tid := var.fresh(&quot;tid&quot;, TInt, o.nthreads * outer_num_thr),
+                smp_loop(o.nthreads, tid, (outer_tid * outer_num_thr) + o.tid,
+                        o.var, o.domain,
+                        self(o.child(1), y, x,
+                                CopyFields(opts, rec(_tid := tid))))
+                )
+));
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="openmp-unparser">
+<h2><a class="toc-backref" href="#id10">OpenMP Unparser</a><a class="headerlink" href="#openmp-unparser" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="parallel-for">
+<h3><a class="toc-backref" href="#id11">Parallel For</a><a class="headerlink" href="#parallel-for" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="definition">
+<h4><a class="toc-backref" href="#id12">Definition</a><a class="headerlink" href="#definition" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Unparser for #pragma omp parallel for
+Class(OpenMP_Unparser, OpenMP_UnparseMixin_ParFor, CUnparserProg);
+</pre></div>
+</div>
+</div>
+<div class="section" id="mixin">
+<h4><a class="toc-backref" href="#id13">Mixin</a><a class="headerlink" href="#mixin" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\paradigms\smp\unparsed.gi
+Class(OpenMP_UnparseMixin_ParFor, SMP_UnparseMixin, rec(
+        includes := [&quot;&lt;omp.h&gt;&quot;],
+        threadId := (self,o,i,is) &gt;&gt; Print(&quot;omp_get_thread_num()&quot;),
+        barrier := (self,o,i, is) &gt;&gt;
+                Print(Blanks(i), &quot;/* SMP barrier */\n&quot;),
+        smp_loop := (self,o,i,is) &gt;&gt; let(v := o.var,
+                lo := 0, hi := o.range,
+                Print(Blanks(i),
+                &quot;#pragma omp parallel for schedule(static, &quot;,
+                Int((hi+1)/2),&quot;)\n&quot;,
+                Blanks(i), &quot;for(int &quot;, v, &quot; = &quot;, lo, &quot;; &quot;, v,
+                &quot; &lt; &quot;, hi, &quot;; &quot;, v, &quot;++) {\n&quot;,
+                Blanks(i + is), &quot;int &quot;, o.tidvar, &quot; = &quot;, v, &quot;;\n&quot;,
+                self.opts.unparser(o.cmd,i+is,is),
+                Blanks(i), &quot;}\n&quot;)),
+));
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="parallel-region">
+<h3><a class="toc-backref" href="#id14">Parallel Region</a><a class="headerlink" href="#parallel-region" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h4><a class="toc-backref" href="#id15">Definition</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Unparser for #pragma omp parallel regions
+# namespaces/spiral/libgen/recgt.gi
+Class(OpenMP_Unparser, OpenMP_UnparseMixin, CUnparserProg);
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h4><a class="toc-backref" href="#id16">Mixin</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># spiral-core\namespaces\spiral\paradigms\smp\unparsed.gi
+Class(OpenMP_UnparseMixin, SMP_UnparseMixin, rec(
+        includes := [&quot;&lt;omp.h&gt;&quot;],
+        smp_fork := (self, o, i, is) &gt;&gt; Print(
+                Blanks(i), &quot;#pragma omp parallel num_threads(&quot;,
+                o.nthreads, &quot;)\n&quot;,
+                Blanks(i), &quot;{\n&quot;,
+                self(o.cmd, i+is, is),
+                Blanks(i), &quot;}\n&quot;
+        ),
+        threadId := (self,o,i,is) &gt;&gt; Print(&quot;omp_get_thread_num()&quot;),
+        barrier := (self,o,i, is) &gt;&gt; Print(&quot;#pragma omp barrier\n&quot;)
+));
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="avx.html" class="btn btn-neutral float-right" title="SIMD" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Special Hardware" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

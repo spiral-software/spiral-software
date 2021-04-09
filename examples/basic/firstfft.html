@@ -1,0 +1,361 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Generate a Simple FFT &mdash; SPIRAL  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="FFT with SIMD Instructions" href="simdfft.html" />
+    <link rel="prev" title="Examples" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> SPIRAL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#basic-ffts">Basic FFTs</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Generate a Simple FFT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simdfft.html">FFT with SIMD Instructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ompfft.html">Threaded FFT with OpenMP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpsearch.html">Find a Good Rule Tree with Dynamic Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpsearch3d.html">3D FFT with AVX Using Dynamic Programming Search</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#advanced-examples-from-fftx">Advanced Examples from FFTX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#advanced-examples-from-darpa-brass-demonstrating-hcol">Advanced Examples from DARPA BRASS Demonstrating HCOL</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../spiral_objects/index.html">SPIRAL Objects and Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography.html">Further Reading</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SPIRAL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Examples</a> &raquo;</li>
+        
+      <li>Generate a Simple FFT</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/examples/basic/firstfft.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="generate-a-simple-fft">
+<h1>Generate a Simple FFT<a class="headerlink" href="#generate-a-simple-fft" title="Permalink to this headline">¶</a></h1>
+<p>This SPIRAL script will generate a simple FFT of size 4.  You can copy and paste it into
+the SPIRAL window to see the results.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>opts := SpiralDefaults;
+transform := DFT(4);
+ruletree := RandomRuleTree(transform, opts);
+icode := CodeRuleTree(ruletree, opts);
+PrintCode(&quot;DFT4&quot;, icode, opts);
+</pre></div>
+</div>
+<p>Let’s walk through it line by line, sometimes using other commands to look deeper into what is happening.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Set the controlling options.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>spiral&gt; opts := SpiralDefaults;
+&lt;Spiral options record&gt;
+spiral&gt;
+</pre></div>
+</div>
+<p>Sets the <code class="docutils literal notranslate"><span class="pre">opts</span></code> variable to the default set of options for SPIRAL.  Later examples will set specific option values
+to modify the default behavior.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Specify the transform.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>spiral&gt; transform := DFT(4);
+DFT(4, 1)
+spiral&gt; pm(transform);
+[ [ 1, 1, 1, 1 ],
+  [ 1, E(4), -1, -E(4) ],
+  [ 1, -1, 1, -1 ],
+  [ 1, -E(4), -1, E(4) ] ]
+spiral&gt;
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">DFT()</span></code> creates a transform object for a discrete fourier transform of specified size.</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">pm()</span></code> – print matrix – is a handy utility to print the matrix representation of a transform.</div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Generate a tree of breakdown rules.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>spiral&gt; ruletree := RandomRuleTree(transform, opts);
+DFT_HW_CT( DFT(4, 1),
+  DFT_Base( DFT(2, 1) ),
+  DFT_Base( DFT(2, 1) ) )
+spiral&gt;
+</pre></div>
+</div>
+<p>Builds the tree of smaller transforms that define the FFT.
+<code class="docutils literal notranslate"><span class="pre">RandomRuleTree()</span></code> randomly picks one of potentially very many valid rule trees.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Generate code.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>spiral&gt; icode := CodeRuleTree(ruletree, opts);
+program(
+   chain(
+      func(TVoid, &quot;init&quot;, [  ],
+         chain()
+      ),
+      func(TVoid, &quot;transform&quot;, [ Y, X ],
+         decl([ t57, t58, t59, t60, t61, t62, t63, t64 ],
+            chain(
+               assign(t57, add(deref(X), deref(add(X, V(4))))),
+               assign(t58, add(deref(add(X, V(1))), deref(add(X, V(5))))),
+               assign(t59, sub(deref(X), deref(add(X, V(4))))),
+               assign(t60, sub(deref(add(X, V(1))), deref(add(X, V(5))))),
+               assign(t61, add(deref(add(X, V(2))), deref(add(X, V(6))))),
+               assign(t62, add(deref(add(X, V(3))), deref(add(X, V(7))))),
+               assign(t63, sub(deref(add(X, V(2))), deref(add(X, V(6))))),
+               assign(t64, sub(deref(add(X, V(3))), deref(add(X, V(7))))),
+               assign(deref(Y), add(t57, t61)),
+               assign(deref(add(Y, V(1))), add(t58, t62)),
+               assign(deref(add(Y, V(4))), sub(t57, t61)),
+               assign(deref(add(Y, V(5))), sub(t58, t62)),
+               assign(deref(add(Y, V(2))), sub(t59, t64)),
+               assign(deref(add(Y, V(3))), add(t60, t63)),
+               assign(deref(add(Y, V(6))), add(t59, t64)),
+               assign(deref(add(Y, V(7))), sub(t60, t63))
+            )
+         )
+      )
+   )
+)
+spiral&gt;
+</pre></div>
+</div>
+<p>Creates the abstract code.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Produce the compileable C code.</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="n">spiral</span><span class="o">&gt;</span> <span class="n">PrintCode</span><span class="p">(</span><span class="s">&quot;DFT4&quot;</span><span class="p">,</span> <span class="n">icode</span><span class="p">,</span> <span class="n">opts</span><span class="p">);</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * This code was generated by Spiral 8.0.0, www.spiral.net</span>
+<span class="cm"> */</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;include/omega64.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span> <span class="nf">init_DFT4</span><span class="p">()</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">DFT4</span><span class="p">(</span><span class="kt">double</span>  <span class="o">*</span><span class="n">Y</span><span class="p">,</span> <span class="kt">double</span>  <span class="o">*</span><span class="n">X</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">double</span> <span class="n">t57</span><span class="p">,</span> <span class="n">t58</span><span class="p">,</span> <span class="n">t59</span><span class="p">,</span> <span class="n">t60</span><span class="p">,</span> <span class="n">t61</span><span class="p">,</span> <span class="n">t62</span><span class="p">,</span> <span class="n">t63</span><span class="p">,</span> <span class="n">t64</span><span class="p">;</span>
+    <span class="n">t57</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)));</span>
+    <span class="n">t58</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)));</span>
+    <span class="n">t59</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)));</span>
+    <span class="n">t60</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)));</span>
+    <span class="n">t61</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)));</span>
+    <span class="n">t62</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">3</span><span class="p">))</span> <span class="o">+</span> <span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)));</span>
+    <span class="n">t63</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)));</span>
+    <span class="n">t64</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">3</span><span class="p">))</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="n">X</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)));</span>
+    <span class="o">*</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">t57</span> <span class="o">+</span> <span class="n">t61</span><span class="p">);</span>
+    <span class="o">*</span><span class="p">((</span><span class="n">Y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">=</span> <span class="p">(</span><span class="n">t58</span> <span class="o">+</span> <span class="n">t62</span><span class="p">);</span>
+    <span class="o">*</span><span class="p">((</span><span class="n">Y</span> <span class="o">+</span> <span class="mi">4</span><span class="p">))</span> <span class="o">=</span> <span class="p">(</span><span class="n">t57</span> <span class="o">-</span> <span class="n">t61</span><span class="p">);</span>
+    <span class="o">*</span><span class="p">((</span><span class="n">Y</span> <span class="o">+</span> <span class="mi">5</span><span class="p">))</span> <span class="o">=</span> <span class="p">(</span><span class="n">t58</span> <span class="o">-</span> <span class="n">t62</span><span class="p">);</span>
+    <span class="o">*</span><span class="p">((</span><span class="n">Y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span> <span class="o">=</span> <span class="p">(</span><span class="n">t59</span> <span class="o">-</span> <span class="n">t64</span><span class="p">);</span>
+    <span class="o">*</span><span class="p">((</span><span class="n">Y</span> <span class="o">+</span> <span class="mi">3</span><span class="p">))</span> <span class="o">=</span> <span class="p">(</span><span class="n">t60</span> <span class="o">+</span> <span class="n">t63</span><span class="p">);</span>
+    <span class="o">*</span><span class="p">((</span><span class="n">Y</span> <span class="o">+</span> <span class="mi">6</span><span class="p">))</span> <span class="o">=</span> <span class="p">(</span><span class="n">t59</span> <span class="o">+</span> <span class="n">t64</span><span class="p">);</span>
+    <span class="o">*</span><span class="p">((</span><span class="n">Y</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">=</span> <span class="p">(</span><span class="n">t60</span> <span class="o">-</span> <span class="n">t63</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">spiral</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">PrintCode()</span></code> generates the C code.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="simdfft.html" class="btn btn-neutral float-right" title="FFT with SIMD Instructions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SPIRAL Team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

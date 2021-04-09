@@ -17,6 +17,7 @@ STUB            ?= $(OUTDIR)/testcode.h
 TIMER           ?= ../common/papi_time.c
 TIMER_OPTS      ?= -n 100
 MATRIX          ?= ../common/matrix.c
+VECTOR          ?= ../common/cvector.c
 
 COUT   ?= $(OUTDIR)/cout.txt
 CERR   ?= $(OUTDIR)/cerr.txt
@@ -33,6 +34,7 @@ override CFLAGS += -w -I. -I.. -I../common -I../conf -I../../.. -include $(STUB)
 # this is our executable.
 TIMEREXE = $(OUTDIR)/$(notdir $(subst .c,,$(TIMER)))
 MATRIXEXE = $(OUTDIR)/$(notdir $(subst .c,,$(MATRIX)))
+VECTOREXE = $(OUTDIR)/$(notdir $(subst .c,,$(VECTOR)))
 
 # some defines for source and object files.
 ######
@@ -56,6 +58,8 @@ test: testTimer
 .PHONY: matrix
 matrix: clean buildMatrix testMatrix
 
+.PHONY: vector
+vector: clean buildVector testVector
 
 # internals of this Makefile
 .PHONY: buildTimer
@@ -64,6 +68,8 @@ buildTimer: $(TIMEREXE)
 .PHONY: buildMatrix
 buildMatrix: $(MATRIXEXE)
 
+.PHONY: buildVector
+buildVector: $(VECTOREXE)
 .PHONY: testTimer
 testTimer: buildTimer
 	@-$(TIMEREXE) $(TIMER_OPTS)
@@ -72,6 +78,9 @@ testTimer: buildTimer
 testMatrix: buildMatrix
 	@-$(MATRIXEXE)
 
+.PHONY: testVector
+testVector: buildVector
+	@-$(VECTOREXE)
 # the link command, mashes all objects together.
 $(TIMEREXE): $(TIMER) $(OBJ) libconf.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
@@ -79,6 +88,8 @@ $(TIMEREXE): $(TIMER) $(OBJ) libconf.a
 $(MATRIXEXE): $(MATRIX) $(OBJ) libconf.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+$(VECTOREXE): $(VECTOR) $(OBJ) libconf.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 # makes the libconf library in the ../conf dir.
 # this really isn't PHONY but PHONY forces the execution of the make
 # command to confirm that the libconf.a library is actually up to date.
@@ -101,6 +112,7 @@ endef
 $(foreach src,$(SRC),$(eval $(call C_TO_OBJ, $(src))))
 $(foreach src,$(TIMER),$(eval $(call C_TO_OBJ, $(src))))
 $(foreach src,$(MATRIX),$(eval $(call C_TO_OBJ, $(src))))
+$(foreach src,$(VECTOR),$(eval $(call C_TO_OBJ, $(src))))
 
 # implicit rules that build .h file dependecy information using the gcc -MM feature of gcc. the .d files are then
 # included in the makefile.
@@ -115,6 +127,7 @@ ifeq (,$(findstring $(CC),"icc gcc"))
 
 -include $(TIMER:.c=.d)
 -include $(MATRIX:.c=.d)
+-include $(VECTOR:.c=.d)
 -include $(SRC:.c=.d)
 endif
 
@@ -122,15 +135,17 @@ endif
 
 $(OUTDIR)/$(notdir $(TIMER:.c=.o)): $(STUB)
 $(OUTDIR)/$(notdir $(MATRIX:.c=.o)): $(STUB)
+$(OUTDIR)/$(notdir $(VECTOR:.c=.o)): $(STUB)
 
 # cleanup
 ###########
 
 TIMEREXECLEAN = $(TIMEREXE)
 MATRIXEXECLEAN = $(MATRIXEXE)
+VECTOREXECLEAN = $(VECTOREXE)
 
 .PHONY: clean
 clean: 
 	$(MAKE) -C ../conf -f Makefile.linux CONFDIR=$(CURDIR) clean
-	-$(RM) $(SRC:.c=.d) $(TIMER:.c=.d) $(OBJ) $(TIMEROBJ) $(MATRIXOBJ) $(TIMEREXECLEAN) $(MATRIXEXECLEAN)
+	-$(RM) $(SRC:.c=.d) $(TIMER:.c=.d) $(OBJ) $(TIMEROBJ) $(MATRIXOBJ) $(VECTOROBJ) $(TIMEREXECLEAN) $(MATRIXEXECLEAN) $(VECTOREXECLEAN)
 

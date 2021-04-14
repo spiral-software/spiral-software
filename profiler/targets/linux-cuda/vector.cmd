@@ -11,8 +11,10 @@ TEMPDIR=$PWD
 
 cp -f ../../targets/common/CMakeLists.txt $TEMPDIR/CMakeLists.txt
 mv testcode.c testcode.cu
-cmake -DPROJECT:STRING=cvector . > /dev/null
+rm -rf build && mkdir build && cd build
+cmake -DPROJECT:STRING=cvector .. > /dev/null
 make install > /dev/null
+cd ..
 
 if [ -f ./cvector ]; then
     ./cvector > vector.txt

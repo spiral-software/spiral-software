@@ -46,6 +46,8 @@ if sys.platform == 'win32':
 elif sys.platform == 'linux':
         if os.uname().machine == 'ppc64le':
                 def_target = 'linux-ppc64le-gcc'
+        elif os.uname().machine.startswith('armv7'):
+                def_target = 'linux-arm-gcc'
         else:
                 def_target  = 'linux-x86'
 elif sys.platform == 'darwin':

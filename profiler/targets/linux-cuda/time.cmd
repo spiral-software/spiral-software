@@ -11,8 +11,10 @@ TEMPDIR=$PWD
 
 cp -f ../../targets/common/CMakeLists.txt $TEMPDIR/CMakeLists.txt > /dev/null
 mv testcode.c testcode.cu
-cmake -DPROJECT:STRING=time . > /dev/null
+rm -rf build && mkdir build && cd build
+cmake -DPROJECT:STRING=time .. > /dev/null
 make install > /dev/null
+cd ..
 
 if [ -f ./time ]; then
     ./time > time.txt

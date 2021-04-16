@@ -679,6 +679,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 
 			parent = Input;
 
+#ifdef _DEBUG
 			/* if requested enter a break loop                                     */
 			if ( HdExec != 0 && OpenInput( "*errin*" ) ) {
 
@@ -748,11 +749,14 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				LeaveDbgStack();
 				ignore = CloseInput();
 			} else {
+#endif // _DEBUG
 				if (CURR_INTERFACE == ID_BATCH) {
 					/* quit with the first error */
 					SyExit(SYEXIT_FROM_BRK);
 				}
+#ifdef _DEBUG
 			}
+#endif
 
 			while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
 			while ( EvalStackTop > 0 ) EVAL_STACK_POP;

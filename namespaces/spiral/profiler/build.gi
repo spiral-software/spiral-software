@@ -313,8 +313,6 @@ end;
 
 _StandardMeasure := (code, opts) -> _CallProfiler("time", code, opts);
 
-_StandardBuild := (code, opts) -> _CallProfiler("build", code, opts);
-
 _StandardMeasureVerify := function(code, opts, makeTarget)
 	#PrintLine("_StandardMeasureVerify(), makeTarget: \"", makeTarget, "\"");
 	if (makeTarget = "") then

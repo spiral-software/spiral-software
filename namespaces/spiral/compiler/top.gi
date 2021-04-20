@@ -164,7 +164,7 @@ CMeasureRuleTree := function(rt, opts)
         return 1e20;
 	fi;
 	
-	c := ret[2];
+	c := res[2];
 	
     if opts.faultTolerant then
 		res := Try(CMeasure(c, opts));

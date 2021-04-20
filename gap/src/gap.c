@@ -616,7 +616,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 	extern char         * In;
 	TypInputFile        * parent;
 	exc_type_t          e;
-	Int                isBreakpoint;
+	Int           isBreakpoint;
+    Int           debugActive;
 
 	if ( ! ERROR_QUIET ) {
 
@@ -680,8 +681,12 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			parent = Input;
 
 #ifdef _DEBUG
+            debugActive = true;
+#else
+            debugActive = (InDebugMode != 0);
+#endif
 			/* if requested enter a break loop                                     */
-			if ( HdExec != 0 && OpenInput( "*errin*" ) ) {
+			if ( HdExec != 0 && debugActive && OpenInput( "*errin*" ) ) {
 
 				if(parent->packages) PushPackages(parent->packages);
 				if(parent->imports) PushNamespaces(parent->imports);
@@ -749,14 +754,11 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				LeaveDbgStack();
 				ignore = CloseInput();
 			} else {
-#endif // _DEBUG
 				if (CURR_INTERFACE == ID_BATCH) {
 					/* quit with the first error */
 					SyExit(SYEXIT_FROM_BRK);
 				}
-#ifdef _DEBUG
 			}
-#endif
 
 			while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
 			while ( EvalStackTop > 0 ) EVAL_STACK_POP;

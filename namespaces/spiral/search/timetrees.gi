@@ -99,6 +99,30 @@ BestTimedRuleTree := function(reclist)
 end;
 
 
+#F StridedList(from, to, count)
+#F
+#F   Returns a list of <count> integers evenly spaced from <from> to <to>.
+#F
+#F   If the count is greater than <from>..<to> returns [from..to]
+
+StridedList := function(from, to, count)
+	local len, stride, retlist;
+
+	to := Maximum(from, to);
+	
+	len := (to - from) + 1;
+	if (count >= len) then
+		return List([from..to]);
+	fi;
+	
+	stride := len / (count - 1);
+	retlist := List([0..(count - 2)], x -> from + Int(x * stride));
+	Add(retlist, to);
+
+	return retlist;
+end;
+
+
 #F TimeStridedRuleTrees(spl, opts, sample_count)
 #F
 #F    Time a <sample_count> long list of indexed rule trees,
@@ -114,14 +138,7 @@ TimeStridedRuleTrees := function(spl, opts, sample_count)
 	fi;
 
 	n_trees := NofRuleTrees(spl, opts);
-	
-	if sample_count > n_trees then
-		sample_count := n_trees;
-	fi;
-	
-	stride := n_trees / (sample_count - 1);
-	index_list := List([0..(sample_count-2)], x -> 1 + Int(x * stride));
-	Append(index_list, [n_trees]);
+	index_list := StridedList(1, n_trees, sample_count);
 
 	return TimeRuleTrees(spl, opts, index_list);
 end;

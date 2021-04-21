@@ -101,8 +101,8 @@ end;
 
 #F TimeStridedRuleTrees(spl, opts, sample_count)
 #F
-#F    Time a strided list of indexed rule trees starting with index 1
-#F    Calculates stride from <rule tree count> / sample_count
+#F    Time a <sample_count> long list of indexed rule trees,
+#F    evenly spaced from tree 1 through the last last tree.
 #F
 #F    Returns a list of timing records (TimeRec)
 
@@ -111,19 +111,17 @@ TimeStridedRuleTrees := function(spl, opts, sample_count)
 	
 	if sample_count < 1 then
 		Error("<sample_count> must be greater than 0");
-		
-		
 	fi;
 
 	n_trees := NofRuleTrees(spl, opts);
 	
 	if sample_count > n_trees then
-		Error("<sample_count> (", sample_count, ") is larger than number of rule trees (",
-			n_trees, ")");	
+		sample_count := n_trees;
 	fi;
 	
-	stride := n_trees / sample_count;
-	index_list := List([0..(sample_count-1)], x -> 1 + Int(x * stride));
+	stride := n_trees / (sample_count - 1);
+	index_list := List([0..(sample_count-2)], x -> 1 + Int(x * stride));
+	Append(index_list, [n_trees]);
 
 	return TimeRuleTrees(spl, opts, index_list);
 end;

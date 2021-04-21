@@ -63,8 +63,8 @@ CodeSumsOpts := CodeSums;
 #F
 CodeRuleTree := function(rt, opts)
     local sums, code;
-    sums := SumsRuleTree(rt, opts);
-    code := CodeSums(sums, opts);
+    sums := Cond(IsBound(opts.sumsRuleTree), opts.sumsRuleTree(rt), SumsRuleTree(rt, opts));
+    code := Cond(IsBound(opts.codeSums), opts.codeSums(sums), CodeSums(sums, opts));
     return code;
 end;
 
@@ -151,7 +151,9 @@ FailedTrees := [];
 InaccurateTrees := [];
 
 CMeasureRuleTree := function(rt, opts)
-    local res, c, tol;
+    local res, c, tol, verbosity;
+	
+	verbosity := Cond(IsBound(opts.verbosity), opts.verbosity, 0);
 
 	if opts.faultTolerant then
 		res := Try(CodeRuleTree(rt, opts));
@@ -160,6 +162,9 @@ CMeasureRuleTree := function(rt, opts)
 	fi;
 	
 	if res[1]=false then
+		if verbosity > 0 then
+			Print("CMeasureRuleTree() failed in CodeRuleTree()\n");
+		fi;
         Add(FailedTrees, rt);
         return 1e20;
 	fi;
@@ -173,6 +178,9 @@ CMeasureRuleTree := function(rt, opts)
     fi;
 
     if res[1]=false then
+		if verbosity > 0 then
+			Print("CMeasureRuleTree() failed in CodeRuleTree()\n");
+		fi;
         Add(FailedTrees, rt);
         return 1e20;
     else

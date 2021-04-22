@@ -73,6 +73,32 @@ TimeRuleTrees := function(spl, opts, treenums)
 end;
 
 
+#F BestNTimedRuleTrees(reclist, n)
+#F
+#F    Finds the n TimeRecs in reclist with the best times
+#F    reclist - list of timing records as returned by TimeRuleTrees
+#F    n       - number of records to return 
+#F
+#F	  Returns a copy of the sorted list of n best TimeRecs
+
+BestNTimedRuleTrees := function(reclist, n)
+	local sorted;
+	
+	# validate list of timing records
+	if not ForAll(reclist, r -> IsTimeRec(r)) then
+		Error("reclist is not a valid list of timing records");
+	fi;
+	
+	# snap n to valid value
+	n := Maximum(1, n);
+	n := Minimum(n, Length(reclist));
+	
+	sorted := Sort(ShallowCopy(reclist), (l,r) -> l.measured < r.measured);
+	
+	return Copy(sorted{[1..n]});
+end;
+
+
 #F BestTimedRuleTree(reclist)
 #F
 #F    Finds the TimeRec in reclist with the best time
@@ -81,21 +107,7 @@ end;
 #F	  Returns a copy of the best TimeRec
 
 BestTimedRuleTree := function(reclist)
-	local bestRec, tmRec;
-	
-	# validate list of timing records
-	if not ForAll(reclist, r -> IsTimeRec(r)) then
-		Error("reclist is not a valid list of timing records");
-	fi;
-	
-	bestRec := reclist[1];
-	for tmRec in reclist do
-		if tmRec.measured < bestRec.measured then
-			bestRec := tmRec;
-		fi;
-	od;
-	
-	return Copy(bestRec);
+	return Copy(BestNTimedRuleTrees(reclist,1))[1];
 end;
 
 

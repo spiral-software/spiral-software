@@ -50,7 +50,7 @@ TimeRuleTrees := function(spl, opts, treenums)
 	toFile := IsBound(opts.timingResultsFile) and IsString(opts.timingResultsFile);
 	if toFile then
 		resultsFile := opts.timingResultsFile;
-		PrintTo(resultsFile, "# Timing results for ", spl, "\n\n");
+		AppendTo(resultsFile, "# Timing results for ", spl, "\n\n");
 	fi;	
 	
 	retlist := [];

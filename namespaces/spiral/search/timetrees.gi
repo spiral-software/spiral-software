@@ -99,6 +99,38 @@ BestTimedRuleTree := function(reclist)
 end;
 
 
+#F ListOfRandoms(from, to, count)
+#F
+#F   Returns a sorted list of <count> integers randomly chosen from <from> to <to>.
+#F
+#F   If the count is greater than <from>..<to> returns [from..to]
+
+ListOfRandoms := function(from, to, count)
+	local span, retlist, attempts, num;
+
+	to := Maximum(from, to);
+	
+	span := (to - from) + 1;
+	if (count >= span) then
+		return List([from..to]);
+	fi;
+	
+	attempts := 0;
+	retlist := List([]);
+	
+	while ((Length(retlist) < count) and (attempts < 2*count)) do
+		num := Random([from..to]);
+		if not num in retlist then
+			Add(retlist, num);
+		fi;
+		attempts := attempts + 1;
+	od;
+
+	Sort(retlist);
+	return retlist;
+end;
+
+
 #F StridedList(from, to, count)
 #F
 #F   Returns a list of <count> integers evenly spaced from <from> to <to>.
@@ -106,16 +138,16 @@ end;
 #F   If the count is greater than <from>..<to> returns [from..to]
 
 StridedList := function(from, to, count)
-	local len, stride, retlist;
+	local span, stride, retlist;
 
 	to := Maximum(from, to);
 	
-	len := (to - from) + 1;
-	if (count >= len) then
+	span := (to - from) + 1;
+	if (count >= span) then
 		return List([from..to]);
 	fi;
 	
-	stride := len / (count - 1);
+	stride := span / (count - 1);
 	retlist := List([0..(count - 2)], x -> from + Int(x * stride));
 	Add(retlist, to);
 
@@ -139,6 +171,27 @@ TimeStridedRuleTrees := function(spl, opts, sample_count)
 
 	n_trees := NofRuleTrees(spl, opts);
 	index_list := StridedList(1, n_trees, sample_count);
+
+	return TimeRuleTrees(spl, opts, index_list);
+end;
+
+
+#F TimeRandomRuleTrees(spl, opts, sample_count)
+#F
+#F    Time a <sample_count> long list of indexed rule trees,
+#F    randomly chosen from the range of all rule trees.
+#F
+#F    Returns a list of timing records (TimeRec)
+
+TimeRandomRuleTrees := function(spl, opts, sample_count)
+	local n_trees, index_list;
+	
+	if sample_count < 1 then
+		Error("<sample_count> must be greater than 0");
+	fi;
+
+	n_trees := NofRuleTrees(spl, opts);
+	index_list := ListOfRandoms(1, n_trees, sample_count);
 
 	return TimeRuleTrees(spl, opts, index_list);
 end;

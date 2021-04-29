@@ -28,23 +28,28 @@ IsTimeRec := r -> IsRec(r) and IsBound(r.index) and IsBound(r.measured);
 #F    if opts.timingResultsFile is set, prints results to file
 
 TimeRuleTrees := function(spl, opts, treenums)
-	local retlist, idx, tree, meas, verbosity, maxidx, toFile, resultsFile, mem;
+	local idxlist, retlist, idx, tree, meas, verbosity, maxidx, toFile, resultsFile, mem;
 
 	# validate args
 	if (not IsSPL(spl)) or (not IsRec(opts)) or (not IsList(treenums)) then
 		Error("usage: TimeRuleTrees(spl, opts, treenums)");
 	fi;
 	
-	# validate list of indexes
-	maxidx := NofRuleTrees(spl, opts);
-	if not ForAll(treenums, x -> IsInt(x) and x > 0 and x <= maxidx) then
-		Error("List of tree indexes must be in range 1..<number of trees for spl>");
-	fi;
-	
 	verbosity := Cond(IsBound(opts.verbosity), opts.verbosity, 0);
 	
+	# validate list of indexes, drop out of range values
+	maxidx := NofRuleTrees(spl, opts);
+	idxlist := Filtered(treenums, x -> IsInt(x) and x > 0 and x <= maxidx);
+		
+	if (verbosity > 0) and (Length(idxlist) < Length(treenums)) then
+	    Print("Discarded ", Length(treenums) - Length(idxlist), " invalid tree number(s)\n");
+		if (verbosity > 1) then
+			Print("   Dropped items: ", Filtered(treenums, x -> not x in idxlist), "\n");
+		fi;
+	fi;
+	
 	if verbosity > 0 then
-		Print("Timing ", Length(treenums), " rule trees\n");
+		Print("Timing ", Length(idxlist), " rule trees\n");
 	fi;
 	
 	toFile := IsBound(opts.timingResultsFile) and IsString(opts.timingResultsFile);
@@ -54,7 +59,7 @@ TimeRuleTrees := function(spl, opts, treenums)
 	fi;	
 	
 	retlist := [];
-	for idx in treenums do
+	for idx in idxlist do
 		tree := RuleTreeN(spl, idx, opts);
 		if tree <> false then
 			meas := CMeasureRuleTree(tree, opts);

@@ -75,6 +75,9 @@ void compute_matrix()
 		}
 		for (y = 0; y < ROWS; y++) {
 			if (y != 0) {
+				if ((y % 10) == 0) {
+					printf("\n");
+				}
 				printf(", ");
 			}
 			printf("FloatString(\"%.18g\")", Output[y]);

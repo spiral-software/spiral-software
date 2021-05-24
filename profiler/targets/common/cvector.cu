@@ -78,6 +78,9 @@ void compute_vector()
 
 	for (indx = 0; indx < ROWS; indx++) {
 		if (indx != 0) {
+			if ((indx % 10) == 0) {
+				printf("\n");
+			}
 			printf(", ");
 		}
 		printf("FloatString(\"%.18g\")", Output[indx]);

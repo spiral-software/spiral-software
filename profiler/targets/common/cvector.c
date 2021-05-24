@@ -62,6 +62,9 @@ void compute_vector(scalar_type_t *t)
 	FUNC(Output->data, Input->data);
 	for (x = 0; x < ROWS; x++) {
 		if (x != 0) {
+			if ((x % 10) == 0) {
+				printf("\n");
+			}
 			printf(", ");
 			}
 		t->fprint_gap(t, stdout, NTH(Output, x));

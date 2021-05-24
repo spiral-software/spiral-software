@@ -616,7 +616,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 	extern char         * In;
 	TypInputFile        * parent;
 	exc_type_t          e;
-	Int                isBreakpoint;
+	Int           isBreakpoint;
+    Int           debugActive;
 
 	if ( ! ERROR_QUIET ) {
 
@@ -679,8 +680,13 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 
 			parent = Input;
 
+#ifdef _DEBUG
+            debugActive = true;
+#else
+            debugActive = (InDebugMode != 0);
+#endif
 			/* if requested enter a break loop                                     */
-			if ( HdExec != 0 && OpenInput( "*errin*" ) ) {
+			if ( HdExec != 0 && debugActive && OpenInput( "*errin*" ) ) {
 
 				if(parent->packages) PushPackages(parent->packages);
 				if(parent->imports) PushNamespaces(parent->imports);
@@ -813,146 +819,6 @@ Bag       FunError (Bag hdCall)
     return Error("FunError", (Int)hdCall, 0 );
 }
 
-
-/****************************************************************************
-**
-*F  FunWindowCmd( <hdCall> )  . . . . . . . . . . .  execute a window command
-*/
-Bag	FunWindowCmd (Bag hdCall)
-{
-    Bag       hdStr;
-    Bag       hdTmp;
-    Bag       hdCmd;
-    Bag       hdLst;
-    Int            len;
-    Int            n,  m;
-    Int            i;
-    char          * ptr;
-    char          * qtr;
-
-    /* check arguments                                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-	return Error( "usage: WindowCmd( <cmds> )", 0, 0 );
-    hdCmd = EVAL(PTR_BAG(hdCall)[1]);
-    if ( !IsList(hdCmd) )
-	return Error( "usage: WindowCmd( <cmds> )", 0, 0 );
-    hdTmp = ELM_LIST(hdCmd,1);
-    if ( GET_TYPE_BAG(hdTmp) != T_STRING )
-	return Error( "<cmd> must be a string", 0, 0 );
-    if ( GET_SIZE_BAG(hdTmp) != 4 )
-	return Error( "<cmd> is not a valid command", 0, 0 );
-
-    /* compute size needed to store argument string                        */
-    len   = 13;
-    hdLst = NewBag( T_LIST, (LEN_LIST(hdCmd)+1)*SIZE_HD );
-    for ( i = LEN_LIST(hdCmd);  1 < i;  i-- )
-    {
-	hdTmp = ELM_LIST(hdCmd,i);
-	if ( GET_TYPE_BAG(hdTmp) != T_INT && ! IsString(hdTmp) )
-	    return Error("%d.th argument must be a string or integer",i,0);
-	SET_BAG(hdLst, i,  hdTmp );
-	if ( GET_TYPE_BAG(hdTmp) == T_INT )
-	    len += 12;
-	else
-	    len += 5 + 2*GET_SIZE_BAG(hdTmp);
-    }
-
-    /* convert <hdCall> into an argument string                            */
-    hdStr  = NewBag( T_STRING, len + 13 );
-    ptr    = (char*) PTR_BAG(hdStr);
-    *ptr   = '\0';
-
-    /* first the command name                                              */
-    strncat( ptr, (char*)PTR_BAG(ELM_LIST(hdCmd,1)), 3 );
-    ptr += 3;
-
-    /* and at last the arguments                                           */
-    for ( i = 2;  i < GET_SIZE_BAG(hdLst)/SIZE_HD;  i++ )
-    {
-	hdTmp = PTR_BAG(hdLst)[i];
-	if ( GET_TYPE_BAG(hdTmp) == T_INT )
-	{
-	    *ptr++ = 'I';
-	    m = HD_TO_INT(hdTmp);
-	    for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
-		*ptr++ = (m%10) + '0';
-	    if ( HD_TO_INT(hdTmp) < 0 )
-		*ptr++ = '-';
-	    else
-		*ptr++ = '+';
-	}
-	else
-	{
-	    *ptr++ = 'S';
-	    m = GET_SIZE_BAG(hdTmp)-1;
-	    for ( n = 7;  0 <= n;  n--, m /= 10 )
-		*ptr++ = (m%10) + '0';
-	    qtr = (char*) PTR_BAG(hdTmp);
-	    for ( m = GET_SIZE_BAG(hdTmp)-1;  0 < m;  m-- )
-		*ptr++ = *qtr++;
-	}
-    }
-    *ptr = 0;
-
-    /* compute correct length of argument string                           */
-    qtr = (char*) PTR_BAG(hdStr);
-    len = (Int)(ptr - qtr);
-
-    /* now call the window front end with the argument string              */
-    ptr = SyWinCmd( qtr, len );
-    len = strlen(ptr);
-
-    /* now convert result back into a list                                 */
-    hdLst = NewBag( T_LIST, SIZE_PLEN_PLIST(11) );
-    SET_LEN_PLIST( hdLst, 0 );
-    i = 1;
-    while ( 0 < len )
-    {
-	if ( *ptr == 'I' )
-	{
-	    ptr++;
-	    for ( n=0,m=1; '0' <= *ptr && *ptr <= '9'; ptr++,m *= 10,len-- )
-			n += ((Int)(*ptr) - (Int)'0') * m;
-	    if ( *ptr++ == '-' )
-		n *= -1;
-	    len -= 2;
-	    AssPlist( hdLst, i, INT_TO_HD(n) );
-	}
-	else if ( *ptr == 'S' )
-	{
-	    ptr++;
-	    for ( n = 0, m = 7;  0 <= m;  m-- )
-			n = n*10 + ((Int)ptr[m] - (Int)'0');
-	    hdTmp = NewBag( T_STRING, n+1 );
-	    *(char*)PTR_BAG(hdTmp) = '\0';
-	    ptr += 8;
-	    strncat( (char*)PTR_BAG(hdTmp), ptr, n );
-	    ptr += n;
-	    len -= n+9;
-	    AssPlist( hdLst, i, hdTmp );
-	}
-	else
-	    return Error( "unknown return value '%s'", (Int)ptr, 0 );
-	i++;
-    }
-
-    /* if the first entry is one signal an error */
-    if ( ELM_LIST(hdLst,1) == INT_TO_HD(1) )
-    {
-	hdStr = NewBag( T_STRING, 30 );
-	strncat( (char*) PTR_BAG(hdStr), "window system: ", 15 );
-	SET_ELM_PLIST( hdLst, 1, hdStr );
-	Resize( hdLst, i*SIZE_HD );
-	return Error( "FunError", (Int)hdLst, 0 );
-    }
-    else
-    {
-	for ( m = 1;  m <= i-2;  m++ )
-	    SET_ELM_PLIST( hdLst,m, ELM_LIST(hdLst,m+1) );
-	SET_LEN_PLIST( hdLst, i-2 );
-	return hdLst;
-    }
-}
 
 
 /****************************************************************************
@@ -2225,7 +2091,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     InstIntFunc( "Backtrace",  FunBacktrace  );
     InstIntFunc( "Backtrace2", FunBacktrace2 );
     InstIntFunc( "BacktraceTo",FunBacktraceTo);
-    InstIntFunc( "WindowCmd",  FunWindowCmd  );
 
     InstIntFunc( "READ",       FunREAD       );
     InstIntFunc( "READSTR",    FunReadString );

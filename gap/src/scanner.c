@@ -368,14 +368,6 @@ char            GetLine (void)
         return *In;
     }
 
-    /* deal with help requests (preliminary hack)                          */
-    if ( In[0] == '?' ) {
-        In[strlen(In)-1] = '\0';
-        SyHelp( In+1, Input->file );
-        In[0] = '\n';
-        In[1] = '\0';
-    }
-
     /* if neccessary echo the line to the logfile                          */
     if ( Logfile != -1 && (Input->file == 0 || Input->file == 2) )
         SyFputs( In, Logfile );

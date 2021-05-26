@@ -76,6 +76,7 @@ void compute_vector()
 	checkCudaErrors(cudaGetLastError());
 	
 	for (indx = 0; indx < ROWS; indx++) {
+		Output[indx] = (double)-INFINITY;
 		cudaMemcpy(&dev_out[indx], &nzero, sizeof(cufftDoubleReal), cudaMemcpyHostToDevice);
 		checkCudaErrors(cudaGetLastError());
 	}

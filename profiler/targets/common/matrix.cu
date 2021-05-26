@@ -72,6 +72,7 @@ void compute_matrix()
 		cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
 		
 		for (indx = 0; indx < ROWS; indx++) {
+			Output[indx] = (double)-INFINITY;
 			cudaMemcpy(&dev_out[indx], &nzero, sizeof(cufftDoubleReal), cudaMemcpyHostToDevice);
 			checkCudaErrors(cudaGetLastError());
 		}

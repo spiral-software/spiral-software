@@ -1063,7 +1063,13 @@ Obj FunBuildInfo(Obj hdCall) {
 	Pr("GitRemote : %s\n", SPIRAL_GIT_REMOTE_URL, 0);
 	Pr("GitBranch : %s\n", SPIRAL_GIT_COMMIT_BRANCH, 0);
 	Pr("DateTimeUTC : %s %s\n", SPIRAL_BUILD_DATE_UTC, SPIRAL_BUILD_TIME_UTC);
-	Pr("Compiler : %s %s\n", SPIRAL_C_COMPILER_ID, SPIRAL_C_COMPILER_VERSION);
+    Pr("System   : %s on %s\n", SPIRAL_SYSTEM_NAME, SPIRAL_SYSTEM_PROCESSOR);
+    Pr("Compiler : %s %s\n", SPIRAL_C_COMPILER_ID, SPIRAL_C_COMPILER_VERSION);
+#ifdef CMAKE_INTDIR
+    Pr("Configuration : %s\n", CMAKE_INTDIR, 0);
+#else
+    Pr("CMakeBuildType : %s\n", SPIRAL_BUILD_TYPE, 0);
+#endif
     return HdVoid;
 }
 

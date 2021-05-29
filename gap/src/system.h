@@ -176,12 +176,6 @@ extern  Int            SyMemory;
 */
 extern  char            SyInitfiles [16] [256];
 
-/****************************************************************************
-**
-*F  SyHelp( <topic>, <fid> )  . . . . . . . . . . . . . . display online help
-**
-*/
-extern void             SyHelp ( char * topic, Int fin );
 
 /****************************************************************************
 **
@@ -317,19 +311,6 @@ extern  void            SyFputs ( char * line, Int fid );
 **  number of live bags.
 */
 extern void             SyPinfo ( int nr, Int size );
-
-
-/****************************************************************************
-**
-*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . .  . execute a window cmd
-**
-**  'SyWinCmd' send   the  command <str> to  the   window  handler (<len>  is
-**  ignored).  In the string <str> '@' characters are duplicated, and control
-**  characters  are converted to  '@<chr>', e.g.,  <newline> is converted  to
-**  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
-**  that string.
-*/
-extern char *           SyWinCmd ( char * str, Int len );
 
 
 /****************************************************************************

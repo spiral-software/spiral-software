@@ -807,6 +807,12 @@ Bag FunNoDbg (Obj hdCall)
 
 Bag       FunDbgBreak (Obj hdCall)
 {
+#ifndef _DEBUG
+    if (InDebugMode == 0) {
+        Pr("Use Debug(true) to enable debugging\n", 0, 0);
+        return HdVoid;
+    }
+#endif
     char* msg = "\0";
     if ( GET_SIZE_BAG(hdCall) ==  2*SIZE_HD ) {
         hdCall = EVAL(PTR_BAG(hdCall)[1]);
@@ -814,6 +820,7 @@ Bag       FunDbgBreak (Obj hdCall)
             msg = HD_TO_STRING(hdCall);
     }
     DbgBreak(msg, 0, 0);
+
     return HdVoid;
 }
 

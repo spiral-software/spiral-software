@@ -51,6 +51,22 @@ Class(Tensor, BaseOperation, rec(
     #-----------------------------------------------------------------------
     toAMat := self >> TensorProductAMat(List(self._children, AMatSPL)),
     #-----------------------------------------------------------------------
+	matElem := (self,r,c) >> Cond(Length(self._children) = 0,
+		# single child
+		self._children[1].matElem(r,c),
+		# product of element from each child
+		let(
+			lf := self._children[1],
+			rt := Tensor(Drop(self._children, 1)),
+			dm := rt.dims(),
+			lfr := Int((r-1)/dm[2])+1,
+			lfc := Int((c-1)/dm[1])+1,
+			rtr := ((r-1) mod dm[2])+1,
+			rtc := ((c-1) mod dm[1])+1,
+			lf.matElem(lfr,lfc) * rt.matElem(rtr,rtc)
+		)
+	),
+    #-----------------------------------------------------------------------
     transpose := self >>  
         CopyFields(self, rec(_children := List(self._children, x->x.transpose()),
 		          dimensions := Reversed(self.dimensions))),

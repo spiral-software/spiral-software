@@ -28,6 +28,8 @@ Class(DFT_NonTerm, TaggedNonTerminal, rec(
     terminate := self >> let(N := self.params[1], K := self.params[2],
         t := List([0..N-1], r -> List([0..N-1], c -> E(4*N)^(K*self.omega4pow(r,c)))),
             When(self.isReal(), MatAMat(RC(Mat(t)).toAMat()), Mat(t))),
+			
+	matElem := (self,r,c) >> let(N := self.params[1], K := self.params[2], E(4*N)^(K*self.omega4pow(r-1,c-1))),
 
     isReal := self >> false,
     SmallRandom := () -> Random([2..16]),

@@ -44,6 +44,7 @@ Class(Tagged_tSPL_Container, Tagged_tSPL, rec(
     dims := self >> self.params[1].dims(),
     advdims := self >> self.params[1].advdims(),
     terminate := self >> self.params[1].terminate(),
+	matElem := (self,r,c) >> self.params[1].matElem(r,c),
     transpose := self >> ObjId(self)(self.params[1].transpose())
                              .withTags(self.getTags()),
     isReal := self >> self.params[1].isReal(),

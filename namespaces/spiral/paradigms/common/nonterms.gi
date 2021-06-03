@@ -332,6 +332,8 @@ Class(TRC, Tagged_tSPL_Container, rec(
     abbrevs :=  [ (A) -> Checked(IsNonTerminal(A) or IsSPL(A), [A]) ],
     dims := self >> 2*self.params[1].dims(),
     terminate := self >> Mat(MatSPL(RC(self.params[1]))),
+	
+	matElem := (self,r,c) >> RC(self.params[1]).matElem(r,c),
 
     transpose := self >> ObjId(self)(
 	self.params[1].conjTranspose()).withTags(self.getTags()),

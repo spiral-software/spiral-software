@@ -342,7 +342,7 @@ Class(TRC, Tagged_tSPL_Container, rec(
 		x2 := Int((col - 1) / 2) + 1,
 		cplx := self.params[1].matElem(y2,x2),
 		s := m2[y1][x1],
-		Cond(x1=y1, re(cplx).v, im(cplx).v * s)
+		Cond(x1=y1, Re(cplx), Im(cplx) * s)
 	),
 
     transpose := self >> ObjId(self)(

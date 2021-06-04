@@ -334,7 +334,16 @@ Class(TRC, Tagged_tSPL_Container, rec(
     dims := self >> 2*self.params[1].dims(),
     terminate := self >> Mat(MatSPL(RC(self.params[1]))),
 	
-	matElem := (self,r,c) >> RC(self.params[1]).matElem(r,c),
+	matElem := (self,row,col) >> let(
+		m2 := [[1,-1],[1,1]],
+		y1 := ((row - 1) mod 2) + 1,
+		x1 := ((col - 1) mod 2) + 1,
+		y2 := Int((row - 1) / 2) + 1,
+		x2 := Int((col - 1) / 2) + 1,
+		cplx := self.params[1].matElem(y2,x2),
+		s := m2[y1][x1],
+		Cond(x1=y1, re(cplx).v, im(cplx).v * s)
+	),
 
     transpose := self >> ObjId(self)(
 	self.params[1].conjTranspose()).withTags(self.getTags()),

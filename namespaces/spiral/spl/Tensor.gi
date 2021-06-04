@@ -51,13 +51,20 @@ Class(Tensor, BaseOperation, rec(
     #-----------------------------------------------------------------------
     toAMat := self >> TensorProductAMat(List(self._children, AMatSPL)),
     #-----------------------------------------------------------------------
+	_rightTensor := 0,
+	getRightTensor := meth(self)
+		if self._rightTensor = 0 then
+			self._rightTensor := Tensor(Drop(self._children, 1));
+		fi;
+		return self._rightTensor;
+	end,
 	matElem := (self,r,c) >> Cond(Length(self._children) = 0,
 		# single child
 		self._children[1].matElem(r,c),
 		# product of element from each child
 		let(
 			lf := self._children[1],
-			rt := Tensor(Drop(self._children, 1)),
+			rt := self.getRightTensor(),
 			dm := rt.dims(),
 			lfr := Int((r-1)/dm[2])+1,
 			lfc := Int((c-1)/dm[1])+1,

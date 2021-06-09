@@ -29,7 +29,11 @@ Class(DFT_NonTerm, TaggedNonTerminal, rec(
         t := List([0..N-1], r -> List([0..N-1], c -> E(4*N)^(K*self.omega4pow(r,c)))),
             When(self.isReal(), MatAMat(RC(Mat(t)).toAMat()), Mat(t))),
 			
-	matElem := (self,r,c) >> let(N := self.params[1], K := self.params[2], E(4*N)^(K*self.omega4pow(r-1,c-1))),
+	matElem := (self,r,c) >> let(
+		N := self.params[1], 
+		K := self.params[2], 
+		self.elementAt(N,K,r-1,c-1)
+	),
 
     isReal := self >> false,
     SmallRandom := () -> Random([2..16]),
@@ -47,6 +51,7 @@ Class(DFT, DFT_NonTerm, rec(
     transpose     := self >> DFT(self.params[1], self.params[2]).withTags(self.getTags()),
     conjTranspose := self >> DFT(self.params[1], -self.params[2]).withTags(self.getTags()),
     inverse := self >> self.conjTranspose(),
+	elementAt := (N,K,r,c) -> E(N)^((K*r*c) mod N),
     omega4pow := (r,c) -> 4*r*c,
     printlatex := (self) >> Print(" \\DFT_{", self.params[1], "} ")
 ));
@@ -66,6 +71,7 @@ Class(DFT2, DFT_NonTerm, rec(
     transpose     := self >> DFT3(self.params[1], self.params[2]).withTags(self.getTags()),
     conjTranspose := self >> DFT3(self.params[1], -self.params[2]).withTags(self.getTags()),
     inverse := self >> self.conjTranspose(),
+	elementAt := (N,K,r,c) -> E(N*4)^(K*(2*r*(2*c+1))),
     omega4pow := (r,c) -> 2*r*(2*c+1),
 ));
 
@@ -80,6 +86,7 @@ Class(DFT3, DFT_NonTerm, rec(
     transpose     := self >> DFT2(self.params[1], self.params[2]).withTags(self.getTags()),
     conjTranspose := self >> DFT2(self.params[1], -self.params[2]).withTags(self.getTags()),
     inverse := self >> self.conjTranspose(),
+	elementAt := (N,K,r,c) -> E(N*4)^(K*((2*r+1)*2*c)),
     omega4pow := (r,c) -> (2*r+1)*2*c,
 ));
 
@@ -94,6 +101,7 @@ Class(DFT4, DFT_NonTerm, rec(
     transpose     := self >> DFT4(self.params[1], self.params[2]).withTags(self.getTags()),
     conjTranspose := self >> DFT4(self.params[1], -self.params[2]).withTags(self.getTags()),
     inverse := self >> self.conjTranspose(),
+	elementAt := (N,K,r,c) -> E(N*4)^(K*((2*r+1)*(2*c+1))),
     omega4pow := (r,c) -> (2*r+1)*(2*c+1),
 ));
 

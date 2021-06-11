@@ -51,28 +51,65 @@ Class(Tensor, BaseOperation, rec(
     #-----------------------------------------------------------------------
     toAMat := self >> TensorProductAMat(List(self._children, AMatSPL)),
     #-----------------------------------------------------------------------
-	_rightTensor := 0,
-	getRightTensor := meth(self)
-		if self._rightTensor = 0 then
-			self._rightTensor := Tensor(Drop(self._children, 1));
+	_childDims := 0,
+	_numChilds := 0,
+	_mods := [],
+	_divs := [],
+	getChildDims := meth(self)
+		local i, dr, dc, dms;
+		if self._childDims = 0 then
+			self._childDims := List(self._children, c -> c.dims());
+			dms := self._childDims;
+			self._numChilds := Length(self._children);
+			for i in [1..self._numChilds] do
+				dr := 1;
+				dc := 1;
+				if i > 1 then
+					dr := Product(List(Drop(dms,i-1), e -> e[2]));
+					dc := Product(List(Drop(dms,i-1), e -> e[1]));
+				fi;
+				Add(self._mods, [dc,dr]);
+				dr := 1;
+				dc := 1;
+				if i < self._numChilds then
+					dr := Product(List(Drop(dms,i), e -> e[2]));
+					dc := Product(List(Drop(dms,i), e -> e[1]));
+				fi;
+				Add(self._divs, [dc,dr]);
+			od;
 		fi;
-		return self._rightTensor;
+		return self._childDims;
 	end,
-	matElem := (self,r,c) >> Cond(Length(self._children) = 0,
-		# single child
-		self._children[1].matElem(r,c),
+	matElem := meth (self,r,c)
+		local i, len, retval, lr, lc, dr, dc;
+		
+		self.getChildDims();
+		len := self._numChilds;
+		if (len = 1) then
+			# single child
+			return self._children[1].matElem(r,c);
+		fi;
 		# product of element from each child
-		let(
-			lf := self._children[1],
-			rt := self.getRightTensor(),
-			dm := rt.dims(),
-			lfr := Int((r-1)/dm[2])+1,
-			lfc := Int((c-1)/dm[1])+1,
-			rtr := ((r-1) mod dm[2])+1,
-			rtc := ((c-1) mod dm[1])+1,
-			lf.matElem(lfr,lfc) * rt.matElem(rtr,rtc)
-		)
-	),
+		retval := 1;
+		for i in [1..len] do
+			lr := r;
+			lc := c;
+			if i > 1 then
+				dr := self._mods[i][2];
+				dc := self._mods[i][1];
+				lr := ((lr-1) mod dr)+1;
+				lc := ((lc-1) mod dc)+1;
+			fi;
+			if i < len then
+				dr := self._divs[i][2];
+				dc := self._divs[i][1];
+				lr := Int((lr-1) / dr)+1;
+				lc := Int((lc-1) / dc)+1;
+			fi;
+			retval := retval * self._children[i].matElem(lr,lc);
+		od;
+		return retval;
+	end,
     #-----------------------------------------------------------------------
     transpose := self >>  
         CopyFields(self, rec(_children := List(self._children, x->x.transpose()),

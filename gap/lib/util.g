@@ -1298,3 +1298,12 @@ ElapsedTime := function(begt, endt)
     if delta < 0 then delta := delta + 86400; fi;
     return delta;
 end;
+
+#F IsNegativeZero(val)
+#F   return true if double val is -0.0
+
+IsNegativeZero := function(val)
+	return ((val = 0.0) and ((1.0 / val) = (1.0 / -0.0)));
+end;
+
+

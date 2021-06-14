@@ -247,6 +247,30 @@ Class(ClassSPL, AttrMixin, rec(
     toAMat        := meth(self) Error("Not implemented"); end,
     transpose     := meth(self) Error("Not implemented"); end,
     conjTranspose  := meth(self) Error("Not implemented"); end,
+	matElem       := meth(self,row,col) return false; end,
+	codeMatElem   := meth(self,row,col) return false; end,
+	matRow     := meth(self,r)
+		local N, c, lst;
+		N := self.dims()[2];
+		lst := NewList(N);
+		c := N;
+		while c > 0 do
+			lst[c] := self.matElem(r,c);
+			c := c - 1;
+		od;
+		return lst;
+	end,
+	matColumn     := meth(self,c)
+		local N, r, lst;
+		N := self.dims()[1];
+		lst := NewList(N);
+		r := N;
+		while r > 0 do
+			lst[r] := self.matElem(r,c);
+			r := r - 1;
+		od;
+		return lst;
+	end,
 ));
 
 

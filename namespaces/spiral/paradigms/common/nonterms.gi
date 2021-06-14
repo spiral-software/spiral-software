@@ -44,6 +44,7 @@ Class(Tagged_tSPL_Container, Tagged_tSPL, rec(
     dims := self >> self.params[1].dims(),
     advdims := self >> self.params[1].advdims(),
     terminate := self >> self.params[1].terminate(),
+	matElem := (self,r,c) >> self.params[1].matElem(r,c),
     transpose := self >> ObjId(self)(self.params[1].transpose())
                              .withTags(self.getTags()),
     isReal := self >> self.params[1].isReal(),
@@ -332,6 +333,17 @@ Class(TRC, Tagged_tSPL_Container, rec(
     abbrevs :=  [ (A) -> Checked(IsNonTerminal(A) or IsSPL(A), [A]) ],
     dims := self >> 2*self.params[1].dims(),
     terminate := self >> Mat(MatSPL(RC(self.params[1]))),
+	
+	matElem := (self,row,col) >> let(
+		m2 := [[1,-1],[1,1]],
+		y1 := ((row - 1) mod 2) + 1,
+		x1 := ((col - 1) mod 2) + 1,
+		y2 := Int((row - 1) / 2) + 1,
+		x2 := Int((col - 1) / 2) + 1,
+		cplx := self.params[1].matElem(y2,x2),
+		s := m2[y1][x1],
+		Cond(x1=y1, Re(cplx), Im(cplx) * s)
+	),
 
     transpose := self >> ObjId(self)(
 	self.params[1].conjTranspose()).withTags(self.getTags()),

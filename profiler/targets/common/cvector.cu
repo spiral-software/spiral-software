@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 
 #include <cufft.h>
 #include <cufftXt.h>
@@ -28,6 +29,10 @@
 #endif
 #ifndef COLUMNS
 #error COLUMNS must be defined
+#endif
+
+#ifndef NZERO
+#define NZERO (1.0/(double)-INFINITY)
 #endif
 
 cufftDoubleReal  *Input, *Output;
@@ -64,10 +69,17 @@ void finalize() {
 void compute_vector()
 {
 	int indx;
+	double nzero = NZERO;
 	printf("[ ");
 
 	cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
 	checkCudaErrors(cudaGetLastError());
+	
+	for (indx = 0; indx < ROWS; indx++) {
+		Output[indx] = (double)-INFINITY;
+		cudaMemcpy(&dev_out[indx], &nzero, sizeof(cufftDoubleReal), cudaMemcpyHostToDevice);
+		checkCudaErrors(cudaGetLastError());
+	}
 
 	FUNC(dev_out, dev_in);
 	checkCudaErrors(cudaGetLastError());

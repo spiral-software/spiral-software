@@ -25,6 +25,8 @@ PRIMITIVE_REAL_PACKAGE(float,       float,
 		       "%g", "FloatString(\"%.9g\")",
 		       -50 + 100*((float)rand() / RAND_MAX));
 
+PRIMITIVE_REAL_PACKAGE(int, int, "%d", "IntString(\"%d\")", rand());
+
 /**
  * Type records definitions for primitive COMPLEX types 
  */
@@ -46,10 +48,6 @@ PRIMITIVE_CPLX_PACKAGE(float,       float,
 		       -50 + 100*((float)rand() / RAND_MAX), sqrt);
 
 /* vector definitions for fixed point real types */
-
-PRIMITIVE_FPREAL_PACKAGE(int, int,
-                         "%g", "FloatString(\"%.22g\")", 
-			 -50 + 100*((double)rand() / RAND_MAX));
 
 PRIMITIVE_FPREAL_PACKAGE(short, short,
                          "%g", "FloatString(\"%.22g\")", 

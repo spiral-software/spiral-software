@@ -11,4 +11,5 @@ REM VsDevCmd.bat, then run it to set the environment for nmake...
 for /f "usebackq delims=#" %%a in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere" -latest -property installationPath`) do call "%%a\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64 > nul
 
 set SGBETEMPDIR=%cd%
+nmake /C /S /f ../../targets/win-x86-vcc/Makefile clean
 nmake /C /S /f ../../targets/win-x86-vcc/Makefile GAP=%SGBETEMPDIR%\testcode.c STUB=%SGBETEMPDIR%\testcode.h CC="cl" OUTDIR=%SGBETEMPDIR% vector  > vector.txt

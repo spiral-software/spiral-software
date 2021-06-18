@@ -63,7 +63,7 @@ if ( ${_codegen} STREQUAL "GPU" )
     else ()
 	set ( CUDA_COMPILE_FLAGS -m64 -rdc=true )
 	set ( GPU_COMPILE_DEFNS -dc )
-	set ( LIBS_FOR_CUDA cufft_static culibos )
+	set ( LIBS_FOR_CUDA cufft culibos )
 	set ( ADDL_COMPILE_FLAGS )
     endif ()
 

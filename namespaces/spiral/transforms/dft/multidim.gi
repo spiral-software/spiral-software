@@ -32,6 +32,14 @@ Class(MDDFT, TaggedNonTerminal, rec(
                                 i -> DFT(i, self.params[2]).terminate())),
                             When(self.isReal(), MatAMat(RC(t).toAMat()), t)
                          ),
+	_tensor := 0,
+	getTensor := meth(self)
+		if self._tensor = 0 then
+			self._tensor := Tensor(List(self.params[1], i -> DFT(i, self.params[2])));
+		fi;
+		return self._tensor;
+	end,
+	matElem := (self,r,c) >> self.getTensor().matElem(r,c),
 
     transpose := self >> Copy(self),
 

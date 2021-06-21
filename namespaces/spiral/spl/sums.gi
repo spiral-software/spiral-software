@@ -229,6 +229,16 @@ Class(RC, SumsBase, BaseContainer, rec(
     sums := self >> CopyFields(self, rec(_children := [self.child(1).sums()])),
     area := self >> 2*self.child(1).area(),
     toAMat := self >> AMatMat(RealMatComplexMat(MatSPL(self.child(1)))),
+	matElem := (self,row,col) >> let(
+		m2 := [[1,-1],[1,1]],
+		y1 := ((row - 1) mod 2) + 1,
+		x1 := ((col - 1) mod 2) + 1,
+		y2 := Int((row - 1) / 2) + 1,
+		x2 := Int((col - 1) / 2) + 1,
+		cplx := self.child(1).matElem(y2,x2),
+		s := m2[y1][x1],
+		Cond(x1=y1, Re(cplx), Im(cplx) * s)
+	),
     createCode := self >> Cond(IsBound(self.child(1).createCode), RC(self.child(1).createCode()), self),
 
     # assume that normalizedArithCost() always returns cost in real ops

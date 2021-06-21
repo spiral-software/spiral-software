@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 
 #include "sys.h"
 #include "conf.h"
@@ -26,6 +27,10 @@
 #endif
 #ifndef COLUMNS
 #error COLUMNS must be defined
+#endif
+
+#ifndef NZERO
+#define NZERO (1.0/(double)-INFINITY)
 #endif
 
 vector_t * Input;
@@ -49,8 +54,12 @@ void finalize() {
 void compute_matrix()
 {
 	scalar_type_t *t = scalar_find_type(DATATYPE);
-
+	DATATYPE_NO_QUOTES nz = NZERO;
 	int x, y;
+	
+	for (x = 0; x < ROWS; x++) {
+		SET(t, NTH(Output, x), &nz);
+	}
 	printf("[ ");
 	for (x = 0; x < COLUMNS; x++) {
 		vector_basis(Input, x);

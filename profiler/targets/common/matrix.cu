@@ -35,8 +35,8 @@ cufftDoubleReal  *Input, *Output;
 cufftDoubleReal  *dev_in, *dev_out;
 
 void initialize(int argc, char **argv) {
-	cudaMallocHost ( &Input,  sizeof(cufftDoubleReal) * COLUMNS );
-	cudaMallocHost ( &Output, sizeof(cufftDoubleReal) * ROWS );
+	Input =  (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), COLUMNS );
+	Output = (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), ROWS );
 
 	cudaMalloc     ( &dev_in,  sizeof(cufftDoubleReal) * COLUMNS );
 	cudaMalloc     ( &dev_out, sizeof(cufftDoubleReal) * ROWS );
@@ -45,8 +45,8 @@ void initialize(int argc, char **argv) {
 }
 
 void finalize() {
-	cudaFreeHost (Output);
-	cudaFreeHost (Input);
+	free (Output);
+	free (Input);
 	cudaFree     (dev_out);
 	cudaFree     (dev_in);
 }

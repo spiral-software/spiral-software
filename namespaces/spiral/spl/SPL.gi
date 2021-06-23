@@ -271,6 +271,26 @@ Class(ClassSPL, AttrMixin, rec(
 		od;
 		return lst;
 	end,
+	matBox := meth(self,corners)
+		local row1, col1, row2, col2, box, lst, r, c;
+		row1 := corners[1][1];
+		col1 := corners[1][2];
+		row2 := corners[2][1];
+		col2 := corners[2][2];
+		box := [];
+		r := row1;
+		while r <= row2 do
+			lst := [];
+			c := col1;
+			while c <= col2 do
+				Add(lst, self.matElem(r,c));
+				c := c+1;
+			od;
+			Add(box, lst);
+			r := r+1;
+		od;
+		return box;
+	end,
 ));
 
 

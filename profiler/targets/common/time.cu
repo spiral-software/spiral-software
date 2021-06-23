@@ -67,8 +67,8 @@ int main(int argc, char** argv)
 	
 	cudaEventCreate ( &begin );
 	cudaEventCreate ( &end );
-	cudaMallocHost  ( &in,      sizeof(cufftDoubleReal) * COLUMNS );
-	cudaMallocHost  ( &out,     sizeof(cufftDoubleReal) * ROWS );
+	in =  (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), COLUMNS );
+	out = (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), ROWS );
 	cudaMalloc      ( &dev_in,  sizeof(cufftDoubleReal) * COLUMNS );
 	cudaMalloc      ( &dev_out, sizeof(cufftDoubleReal) * ROWS );
 
@@ -109,8 +109,8 @@ int main(int argc, char** argv)
 
 	fflush(stdout);
 	
-	cudaFreeHost  ( in );
-	cudaFreeHost  ( out );
+	free  ( in );
+	free  ( out );
 	cudaFree      ( dev_in );
 	cudaFree      ( dev_out );
 	

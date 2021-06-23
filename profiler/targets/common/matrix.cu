@@ -92,12 +92,18 @@ void compute_matrix()
 	for (x = start_col; x < end_col; x++) {
 		set_value_in_vector(Input, x);
 
-		cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
+		cudaMemcpy (dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
 		
+		// set dev_out to negative zero to catch holes transform
+		for (indx = 0; indx < ROWS; indx++) {
+			Output[indx] = nzero;
+		}
+		cudaMemcpy(dev_out, Output, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyHostToDevice);
+		checkCudaErrors(cudaGetLastError());
+		
+		// set Output to -Inf to catch incomplete copies
 		for (indx = 0; indx < ROWS; indx++) {
 			Output[indx] = (double)-INFINITY;
-			cudaMemcpy(&dev_out[indx], &nzero, sizeof(cufftDoubleReal), cudaMemcpyHostToDevice);
-			checkCudaErrors(cudaGetLastError());
 		}
 		
 		FUNC(dev_out, dev_in);

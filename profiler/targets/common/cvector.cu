@@ -73,10 +73,16 @@ void compute_vector()
 	cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
 	checkCudaErrors(cudaGetLastError());
 	
+	// set dev_out to negative zero to catch holes transform
+	for (indx = 0; indx < ROWS; indx++) {
+		Output[indx] = nzero;
+	}
+	cudaMemcpy(dev_out, Output, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyHostToDevice);
+	checkCudaErrors(cudaGetLastError());
+		
+	// set Output to -Inf to catch incomplete copies
 	for (indx = 0; indx < ROWS; indx++) {
 		Output[indx] = (double)-INFINITY;
-		cudaMemcpy(&dev_out[indx], &nzero, sizeof(cufftDoubleReal), cudaMemcpyHostToDevice);
-		checkCudaErrors(cudaGetLastError());
 	}
 
 	FUNC(dev_out, dev_in);

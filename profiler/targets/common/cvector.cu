@@ -46,10 +46,8 @@ void initialize(int argc, char **argv) {
 	// buffers.  The *input* buffer should be dimensioned by COLUMNS, while the
 	// *output* buffer should be dimensioned by ROWS
 	
-	cudaMallocHost ( &Input,  sizeof(cufftDoubleReal) * COLUMNS );
-	checkCudaErrors(cudaGetLastError());
-	cudaMallocHost ( &Output, sizeof(cufftDoubleReal) * ROWS );
-	checkCudaErrors(cudaGetLastError());
+	Input =  (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), COLUMNS );
+	Output = (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), ROWS );
 
 	cudaMalloc     ( &dev_in,  sizeof(cufftDoubleReal) * COLUMNS );
 	checkCudaErrors(cudaGetLastError());
@@ -60,8 +58,8 @@ void initialize(int argc, char **argv) {
 }
 
 void finalize() {
-	cudaFreeHost (Output);
-	cudaFreeHost (Input);
+	free (Output);
+	free (Input);
 	cudaFree     (dev_out);
 	cudaFree     (dev_in);
 }

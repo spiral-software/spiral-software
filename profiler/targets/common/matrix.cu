@@ -63,10 +63,33 @@ void set_value_in_vector(cufftDoubleReal *arr, int elem)
 
 void compute_matrix()
 {
-	int x, y, indx;
+	int x, y, indx, counter;
+	int start_col, end_col, start_row, end_row;
 	double nzero = NZERO;
+
+#ifdef CMATRIX_UPPER_ROW
+	start_row = CMATRIX_UPPER_ROW - 1;
+#else
+	start_row = 0;
+#endif
+#ifdef CMATRIX_UPPER_COL
+	start_col = CMATRIX_UPPER_COL - 1;
+#else
+	start_col = 0;
+#endif	
+#ifdef CMATRIX_LOWER_ROW
+	end_row = CMATRIX_LOWER_ROW;
+#else
+	end_row = ROWS;
+#endif
+#ifdef CMATRIX_LOWER_COL
+	end_col = CMATRIX_LOWER_COL;
+#else
+	end_col = COLUMNS;
+#endif	
+	
 	printf("[ ");
-	for (x = 0; x < COLUMNS; x++) {
+	for (x = start_col; x < end_col; x++) {
 		set_value_in_vector(Input, x);
 
 		cudaMemcpy ( dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
@@ -80,20 +103,22 @@ void compute_matrix()
 		FUNC(dev_out, dev_in);
 		cudaMemcpy ( Output, dev_out, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyDeviceToHost);
 		
-		if (x != 0) {
+		if (x != start_col) {
 			printf(",\n  [ ");
 		}
 		else {
 			printf("[ ");
 		}
-		for (y = 0; y < ROWS; y++) {
-			if (y != 0) {
-				if ((y % 10) == 0) {
+		counter = 0;
+		for (y = start_row; y < end_row; y++) {
+			if (counter != 0) {
+				if ((counter % 10) == 0) {
 					printf("\n");
 				}
 				printf(", ");
 			}
 			printf("FloatString(\"%.18g\")", Output[y]);
+			counter++;
 		}
 		printf(" ]");
 	}

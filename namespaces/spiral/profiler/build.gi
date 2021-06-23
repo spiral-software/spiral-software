@@ -7,7 +7,7 @@ Import(paradigms.distributed);
 # local functions and variables are prefixed with an underscore.
 
 _WriteStub := function(code, opts)
-    local outstr, s, stub, i, testvec, multiline;
+    local outstr, s, stub, i, testvec, multiline, bounds, corner;
     
     # build the generic stub info
     stub := CopyFields(rec(
@@ -82,6 +82,18 @@ _WriteStub := function(code, opts)
 		Print("};\n");
 	fi;
 	
+	if IsBound(opts.cmatrixBounds) then
+		bounds := opts.cmatrixBounds;
+		if not (IsMat(bounds) and Length(bounds) = 2 and
+				Length(bounds[1]) = 2 and Length(bounds[2]) = 2) then
+			Error("opts.cmatrixBounds must be a list [[ur,uc], [lr,lc]]");
+		fi;
+		Print("\n");
+		Print("#define CMATRIX_UPPER_ROW ", bounds[1][1], "\n");
+		Print("#define CMATRIX_UPPER_COL ", bounds[1][2], "\n");
+		Print("#define CMATRIX_LOWER_ROW ", bounds[2][1], "\n");
+		Print("#define CMATRIX_LOWER_COL ", bounds[2][2], "\n");
+	fi;
 end;
 
 
@@ -193,13 +205,27 @@ end;
 
 CMeasure := (code, opts) -> _CallProfiler("time", code, opts);
 
-## CMatrix(code, opts)
+## CMatrix(code, opts, <bounds>)
 ##
 ## Call profiler to generate matrix equivalent of transform implemented by code
+## Optional bounds specifies sub matrix upper/lower corners [[ur,uc], [lr,lc]]
 
-CMatrix := function(code, opts)
-	local retmat;
+CMatrix := function(arg)
+	local code, opts, retmat, oldbounds;
+	code := arg[1];
+	opts := arg[2];
+	if IsBound(opts.cmatrixBounds) then
+		oldbounds := opts.cmatrixBounds;
+	fi;
+	if Length(arg) = 3 then
+		opts.cmatrixBounds := arg[3];
+	fi;
 	retmat := _CallProfiler("matrix", code, opts);
+	if IsBound(oldbounds) then
+		opts.cmatrixBounds := oldbounds;
+	elif IsBound(opts.cmatrixBounds) then
+		Unbind(opts.cmatrixBounds);
+	fi;
 	return Cond(IsMat(retmat), TransposedMat(retmat), retmat);
 end;
 

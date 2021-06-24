@@ -11,8 +11,8 @@ REM  target and finally, if successful, execute the target.
 
 COPY ..\..\targets\common\CMakeLists.txt %SGBETEMPDIR%\CMakeLists.txt
 RENAME testcode.c testcode.cu
-cmake -DPROJECT:STRING=matrix .
-cmake --build . --config Release --target install
+cmake -DPROJECT:STRING=matrix . < nul
+cmake --build . --config Release --target install < nul
 
 IF EXIST .\matrix.exe (
     .\matrix.exe > matrix.txt

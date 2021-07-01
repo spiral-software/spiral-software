@@ -2,11 +2,7 @@
  *  Copyright (c) 2018-2021, Carnegie Mellon University
  *  See LICENSE for details
  */
-/***************************************************************************
- * SPL Matrix                                                              *
- *                                                                         *
- * Computes matrix that corresponds to SPL generated routine               *
- ***************************************************************************/
+
 
 #include <limits.h>
 #include <time.h>
@@ -14,13 +10,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
-
-#include "sys.h"
-#include "conf.h"
-#include "vector.h"
-#include "opt_macros.h"
-#include "xmalloc.h"
-#include "vector_def.h" /* data_type */
 
 #ifndef MIN
 #define MIN(a,b) (((a)<(b))?(a):(b))
@@ -37,46 +26,39 @@
 #define NZERO (1.0/(double)-INFINITY)
 #endif
 
-vector_t * Input;
-vector_t * Output;
+#ifndef DATATYPE
+#define DATATYPE double
+#endif
+
+#ifndef DATAFORMATSTRING
+#define DATAFORMATSTRING "FloatString(\"%.18g\")"
+#endif
+
+#ifndef RUN_FUNC
+#define RUN_FUNC FUNC(Output, Input)
+#endif
 
 
-void initialize(int argc, char **argv) {
-	scalar_type_t *t = scalar_find_type(DATATYPE);
+DATATYPE * Input;
+DATATYPE * Output;
 
-    // In many case ROWS & COLUMNS are equal; however, when they are not it is
-    // important to use the correct one when allocating memory for the in/out
-    // buffers.  The *input* buffer should be dimensioned by COLUMNS, while the
-    // *output* buffer should be dimensioned by ROWS
-
-	Output = vector_create_zero(t, ROWS);
-    Input  = vector_create_zero(t, COLUMNS);
-
-	INITFUNC();
-}
-
-void finalize() {
-	vector_destroy(Output);
-	vector_destroy(Input);
-}
-
-void compute_vector(scalar_type_t *t)
+void compute_vector()
 {
 	int x;
-	DATATYPE_NO_QUOTES nz = NZERO;
+	DATATYPE nz = NZERO;
 	for (x = 0; x < ROWS; x++) {
-		SET(t, NTH(Output, x), &nz);
+		Output[x] = nz;
 	}
 	printf("[ ");
-	FUNC(Output->data, Input->data);
+	RUN_FUNC;
 	for (x = 0; x < ROWS; x++) {
 		if (x != 0) {
 			if ((x % 10) == 0) {
 				printf("\n");
 			}
 			printf(", ");
-			}
-		t->fprint_gap(t, stdout, NTH(Output, x));
+		}
+		printf(DATAFORMATSTRING, Output[x]);
 	}
 	printf("];\n");
 }
@@ -84,16 +66,21 @@ void compute_vector(scalar_type_t *t)
 
 
 int main(int argc, char** argv) {
-	initialize(argc, argv);
+	Input  = (DATATYPE *) calloc(sizeof(DATATYPE), COLUMNS );
+	Output = (DATATYPE *) calloc(sizeof(DATATYPE), ROWS );
+
+    INITFUNC();
 	
-	scalar_type_t *t = scalar_find_type(DATATYPE);
 	int tlen = sizeof(testvector) / sizeof(testvector[0]);
 	
 	for (int i = 0; i < MIN(tlen, COLUMNS); i++) {
-        SET(t, NTH(Input, i), &testvector[i]);
+        Input[i] = testvector[i];
 	}
 	
-	compute_vector(t);
-	finalize();
+	compute_vector();
+	
+	free(Input);
+	free(Output);
+	
 	return EXIT_SUCCESS;
 }

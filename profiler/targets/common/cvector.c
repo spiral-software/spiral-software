@@ -8,6 +8,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <malloc.h>
 #include <assert.h>
 #include <math.h>
 
@@ -32,6 +33,16 @@
 
 #ifndef DATAFORMATSTRING
 #define DATAFORMATSTRING "FloatString(\"%.18g\")"
+#endif
+
+#ifndef BLOCKSIZE
+#define BLOCKSIZE 64
+#endif
+
+#ifdef _WIN32
+#define MEMALIGN(blksz, memsz) _aligned_malloc((memsz), (blksz))
+#else
+#define MEMALIGN(blksz, memsz) memalign((blksz), (memsz))
 #endif
 
 #ifndef RUN_FUNC
@@ -66,21 +77,21 @@ void compute_vector()
 
 
 int main(int argc, char** argv) {
-	Input  = (DATATYPE *) calloc(sizeof(DATATYPE), COLUMNS );
-	Output = (DATATYPE *) calloc(sizeof(DATATYPE), ROWS );
+	Input  = (DATATYPE *) MEMALIGN(BLOCKSIZE, sizeof(DATATYPE) * COLUMNS);
+	Output = (DATATYPE *) MEMALIGN(BLOCKSIZE, sizeof(DATATYPE) * ROWS);
 
     INITFUNC();
 	
 	int tlen = sizeof(testvector) / sizeof(testvector[0]);
 	
+	for (int i = 0; i < COLUMNS; i++) {
+        Input[i] = 0;
+	}
 	for (int i = 0; i < MIN(tlen, COLUMNS); i++) {
         Input[i] = testvector[i];
 	}
 	
 	compute_vector();
-	
-	free(Input);
-	free(Output);
 	
 	return EXIT_SUCCESS;
 }

@@ -7,6 +7,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <malloc.h>
 #include "rdtsc.h"
 
 
@@ -23,8 +24,18 @@
 #define DATATYPE double
 #endif
 
+#ifndef BLOCKSIZE
+#define BLOCKSIZE 64
+#endif
+
+#ifdef _WIN32
+#define MEMALIGN(blksz, memsz) _aligned_malloc((memsz), (blksz))
+#else
+#define MEMALIGN(blksz, memsz) memalign((blksz), (memsz))
+#endif
+
 #ifndef RUN_FUNC
-	#define RUN_FUNC FUNC(Output, Input)
+#define RUN_FUNC FUNC(Output, Input)
 #endif
 
 
@@ -84,8 +95,8 @@ double perform_timing() {
 int main(int argc, char** argv) {
 	double cycles;
 
-	Input  = (DATATYPE *) calloc(sizeof(DATATYPE), COLUMNS );
-	Output = (DATATYPE *) calloc(sizeof(DATATYPE), ROWS );
+	Input  = (DATATYPE *) MEMALIGN(BLOCKSIZE, sizeof(DATATYPE) * COLUMNS);
+	Output = (DATATYPE *) MEMALIGN(BLOCKSIZE, sizeof(DATATYPE) * ROWS);
 
     INITFUNC();
 

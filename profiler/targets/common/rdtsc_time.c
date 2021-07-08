@@ -5,9 +5,11 @@
 
 #include <limits.h>
 #include <time.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#ifndef __APPLE__
 #include <malloc.h>
+#endif
 #include "rdtsc.h"
 
 
@@ -30,6 +32,8 @@
 
 #ifdef _WIN32
 #define MEMALIGN(blksz, memsz) _aligned_malloc((memsz), (blksz))
+#elif defined (__APPLE__)
+#define MEMALIGN(blksz, memsz) malloc((memsz))
 #else
 #define MEMALIGN(blksz, memsz) memalign((blksz), (memsz))
 #endif

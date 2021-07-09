@@ -104,19 +104,29 @@ end;
 #F 
 DeriveScalarType := function(SPLOpts) 
     local suffix;
-    if IsBound(SPLOpts.customDataType) then return SPLOpts.customDataType;
-    elif IsBound(SPLOpts.customReal) and SPLOpts.dataType = "real" then return SPLOpts.customReal;
-    elif IsBound(SPLOpts.customComplex) and SPLOpts.dataType = "complex" then return SPLOpts.customComplex;
+    if IsBound(SPLOpts.customDataType) then 
+		return SPLOpts.customDataType;
+    elif IsBound(SPLOpts.customReal) and SPLOpts.dataType = "real" then 
+		return SPLOpts.customReal;
+    elif IsBound(SPLOpts.customComplex) and SPLOpts.dataType = "complex" then 
+		return SPLOpts.customComplex;
     else
-	if SPLOpts.dataType = "real" then suffix := "";
-	elif SPLOpts.dataType = "complex" then suffix := "_cplx";
-	else Error("SPLOpts.dataType has invalid value '", SPLOpts.dataType, "'");
-	fi;
-	if SPLOpts.precision = "single" then return Concat("float",suffix);
-	elif SPLOpts.precision = "double" then return Concat("double",suffix);
-	elif SPLOpts.precision = "extended" then return Concat("long_double",suffix);
-	else Error("SPLOpts.precision has invalid value '", SPLOpts.dataType, "'");
-	fi;
+		if SPLOpts.dataType = "real" 
+			then suffix := "";
+		elif SPLOpts.dataType = "complex" then 
+			suffix := "_cplx";
+		else 
+			Error("SPLOpts.dataType has invalid value '", SPLOpts.dataType, "'");
+		fi;
+		if SPLOpts.precision = "single" then 
+			return Concat("float",suffix);
+		elif SPLOpts.precision = "double" then 
+			return Concat("double",suffix);
+		elif SPLOpts.precision = "extended" 
+			then return Concat("long_double",suffix);
+		else 
+			Error("SPLOpts.precision has invalid value '", SPLOpts.dataType, "'");
+		fi;
     fi;
 end;
 

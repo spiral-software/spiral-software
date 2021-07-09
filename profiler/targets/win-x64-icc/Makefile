@@ -26,7 +26,7 @@ export LINK    = link
 
 export CC
 
-override CFLAGS  += /I.. /I. /I..\common /I..\conf /FI$(subst /,\,$(STUB)) /DWIN64 /nologo /Dinline=_inline /Qstd=c99 /Qrestrict /Fa$(subst /,\,$(OUTDIR)/) /FAs
+override CFLAGS  += /I.. /I. /I..\common /FI$(subst /,\,$(STUB)) /DWIN64 /nologo /Dinline=_inline /Qstd=c99 /Qrestrict /Fa$(subst /,\,$(OUTDIR)/) /FAs
 
 override LFLAGS  = /nologo /subsystem:console /incremental:no /PDB:$(subst /,\,$(OUTDIR))\vc70.pdb
 
@@ -69,7 +69,7 @@ testMatrix: buildMatrix
 .PHONY: buildMatrix
 buildMatrix:  link.obj $(MATRIXEXE)
 
-$(MATRIXEXE): $(MOBJ) libconf.lib
+$(MATRIXEXE): $(MOBJ)
 	$(LINK) $(LFLAGS) /out:$(subst /,\,$@) $(subst /,\,$^)	
 
 .PHONY: cleanMatrix
@@ -78,11 +78,9 @@ cleanMatrix:
 
 
 # the link command, mashes all objects together.
-$(EXE): $(OBJ) libconf.lib
+$(EXE): $(OBJ)
 	$(LINK) $(LFLAGS) /out:$(subst /,\,$@) $(subst /,\,$^)
 
-libconf.lib:
-	$(MAKE) -C ..\conf -f Makefile.icc CONFDIR=$(CURDIR)
 
 # the link.c file is empty but crucial. It is required because of
 # peculiarities in the WinAPI CreateProcess() call inside of make.exe.
@@ -125,5 +123,4 @@ $(OUTDIR)/$(notdir $(TIMER:.c=.obj)): $(STUB)
 
 .PHONY: clean
 clean:
-	$(MAKE) -C ..\conf -f Makefile.icc CONFDIR=$(CURDIR) clean
-	-$(RM) $(subst /,\,$(OBJ)) link.obj $(subst /,\,$(EXE)) 2> nul
+	$(RM) $(subst /,\,$(OBJ)) link.obj $(subst /,\,$(EXE)) 2> nul

@@ -26,7 +26,7 @@ export RANLIB  = llvm-ranlib
 
 export CC
 
-override CFLAGS += -fopenmp -I.. -I. -I../common -I../conf -I../../.. -include $(STUB) -DWIN32 -DWIN64
+override CFLAGS += -fopenmp -I.. -I. -I../common -I../../.. -include $(STUB) -DWIN32 -DWIN64
 
 # this is our executable.
 TIMEREXE = $(OUTDIR)/$(notdir $(subst .c,,$(TIMER)))
@@ -82,21 +82,14 @@ testVector: buildVector
 	@-$(VECTOREXE)
 
 # the link command, mashes all objects together.
-$(TIMEREXE): $(TIMER) $(OBJ) libconf.a
+$(TIMEREXE): $(TIMER) $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(MATRIXEXE): $(MATRIX) $(OBJ) libconf.a
+$(MATRIXEXE): $(MATRIX) $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(VECTOREXE): $(VECTOR) $(OBJ) libconf.a
+$(VECTOREXE): $(VECTOR) $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-
-# makes the libconf library in the ../conf dir.
-# this really isn't PHONY but PHONY forces the execution of the make
-# command to confirm that the libconf.a library is actually up to date.
-.PHONY: libconf.a
-libconf.a:
-	$(MAKE) -C ../conf -f Makefile.llvm CONFDIR=$(CURDIR)
 
 ##########
 # rules for .c -> .o
@@ -135,7 +128,6 @@ VECTOREXECLEAN = $(VECTOREXE)
 
 .PHONY: clean
 clean: 
-	$(MAKE) -C ../conf -f Makefile.llvm CONFDIR=$(CURDIR) clean
-	-$(RM) $(subst /,\,$(SRC:.c=.d)) $(subst /,\,$(TIMER:.c=.d))  \
+	$(RM) $(subst /,\,$(SRC:.c=.d)) $(subst /,\,$(TIMER:.c=.d))  \
 	$(subst /,\,$(OBJ))) $(subst /,\,$(TIMEROBJ))  \
 	$(subst /,\,$(TIMEREXECLEAN)) $(subst /,\,$(MATRIXEXECLEAN)) $(subst /,\,$(VECTOREXECLEAN)) 2> null

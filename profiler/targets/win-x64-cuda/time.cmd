@@ -11,12 +11,13 @@ REM  target and finally, if successful, execute the target.
 
 COPY ..\..\targets\common\CMakeLists.txt %SGBETEMPDIR%\CMakeLists.txt
 RENAME testcode.c testcode.cu
-cmake -DPROJECT:STRING=time .
-cmake --build . --config Release --target install
+cmake -DPROJECT:STRING=time . < nul
+cmake --build . --config Release --target install < nul
 
 IF EXIST .\time.exe (
     .\time.exe > time.txt
 ) ELSE (
     type nul > time.txt
 )
+
 

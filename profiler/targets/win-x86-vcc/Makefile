@@ -27,11 +27,9 @@ COUT   		= $(OUTDIR)\cout.txt
 CERR   		= $(OUTDIR)\cerr.txt
 LLOG		= $(OUTDIR)\llog.txt
 
-CFLAGS  = /I..\..\targets /I..\..\targets\common /I..\..\targets\conf /FI$(STUB) /DWIN64 /nologo /Dinline=__inline /O2 /Oi /openmp
+CFLAGS  = /I..\..\targets /I..\..\targets\common  /FI$(STUB) /DWIN64 /nologo /Dinline=__inline /O2 /Oi /openmp
 LFLAGS  = /nologo /subsystem:console /incremental:no /PDB:$(OUTDIR)\vc70.pdb
 
-# this controls the output directory for the conf stuff.
-CONFDIR 	= ..\..\targets\win-x86-vcc
 
 TIMEREXE=$(OUTDIR)\$(TIMERSRC:.c=.exe)
 MATRIXEXE=$(OUTDIR)\$(MATRIXSRC:.c=.exe)
@@ -77,14 +75,14 @@ testVector: buildVector
 	@-$(VECTOREXE)
 
 # the link command, mashes all objects together.
-$(TIMEREXE): $(TIMEROBJ) $(OBJ) libconf.lib
-	$(LINK) $(LFLAGS) /out:$@ $(TIMEROBJ) $(OBJ) $(CONFDIR)\libconf.lib
+$(TIMEREXE): $(TIMEROBJ) $(OBJ) 
+	$(LINK) $(LFLAGS) /out:$@ $(TIMEROBJ) $(OBJ) 
 
-$(MATRIXEXE): $(MATRIXOBJ) $(OBJ) libconf.lib
-	$(LINK) $(LFLAGS) /out:$@ $(MATRIXOBJ) $(OBJ) $(CONFDIR)\libconf.lib
+$(MATRIXEXE): $(MATRIXOBJ) $(OBJ) 
+	$(LINK) $(LFLAGS) /out:$@ $(MATRIXOBJ) $(OBJ) 
 
-$(VECTOREXE): $(VECTOROBJ) $(OBJ) libconf.lib
-	$(LINK) $(LFLAGS) /out:$@ $(VECTOROBJ) $(OBJ) $(CONFDIR)\libconf.lib
+$(VECTOREXE): $(VECTOROBJ) $(OBJ) 
+	$(LINK) $(LFLAGS) /out:$@ $(VECTOROBJ) $(OBJ) 
 
 # make sure that timed code always up-to-date
 delTimerBinFiles:
@@ -99,8 +97,6 @@ delVectorBinFiles:
 	-$(RM) $(OBJ) $(VECTOROBJ) 2> nul
 	-$(RM) $(VECTOREXE) 2> nul
 
-libconf.lib:
-	$(MAKE) /C /S /f ..\..\targets\conf\Makefile.win CONFDIR=$(CONFDIR) all
 
 ##########
 # rules for .c -> .o
@@ -137,4 +133,5 @@ $(TIMEREXE:.exe=.obj): $(STUB)
 
 .PHONY: clean
 clean: delTimerBinFiles delMatrixBinFiles delVectorBinFiles
-	$(MAKE) /C /S /f ..\..\targets\conf\Makefile.win CONFDIR=$(CONFDIR) clean
+
+

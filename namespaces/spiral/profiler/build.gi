@@ -23,17 +23,11 @@ _WriteStub := function(code, opts)
     
     # build the generic stub info
     stub := CopyFields(rec(
-        MEM_SIZE := When(IsBound(code.dimensions), EvalScalar(code.dimensions[1]) * 4, 0),
         DATATYPE := datatype,
 		DATAFORMATSTRING := _DataFormatString(datatype),
-        PAGESIZE := 4096,
         INITFUNC := "init_sub",
         FUNC := "sub",
-        DESTROYFUNC := "destroy_sub",
-        DATATYPE_SIZEINBYTES := Cond(datatype = "float", 4, Cond(datatype = "double", 8, 0)),
-        NUMTHREADS := When(IsBound(opts.smp) and IsInt(opts.smp.numproc), opts.smp.numproc, 1),
-        RADIX :=      When(IsBound(opts.smp) and IsInt(opts.smp.numproc) and IsBound(code.dimensions), (code.dimensions[1]/(2 * opts.smp.numproc)), 2),
-        QUICKVERIFIER := When(IsBound(opts.quickverifier), opts.quickverifier, "nulltransform")
+        DESTROYFUNC := "destroy_sub"
     ));
 	
     if IsBound(code.dimensions) then

@@ -17,7 +17,9 @@ end;
 
 
 _WriteStub := function(code, opts)
-    local outstr, s, stub, i, testvec, multiline, bounds, corner, datatype;
+    local outstr, s, stub, i, testvec, multiline, bounds, corner, datatype, testcodeopts;
+	
+	testcodeopts := Cond(IsBound(opts.testcode) and IsRec(opts.testcode), opts.testcode, rec());
 	
 	datatype := DeriveScalarType(opts);
     
@@ -62,11 +64,11 @@ _WriteStub := function(code, opts)
     
 	#add testvector if specified in opts
 	
-	if IsBound(opts.testvector) then
-		testvec := opts.testvector;
+	if IsBound(testcodeopts.testvector) then
+		testvec := testcodeopts.testvector;
 		multiline := false;
 		if not IsVector(testvec) then
-			Error("opts.testvector must be a valid vector");
+			Error("testvector must be a valid vector");
 		fi;
 		Print("\n\nstatic ", DeriveScalarType(opts), " testvector[] = {");
 		if Length(testvec) > 10 then
@@ -88,11 +90,11 @@ _WriteStub := function(code, opts)
 		Print("};\n");
 	fi;
 	
-	if IsBound(opts.cmatrixBounds) then
-		bounds := opts.cmatrixBounds;
+	if IsBound(testcodeopts.cmatrixBounds) then
+		bounds := testcodeopts.cmatrixBounds;
 		if not (IsMat(bounds) and Length(bounds) = 2 and
 				Length(bounds[1]) = 2 and Length(bounds[2]) = 2) then
-			Error("opts.cmatrixBounds must be a list [[ur,uc], [lr,lc]]");
+			Error("cmatrixBounds must be a list [[ur,uc], [lr,lc]]");
 		fi;
 		Print("\n");
 		Print("#define CMATRIX_UPPER_ROW ", bounds[1][1], "\n");
@@ -220,17 +222,20 @@ CMatrix := function(arg)
 	local code, opts, retmat, oldbounds;
 	code := arg[1];
 	opts := arg[2];
-	if IsBound(opts.cmatrixBounds) then
-		oldbounds := opts.cmatrixBounds;
+	if not (IsBound(opts.testcode) and IsRec(opts.testcode)) then
+		opts.testcode := rec();
+	fi;
+	if IsBound(opts.testcode.cmatrixBounds) then
+		oldbounds := opts.testcode.cmatrixBounds;
 	fi;
 	if Length(arg) = 3 then
-		opts.cmatrixBounds := arg[3];
+		opts.testcode.cmatrixBounds := arg[3];
 	fi;
 	retmat := _CallProfiler("matrix", code, opts);
 	if IsBound(oldbounds) then
-		opts.cmatrixBounds := oldbounds;
-	elif IsBound(opts.cmatrixBounds) then
-		Unbind(opts.cmatrixBounds);
+		opts.testcode.cmatrixBounds := oldbounds;
+	elif IsBound(opts.testcode.cmatrixBounds) then
+		Unbind(opts.testcode.cmatrixBounds);
 	fi;
 	return Cond(IsMat(retmat), TransposedMat(retmat), retmat);
 end;
@@ -240,9 +245,20 @@ end;
 ## Call profiler to apply transform implemented by code to vector
 
 CVector := function (code, vector, opts)
-	local retvec;
-	opts.testvector := vector;
+	local retvec, oldvec;
+	if not (IsBound(opts.testcode) and IsRec(opts.testcode)) then
+		opts.testcode := rec();
+	fi;
+	if IsBound(opts.testcode.testvector) then
+		oldvec := opts.testcode.testvector;
+	fi;
+	opts.testcode.testvector := vector;
 	retvec :=  _CallProfiler("vector", code, opts);
+	if IsBound(oldvec) then
+		opts.testcode.testvector := oldvec;
+	elif IsBound(opts.testcode.testvector) then
+		Unbind(opts.testcode.testvector);
+	fi;
 	return retvec;
 end;
 

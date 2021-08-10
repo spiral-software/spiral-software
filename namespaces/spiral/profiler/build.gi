@@ -32,6 +32,12 @@ _WriteStub := function(code, opts)
         DESTROYFUNC := "destroy_sub"
     ));
 	
+	if IsBound(testcodeopts.runFunc) then
+		stub.RUN_FUNC := testcodeopts.runFunc;
+	fi;
+	
+	
+	
     if IsBound(code.dimensions) then
         stub.ALLOCATE_MEMORY := "1";
         stub.ROWS := EvalScalar(code.dimensions[1]);
@@ -60,7 +66,12 @@ _WriteStub := function(code, opts)
     ##  add extern function declarations ... required for cuda
     Print("\nextern void INITFUNC();\n");
     Print("extern void DESTROYFUNC();\n");
-    Print("extern void FUNC( ", DeriveScalarType(opts), " *out, ", DeriveScalarType(opts), " *in );\n");
+	
+	if IsBound(testcodeopts.funcArgs) then
+		Print("extern void FUNC( ", testcodeopts.funcArgs," );\n");
+	else
+	    Print("extern void FUNC( ", DeriveScalarType(opts), " *out, ", DeriveScalarType(opts), " *in );\n");
+	fi;
     
 	#add testvector if specified in opts
 	

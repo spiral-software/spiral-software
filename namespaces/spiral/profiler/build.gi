@@ -60,8 +60,18 @@ _WriteStub := function(code, opts)
             fi;
         fi;
     od;
-
     Print(outstr);
+	
+	if IsBound(testcodeopts.includeAppend) then
+		Print("\n");
+		if IsFunc(testcodeopts.includeAppend) then
+			testcodeopts.includeAppend();
+		else
+			Print(testcodeopts.includeAppend);
+		fi;
+		Print("\n");
+	fi;
+	
 
     ##  add extern function declarations ... required for cuda
     Print("\nextern void INITFUNC();\n");

@@ -8,7 +8,7 @@ Import(paradigms.distributed);
 
 
 _DataFormatString := function(datatype)
-	if datatype = "int" then
+	if (datatype in ["int", "BigInt", "__int64", "__int32", "__int16", "__int8"]) or StartsWith(datatype, "unsigned") then
 		return "\"IntString(\\\"%d\\\")\"";
 	else
 		return "\"FloatString(\\\"%.18g\\\")\"";

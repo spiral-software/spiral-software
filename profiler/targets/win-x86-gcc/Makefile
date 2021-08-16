@@ -71,10 +71,10 @@ testMatrix: buildMatrix
 
 # the link command, mashes all objects together.
 $(TIMEREXE): $(TIMER) $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) -DMAINOBJ $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(MATRIXEXE): $(MATRIX) $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) -DMAINOBJ $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 ##########
 # rules for .c -> .o

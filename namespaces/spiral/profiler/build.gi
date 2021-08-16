@@ -62,14 +62,19 @@ _WriteStub := function(code, opts)
     od;
     Print(outstr);
 	
+	#
+	# Remainder of include file only for driver (MAINOBJ) code
+	# 
+	
+	Print("\n");
+	Print("#ifdef MAINOBJ\n");
+	
 	if IsBound(testcodeopts.includeAppend) then
-		Print("\n");
 		if IsFunc(testcodeopts.includeAppend) then
 			testcodeopts.includeAppend();
 		else
 			Print(testcodeopts.includeAppend);
 		fi;
-		Print("\n");
 	fi;
 	
 
@@ -91,7 +96,7 @@ _WriteStub := function(code, opts)
 		if not IsVector(testvec) then
 			Error("testvector must be a valid vector");
 		fi;
-		Print("\n\nstatic ", DeriveScalarType(opts), " testvector[] = {");
+		Print("\nstatic ", DeriveScalarType(opts), " testvector[] = {");
 		if Length(testvec) > 10 then
 			Print("\n    ");
 		fi;
@@ -123,6 +128,11 @@ _WriteStub := function(code, opts)
 		Print("#define CMATRIX_LOWER_ROW ", bounds[2][1], "\n");
 		Print("#define CMATRIX_LOWER_COL ", bounds[2][2], "\n");
 	fi;
+	
+	# end of MAINOBJ section
+	Print("#endif\n");
+	Print("\n");
+		
 end;
 
 

@@ -24,6 +24,8 @@ set ( PROF_COMMON  ${PROF_TARGETS}/common )
 set ( PROF_INCLUDE ${PROF_TARGETS}/include )
 set ( SOURCES      ${PROF_COMMON}/${PROJECT}.cu testcode.cu )
 
+set_source_files_properties(${PROF_COMMON}/${PROJECT}.cu PROPERTIES COMPILE_DEFINITIONS  "MAINOBJ")
+
 include_directories ( ${CMAKE_SOURCE_DIR} ${PROF_TARGETS} ${PROF_COMMON} ${PROF_INCLUDE}  )
 
 ##  Setup compilation flags

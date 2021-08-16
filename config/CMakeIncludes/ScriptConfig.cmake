@@ -36,27 +36,11 @@ endif ()
 
 if (WIN32)
     ##  Windows ... now determine which C compiler we're using...
-    string (COMPARE EQUAL "${CMAKE_C_COMPILER_ID}" "Intel" ICC_COMPILER)
-    string (COMPARE EQUAL "${CMAKE_C_COMPILER_ID}" "GNU" GCC_COMPILER)
     string (COMPARE EQUAL "${CMAKE_C_COMPILER_ID}" "LLVM" LLVM_COMPILER)
     string (COMPARE EQUAL "${CMAKE_C_COMPILER_ID}" "NVCC" NVCC_COMPILER)
     set(SPIRAL_OS_NAME "Windows8")
 
-    if (${ICC_COMPILER})
-	##  Intel ICC compiler
-	set (USE_COMPILER_ICC "true")
-	set (USE_COMPILER_GCC "false")
-	set (USE_COMPILER_LLVM "false")
-	set (USE_COMPILER_NVCC "false")
-	set (PROFILER_TARGET "win-x64-icc")
-    elseif (${GNU_COMPILER})
-	##  GNU C compiler
-	set (USE_COMPILER_ICC "false")
-	set (USE_COMPILER_GCC "true")
-	set (USE_COMPILER_LLVM "false")
-	set (USE_COMPILER_NVCC "false")
-	set (PROFILER_TARGET "win-x86-gcc")
-    elseif (${LLVM_COMPILER})
+    if (${LLVM_COMPILER})
 	##  LLVM Clang compiler
 	set (USE_COMPILER_ICC "false")
 	set (USE_COMPILER_GCC "false")

@@ -115,13 +115,13 @@ $(OBJ): $(GAP) $(STUB)
 	$(CC) $(CFLAGS) /c /Fo$@ $(GAP) >$(COUT) 2>$(CERR)
 
 $(TIMEROBJ): $(TIMER)
-	$(CC) $(CFLAGS) /c /Fo$@ $(TIMER) >$(COUT) 2>$(CERR)
+	$(CC) /DMAINOBJ $(CFLAGS) /c /Fo$@ $(TIMER) >$(COUT) 2>$(CERR)
 
 $(MATRIXOBJ):$(MATRIX)
-	$(CC) $(CFLAGS) /c /Fo$@ $(MATRIX) >$(COUT) 2>$(CERR)
+	$(CC) /DMAINOBJ $(CFLAGS) /c /Fo$@ $(MATRIX) >$(COUT) 2>$(CERR)
 
 $(VECTOROBJ):$(VECTOR)
-	$(CC) $(CFLAGS) /c /Fo$@ $(VECTOR) >$(COUT) 2>$(CERR)
+	$(CC) /DMAINOBJ $(CFLAGS) /c /Fo$@ $(VECTOR) >$(COUT) 2>$(CERR)
 
 
 # hardcoded dependency information. this is required such that the timer is rebuilt when the stub changes.

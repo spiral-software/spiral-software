@@ -32,6 +32,8 @@ if ( WIN32 )
     set ( CUDA_COMPILE_FLAGS -DWIN64 -rdc=false --pre-include testcode.h )
     set ( GPU_COMPILE_DEFNS )			##   -Xptxas -v
     set ( LIBS_FOR_CUDA cufft )
+	set ( CMAKE_C_STANDARD 11 )
+	set ( CMAKE_CXX_STANDARD 11 )
 else ()
     set ( CUDA_COMPILE_FLAGS -m64 -rdc=true --pre-include testcode.h )
     set ( GPU_COMPILE_DEFNS -dc )		##   -Xptxas -v

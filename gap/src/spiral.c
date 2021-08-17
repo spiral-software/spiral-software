@@ -1070,6 +1070,7 @@ Obj FunBuildInfo(Obj hdCall) {
 #else
     Pr("CMakeBuildType : %s\n", SPIRAL_BUILD_TYPE, 0);
 #endif
+	Pr("CMakeVersion : %s\n", SPIRAL_CMAKE_VERSION, 0);
     return HdVoid;
 }
 

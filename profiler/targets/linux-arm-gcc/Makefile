@@ -83,13 +83,13 @@ testVector: buildVector
 	@-$(VECTOREXE)
 # the link command, mashes all objects together.
 $(TIMEREXE): $(TIMER) $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) -DMAINOBJ $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(MATRIXEXE): $(MATRIX) $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) -DMAINOBJ $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(VECTOREXE): $(VECTOR) $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) -DMAINOBJ $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 
 ##########

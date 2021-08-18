@@ -62,31 +62,30 @@ _WriteStub := function(code, opts)
     od;
     Print(outstr);
 	
+    if IsBound(testcodeopts.includeAppend) then
+        if IsFunc(testcodeopts.includeAppend) then
+	    testcodeopts.includeAppend();
+	else
+	    Print(testcodeopts.includeAppend);
+	fi;
+    fi;
+	
+    ##  add extern function declarations ... required for cuda
+    Print("\nextern void INITFUNC();\n");
+    Print("extern void DESTROYFUNC();\n");
+	
+    if IsBound(testcodeopts.funcArgs) then
+        Print("extern void FUNC( ", testcodeopts.funcArgs," );\n");
+    else
+        Print("extern void FUNC( ", DeriveScalarType(opts), " *out, ", DeriveScalarType(opts), " *in );\n");
+    fi;
+	
 	#
 	# Remainder of include file only for driver (MAINOBJ) code
 	# 
 	
 	Print("\n");
 	Print("#ifdef MAINOBJ\n");
-	
-	if IsBound(testcodeopts.includeAppend) then
-		if IsFunc(testcodeopts.includeAppend) then
-			testcodeopts.includeAppend();
-		else
-			Print(testcodeopts.includeAppend);
-		fi;
-	fi;
-	
-
-    ##  add extern function declarations ... required for cuda
-    Print("\nextern void INITFUNC();\n");
-    Print("extern void DESTROYFUNC();\n");
-	
-	if IsBound(testcodeopts.funcArgs) then
-		Print("extern void FUNC( ", testcodeopts.funcArgs," );\n");
-	else
-	    Print("extern void FUNC( ", DeriveScalarType(opts), " *out, ", DeriveScalarType(opts), " *in );\n");
-	fi;
     
 	#add testvector if specified in opts
 	

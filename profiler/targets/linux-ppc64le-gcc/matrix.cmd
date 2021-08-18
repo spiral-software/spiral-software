@@ -3,6 +3,17 @@
 #  Copyright (c) 2018-2021, Carnegie Mellon University
 #  See LICENSE for details
 
-TEMPDIR=$PWD
+##  Use cmake to build the project (PROJECT=matrix) for C language (SUFFIX=c) 
 
-make matrix -R -C ../../targets/linux-ppc64le-gcc GAP="$TEMPDIR/testcode.c" STUB="$TEMPDIR/testcode.h" CC="gcc" CFLAGS="-O2 -Wall -fomit-frame-pointer -std=c99" OUTDIR="$TEMPDIR" -s > matrix.txt
+TEMPDIR=$PWD
+cp -f ../../targets/common/CMakeLists.txt $TEMPDIR/CMakeLists.txt
+rm -rf build && mkdir build && cd build
+cmake -DPROJECT:STRING=matrix -DSUFFIX:STRING=c .. > /dev/null
+make install > /dev/null
+cd ..
+
+if [ -f ./matrix ]; then
+    ./matrix > matrix.txt
+else
+    touch matrix.txt
+fi

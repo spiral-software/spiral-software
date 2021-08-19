@@ -40,30 +40,29 @@ include_directories ( ${CMAKE_SOURCE_DIR} ${PROF_TARGETS} ${PROF_COMMON} ${PROF_
 
 set ( ADDL_COMPILE_FLAGS )
 set ( GPU_COMPILE_DEFNS )
-set ( LIBS_FOR_CUDA )
+set ( LIBS_TO_LINK )
 set ( CMAKE_C_STANDARD 11 )
 set ( CMAKE_CXX_STANDARD 11 )
 
 if ( WIN32 )
-    set ( ADDL_COMPILE_FLAGS -DWIN64 /openmp )
+    set ( ADDL_COMPILE_FLAGS -DWIN64 )
     if ( ${SUFFIX} STREQUAL "cu" )
 	list ( APPEND ADDL_COMPILE_FLAGS -rdc=false --pre-include testcode.h )
 	set ( GPU_COMPILE_DEFNS )			##   -Xptxas -v
-	set ( LIBS_FOR_CUDA cufft )
+	set ( LIBS_TO_LINK cufft )
     else ()
-	list ( APPEND ADDL_COMPILE_FLAGS /FItestcode.h )
+	list ( APPEND ADDL_COMPILE_FLAGS /FItestcode.h /openmp )
     endif ()
 else ()
-    set ( ADDL_COMPILE_FLAGS -fopenmp )
+    set ( ADDL_COMPILE_FLAGS )
     if ( ${SUFFIX} STREQUAL "cu" )
 	list ( APPEND ADDL_COMPILE_FLAGS -m64 -rdc=false --pre-include testcode.h )
 	set ( GPU_COMPILE_DEFNS )		##   -Xptxas -v
-	set ( LIBS_FOR_CUDA cufft culibos )
+	set ( LIBS_TO_LINK cufft culibos )
     else ()
-	list ( APPEND ADDL_COMPILE_FLAGS -include testcode.h )
+	list ( APPEND ADDL_COMPILE_FLAGS -include testcode.h -fopenmp -march=native )
+	set ( LIBS_TO_LINK gomp pthread m )
     endif ()
-    set_source_files_properties ( ${SOURCES} PROPERTIES COMPILE_DEFINITIONS
-                                  "HAVE_UNISTD_H;INSIDE_SPIRAL" )
 endif ()
 
 if ( ${SUFFIX} STREQUAL "cu" )
@@ -76,7 +75,7 @@ target_compile_options       ( ${PROJECT} PRIVATE ${ADDL_COMPILE_FLAGS} ${GPU_CO
 
 if ( ${SUFFIX} STREQUAL "cu" )
     set_property      ( TARGET ${PROJECT} PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON )
-    target_link_libraries    ( ${PROJECT} ${LIBS_FOR_CUDA} )
 endif ()
+target_link_libraries    ( ${PROJECT} ${LIBS_TO_LINK} )
 
 install ( TARGETS ${PROJECT} DESTINATION ${CMAKE_SOURCE_DIR} )

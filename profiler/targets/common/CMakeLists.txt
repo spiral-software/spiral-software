@@ -31,10 +31,8 @@ set ( PROF_COMMON  ${PROF_TARGETS}/common )
 set ( PROF_INCLUDE ${PROF_TARGETS}/include )
 set ( SOURCES      ${PROF_COMMON}/${PROJECT}.${SUFFIX} testcode.${SUFFIX} )
 
-if ( ${PROJECT} STREQUAL "cvector" )
-    set_source_files_properties ( ${PROF_COMMON}/${PROJECT}.${SUFFIX}
-	                          PROPERTIES COMPILE_DEFINITIONS  "MAINOBJ" )
-endif ()
+set_source_files_properties ( ${PROF_COMMON}/${PROJECT}.${SUFFIX}
+                              PROPERTIES COMPILE_DEFINITIONS  "MAINOBJ" )
 
 include_directories ( ${CMAKE_SOURCE_DIR} ${PROF_TARGETS} ${PROF_COMMON} ${PROF_INCLUDE}  )
 
@@ -47,7 +45,7 @@ set ( CMAKE_C_STANDARD 11 )
 set ( CMAKE_CXX_STANDARD 11 )
 
 if ( WIN32 )
-    set ( ADDL_COMPILE_FLAGS -DWIN64 )
+    set ( ADDL_COMPILE_FLAGS -DWIN64 /openmp )
     if ( ${SUFFIX} STREQUAL "cu" )
 	list ( APPEND ADDL_COMPILE_FLAGS -rdc=false --pre-include testcode.h )
 	set ( GPU_COMPILE_DEFNS )			##   -Xptxas -v
@@ -56,6 +54,7 @@ if ( WIN32 )
 	list ( APPEND ADDL_COMPILE_FLAGS /FItestcode.h )
     endif ()
 else ()
+    set ( ADDL_COMPILE_FLAGS -fopenmp )
     if ( ${SUFFIX} STREQUAL "cu" )
 	list ( APPEND ADDL_COMPILE_FLAGS -m64 -rdc=false --pre-include testcode.h )
 	set ( GPU_COMPILE_DEFNS )		##   -Xptxas -v
@@ -63,6 +62,8 @@ else ()
     else ()
 	list ( APPEND ADDL_COMPILE_FLAGS -include testcode.h )
     endif ()
+    set_source_files_properties ( ${SOURCES} PROPERTIES COMPILE_DEFINITIONS
+                                  "HAVE_UNISTD_H;INSIDE_SPIRAL" )
 endif ()
 
 if ( ${SUFFIX} STREQUAL "cu" )

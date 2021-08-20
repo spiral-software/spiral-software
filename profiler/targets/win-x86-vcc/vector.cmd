@@ -7,7 +7,8 @@ REM  Use cmake to build the project (PROJECT=cvector) for C language (SUFFIX=c)
 
 set SGBETEMPDIR=%cd%
 COPY ..\..\targets\common\CMakeLists.txt %SGBETEMPDIR%\CMakeLists.txt
-rm -rf build && md build && cd build
+IF EXIST .\build ( rd /s /q build )
+md build && cd build
 cmake -DPROJECT:STRING=cvector -DSUFFIX:STRING=c .. < nul
 cmake --build . --config Release --target install < nul
 cd ..

@@ -8,7 +8,7 @@
 TEMPDIR=$PWD
 cp -f ../../targets/common/CMakeLists.txt $TEMPDIR/CMakeLists.txt
 rm -rf build && mkdir build && cd build
-cmake -DPROJECT:STRING=rdtsc_time -DSUFFIX:STRING=c .. > /dev/null
+cmake -DPROJECT:STRING=rdtsc_time -DSUFFIX:STRING=c -DEXFLAGS:STRING=-march\=native .. > /dev/null
 make install > /dev/null
 cd ..
 

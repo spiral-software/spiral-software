@@ -16,15 +16,20 @@ set ( CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, Mi
 ##  PROJECT: { matrix | rdtsc_time | papi_time | cvector }
 ##  SUFFIX:  { c | cu }
 
-set ( _add_cuda )
-if ( ${SUFFIX} STREQUAL "cu" )
-    set ( _add_cuda CUDA )
-endif ()
 
-project ( SPIRAL_CUDA
+if  ( ${SUFFIX} STREQUAL "cu" )
+	project ( ${PROJECT}_CUDA
          VERSION 1.0.1
                 DESCRIPTION "Profile SPIRAL/Cuda code, matrix/vector/time test"
-                LANGUAGES C CXX ${_add_cuda} )
+                LANGUAGES C CXX CUDA )
+else ()
+	project ( ${PROJECT}
+         VERSION 1.0.1
+                DESCRIPTION "Profile SPIRAL code, matrix/vector/time test"
+                LANGUAGES C CXX )
+endif ()				
+				
+				
 
 set ( PROF_TARGETS ${CMAKE_SOURCE_DIR}/../../targets )
 set ( PROF_COMMON  ${PROF_TARGETS}/common )

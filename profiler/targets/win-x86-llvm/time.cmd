@@ -18,7 +18,7 @@ REM  environment.
 COPY ..\..\targets\common\CMakeLists.txt %SGBETEMPDIR%\CMakeLists.txt
 IF EXIST .\build ( rd /s /q build )
 md build && cd build
-cmake -DPROJECT:STRING=rdtsc_time -DSUFFIX:STRING=c .. < nul
+cmake -DPROJECT:STRING=rdtsc_time -DSUFFIX:STRING=c -T clangcl .. < nul
 cmake --build . --config Release --target install < nul
 cd ..
 

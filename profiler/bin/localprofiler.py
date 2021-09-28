@@ -5,6 +5,7 @@
 
 import argparse
 import os
+import glob
 import sys
 import tempfile
 import shutil
@@ -15,14 +16,9 @@ MinPythonVersion    = (3, 6)
 ProfilerName        = 'spiralprofiler'
 ProfilerVersion     = '1.0.0'
 
-def filesForRequest(request):
-    if request == 'time':
-        return ['testcode.c', 'testcode.h']
-    if request == 'vector':
-        return ['testcode.c', 'testcode.h']
-    else:
-        # TODO make this scalable/portable/configurable
-        return ['testcode.c', 'testcode.h']
+def filesToSend():
+    pattern = os.path.join(srcdir, '*.[c|h]')
+    return glob.glob(pattern)
         
 def cleanup():
     # delete temp directory
@@ -138,8 +134,10 @@ os.makedirs(tempdirs, mode=0o777, exist_ok=True)
 tempworkdir = tempfile.mkdtemp(None, prefix, tempdirs)
 
 # copy files from source directory to temporary work directory
-os.chdir(srcdir)
-filelist = filesForRequest(request)
+filelist = filesToSend()
+if debug:
+    print("source files:", filelist)
+    
 for fname in filelist:
     try:
         shutil.copy(fname, tempworkdir)

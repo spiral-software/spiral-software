@@ -1307,3 +1307,23 @@ IsNegativeZero := function(val)
 end;
 
 
+#F CopyFile(src, dst)
+#F     Copy src to dst and return status
+#F     src must be a file and can specify a full or relative path
+#F     if dst is a directory, src is copied to a file of the same name
+#F     if dst already exists, it is overwritten
+
+CopyFile := function(src, dst)
+    local cmd;
+
+    if IsWindows() then
+        cmd := Concat("copy /y ",src," ",dst);
+    else
+        cmd := Concat("cp -f ",src," ", dst);
+    fi;
+    
+    return IntExec(cmd);
+end;
+
+
+

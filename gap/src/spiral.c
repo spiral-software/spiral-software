@@ -1309,6 +1309,22 @@ Bag FunExit( Bag hdCall ) {
 }
 
 
+/****************************************************************************
+**
+*F  IsWindows()
+**
+** returns true if built for Windows
+*/
+
+Obj FunIsWindows(Obj hdCall) {
+#ifdef WIN32
+    return HdTrue;
+#else
+    return HdFalse;
+#endif
+}
+
+
 
 /****************************************************************************
 **
@@ -1377,6 +1393,7 @@ void            InitSPIRAL (void) {
     InstIntFunc( "PathRelativeToSPIRAL",  FunPathRelativeToSPIRAL );
 	InstIntFunc( "Version", FunVersion);
 	InstIntFunc( "BuildInfo", FunBuildInfo);
+    InstIntFunc( "IsWindows", FunIsWindows);
     IdentAssign( "NULL", HdVoid);
     IdentAssign( "HdStack", HdStack);
     InstIntFunc( "HdExec",  FunHdExec);

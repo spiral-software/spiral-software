@@ -985,6 +985,7 @@ Class(CUnparser, CUnparserBase, rec(
                    o.id="destroy"   and IsBound(self.opts.subName),
                      Concat("destroy_",self.opts.subName),
                    o.id),
+		When ((IsBound(self.opts.wrapCFuncs) and self.opts.wrapCFuncs), Print("\nextern \"C\" {")),
         Print("\n", Blanks(i),
             self.opts.funcModifier, self.declare(o.ret, var(id, o.ret), i, is), "(",
             DoForAllButLast(parameters, p->Print(self.declare(p.t, p,i,is), ", ")),
@@ -993,7 +994,8 @@ Class(CUnparser, CUnparserBase, rec(
             When(IsBound(self.opts.postalign), DoForAll(parameters, p->self.opts.postalign(p,i+is,is))),
             self(o.cmd, i+is, is),
             Blanks(i),
-            "}\n")),
+            "}\n"),
+		When ((IsBound(self.opts.wrapCFuncs) and self.opts.wrapCFuncs), Print("}\n"))),
 
     # C99 style, loop var declared inside
     loop := (self, o, i, is) >> let(v := o.var, lo := o.range[1], hi := Last(o.range),

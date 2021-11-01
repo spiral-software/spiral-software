@@ -233,11 +233,9 @@ char            SyInitfiles [16] [256];
 
 /****************************************************************************
 **
-*V  syStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
-*V  syStopTime  . . . . . . . . . . . . . . . . . . time when reading started
+*V  syStartTime . . . . . . . . . . . . . . time when GAP was started in msec
 */
 UInt   syStartTime;
-UInt   syStopTime;
 
 
 
@@ -528,9 +526,7 @@ char *          SyFgets (char line[], Int length, Int fid )
     /* Joohoon Interface reader implementation here */
     
     if( CURR_INTERFACE ){
-      syStopTime = SyTime();
       p = interface_read_input_nolist( line );
-      syStartTime += SyTime() - syStopTime;
       return p;
     }
 
@@ -540,22 +536,15 @@ char *          SyFgets (char line[], Int length, Int fid )
 
     /* no line editing if the user disabled it                             */
     if ( syLineEdit == 0 ) {
-      syStopTime = SyTime();
       p = fgets( line, (Int)length, syBuf[fid].fp );
-      syStartTime += SyTime() - syStopTime;
       return p;
     }
 
     /* no line editing if the file cannot be turned to raw mode            */
     if ( syLineEdit == 1 && ! syStartraw(fid) ) {
-        syStopTime = SyTime();
         p = fgets( line, (Int)length, syBuf[fid].fp );
-        syStartTime += SyTime() - syStopTime;
         return p;
     }
-
-    /* stop the clock, reading should take no time                         */
-    syStopTime = SyTime();
 
     /* the line starts out blank                                           */
     line[0] = '\0';  p = line;  h = syHistory;
@@ -1343,10 +1332,6 @@ char *          SyFgets (char line[], Int length, Int fid )
     /* switch back to cooked mode                                          */
     if ( syLineEdit == 1 )
         syStopraw(fid);
-
-    /* start the clock again                                               */
-    syStartTime += SyTime() - syStopTime;
-
 
     /* return the line (or '0' at end-of-file)                             */
     if ( *line == '\0' )
@@ -2192,127 +2177,25 @@ int             SyExec (char *cmd)
 **
 **  'SyTime' returns the number of milliseconds spent by GAP so far.
 **
-**  Should be as accurate as possible,  because it  is  used  for  profiling.
 */
 
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For Berkeley UNIX the clock ticks in 1/60.  On some (all?) BSD systems we
-**  can use 'getrusage', which gives us a much better resolution.
-*/
-#if SYS_BSD
-#ifndef SYS_HAS_NO_GETRUSAGE
-
-#ifndef SYS_RESOURCE_H                  /* definition of 'struct rusage'   */
-# include       <sys/time.h>            /* definition of 'struct timeval'  */
-# include       <sys/resource.h>
-# define SYS_RESOURCE_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern  int             getrusage ( int, struct rusage * );
-#endif
 
 UInt   SyTime ()
 {
-    struct rusage       buf;
-
-    if ( getrusage( RUSAGE_SELF, &buf ) ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000 -syStartTime;
-}
-
-#endif
-
-#ifdef SYS_HAS_NO_GETRUSAGE
-
-#ifndef SYS_TIMES_H                     /* time functions                  */
-# include       <sys/types.h>
-# include       <sys/times.h>
-# define SYS_TIMES_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern  int             times ( struct tms * );
-#endif
-
-UInt   SyTime ()
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return 100 * tbuf.tms_utime / (60/10) - syStartTime;
-}
-
-#endif
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For UNIX System V and OS/2 the clock ticks in 1/HZ,  this is usually 1/60
-**  or 1/100.
-*/
-#if SYS_USG
-
-#ifndef SYS_TIMES_H                     /* time functions                  */
-# include       <sys/param.h>           /* definition of 'HZ'              */
-# include       <sys/types.h>
-# include       <sys/times.h>
-# define SYS_TIMES_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern  int             times ( struct tms * );
-#endif
-#include <errno.h>
-UInt   SyTime ()
-{
-    struct tms          tbuf;
-    if ( times( &tbuf ) == -1 ) {
-        perror("gap: panic 'SyTime' cannot get time");
-        SyExit( 1 );
-    }
-    return 100 * tbuf.tms_utime / (HZ / 10) - syStartTime;
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For Windows we use the function 'clock' and allow to stop the clock.
-*/
-#if WIN32
-
-#ifndef SYS_TIME_H                      /* time functions                  */
-# include       <time.h>
-# define SYS_TIME_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* ANSI/TRAD decl. from H&S 18.2    */
-# if SYS_ANSI
-extern  clock_t         clock ( void );
-# define SYS_CLOCKS     CLOCKS_PER_SEC
-# else
-extern  Int            clock ( void );
-#   define SYS_CLOCKS   100
-# endif
-#endif
+UInt msecs;
 
 #ifdef WIN32
-#define SYS_CLOCKS     CLOCKS_PER_SEC
+    UInt ticks = (UInt)clock();
+    float factor = 1000.0 / CLOCKS_PER_SEC;
+    msecs = (UInt)(ticks * factor);
+#else
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    msecs = (UInt)((now.tv_sec * 1000) + (now.tv_nsec / 1000000));
 #endif
 
-UInt   SyTime ()
-{
-    return 100 * (UInt)clock() / (SYS_CLOCKS/10) - syStartTime;
+return msecs - syStartTime;
 }
-
-#endif
 
 
 /****************************************************************************
@@ -2661,8 +2544,17 @@ void            InitSystem (int argc, char **argv)
         ++argv;  --argc;
     }
 
-    /* start the clock                                                     */
-    syStartTime = SyTime();
+    /* this process's start time in msecs */
+#ifdef WIN32
+    UInt ticks = (UInt)clock();
+    float factor = 1000.0 / CLOCKS_PER_SEC;
+    syStartTime = (UInt)(ticks * factor);
+#else
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    syStartTime = (UInt)((now.tv_sec * 1000) + (now.tv_nsec / 1000000));
+#endif
+    
 
     /* now we start                                                        */
     return;

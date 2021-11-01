@@ -129,8 +129,6 @@ int             main (int argc, char **argv)
 	/* printf("# bytes allocated = %d, ptr = %X, value = %s\n", n, p, p);	 */
 	/*************************************************************************/
 
-	GapRunTime.gap_start = clock();
-	
     Try {
 		/* initialize everything                                             */
 		InitGap( argc, argv, &argc );
@@ -139,6 +137,8 @@ int             main (int argc, char **argv)
 		exc_show();
 		return 1;
     }
+
+    GapRunTime.gap_start = SyTime();
 
     Try { 
 		HookSessionStart(); 
@@ -179,9 +179,6 @@ int             main (int argc, char **argv)
 		}
     }
 
-	//  GapRunTime.gap_end = clock();
-	//  PrintRuntimeStats(&GapRunTime);
-	
      /* exit to the operating system, the return is there to please lint    */
     if (NrHadSyntaxErrors && (LAST_INTERFACE == ID_BATCH)) 
         SyExit(SYEXIT_WITH_SYNTAX_ERRORS);

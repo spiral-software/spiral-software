@@ -154,7 +154,6 @@ set(SOURCES
     iface_batch.h
     iface_console.h
     iface_original.h
-    iface_tcpip.h
     integer.h
     integer4.h
     interface.h
@@ -196,7 +195,7 @@ set(SOURCES
 
 ##  Additional modules to compile when not on Windows...
 if (!WIN32)
-    list(APPEND SOURCES iface_tcpip.c ipc.c)
+    list(APPEND SOURCES ipc.c)
 endif()
 
 add_executable(${PROJECT} ${SOURCES})

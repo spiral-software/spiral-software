@@ -157,7 +157,6 @@ set(SOURCES
     integer.h
     integer4.h
     interface.h
-    ipc.h
     list.h
     machine_endian.h
     md5.h
@@ -192,11 +191,6 @@ set(SOURCES
     vector.h
     word.h
 )
-
-##  Additional modules to compile when not on Windows...
-if (!WIN32)
-    list(APPEND SOURCES ipc.c)
-endif()
 
 add_executable(${PROJECT} ${SOURCES})
 set_property ( TARGET ${PROJECT} PROPERTY CUDA_ARCHITECTURES OFF)

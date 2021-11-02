@@ -36,7 +36,6 @@
 #include        "args.h"
 
 #include        "interface.h"           /* New Spiral Interface            */
-#include        "ipc.h"
 #include		"GapUtils.h"
 
 extern void InitGap (int argc, char** argv, int* stackBase);

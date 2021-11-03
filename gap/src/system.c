@@ -2419,15 +2419,6 @@ void            InitSystem (int argc, char **argv)
             ++argv; --argc;
             break;
 
-        case 'i': /* '-i <interface>', set which interface will be used         */
-            if ( argc < 3 ) {
-                fputs("gap: option '-i' must have an argument.\n",stderr);
-                goto usage;
-            }
-	    InitInterface(argc, argv);
-            ++argv; --argc;
-            break;
-
         case 'a': /* '-a <memory>', set amount to pre'm*a*lloc'ate         */
             if ( argc < 3 ) {
                 fputs("gap: option '-a' must have an argument.\n",stderr);
@@ -2564,7 +2555,6 @@ void            InitSystem (int argc, char **argv)
     fputs("usage: gap [-l <libname>] [-h <hlpname>] [-m <gap_memory>]\n",stderr);
     fputs("           [-a <premalloc_memory>]\n",stderr);
     fputs("           [-g] [-q] [-b] [-x <nr>]  [-y <nr>]\n",stderr);
-    fputs("           [-i <interface_name>]\n",stderr);
     fputs("           <file>...\n",stderr);
     fputs("  run the Groups, Algorithms and Programming system.\n",stderr);
     SyExit( 1 );

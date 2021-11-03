@@ -179,11 +179,7 @@ int             main (int argc, char **argv)
 		}
     }
 
-     /* exit to the operating system, the return is there to please lint    */
-    if (NrHadSyntaxErrors && (LAST_INTERFACE == ID_BATCH)) 
-        SyExit(SYEXIT_WITH_SYNTAX_ERRORS);
-    else
-        SyExit(SYEXIT_OK);
+    SyExit(SYEXIT_OK);
 
     return SYEXIT_OK;
 }
@@ -700,11 +696,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }
 				/* now enter a read-eval-print loop, just as in main               */
 				while ( Symbol != S_EOF ) {
-					if (CURR_INTERFACE == ID_BATCH) {
-						/* inconsistency in interfaces: ReadIt ignoring interfaces,
-						quit from here if we are in batch interface */
-						SyExit(SYEXIT_FROM_BRK);
-					}
 					/* read an expression                                          */
 					if (InBreakpoint) {
 						Prompt = DbgPrompt; 
@@ -750,11 +741,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				/* remove function definitions from the stack and close "*errin*"  */
 				LeaveDbgStack();
 				ignore = CloseInput();
-			} else {
-				if (CURR_INTERFACE == ID_BATCH) {
-					/* quit with the first error */
-					SyExit(SYEXIT_FROM_BRK);
-				}
 			}
 
 			while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );

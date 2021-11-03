@@ -109,22 +109,6 @@ int setup_interface(const char *trig_name, int input_buf_no, int output_buf_no)
 }
 
 
-/* Determines what interface will be used at start up */
-int InitInterface(int argc, char **argv)
-{
-  int i,j;
-  LAST_INTERFACE = CURR_INTERFACE;
-  CURR_INTERFACE = DEFAULT_INTERFACE;
-
-  for(i=0; i<argc; i++){
-    for(j=0; j<IFACE_TABLE_SIZE; j++){
-      if(strcmp(argv[i], gap_interface[j].name) == 0)
-	CURR_INTERFACE = gap_interface[j].id;
-    }    
-  }
-  return IF_SUCCESS;
-}
-
 int enable_interface(const char *trig_name, int input_buf_no, int output_buf_no)
 {
   if(input_buf_list[input_buf_no] == NULL ||

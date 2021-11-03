@@ -10,12 +10,8 @@
 
 
 #define ID_ORIGINAL         0 /* Original Interface must be entry 0 in the table */
-#define ID_CONSOLE          1 /* Other entries can be placed anywhere */
-#define ID_GUI              2
-#define ID_TCPIP            3
-#define ID_JAVARMI          4
-#define ID_BATCH            5
-#define IFACE_TABLE_SIZE    6 /* When you add a new entry to table, adjust this number */
+
+#define IFACE_TABLE_SIZE    1 /* When you add a new entry to table, adjust this number */
 
 #define DEFAULT_INTERFACE   ID_ORIGINAL
 

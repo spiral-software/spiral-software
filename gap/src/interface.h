@@ -11,7 +11,6 @@
 #define STATIC_INPUT_BUF_SIZE  4096
 #define STATIC_OUTPUT_BUF_SIZE 4096
 
-int InitInterface(int argc, char **argv);
 int interface_init();
 int setup_interface(const char *trig_name, int input_buf_no, int output_buf_no);
 int enable_interface(const char *trig_name, int input_buf_no, int output_buf_no);

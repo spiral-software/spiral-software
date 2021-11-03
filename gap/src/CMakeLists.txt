@@ -90,8 +90,6 @@ set(SOURCES
     iface.c
     iface_table.c
     iface_original.c
-    iface_console.c
-    iface_batch.c
     debug.c
     md5.c
     hash.c
@@ -151,8 +149,6 @@ set(SOURCES
     idents.h
     ieee754.h
     iface.h
-    iface_batch.h
-    iface_console.h
     iface_original.h
     integer.h
     integer4.h

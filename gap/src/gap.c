@@ -54,7 +54,6 @@ extern Bag                  HdStack;
 extern UInt        TopStack;
 
 int CURR_INTERFACE = DEFAULT_INTERFACE;
-int LAST_INTERFACE = DEFAULT_INTERFACE;
 
 int ERROR_QUIET = 0;
 int BACKTRACE_DEFAULT_LEVEL = 5;
@@ -115,19 +114,7 @@ int             main (int argc, char **argv)
     extern void         InitGap (int argc, char **argv, int *stackBase);
     exc_type_t          e;
 
-   
-    /* Save this information to reset */
     CURR_INTERFACE = DEFAULT_INTERFACE;
-    interface_save_args(argc, argv);
- 
-	/*************************************************************************/
-	/* printf("message from gap...\n");										 */
-	/* char *p;																 */
-	/* Int n = 50 * sizeof(char *);											 */
-	/* p = (char *)malloc(n);												 */
-	/* strcpy(p, "1234567890ABCDEF FEDCBA0987654321");						 */
-	/* printf("# bytes allocated = %d, ptr = %X, value = %s\n", n, p, p);	 */
-	/*************************************************************************/
 
     Try {
 		/* initialize everything                                             */

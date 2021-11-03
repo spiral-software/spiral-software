@@ -56,7 +56,6 @@
  */
 
 extern int CURR_INTERFACE;
-extern struct gap_iface gap_interface[];
 
 
 
@@ -1823,7 +1822,7 @@ void            SyFputs (char line[], Int fid )
 
     /* Joohoon new interface implementation */
     if( CURR_INTERFACE ){
-      gap_interface[CURR_INTERFACE].write_callback(line,syBuf[fid].fp);
+      original_printf(line,syBuf[fid].fp);
       interface_write_output_nolist(line);
       return;
     }
@@ -1901,12 +1900,16 @@ void ANSIEscapeValueToColor(DWORD value, DWORD *mask, DWORD *flags)
 }
 
 #endif
+
+extern void original_printf(char* data, FILE* fp);
+
+
 void            SyFputs ( char line[], Int fid )
 {
 
     /* Joohoon new interface implementation */
     if( CURR_INTERFACE ){
-      gap_interface[CURR_INTERFACE].write_callback(line, syBuf[fid].fp);
+      original_printf(line, syBuf[fid].fp);
       interface_write_output_nolist(line);
       return;
     }

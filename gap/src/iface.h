@@ -15,13 +15,6 @@
 
 #define DEFAULT_INTERFACE   ID_ORIGINAL
 
-struct gap_iface
-{ 
-  int id; 
-  char *name; 
-  int (*main)(); 
-  void (*write_callback)(char *, FILE *);
-};
 
 /*
  * execute the command stored in the input buffer
@@ -31,20 +24,5 @@ struct gap_iface
  * SUCCESS / FAILURE / SIG_STOP / ERROR 
  */
 int execute(char *input, char *output);
-
-/*
- * Resets the internal data structure of the gap kernel
- * to initial state 
- * return value will be SUCCESS or FAILURE
- */
-int reset();
-
-/* This is a signal handler for the CTRL+C
- * This signal handler is used to catch user interrupt
- * and stops the execution that was sent by using the
- * execute function. execute function will return with
- * SIG_STOP immediately
- */
-void *SIG_STOP_HANDLER();
 
 #endif

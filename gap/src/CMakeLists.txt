@@ -88,7 +88,6 @@ set(SOURCES
     interface.c
     buf_list.c
     iface.c
-    iface_table.c
     iface_original.c
     debug.c
     md5.c

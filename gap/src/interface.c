@@ -39,17 +39,6 @@
 #include		"GapUtils.h"
 
 
-extern struct gap_iface gap_interface[];
-
-extern Bag            HdStack;
-extern UInt        TopStack;
-
-extern Bag       HdLast, HdLast2, HdLast3;
-extern Bag       HdTime;
-
-
-int interface_enable;
-
 
 char static_input_buf[STATIC_INPUT_BUF_SIZE];
 char static_output_buf[STATIC_OUTPUT_BUF_SIZE];

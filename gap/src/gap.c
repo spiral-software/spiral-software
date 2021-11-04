@@ -108,12 +108,18 @@ Int         DbgInBreakLoop = 0;
 */
 
 
-extern int original_main(void);
+extern void  InitGap(int argc, char** argv, int* stackBase);
 
 int             main (int argc, char **argv)
 {
-    extern void         InitGap (int argc, char **argv, int *stackBase);
     exc_type_t          e;
+    int exec_status, i;
+    char input[4096];
+    char output[4096];
+
+    for (i = 0; i < 4096; ++i) {
+        input[i] = output[i] = 0;
+    }
 
     Try {
 		/* initialize everything                                             */
@@ -144,10 +150,10 @@ int             main (int argc, char **argv)
     /* Load static history buffer */
     SyLoadHistory();
  
-    /* Start Interface Main Evaluation here */
-    int ret = 1;
-    while (ret != INTER_EXIT) {
-       ret = original_main();
+    /* main evaluation loop */
+    exec_status = EXEC_SUCCESS;
+    while (exec_status != EXEC_QUIT) {
+        exec_status = execute(input, output);
     }
  
     /* Write static history buffer */

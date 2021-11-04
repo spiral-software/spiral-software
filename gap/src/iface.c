@@ -69,13 +69,6 @@ int execute(char *input, char *output)
      strncpy(spiralPrompt, prompt, strlen(prompt)+1);
   }
 	
-  /* clear the output buffer */
-  //strcpy(output, static_output_buf);
-  //static_output_buf[0] = '\0';
-
-  /* Write to input buf */
-  //strcpy(static_input_buf, input);
-
   /* repeat the read-eval-print cycle until end of input                 */
   Try {
     /* read an expression                                              */
@@ -89,45 +82,37 @@ int execute(char *input, char *output)
       start = SyTime();
       hd = EVAL( hd );
       if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
-	Error("'return' must not be used in main loop",0,0);
+	    Error("'return' must not be used in main loop",0,0);
       else if ( hd == HdReturn ) {
-	hd = HdVoid;
-	Symbol = S_EOF;
-	//interface_read_output_nolist(output);
-	return EXEC_QUIT;
+	    hd = HdVoid;
+	    Symbol = S_EOF;
+	    return EXEC_QUIT;
       }
       SET_BAG(HdTime, 0,  INT_TO_HD( SyTime() - start ) );
       
       /* assign the value to 'last' and then print it                */
       if ( hd != 0 && GET_TYPE_BAG(hd) != T_VOID ) {
-
-		  SET_BAG(HdLast3, 0,  PTR_BAG(HdLast2)[0] );
-	SET_BAG(HdLast2, 0,  PTR_BAG(HdLast)[0] );
-	SET_BAG(HdLast, 0,  hd );
-	if ( ! GAP_SILENT ) {
-	  IsString( hd );
-	  Print( hd );
-	  Pr("\n",0,0);
-	}
+    	SET_BAG(HdLast3, 0,  PTR_BAG(HdLast2)[0] );
+        SET_BAG(HdLast2, 0,  PTR_BAG(HdLast)[0] );
+	    SET_BAG(HdLast, 0,  hd );
+	    if ( ! GAP_SILENT ) {
+	        IsString( hd );
+	        Print( hd );
+	        Pr("\n",0,0);
+	    }
       }
-      
     }
-    
   }
   Catch(e) {
     /* exceptions raised using Error() are already printed at this point */
-    if(e!=ERR_GAP) {
+    if (e!=ERR_GAP) {
       exc_show();
       while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
       while ( EvalStackTop > 0 ) EVAL_STACK_POP;
  
-      //interface_read_output_nolist(output);
       return EXEC_ERROR;
     }
-    
   }
-  
-  //interface_read_output_nolist(output);
   return EXEC_SUCCESS;
 }
 

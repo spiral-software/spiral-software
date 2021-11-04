@@ -87,7 +87,6 @@ set(SOURCES
     lex.yy.c
     buf_list.c
     iface.c
-    iface_original.c
     debug.c
     md5.c
     hash.c
@@ -147,7 +146,6 @@ set(SOURCES
     idents.h
     ieee754.h
     iface.h
-    iface_original.h
     integer.h
     integer4.h
     list.h

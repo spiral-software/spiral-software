@@ -43,7 +43,6 @@
 #include        "namespaces.h"          /* InitNamespaces                  */
 #include        "args.h"
 
-#include        "interface.h"           /* New Spiral Interface            */
 #include        "iface.h"               
 #include        "tables.h"
 #include        "debug.h"
@@ -52,8 +51,6 @@
 
 extern Bag                  HdStack;
 extern UInt        TopStack;
-
-int CURR_INTERFACE = DEFAULT_INTERFACE;
 
 int ERROR_QUIET = 0;
 int BACKTRACE_DEFAULT_LEVEL = 5;
@@ -109,12 +106,14 @@ Int         DbgInBreakLoop = 0;
 **  expression, evaluates it and prints the value.  This continues until  the
 **  end of the input file.
 */
+
+
+extern int original_main(void);
+
 int             main (int argc, char **argv)
 {
     extern void         InitGap (int argc, char **argv, int *stackBase);
     exc_type_t          e;
-
-    CURR_INTERFACE = DEFAULT_INTERFACE;
 
     Try {
 		/* initialize everything                                             */
@@ -146,7 +145,10 @@ int             main (int argc, char **argv)
     SyLoadHistory();
  
     /* Start Interface Main Evaluation here */
-    start_interface(CURR_INTERFACE);
+    int ret = 1;
+    while (ret != INTER_EXIT) {
+       ret = original_main();
+    }
  
     /* Write static history buffer */
     SySaveHistory();

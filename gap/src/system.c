@@ -11,7 +11,6 @@
 #include		<stdlib.h>
 #include        "system.h"              /* declaration part of the package */
 #include        "spiral.h"              /* InitLibName() */
-#include        "interface.h"           /* Outside Interface */
 #include        "iface.h"
 #include		"GapUtils.h"
 
@@ -49,13 +48,6 @@
 #  define SYS_CONST
 # endif
 #endif
-
-
-/***************
- * Interface flag 
- */
-
-extern int CURR_INTERFACE;
 
 
 
@@ -522,17 +514,7 @@ char *          SyFgets (char line[], Int length, Int fid )
         return p;
     }
 
-    /* Joohoon Interface reader implementation here */
     
-    if( CURR_INTERFACE ){
-      p = interface_read_input_nolist( line );
-      return p;
-    }
-
-    /* Should not get below this point with new interface */
-    /* Must clean up this part */
-
-
     /* no line editing if the user disabled it                             */
     if ( syLineEdit == 0 ) {
       p = fgets( line, (Int)length, syBuf[fid].fp );
@@ -1820,12 +1802,6 @@ void            SyFputs (char line[], Int fid )
 {
     Int                i;
 
-    /* Joohoon new interface implementation */
-    if( CURR_INTERFACE ){
-      original_printf(line,syBuf[fid].fp);
-      interface_write_output_nolist(line);
-      return;
-    }
 
     /* if outputing to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {
@@ -1907,12 +1883,6 @@ extern void original_printf(char* data, FILE* fp);
 void            SyFputs ( char line[], Int fid )
 {
 
-    /* Joohoon new interface implementation */
-    if( CURR_INTERFACE ){
-      original_printf(line, syBuf[fid].fp);
-      interface_write_output_nolist(line);
-      return;
-    }
 
     /* handle the console                                                  */
 #ifndef WIN32

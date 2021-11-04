@@ -85,7 +85,6 @@ set(SOURCES
     double.c
     complex.c
     lex.yy.c
-    interface.c
     buf_list.c
     iface.c
     iface_original.c
@@ -151,7 +150,6 @@ set(SOURCES
     iface_original.h
     integer.h
     integer4.h
-    interface.h
     list.h
     machine_endian.h
     md5.h

@@ -17,6 +17,4 @@ int original_main(void) {
   return INTER_EXIT;
 }
 
-void original_printf(char *data, FILE* fp){
-  printf("%s", data);
-}
+

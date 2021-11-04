@@ -25,7 +25,6 @@
 /* #include        "flags.h" */			// defns & decls moved to memmgr.h
 #include        "args.h"
 
-#include        "interface.h"           /* New Spiral Interface            */
 #include        "iface.h"
 #include		"GapUtils.h"			/* Gap Utilities */
 
@@ -49,7 +48,7 @@ int execute(char *input, char *output)
   static char	    spiralPrompt[80] = "spiral> ";
 
   if ( Symbol==S_EOF ){
-    interface_read_output_nolist(output);
+    //interface_read_output_nolist(output);
     return EXEC_QUIT;
   }
 
@@ -71,10 +70,11 @@ int execute(char *input, char *output)
   }
 	
   /* clear the output buffer */
-  interface_read_output_nolist(output);
+  //strcpy(output, static_output_buf);
+  //static_output_buf[0] = '\0';
 
   /* Write to input buf */
-  interface_write_input_nolist(input);
+  //strcpy(static_input_buf, input);
 
   /* repeat the read-eval-print cycle until end of input                 */
   Try {
@@ -93,7 +93,7 @@ int execute(char *input, char *output)
       else if ( hd == HdReturn ) {
 	hd = HdVoid;
 	Symbol = S_EOF;
-	interface_read_output_nolist(output);
+	//interface_read_output_nolist(output);
 	return EXEC_QUIT;
       }
       SET_BAG(HdTime, 0,  INT_TO_HD( SyTime() - start ) );
@@ -121,13 +121,13 @@ int execute(char *input, char *output)
       while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
       while ( EvalStackTop > 0 ) EVAL_STACK_POP;
  
-      interface_read_output_nolist(output);
+      //interface_read_output_nolist(output);
       return EXEC_ERROR;
     }
     
   }
   
-  interface_read_output_nolist(output);
+  //interface_read_output_nolist(output);
   return EXEC_SUCCESS;
 }
 

@@ -43,7 +43,6 @@
 #include        "namespaces.h"          /* InitNamespaces                  */
 #include        "args.h"
 
-#include        "interface.h"           /* New Spiral Interface            */
 #include        "iface.h"               
 #include        "tables.h"
 #include        "debug.h"
@@ -52,9 +51,6 @@
 
 extern Bag                  HdStack;
 extern UInt        TopStack;
-
-int CURR_INTERFACE = DEFAULT_INTERFACE;
-int LAST_INTERFACE = DEFAULT_INTERFACE;
 
 int ERROR_QUIET = 0;
 int BACKTRACE_DEFAULT_LEVEL = 5;
@@ -110,24 +106,20 @@ Int         DbgInBreakLoop = 0;
 **  expression, evaluates it and prints the value.  This continues until  the
 **  end of the input file.
 */
+
+
+extern void  InitGap(int argc, char** argv, int* stackBase);
+
 int             main (int argc, char **argv)
 {
-    extern void         InitGap (int argc, char **argv, int *stackBase);
     exc_type_t          e;
+    int exec_status, i;
+    char input[4096];
+    char output[4096];
 
-   
-    /* Save this information to reset */
-    CURR_INTERFACE = DEFAULT_INTERFACE;
-    interface_save_args(argc, argv);
- 
-	/*************************************************************************/
-	/* printf("message from gap...\n");										 */
-	/* char *p;																 */
-	/* Int n = 50 * sizeof(char *);											 */
-	/* p = (char *)malloc(n);												 */
-	/* strcpy(p, "1234567890ABCDEF FEDCBA0987654321");						 */
-	/* printf("# bytes allocated = %d, ptr = %X, value = %s\n", n, p, p);	 */
-	/*************************************************************************/
+    for (i = 0; i < 4096; ++i) {
+        input[i] = output[i] = 0;
+    }
 
     Try {
 		/* initialize everything                                             */
@@ -158,8 +150,11 @@ int             main (int argc, char **argv)
     /* Load static history buffer */
     SyLoadHistory();
  
-    /* Start Interface Main Evaluation here */
-    start_interface(CURR_INTERFACE);
+    /* main evaluation loop */
+    exec_status = EXEC_SUCCESS;
+    while (exec_status != EXEC_QUIT) {
+        exec_status = execute(input, output);
+    }
  
     /* Write static history buffer */
     SySaveHistory();
@@ -179,11 +174,7 @@ int             main (int argc, char **argv)
 		}
     }
 
-     /* exit to the operating system, the return is there to please lint    */
-    if (NrHadSyntaxErrors && (LAST_INTERFACE == ID_BATCH)) 
-        SyExit(SYEXIT_WITH_SYNTAX_ERRORS);
-    else
-        SyExit(SYEXIT_OK);
+    SyExit(SYEXIT_OK);
 
     return SYEXIT_OK;
 }
@@ -700,11 +691,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }
 				/* now enter a read-eval-print loop, just as in main               */
 				while ( Symbol != S_EOF ) {
-					if (CURR_INTERFACE == ID_BATCH) {
-						/* inconsistency in interfaces: ReadIt ignoring interfaces,
-						quit from here if we are in batch interface */
-						SyExit(SYEXIT_FROM_BRK);
-					}
 					/* read an expression                                          */
 					if (InBreakpoint) {
 						Prompt = DbgPrompt; 
@@ -750,11 +736,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				/* remove function definitions from the stack and close "*errin*"  */
 				LeaveDbgStack();
 				ignore = CloseInput();
-			} else {
-				if (CURR_INTERFACE == ID_BATCH) {
-					/* quit with the first error */
-					SyExit(SYEXIT_FROM_BRK);
-				}
 			}
 
 			while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );

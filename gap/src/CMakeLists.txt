@@ -85,13 +85,8 @@ set(SOURCES
     double.c
     complex.c
     lex.yy.c
-    interface.c
     buf_list.c
     iface.c
-    iface_table.c
-    iface_original.c
-    iface_console.c
-    iface_batch.c
     debug.c
     md5.c
     hash.c
@@ -151,14 +146,8 @@ set(SOURCES
     idents.h
     ieee754.h
     iface.h
-    iface_batch.h
-    iface_console.h
-    iface_original.h
-    iface_tcpip.h
     integer.h
     integer4.h
-    interface.h
-    ipc.h
     list.h
     machine_endian.h
     md5.h
@@ -193,11 +182,6 @@ set(SOURCES
     vector.h
     word.h
 )
-
-##  Additional modules to compile when not on Windows...
-if (!WIN32)
-    list(APPEND SOURCES iface_tcpip.c ipc.c)
-endif()
 
 add_executable(${PROJECT} ${SOURCES})
 set_property ( TARGET ${PROJECT} PROPERTY CUDA_ARCHITECTURES OFF)

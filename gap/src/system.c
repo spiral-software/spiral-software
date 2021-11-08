@@ -11,14 +11,13 @@
 #include		<stdlib.h>
 #include        "system.h"              /* declaration part of the package */
 #include        "spiral.h"              /* InitLibName() */
-#include        "interface.h"           /* Outside Interface */
 #include        "iface.h"
 #include		"GapUtils.h"
 
 
 #ifdef WIN32
 
-#define	WIN32_ANSICOLOR_EMU
+//#define	WIN32_ANSICOLOR_EMU
 #define WIN32_CTRLV_SUPPORT
 #include <direct.h> // for mkdir, getdrive, etc.
 #include <process.h> // for getpid()
@@ -49,14 +48,6 @@
 #  define SYS_CONST
 # endif
 #endif
-
-
-/***************
- * Interface flag 
- */
-
-extern int CURR_INTERFACE;
-extern struct gap_iface gap_interface[];
 
 
 
@@ -523,17 +514,7 @@ char *          SyFgets (char line[], Int length, Int fid )
         return p;
     }
 
-    /* Joohoon Interface reader implementation here */
     
-    if( CURR_INTERFACE ){
-      p = interface_read_input_nolist( line );
-      return p;
-    }
-
-    /* Should not get below this point with new interface */
-    /* Must clean up this part */
-
-
     /* no line editing if the user disabled it                             */
     if ( syLineEdit == 0 ) {
       p = fgets( line, (Int)length, syBuf[fid].fp );
@@ -1821,12 +1802,6 @@ void            SyFputs (char line[], Int fid )
 {
     Int                i;
 
-    /* Joohoon new interface implementation */
-    if( CURR_INTERFACE ){
-      gap_interface[CURR_INTERFACE].write_callback(line,syBuf[fid].fp);
-      interface_write_output_nolist(line);
-      return;
-    }
 
     /* if outputing to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {
@@ -1860,145 +1835,11 @@ void            SyFputs (char line[], Int fid )
 
 #if WIN32
 
-#ifdef  WIN32_ANSICOLOR_EMU
-
-DWORD   DefaultConsoleAttributes = 0;
-
-void ANSIEscapeValueToColor(DWORD value, DWORD *mask, DWORD *flags)
+void  SyFputs ( char line[], Int fid )
 {
-    DWORD   color_table[8] = { 0, FOREGROUND_RED, FOREGROUND_GREEN, 
-                        FOREGROUND_RED | FOREGROUND_GREEN, FOREGROUND_BLUE,
-                        FOREGROUND_BLUE | FOREGROUND_RED, FOREGROUND_BLUE | FOREGROUND_GREEN,
-                        FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE };
-
-    if (value==0) {
-        *flags = DefaultConsoleAttributes; *mask = 0xFF;
-    } else if (value==1) {
-        *flags |= FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
-        //*mask |= FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
-    } else if (value>=30 && value<=37) {
-        *flags = (*flags & 0xFFFFFFF8) | color_table[value-30];
-        *mask |= 0x0F;
-    } else if (value == 39) {
-        *flags = (*flags & 0xFFFFFFF0) | (DefaultConsoleAttributes & 0x0F);
-        *mask |= 0x0F;
-    } else if (value>=40 && value<=47) {
-        *flags = (*flags & 0xFFFFFF8F) | (color_table[value-40] << 4);
-        *mask |= 0x0F0;
-    } else if (value == 49) {
-        *flags = (*flags & 0xFFFFFF0F) | (DefaultConsoleAttributes & 0x0F0);
-        *mask |= 0x0F0;
-    } else if (value == 7) {
-        *flags |= COMMON_LVB_REVERSE_VIDEO;
-        *mask |= COMMON_LVB_REVERSE_VIDEO;
-    } else if (value == 21) {
-        *flags |= COMMON_LVB_UNDERSCORE;
-        *mask |= COMMON_LVB_UNDERSCORE;
-    } else if (value == 24) {
-        *flags &= ~COMMON_LVB_UNDERSCORE;
-        *mask |= COMMON_LVB_UNDERSCORE;
-    }
-}
-
-#endif
-void            SyFputs ( char line[], Int fid )
-{
-
-    /* Joohoon new interface implementation */
-    if( CURR_INTERFACE ){
-      gap_interface[CURR_INTERFACE].write_callback(line, syBuf[fid].fp);
-      interface_write_output_nolist(line);
-      return;
-    }
-
-    /* handle the console                                                  */
-#ifndef WIN32
-    if ( isatty( fileno(syBuf[fid].fp) ) ) 
-	{
-	    char *s;
-	    Int i;
-
-        /* test whether this is a line with a prompt                       */
-        syNrchar = 0;
-        for ( i = 0; line[i] != '\0'; i++ ) {
-            if ( line[i] == '\n' )  syNrchar = 0;
-            else                    syPrompt[syNrchar++] = line[i];
-        }
-        syPrompt[syNrchar] = '\0';
-
-        /* handle stopped output                                           */
-        while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
-
-        /* output the line                                                 */
-        for ( s = line; *s != '\0'; s++ )
-            PUTCHAR( *s );
-    }
-
-    /* ordinary file                                                       */
-    else {
-#endif
-#ifdef  WIN32_ANSICOLOR_EMU
-        /* emulate ANSI color escape sequences */
-        if (syBuf[fid].fp == stdout || syBuf[fid].fp == stderr) {
-            char    *c = line;
-            char    *s = line;
-            int     state = 0;
-            int     value = 0;
-            DWORD   flags = 0;
-            DWORD   mask = 0;
-            CONSOLE_SCREEN_BUFFER_INFO  bf;
-            while (*c) {
-                if (*c==0x1B && state==0) {
-                    state = 1;
-                } else
-                if (*c==0x5B && state==1) {
-                    flags = 0;
-                    mask = 0;
-                    value = 0;
-                    state = 2;
-                } else
-                if (state>=2) { // reading escape sequence
-                    if (*c=='m') { // end of escape sequence
-                        ANSIEscapeValueToColor(value, &mask, &flags);
-                        // print line
-                        *(c-state) = 0;
-                        fputs( s, syBuf[fid].fp );
-                        *(c-state) = 0x1B;
-                        s = c+1;
-                        // assign new text attributes
-                        bf.wAttributes = 0;
-                        GetConsoleScreenBufferInfo(GetStdHandle(syBuf[fid].fp==stderr ? STD_ERROR_HANDLE: STD_OUTPUT_HANDLE), &bf);
-                        if (DefaultConsoleAttributes==0) DefaultConsoleAttributes = bf.wAttributes;
-                        SetConsoleTextAttribute(GetStdHandle(syBuf[fid].fp==stderr ? STD_ERROR_HANDLE: STD_OUTPUT_HANDLE), 
-                            bf.wAttributes & ~mask | flags & mask);
-                        state = 0;
-                    } else
-                    if (*c==';') { // got some value, modify flags
-                        ANSIEscapeValueToColor(value, &mask, &flags);
-                        value = 0;
-                        state++;
-                    } else
-                    if (*c-'0'<=9) { // reading decimal number
-                        value = value*10+(*c-'0');
-                        state++;
-                    } else { // error
-                        state = 0;
-                    }
-                } else
-                    state = 0;
-                c++;
-            }
-            if (s != c) // print remaining characters
-                fputs(s, syBuf[fid].fp );
-        } else
-#endif
         fputs( line, syBuf[fid].fp );
    		fflush( syBuf[fid].fp );		// typically the GAP internal output buffer has just been flushed, so flush file buffer, too
                                         // otherwise piped output gets delayed
-#ifndef WIN32
-    }
-#endif
-
 }
 
 #endif
@@ -2419,15 +2260,6 @@ void            InitSystem (int argc, char **argv)
             ++argv; --argc;
             break;
 
-        case 'i': /* '-i <interface>', set which interface will be used         */
-            if ( argc < 3 ) {
-                fputs("gap: option '-i' must have an argument.\n",stderr);
-                goto usage;
-            }
-	    InitInterface(argc, argv);
-            ++argv; --argc;
-            break;
-
         case 'a': /* '-a <memory>', set amount to pre'm*a*lloc'ate         */
             if ( argc < 3 ) {
                 fputs("gap: option '-a' must have an argument.\n",stderr);
@@ -2564,7 +2396,6 @@ void            InitSystem (int argc, char **argv)
     fputs("usage: gap [-l <libname>] [-h <hlpname>] [-m <gap_memory>]\n",stderr);
     fputs("           [-a <premalloc_memory>]\n",stderr);
     fputs("           [-g] [-q] [-b] [-x <nr>]  [-y <nr>]\n",stderr);
-    fputs("           [-i <interface_name>]\n",stderr);
     fputs("           <file>...\n",stderr);
     fputs("  run the Groups, Algorithms and Programming system.\n",stderr);
     SyExit( 1 );

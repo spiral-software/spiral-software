@@ -667,5 +667,9 @@ typedef void            (*TNumAbortFuncBags) (
 extern  TNumAbortFuncBags       AbortFuncBags;
 
 
+
+extern char* SyPathSep();
+
+
 #endif // _SYSTEM_H
 

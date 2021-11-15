@@ -385,7 +385,7 @@ Obj  FunCurrentDir ( Obj hdCall )
 
     else {
         Int pos;
-		char path_sep = config_demand_val("path_sep")->strval[0];
+		char path_sep = SyPathSep();
 		Obj hd = StringToHd(file);
 
 		pos = strlen(file);

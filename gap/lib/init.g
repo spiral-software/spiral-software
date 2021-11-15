@@ -138,7 +138,7 @@ end);
 
 VERLIB := "v3r4p4 1997/04/18";
 
-PATH_SEP := config_val_t_strval_get(config_demand_val("path_sep"));
+PATH_SEP := GetEnv("SPIRAL_CONFIG_PATH_SEP");
 
 Global.SpiralVersion := Version();
 
@@ -1114,6 +1114,6 @@ if not IsBound(InfoLatticeSpiral) then
   InfoLatticeSpiral := Ignore;
 fi;
 
-Read(Concat(Conf("spiral_dir"), Conf("path_sep"), "namespaces", Conf("path_sep"), "init.g"));
+Read(Concat(Conf("spiral_dir"), PATH_SEP, "namespaces", PATH_SEP, "init.g"));
 
 _fileProgress.done := true;

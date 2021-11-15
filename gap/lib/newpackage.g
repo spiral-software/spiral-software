@@ -49,7 +49,7 @@ _Load := function(path, pkg)
     local init, dir, file, file_candidates, dir_candidates, ext, top, i, found;
 
     file_candidates := List(Concat(SPIRAL_PATHS, PACKAGES_PATHS, SPIRAL_LOAD_PATHS), base -> Concat(base, path, ".g"));
-    dir_candidates := List(Concat(SPIRAL_PATHS, PACKAGES_PATHS, SPIRAL_LOAD_PATHS), base -> Concat(base, path, Conf("path_sep")));
+    dir_candidates := List(Concat(SPIRAL_PATHS, PACKAGES_PATHS, SPIRAL_LOAD_PATHS), base -> Concat(base, path, PATH_SEP));
 
     if Global.LoadStack <> [] then
 		top := Last(Global.LoadStack);

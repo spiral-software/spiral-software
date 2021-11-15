@@ -35,8 +35,8 @@ end;
 #F
 SYS_EXEC := function ( arg ) 
     local cmd;
-    cmd := command_quotify_static(Concatenation(List(arg, String)));
-    if SysVerbose() = 2 then Print("gap: ", cmd, "\n"); fi;
+    cmd := Concatenation(List(arg, String));
+    if SysVerbose() = 2 then Print("Exec: ", cmd, "\n"); fi;
     return Exec(cmd);
 end;
 

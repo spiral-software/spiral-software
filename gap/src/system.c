@@ -2057,7 +2057,7 @@ char *          SyTmpname (void)
 {
 #ifdef WIN32
     return GuSysTmpname(config_demand_val("tmp_dir")->strval, 
-		config_demand_val("path_sep")->strval, 
+        SyPathSep(),
 		"gap_XXXXXX");
 #else
 #ifdef HAVE_MKSTEMP
@@ -2066,7 +2066,7 @@ char *          SyTmpname (void)
     int fd;
     if(result==NULL) {
 		char * tmp_dir = config_demand_val("tmp_dir")->strval;
-		char * path_sep = config_demand_val("path_sep")->strval;
+		char * path_sep = SyPathSep();
 		result = GuMakeMessage("%s%sgap_XXXXXX", tmp_dir, path_sep);
 		len = strlen(result);
     }
@@ -2869,3 +2869,12 @@ fullusage:
     SyExit(1);
 }
 
+
+char* SyPathSep()
+{
+#ifdef _WIN32
+    return "\\";
+#else
+    return "/";
+#endif
+}

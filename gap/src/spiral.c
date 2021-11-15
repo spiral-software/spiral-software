@@ -66,7 +66,7 @@ void            InitLibName (char *progname, char *SyLibname, int maxLen)
 		else
 			lib_ptr = "";
 
-		temp = config_demand_val("path_sep");
+		temp = SyPathSep();
 		if (temp != NULL)
 			path_sep = temp->strval;
 		else

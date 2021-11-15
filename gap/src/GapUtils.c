@@ -350,8 +350,6 @@ config_val_t *config_demand_val(char * name)
         env = getenv("SPIRAL_CONFIG_SPIRAL_DIR");
     } else if( strcmp(name, "exec_dir") == 0) {
         env = getenv("SPIRAL_CONFIG_EXEC_DIR");
-    } else if( strcmp(name, "path_sep") == 0) {
-        env = getenv("SPIRAL_CONFIG_PATH_SEP");
     } else if( strcmp(name, "gap_lib_dir") == 0) {
         env = getenv("SPIRAL_GAP_LIB_DIR");
     } else
@@ -486,10 +484,7 @@ int sys_rm(const char * name) {
     }
 }
 
-void sys_check_exists(const char * fname) {
-    if(!sys_exists(fname))
-	Throw exc(ERR_IO_FILE_READ, fname);
-}
+
 
 
 

@@ -1127,7 +1127,7 @@ CheckFileExists := function(file, folder)
     fi;
     if folder <> "" then
 	path := Conf("spiral_dir");
-        sep  := Conf("path_sep"); 
+        sep  := PATH_SEP; 
         path := Concat(path, sep, folder, sep, file);
     else
 	path := file;

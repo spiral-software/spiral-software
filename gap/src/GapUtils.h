@@ -266,7 +266,7 @@ char *command_quotify_static(char * command);
 int sys_exists(const char *fname);
 int sys_mkdir(const char * name);
 int sys_rm(const char * name);
-void sys_check_exists(const char * fname);
+
 
 
 #endif					// GAP_UTILS_H_INCLUDED

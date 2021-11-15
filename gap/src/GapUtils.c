@@ -370,17 +370,7 @@ config_val_t * config_get_val(char * name) {
     return config_demand_val(name);
 }
 
-config_val_t * config_get_val_profile(config_profile_t * profile, char * name) {
-    return config_demand_val(name);
-}
 
-config_val_t * config_valid_val(char * name) { 
-    return config_demand_val(name);
-}
-
-config_val_t * config_valid_val_profile(config_profile_t * profile, char * name) {
-    return config_demand_val(name);
-}
 
 /** Same as config_valid_val, but returns a string value, or "" 
     if value is not valid or type!=VAL_STR */
@@ -451,11 +441,6 @@ char *command_quotify_static(char * command) { return quotify_static(command); }
 #else
 char *command_quotify_static(char * command) { return command; }
 #endif
-
-char *file_quotify_static(char * fname) { 
-    if(strchr(fname, ' ')!=NULL) return quotify_static(fname); 
-    else return fname; 
-}
 
 int sys_exists(const char *fname) {
     FILE * f = fopen(fname, "r");

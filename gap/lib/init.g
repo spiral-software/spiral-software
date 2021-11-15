@@ -1104,7 +1104,7 @@ CantCopy(Cyclotomics);
 CantCopy(Integers);
 
 Concat:=ConcatenationString;
-QUOTIFY := file_quotify_static;
+
 RandomSeed(TimeInSecs());
 
 # Info Lattice

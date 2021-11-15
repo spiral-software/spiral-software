@@ -24,16 +24,7 @@ Conf := function ( key )
 	    config_demand_val(key));
 end;
 
-#F ConfHasVal( <key> )
-#F    Return 'true' of configuration value with key <key> is defined, 'false'
-#F    otherwise.
-#F
-ConfHasVal := function ( key )
-    Constraint(IsString(key));
-    if config_get_val(key) = "NULL" then return false;
-    else return true;
-    fi;
-end;
+
 
 #F OS Related functions
 #F ====================

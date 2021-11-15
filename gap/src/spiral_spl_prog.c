@@ -20,16 +20,6 @@
 
 #include		"GapUtils.h"
 
-Bag CheckInputType(int input_type)
-{
-	if (input_type < 0 || input_type >= INPUT_LAST) {
-		return Error("Bad input type %d, must be in range [0,%d]",
-			input_type, INPUT_LAST - 1);
-	}
-	else {
-		return HdVoid;
-	}
-}
 
 
 

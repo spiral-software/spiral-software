@@ -21,7 +21,7 @@ end;
 
 GetBasicProfilerTestFName := function(pf)
     local path, sep;
-    sep  := Conf("path_sep");
+    sep  := PATH_SEP;
     path := Conf("spiral_dir");
     path := Concat(path, sep, "build");
     if pf then

@@ -4,5 +4,5 @@
 
 Import(rewrite, spl, code, compiler);
 
-ACM := Concat(Conf("exec_dir"), Conf("path_sep"), "acm");
+ACM := Concat(Conf("exec_dir"), PATH_SEP, "acm");
 Include(acm);

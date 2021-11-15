@@ -16,12 +16,41 @@ _DataFormatString := function(datatype)
 end;
 
 
+_DeriveScalarType := function(SPLOpts) 
+    local suffix;
+    if IsBound(SPLOpts.customDataType) then 
+		return SPLOpts.customDataType;
+    elif IsBound(SPLOpts.customReal) and SPLOpts.dataType = "real" then 
+		return SPLOpts.customReal;
+    elif IsBound(SPLOpts.customComplex) and SPLOpts.dataType = "complex" then 
+		return SPLOpts.customComplex;
+    else
+		if SPLOpts.dataType = "real" 
+			then suffix := "";
+		elif SPLOpts.dataType = "complex" then 
+			suffix := "_cplx";
+		else 
+			Error("SPLOpts.dataType has invalid value '", SPLOpts.dataType, "'");
+		fi;
+		if SPLOpts.precision = "single" then 
+			return Concat("float",suffix);
+		elif SPLOpts.precision = "double" then 
+			return Concat("double",suffix);
+		elif SPLOpts.precision = "extended" 
+			then return Concat("long_double",suffix);
+		else 
+			Error("SPLOpts.precision has invalid value '", SPLOpts.dataType, "'");
+		fi;
+    fi;
+end;
+
+
 _WriteStub := function(code, opts)
     local outstr, s, stub, i, testvec, multiline, bounds, corner, datatype, testcodeopts;
 	
 	testcodeopts := Cond(IsBound(opts.testcode) and IsRec(opts.testcode), opts.testcode, rec());
 	
-	datatype := DeriveScalarType(opts);
+	datatype := _DeriveScalarType(opts);
     
     # build the generic stub info
     stub := CopyFields(rec(
@@ -85,7 +114,7 @@ _WriteStub := function(code, opts)
 	if IsBound(testcodeopts.funcArgs) then
 		Print("extern void FUNC( ", testcodeopts.funcArgs," );\n");
 	else
-	    Print("extern void FUNC( ", DeriveScalarType(opts), " *out, ", DeriveScalarType(opts), " *in );\n");
+	    Print("extern void FUNC( ", _DeriveScalarType(opts), " *out, ", _DeriveScalarType(opts), " *in );\n");
 	fi;
     
 	#add testvector if specified in opts
@@ -96,7 +125,7 @@ _WriteStub := function(code, opts)
 		if not IsVector(testvec) then
 			Error("testvector must be a valid vector");
 		fi;
-		Print("\nstatic ", DeriveScalarType(opts), " testvector[] = {");
+		Print("\nstatic ", _DeriveScalarType(opts), " testvector[] = {");
 		if Length(testvec) > 10 then
 			Print("\n    ");
 		fi;

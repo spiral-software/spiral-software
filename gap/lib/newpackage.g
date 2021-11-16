@@ -3,13 +3,7 @@
 ##  Copyright (c) 2018-2021, Carnegie Mellon University
 ##  See LICENSE for details
 
-SPIRAL_DIR := Conf("spiral_dir");
-if ContainsElement(SPIRAL_DIR, ' ') then
-	tmpnspdir := WinShortPathName(SPIRAL_DIR);
-	if IsString(tmpnspdir) and Length(tmpnspdir) > 0 then
-		SPIRAL_DIR := tmpnspdir;
-	fi;
-fi;
+
 
 SPIRAL_PATHS := [  SPIRAL_DIR :: PATH_SEP :: "namespaces", "." ];
 

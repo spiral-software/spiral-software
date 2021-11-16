@@ -346,8 +346,6 @@ config_val_t *config_demand_val(char * name)
 	
     if (strcmp(name, "tmp_dir") == 0) {
         env = getenv("SPIRAL_CONFIG_TMP_DIR");
-    } else if( strcmp(name, "spiral_dir") == 0) {
-        env = getenv("SPIRAL_CONFIG_SPIRAL_DIR");
     } else if( strcmp(name, "exec_dir") == 0) {
         env = getenv("SPIRAL_CONFIG_EXEC_DIR");
     } else if( strcmp(name, "gap_lib_dir") == 0) {

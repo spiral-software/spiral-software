@@ -1113,7 +1113,7 @@ end;
 
 
 #F CheckFileExists (file, folder)
-#F     If <folder> is not "" look in <folder> under "spiral_dir" for <file>
+#F     If <folder> is not "" look in <folder> under SPIRAL_DIR for <file>
 #F     otherwise, look for a file named <file>
 #F     Return True is found, otherwise, False
 
@@ -1126,7 +1126,7 @@ CheckFileExists := function(file, folder)
 	return res;
     fi;
     if folder <> "" then
-	path := Conf("spiral_dir");
+	path := SPIRAL_DIR;
         sep  := PATH_SEP; 
         path := Concat(path, sep, folder, sep, file);
     else

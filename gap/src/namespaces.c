@@ -381,7 +381,7 @@ Obj  FunCurrentDir ( Obj hdCall )
 		return Error(usage, 0, 0);
 
     if ( strcmp(file, "*stdin*")==0 || strcmp(file, "*stderr*")==0 )
-        return StringToHd(config_demand_val("spiral_dir")->strval );
+        return StringToHd(getenv("SPIRAL_CONFIG_SPIRAL_DIR"));
 
     else {
         Int pos;

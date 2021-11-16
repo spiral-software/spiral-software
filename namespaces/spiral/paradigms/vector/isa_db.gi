@@ -203,8 +203,8 @@ Class(SIMD_ISA_DB, rec(
                           "active ISAs: ", PrintCS(self.active()), "\n"),
     getISA := (self, isa) >> self.isa_db.(isa),
 #------------------------------------------
-    HASH_FILE := file -> let(p := PATH_SEP, base := Conf("spiral_dir"), Concat(base, p, "namespaces", p, "spiral", p, "platforms", p, "_", file, "_generated1.gi")),
-    RULES_FILE := file -> let(p := PATH_SEP, base := Conf("spiral_dir"), Concat(base, p, "namespaces", p, "spiral", p, "platforms", p, "_", file, "_generated0.gi")),
+    HASH_FILE := file -> let(p := PATH_SEP, base := SPIRAL_DIR, Concat(base, p, "namespaces", p, "spiral", p, "platforms", p, "_", file, "_generated1.gi")),
+    RULES_FILE := file -> let(p := PATH_SEP, base := SPIRAL_DIR, Concat(base, p, "namespaces", p, "spiral", p, "platforms", p, "_", file, "_generated0.gi")),
     hash := HashTableDP(),
     hashFlush := meth(self) self.hash := HashTableDP(); end,
     hashSave := meth(self)

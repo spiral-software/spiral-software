@@ -140,6 +140,13 @@ VERLIB := "v3r4p4 1997/04/18";
 
 PATH_SEP := GetEnv("SPIRAL_CONFIG_PATH_SEP");
 
+SPIRAL_DIR := GetEnv("SPIRAL_CONFIG_SPIRAL_DIR");
+
+Declare(SYS_EXEC);
+Declare(SysTmpName);
+Declare(SysRemove);
+
+
 Global.SpiralVersion := Version();
 
 PrintBannerSpiral := function()
@@ -1114,6 +1121,6 @@ if not IsBound(InfoLatticeSpiral) then
   InfoLatticeSpiral := Ignore;
 fi;
 
-Read(Concat(Conf("spiral_dir"), PATH_SEP, "namespaces", PATH_SEP, "init.g"));
+Read(Concat(SPIRAL_DIR, PATH_SEP, "namespaces", PATH_SEP, "init.g"));
 
 _fileProgress.done := true;

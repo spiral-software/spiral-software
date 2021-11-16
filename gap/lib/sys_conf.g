@@ -10,20 +10,6 @@ GlobalPackage(spiral.sys);
 #F ===========================================
 #F
 
-#F Simple accessor functions
-#F =========================
-#F
-
-#F Conf( <key> )
-#F    Return a config value with key <key>, and generate an error if the value
-#F    is not defined.
-#F
-Conf := function ( key )
-    Constraint(IsString(key));
-    return gap_config_val_t(
-	    config_demand_val(key));
-end;
-
 
 
 #F OS Related functions
@@ -58,7 +44,7 @@ end;
 #F    Returns temporary file name
 #F
 SysTmpName := function ( )
-    SysMkdir(Conf("tmp_dir"));
+    SysMkdir(GetEnv("SPIRAL_CONFIG_TMP_DIR"));
     return TmpName();
 end;
 

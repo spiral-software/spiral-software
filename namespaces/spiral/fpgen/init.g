@@ -4,5 +4,5 @@
 
 Import(rewrite, spl, code, compiler);
 
-ACM := Concat(Conf("exec_dir"), PATH_SEP, "acm");
+ACM := Concat(GetEnv("SPIRAL_CONFIG_EXEC_DIR"), PATH_SEP, "acm");
 Include(acm);

@@ -74,7 +74,6 @@ set(SOURCES
     spiral.c
     globals.c
     fft.c
-    sys_conf_wrap.c
     args.c
     comments.c
     type_wrap.c

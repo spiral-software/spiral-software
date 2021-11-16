@@ -1332,7 +1332,7 @@ Obj FunIsWindows(Obj hdCall) {
 **
 **  'InitSPIRAL' initializes packages needed by SPIRAL
 */
-extern void Init_sys_conf();
+extern void Init_GAP_Utils();
 extern void Init_types();
 extern void Init_Double();
 extern void Init_Complex();
@@ -1346,6 +1346,7 @@ void            InitSPIRAL (void) {
     Init_Double();
     Init_Complex();
     Init_types();
+    Init_GAP_Utils();
     /**/ GlobalPackage2("spiral", "util"); /**/
     InitGlobalBag( &HdListClass, "HdListClass" );
     InstIntFunc( "Apropos",          FunApropos );
@@ -1406,14 +1407,10 @@ void            InitSPIRAL (void) {
 
 	InstIntFunc("Exit", FunExit);
 
-    /**/ EndPackage(); /**/
-
     GuSysSetProgname("gap");
     GuSysSetExitFunc(ErrorExit);
 
-    /**/ GlobalPackage2("spiral", "sys_conf"); /**/
-	Init_sys_conf();
-    /**/ EndPackage(); /**/
+
 }
 
 /****************************************************************************

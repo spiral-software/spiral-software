@@ -21,6 +21,12 @@
 #include "conf.h"
 #include "GapUtils.h"
 
+// for GAP to C functions
+#include "system.h"
+#include "memmgr.h" 
+#include "integer.h"
+#include "args.h"
+
 
 struct gu_msg_utils {
 	int msg_verbose;
@@ -483,6 +489,75 @@ int sys_rm(const char * name) {
 }
 
 
+
+Bag FunSysExists(Bag argv) {
+    char* usage = "sys_exists (const char *fname)";
+    int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
+
+    int  _result;
+    char* _arg0;
+
+    if ((argc < 2) || (argc > 2)) {
+        return Error(usage, 0, 0);
+    }
+    
+    _arg0 = (char*)HdToString(ELM_ARGLIST(argv, 1),
+            "<fname> must be a String.\nUsage: %s", (Int)usage, 0);
+
+    _result = (int)sys_exists(_arg0);
+
+    return INT_TO_HD(_result);
+}
+
+
+Bag FunSysMkdir(Bag argv) {
+    char* usage = "sys_mkdir (const char *name)";
+    int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
+    Bag  result;
+
+    int  _result;
+    char* _arg0;
+
+    if ((argc < 2) || (argc > 2)) {
+        return Error(usage, 0, 0);
+    }
+
+    _arg0 = (char*)HdToString(ELM_ARGLIST(argv, 1),
+            "<name> must be a String.\nUsage: %s", (Int)usage, 0);
+
+    return INT_TO_HD(_result);
+}
+
+
+Bag FunSysRm(Bag argv) {
+    char* usage = "sys_rm (const char *name)";
+    int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
+
+    int  _result;
+    char* _arg0;
+
+    if ((argc < 2) || (argc > 2)) {
+        return Error(usage, 0, 0);
+    }
+
+    _arg0 = (char*)HdToString(ELM_ARGLIST(argv, 1),
+            "<name> must be a String.\nUsage: %s", (Int)usage, 0);
+
+    _result = (int)sys_rm(_arg0);
+  
+    return INT_TO_HD(_result);
+}
+
+
+void     Init_GAP_Utils(void) {
+
+    InstIntFunc("sys_exists", FunSysExists);
+    InstIntFunc("sys_mkdir", FunSysMkdir);
+    InstIntFunc("sys_rm", FunSysRm);
+
+
+
+}
 
 
 

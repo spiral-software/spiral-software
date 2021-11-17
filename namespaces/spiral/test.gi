@@ -35,8 +35,8 @@ end;
 #F  ClearBasicProfilerTestResults () -- remove results of prior run(s) of basic profiler test
 
 ClearBasicProfilerTestResults := function()
-    SysRemove(GetBasicProfilerTestFName(true));
-    SysRemove(GetBasicProfilerTestFName(false));
+    sys_rm(GetBasicProfilerTestFName(true));
+    sys_rm(GetBasicProfilerTestFName(false));
     return;
 end;
 

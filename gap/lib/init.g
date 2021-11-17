@@ -316,9 +316,6 @@ AUTO( ReadLib( "abattoir" ),
   RequirePackage, IsOperationsRecord, OpsOps, OperationsRecord, EXEC,
   False, True, PrintFactorsInt );
 
-AUTO( ReadLib("sys_conf"),
-    SYS_EXEC, SysTmpName, SysRemove );
-
 AUTO( ReadLib( "agcent" ),
   MainEntryCSAgGroup, CentralCaseCentAgGroup, GeneralCaseCentAgGroup,
   MainEntryCentAgGroup, CentralCaseECAgWords, GeneralCaseECAgWords,

@@ -16,9 +16,9 @@ CheckSynthFormat := result -> true;
 RunSynth := function(nums)
     local rfile, numst, result, msg;
     Constraint(ForAll(nums, IsInt));
-    rfile := SysTmpName();
+    rfile := TmpName();
     numst := Concatenation(List(nums, x->Concat(StringInt(x), " ")));
-    SYS_EXEC(ACM, " ", numst, " -gap > ", rfile);
+    Exec(Concat(ACM, " ", numst, " -gap > ", rfile));
     result := Try(ReadVal(rfile));
     if result[1] = false  then
         Error(ACM, " did not produce valid result, offending output kept in '", rfile, 

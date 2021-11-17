@@ -142,11 +142,6 @@ PATH_SEP := GetEnv("SPIRAL_CONFIG_PATH_SEP");
 
 SPIRAL_DIR := GetEnv("SPIRAL_CONFIG_SPIRAL_DIR");
 
-Declare(SYS_EXEC);
-Declare(SysTmpName);
-Declare(SysRemove);
-
-
 Global.SpiralVersion := Version();
 
 PrintBannerSpiral := function()
@@ -322,7 +317,7 @@ AUTO( ReadLib( "abattoir" ),
   False, True, PrintFactorsInt );
 
 AUTO( ReadLib("sys_conf"),
-    Conf );
+    SYS_EXEC, SysTmpName, SysRemove );
 
 AUTO( ReadLib( "agcent" ),
   MainEntryCSAgGroup, CentralCaseCentAgGroup, GeneralCaseCentAgGroup,
@@ -1053,39 +1048,6 @@ AUTO( ReadGrp( "trans" ),
   SetSetOrbits, OrbNEq, CntOp, TransitiveIdentification,
   SelectTransitiveGroups, AllTransitiveGroups, OneTransitiveGroup );
 
-#AUTO( ReadTwo( "twogp" ),
-#  TGParts, TGLoad, TGGroup, TwoGroup, pClass, AllTwoGroups, OneTwoGroup );
-#
-#AUTO( ReadThr( "thrgp" ),
-#  ThGParts, ThGLoad, ThGGroup, ThreeGroup, AllThreeGroups, OneThreeGroup );
-#
-#AUTO( ReadTbl( "ctadmin" ),
-#  TABLEFILENAME, LIBTABLE, SET_TABLEFILENAME, GALOIS, TENSOR, EvalChars, MBT,
-#  MOT, LowercaseString, NotifyCharTableName, NotifyCharTable,
-#  LibInfoCharTable, FirstNameCharTable, FileNameCharTable, ALN, ALF, ACM, ARC,
-#  ConstructMixed, ConstructProj, ConstructDirectProduct, ConstructIsoclinic,
-#  ConstructV4G, ConstructGS3, ConstructPermuted, ConstructSubdirect,
-#  UnpackedCll, CllToClf, ConstructClifford, BrauerTree, DecMat,
-#  BasicSetBrauerTree, AddDecMats, PartsBrauerTableName, BrauerTable,
-#  LibraryTables, CharTableLibrary, OfThose, IsSporadicSimple, SchurCover,
-#  AllCharTableNames, ShrinkClifford, TextString, BlanklessPrint, ShrinkChars,
-#  ClfToCll, PrintFusion, PrintToLib, PrintClmsToLib );
-#
-#AUTO( ReadTbl( "ctprimar" ),
-#  LIBLIST );
-#
-#AUTO( ReadTom( "tmprimar" ),
-#  TOM, TOMLIST, TomLibrary );
-#
-#AUTO( ReadSml( "idgroup.sml" ),
-#  AgGroupCode, CodeAgGroup, InitRandomIsomorphismChecking, RandomSpecialPres,
-#  RandomIsomorphismChecking, IdGroupRandomTest, IdGroupSpecialFp, EvalFpCoc,
-#  IdSmallGroup, IdP1Q1R1Group, IdP2Q1Group, IdP1Q2Group, IdP1Group, IdP2Group,
-#  IdP3Group, IdP1Q1Group, IdGroup );
-#
-#AUTO( ReadSml( "smallgrp.sml" ),
-#  Codes1000, PermGroupCode, AgGroupCode, GroupCode, LoadSmallGroups,
-#  UnloadSmallGroups, SmallGroup, AllSmallGroups, NumberSmallGroups );
 
 # load packages
 

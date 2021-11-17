@@ -1074,8 +1074,6 @@ CantCopy(Integers);
 
 Concat:=ConcatenationString;
 
-RandomSeed(TimeInSecs());
-
 # Info Lattice
 # ------------
 # set to Print for information

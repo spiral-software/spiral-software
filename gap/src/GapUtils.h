@@ -263,10 +263,10 @@ char *command_quotify_static(char * command);
 char *command_quotify_static(char * command);
 #endif
 
-int sys_exists(const char *fname);
-int sys_mkdir(const char * name);
-int sys_rm(const char * name);
-
+extern int sys_exists(const char *fname);
+extern int sys_mkdir(const char * name);
+extern int sys_rm(const char * name);
+extern char* PathSep();
 
 
 #endif					// GAP_UTILS_H_INCLUDED

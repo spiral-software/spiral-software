@@ -489,6 +489,17 @@ int sys_rm(const char * name) {
 }
 
 
+char* PathSep()
+{
+#ifdef _WIN32
+    return "\\";
+#else
+    return "/";
+#endif
+}
+
+
+
 
 Bag FunSysExists(Bag argv) {
     char* usage = "sys_exists (const char *fname)";

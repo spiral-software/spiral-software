@@ -669,7 +669,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			parent = Input;
 
 #ifdef _DEBUG
-            debugActive = true;
+            debugActive = 1;
 #else
             debugActive = (InDebugMode != 0);
 #endif

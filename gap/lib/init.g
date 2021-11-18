@@ -132,14 +132,11 @@ function(arg)
     ClearCommentBuffer();
 end);
 
-##  CVSID := function(cvs_id)
-##      CurrentFile().id := cvs_id;
-##  end;
+
 
 VERLIB := "v3r4p4 1997/04/18";
 
-PATH_SEP := GetEnv("SPIRAL_CONFIG_PATH_SEP");
-
+PATH_SEP := PathSep();
 SPIRAL_DIR := GetEnv("SPIRAL_CONFIG_SPIRAL_DIR");
 
 Global.SpiralVersion := Version();

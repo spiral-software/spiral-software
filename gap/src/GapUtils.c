@@ -560,14 +560,19 @@ Bag FunSysRm(Bag argv) {
 }
 
 
+Bag FunPathSep(Bag hdCall) {
+    char* sep = PathSep();
+
+    return StringToHd(sep);
+}
+
+
 void     Init_GAP_Utils(void) {
 
     InstIntFunc("sys_exists", FunSysExists);
     InstIntFunc("sys_mkdir", FunSysMkdir);
     InstIntFunc("sys_rm", FunSysRm);
-
-
-
+    InstIntFunc("PathSep", FunPathSep);
 }
 
 

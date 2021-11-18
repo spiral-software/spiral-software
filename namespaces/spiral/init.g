@@ -23,9 +23,6 @@ Declare(CMatrix);
 Load(spiral.compiler);
 Global.compiler := spiral.compiler;
 
-Load(spiral.fpgen);
-
-
 Include(defaults);
 Include(perfstat);
 

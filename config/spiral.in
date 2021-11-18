@@ -11,7 +11,7 @@ GAP_DIR=$SPIRAL/gap
 GAP_MEM=@SPIRAL_MEMORY_POOL@
 
 export SPIRAL_CONFIG_TMP_DIR="/tmp/spiraltmp"
-export SPIRAL_CONFIG_SPIRAL_DIR="$SPIRAL"
+export SPIRAL_DIR="$SPIRAL"
 export SPIRAL_CONFIG_EXEC_DIR="/usr/local/bin"
 
 

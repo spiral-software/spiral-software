@@ -133,11 +133,8 @@ function(arg)
 end);
 
 
-
-VERLIB := "v3r4p4 1997/04/18";
-
 PATH_SEP := PathSep();
-SPIRAL_DIR := GetEnv("SPIRAL_CONFIG_SPIRAL_DIR");
+SPIRAL_DIR := GetEnv("SPIRAL_DIR");
 
 Global.SpiralVersion := Version();
 

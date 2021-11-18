@@ -17,7 +17,7 @@ if [ ! -f "$GAP_EXE" ]; then
 fi
 
 export SPIRAL_CONFIG_TMP_DIR="/tmp/spiraltmp"
-export SPIRAL_CONFIG_SPIRAL_DIR="$SPIRAL"
+export SPIRAL_DIR="$SPIRAL"
 export SPIRAL_CONFIG_EXEC_DIR="/usr/local/bin"
 
 ##  Setup PROFILER_LOCAL_ARGS with the target used for CMeasure & CMatrix measurements

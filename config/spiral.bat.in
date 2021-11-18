@@ -21,8 +21,6 @@ if "x%PROFILER_LOCAL_ARGS%" == "x" (
     set PROFILER_LOCAL_ARGS=--workdir %SP_WORKDIR%
 )
 
-set SPIRAL_CONFIG_SPIRAL_DIR=%SPIRAL_DIR%
-
 set OLDPATH=%PATH%
 set PATH=%PATH%;%SPIRAL_DIR%profiler\bin
 

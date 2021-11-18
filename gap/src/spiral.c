@@ -1017,7 +1017,7 @@ Obj FunPathRelativeToSPIRAL( Obj hdCall ) {
      hdPath = EVAL( PTR_BAG(hdCall)[1] );
      if( GET_TYPE_BAG(hdPath) != T_STRING ) return Error(usage,0,0);
      path = strdup( (char*) PTR_BAG(hdPath) );
-     spiral_dir = getenv("SPIRAL_CONFIG_SPIRAL_DIR");
+     spiral_dir = getenv("SPIRAL_DIR");
 
      /* strip install directory */
      if ( strncmp(path, spiral_dir, strlen(spiral_dir)) == 0 ) {

@@ -61,7 +61,7 @@ _Load := function(path, pkg)
 
     for file in file_candidates do
 		InfoRead1( "#I  Load tries \"", file, "\"\n" );
-		if sys_exists(file)=1 and READ(file, pkg) then 
+		if FileExists(file)=1 and READ(file, pkg) then 
 			pkg.__file__ := file;
 			RemoveLast(Global.LoadStack, 1);
 			return file; 
@@ -73,7 +73,7 @@ _Load := function(path, pkg)
 		InfoRead1( "#I  Load tries (dir) \"", file, "\"\n" );
 		pkg.__files__ := [ file ];
 		pkg.__dir__ := dir;
-		if sys_exists(file)=1 and READ(file, pkg) then 
+		if FileExists(file)=1 and READ(file, pkg) then 
 			RemoveLast(Global.LoadStack, 1);
 			return file; 
 		fi;	
@@ -92,7 +92,7 @@ _Include := function(path, pkg)
     local file;
 
     file := path :: ".gi"; InfoRead1( "#I  Include tries \"", file, "\"\n" );
-    if sys_exists(file)=1 then 
+    if FileExists(file)=1 then 
         if READ(file, pkg) then 
             Add(pkg.__files__, file);
             return file; 
@@ -122,7 +122,7 @@ _LoadRedirect := function(path, pkg)
 		pkg.__packages__ := [];
     fi;
 
-    if sys_exists(file)=1 then 
+    if FileExists(file)=1 then 
 		Local.__dir__ := path :: PATH_SEP;
         if READ(file, pkg) then 
             Add(pkg.__files__, file);

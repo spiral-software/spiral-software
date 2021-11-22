@@ -59,7 +59,7 @@ end;
 CheckBasicProfilerTest := function()
     local res, file;
     file := GetBasicProfilerTestFName(true);
-    res  := CheckFileExists(file, "");
+    res  := FileExists(file);
     
     if SysVerbose() > 0 then
         Print("Marker file: ", file);
@@ -68,7 +68,7 @@ CheckBasicProfilerTest := function()
     if res then return res; fi;
     
     file := GetBasicProfilerTestFName(false);
-    res := CheckFileExists(file, "");
+    res := FileExists(file);
     if SysVerbose() > 0 then
         Print("Marker file: ", file);
         if res then PrintLine(" Found, return false"); else PrintLine(" NOT Found"); fi;

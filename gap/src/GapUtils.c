@@ -499,9 +499,7 @@ char* PathSep()
 }
 
 
-
-
-Bag FunSysExists(Bag argv) {
+Bag FunFileExists(Bag argv) {
     char* usage = "sys_exists (const char *fname)";
     int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
 
@@ -569,7 +567,7 @@ Bag FunPathSep(Bag hdCall) {
 
 void     Init_GAP_Utils(void) {
 
-    InstIntFunc("sys_exists", FunSysExists);
+    InstIntFunc("FileExists", FunFileExists);
     InstIntFunc("sys_mkdir", FunSysMkdir);
     InstIntFunc("sys_rm", FunSysRm);
     InstIntFunc("PathSep", FunPathSep);

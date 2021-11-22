@@ -1112,31 +1112,6 @@ PrintResetRuntimeStats := function()
 end;
 
 
-#F CheckFileExists (file, folder)
-#F     If <folder> is not "" look in <folder> under SPIRAL_DIR for <file>
-#F     otherwise, look for a file named <file>
-#F     Return True is found, otherwise, False
-
-CheckFileExists := function(file, folder)
-    local path, res, sep;
-    res := false;
-    
-    if file = "" then
-	PrintLine("Usage: CheckFileExists (<file>, <folder>); file name required");
-	return res;
-    fi;
-    if folder <> "" then
-	path := SPIRAL_DIR;
-        sep  := PATH_SEP; 
-        path := Concat(path, sep, folder, sep, file);
-    else
-	path := file;
-    fi;
-
-    if sys_exists(path) <> 0 then res := true; else res := false; fi;
-    return res;
-end;
-
 #F IntFromHexString(<str>)
 #F     Accepts a hexadecimal string and returns the Integer value.
 #F     The string may optionally have a leading "0x" and both upper and lower

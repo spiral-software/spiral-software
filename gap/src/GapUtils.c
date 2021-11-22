@@ -419,30 +419,6 @@ int GuSysSetenv(char *var, char *value, int i)
 #endif
 }
 
-/*
- * Required for InstIntFunc() handling
- */
-
-static char *quotify(const char *str) {
-    char *buf = (char*) malloc(strlen(str) + 3);
-    sprintf(buf, "%c%s%c", QUOTIFY_CHAR, str, QUOTIFY_CHAR);
-    return buf;
-}
-
-static char *quotify_static(char *str) {
-    static char *buf = NULL;
-    if(buf!=NULL)
-	free(buf);
-    buf = quotify(str);
-    return buf;
-}
-
-/* Under Windows we need to quotify the command (Franz, why?) */
-#ifdef QUOTIFY_SHELL_COMMAND 
-char *command_quotify_static(char * command) { return quotify_static(command); }
-#else
-char *command_quotify_static(char * command) { return command; }
-#endif
 
 int sys_exists(const char *fname) {
     FILE * f = fopen(fname, "r");

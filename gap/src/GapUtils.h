@@ -255,13 +255,5 @@ void GuSysCheckExists(const char * fname);
 /* set an evironment variable to value */
 int GuSysSetenv(char* var, char* value, int i);
 
-
-
-#ifdef QUOTIFY_SHELL_COMMAND 
-char *command_quotify_static(char * command);
-#else
-char *command_quotify_static(char * command);
-#endif
-
 #endif					// GAP_UTILS_H_INCLUDED
 

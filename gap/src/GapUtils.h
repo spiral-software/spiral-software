@@ -82,31 +82,9 @@ void GuSysDebug(const char *msg, ...);
  *   Throw exc(ERR_OTHER, "your error message");
  * */
 
-/* here IO prefix does not indicate an error in io.c module. 
-   in fact io.c does not throw exceptions. IO prefix is used for clarity */
 typedef enum exc_type {
     ERR_IO_FILE_READ,
-    ERR_IO_FILE_WRITE,
-    ERR_IO_TMPDIR_CREATE,
     ERR_IO_TMPNAME,
-    ERR_MEM_ALLOC,
-    ERR_MEM_ALLOC_ZERO,
-    ERR_MEM_REALLOC,
-    ERR_MEM_REALLOC_ZERO,
-    ERR_MEM_FREE_NULL,
-    ERR_SYS_SPL_COMPILE,
-    ERR_SYS_TARGET_COMPILE,
-    ERR_SYS_LINK,   
-    ERR_SYS_DIMENSION,
-    ERR_SYS_DIMENSION_DET,
-    ERR_INVALID_KEYWORD,
-    ERR_CMDLINE,
-    ERR_CONFIG_PROFILE,
-    ERR_CONFIG_FILE,
-    ERR_CONFIG_ENV,
-    ERR_CONFIG_UNINIT_EXPAND,
-    ERR_CONFIG_DEMAND_NOT_VALID,
-    ERR_CONFIG_DEMAND_NOT_INIT,
     ERR_OTHER,
     ERR_GAP, 
     ERR_ASSERTION_FAILED

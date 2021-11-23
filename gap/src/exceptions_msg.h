@@ -21,7 +21,6 @@ exc_msg_template_t EXC_ASSERTION_TEMPLATE = {
 exc_msg_template_t EXC_MSG_TEMPLATES[] = 
 { 
     { ERR_IO_FILE_READ,  "'%s' can not be opened for reading", 1 }, 
-    { ERR_IO_TMPNAME, "Can't create a temporary file name using template '%s'", 1 },
     { ERR_OTHER, "%s", 1 },
     { ERR_GAP, "", 0}
 };

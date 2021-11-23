@@ -20,22 +20,8 @@ int GuSysGetVerbose();
 void GuSysSetProgname(char *progname);
 char *GuSysGetProgname();
 void GuSysSetExitFunc(void (*exit_func)(int) );
-void (*GuSysGetExitFunc())(int);
+
 void GuFatalMsgExit(int exit_code, const char *err_msg, ...);
-
-/** Generates a unique temporary file name from template. Template must be
- * a simple filename (without directory paths), last six characters of
- * template must be XXXXXX, and these are replaced with a string that makes
- * the filename unique. 
- *
- * None of the parameters will be modified. The result will be allocated
- * with malloc(). It has to be deallocated by the callee with free().
- *
- * Note: on older Unices and Win32 tmpnam() is used so that template
- * parameter will be effectively ignored. 
- */
-
-char *GuSysTmpname(char *dir, char *pathsep, char *templat);
 
 
 /* Utilities to print messages */
@@ -84,7 +70,6 @@ void GuSysDebug(const char *msg, ...);
 
 typedef enum exc_type {
     ERR_IO_FILE_READ,
-    ERR_IO_TMPNAME,
     ERR_OTHER,
     ERR_GAP, 
     ERR_ASSERTION_FAILED

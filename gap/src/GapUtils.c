@@ -75,18 +75,7 @@ void GuSysSetExitFunc(void (*exit_func)(int) )
     gu_utils.sys_exit_func = exit_func;
 }
 
-/* Returns the exit function */
-void (*GuSysGetExitFunc())(int)
-{
-	if (gu_utils.sys_exit_func == (void *)0) {
-#ifndef DEBUG
-		gu_utils.sys_exit_func = (void *)exit;
-#else
-		gu_utils.sys_exit_func = (void *)gu_exit_abort;
-#endif
-	}
-	return gu_utils.sys_exit_func;
-}
+
 
 
 /*
@@ -205,62 +194,6 @@ void GuSysStderr(const char *err_msg, ...)
 }
 
 
-/** Create a name for a temporary file. Storage is automatically
- * allocated. So the result has to be xfree'd, to prevent a leak 
- *
- * This is a tricky function to implement. On modern UNIX systems
- * mkstemp is available, which is ideal. However, on Win32 and older
- * Unices, there is no mkstemp. In these cases we use tmpnam() which
- * works differently, and is more dangerous. 
- */
-
-char *GuSysTmpname(char *dir, char *pathsep, char *template) 
-{
-#ifdef WIN32
-    char *name;
-
-	/* in Windows, _tempnam should do the same as mkstemp */
-    name = _tempnam(dir, template);
-
-    if(name == NULL)
-        gu_sys_fatal(EXIT_CMDLINE, "TEMP name generation failed!");
-
-	return name;
-#else
-#ifdef HAVE_MKSTEMP
-    int fd;
-    char *full_template = GuMakeMessage("%s%s%s", dir, pathsep, template);
-    fd = mkstemp(full_template);
-    if(fd==-1) {
-		gu_sys_err("template='%s'\n", full_template);
-		free(full_template);
-		Throw exc(ERR_IO_TMPNAME);
-		return NULL; /* never reached */
-    }
-    else {
-		/* mkstemp actually creates an empty file; remove it, we only want the name */
-		gu_sys_msg(1, "Unlinking %s\n", full_template);
-		unlink(full_template); 
-		close(fd); 
-		return full_template;
-    }
-#else
-    char * result = malloc(L_tmpnam);
-    char * retval;
-    retval = tmpnam(result);
-    if(retval==NULL) {
-		free(result);
-		Throw exc(ERR_IO_TMPNAME);
-		return NULL; /* never reached */
-    }
-    else {
-		return result;
-    }
-#endif
-#endif
-}
-
-
 
 /* Throw / Catch exception handling */
 /* Declaring as an array allows to avoid creating a separate pointer variable */
@@ -274,11 +207,11 @@ struct extended_exception_context the_extended_exception_context[1];
 static exc_msg_template_t * exc_find_msg_template (exc_type_t type) {
     int i;
     if(type==ERR_ASSERTION_FAILED) 
-	return & EXC_ASSERTION_TEMPLATE;
+	    return & EXC_ASSERTION_TEMPLATE;
 
     for(i=0; i < sizeof(EXC_MSG_TEMPLATES)/sizeof(exc_msg_template_t); ++i)
-	if(type==EXC_MSG_TEMPLATES[i].type)
-	    return & EXC_MSG_TEMPLATES[i];
+	    if(type==EXC_MSG_TEMPLATES[i].type)
+	        return & EXC_MSG_TEMPLATES[i];
 
     Throw exc(ERR_ASSERTION_FAILED, "'type' must be a known type");
 }

@@ -369,12 +369,6 @@ extern  int             SyExec ( char * cmd );
 extern  UInt   SyTime ( void );
 
 
-/****************************************************************************
-**
-*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
-*/
-extern  char *          SyTmpname ( void );
-
 
 /****************************************************************************
 **

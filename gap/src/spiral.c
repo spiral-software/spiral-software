@@ -49,29 +49,17 @@ Bag     HdListClass = 0;          /* used by Fun_ObjId()              */
 **  ized to a valid string. maxLen should  contain the  available storage  of
 **  SyLibName.
 */
-void            InitLibName (char *progname, char *SyLibname, int maxLen)
+void  InitLibName (char *progname, char *SyLibname, int maxLen)
 {
     char *lib_ptr;
     char *path_sep;
 
-    // InitSysConf(progname);	don't need, only sets pgm name, called directly below.
 	GuSysSetProgname("gap");
 	
     if(SyLibname[0] == '\0') {
-        /* read gap_lib_dir from configuration */
-		config_val_t * temp = config_demand_val("gap_lib_dir");
-		if (temp != NULL)
-			lib_ptr = temp->strval;
-		else
-			lib_ptr = "";
-
-		temp = PathSep();
-		if (temp != NULL)
-			path_sep = temp->strval;
-		else
-			path_sep = "";
-
-        strncat( SyLibname, lib_ptr, maxLen - strlen(SyLibname)-2 );
+        lib_ptr = getenv("SPIRAL_GAP_LIB_DIR");
+        path_sep = PathSep();
+		strncat( SyLibname, lib_ptr, maxLen - strlen(SyLibname)-2 );
         strncat( SyLibname, path_sep, maxLen - strlen(SyLibname)-2 );
     }
 }

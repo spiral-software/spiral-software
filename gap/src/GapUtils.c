@@ -116,23 +116,6 @@ char *GuMakeMessage(const char *fmt, ...) {
 }
 
 
-/* Message printing utilities */
-
-/* Print a message - depending on verbosity level */
-static void gu_sys_msg(int level, const char *msg, ...)
-{
-    va_list ap;
-    if (GuSysGetVerbose() >= level) {
-		if (GuSysGetProgname())
-			fprintf(stderr, "%s: ", GuSysGetProgname());
-		
-		va_start(ap, msg);
-		vfprintf(stderr, msg, ap);
-		va_end(ap);
-		fflush(stderr);
-    }
-	return;
-}
 
 /* prints err_msg to stderr, printing progname in front of err_msg */
 static void gu_sys_err(const char *err_msg, ...)
@@ -273,56 +256,6 @@ void exc_show ( )
 }
 
 
-/* Return the value of  an environment variable or else return an empty string */
-config_val_t *config_demand_val(char * name)
-{
-    char* env = NULL;
-    config_val_t* ret = (config_val_t *)malloc(sizeof(config_val_t));
-	// char *dmsg = GuMakeMessage("***   Message: # bytes allocated = %d, ptr = %p, value = %s\n", sizeof(config_val_t), (char *)ret, (char *)ret);
-
-	if (ret == (config_val_t *)NULL)
-		return ret;
-	
-    if (strcmp(name, "tmp_dir") == 0) {
-        env = getenv("SPIRAL_CONFIG_TMP_DIR");
-    } else if( strcmp(name, "exec_dir") == 0) {
-        env = getenv("SPIRAL_CONFIG_EXEC_DIR");
-    } else if( strcmp(name, "gap_lib_dir") == 0) {
-        env = getenv("SPIRAL_GAP_LIB_DIR");
-    } else
-        return NULL;			// L-COMM: the function ConfHasVal in sys_conf.g
-								// requires NULL return to report missing key-value pair.
-
-    if (env == NULL) {
-        env = "";
-    }
-    ret->type = VAL_STR;
-    ret->strval = env;
-    return ret;
-}
-
-config_val_t * config_get_val(char * name) { 
-    return config_demand_val(name);
-}
-
-
-
-/** Same as config_valid_val, but returns a string value, or "" 
-    if value is not valid or type!=VAL_STR */
-char * config_valid_strval(char * name) {
-    config_val_t * temp = config_demand_val(name);
-    return temp->strval;
-}
-
-char * config_valid_strval_profile(config_profile_t * profile, char *name) {
-    return config_valid_strval(name);
-}
-
-config_val_t * config_demand_val_profile(config_profile_t * profile, char * name) {
-    return config_demand_val(name);
-}
-
-
 int sys_exists(const char *fname) {
     FILE * f = fopen(fname, "r");
     if(!f) return 0;
@@ -330,39 +263,12 @@ int sys_exists(const char *fname) {
     return 1;
 }
 
-int sys_mkdir(const char * name) {
-    char * cmd_mkdir = config_demand_val("cmd_mkdir")->strval;
-    char * command;
-    int result;
-#ifdef WIN32
-    /*
-	 * windows 'mkdir' fails if directory exists
-	 * and fopen() cannot be used to check if directory exists
-	 */
-    char * cwd = (char*) getcwd(0,0);	/* get current directory */
-    result = chdir(name);	/* see if 'name' already exists by chdir'ing */
-    chdir(cwd);				/* go back to where we started */
-    free(cwd); 
-    if(result!=-1) {
-		gu_sys_msg(1, "'%s' exists\n", name);
-		return 0;
-    }
-#endif
-    /* put directory name in quotes to handle names with spaces */
-    command = GuMakeMessage("%s \"%s\"\n", cmd_mkdir, name);
-    gu_sys_msg(1, command);
-    result = system(command);
-    free(command);
-    return result;
-}
 
 int sys_rm(const char * name) {
     if(sys_exists(name)) {
-		gu_sys_msg(2, "removing '%s'\n", name);
 		return remove(name);
     }
     else {
-		gu_sys_msg(2, "removing '%s' - file does not exist\n", name);
 		return 0;
     }
 }
@@ -398,25 +304,6 @@ Bag FunFileExists(Bag argv) {
 }
 
 
-Bag FunSysMkdir(Bag argv) {
-    char* usage = "sys_mkdir (const char *name)";
-    int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
-    Bag  result;
-
-    int  _result;
-    char* _arg0;
-
-    if ((argc < 2) || (argc > 2)) {
-        return Error(usage, 0, 0);
-    }
-
-    _arg0 = (char*)HdToString(ELM_ARGLIST(argv, 1),
-            "<name> must be a String.\nUsage: %s", (Int)usage, 0);
-
-    return INT_TO_HD(_result);
-}
-
-
 Bag FunSysRm(Bag argv) {
     char* usage = "sys_rm (const char *name)";
     int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
@@ -447,7 +334,6 @@ Bag FunPathSep(Bag hdCall) {
 void     Init_GAP_Utils(void) {
 
     InstIntFunc("FileExists", FunFileExists);
-    InstIntFunc("sys_mkdir", FunSysMkdir);
     InstIntFunc("sys_rm", FunSysRm);
     InstIntFunc("PathSep", FunPathSep);
 }

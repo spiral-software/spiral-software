@@ -200,16 +200,6 @@ typedef struct config_val {
     double floatval;
 } config_val_t;
 
-/* Return the value of  an environment variable or else return an empty string */
-config_val_t *config_demand_val(char *key_name);
-
-config_val_t * config_get_val(char * name);
-
-
-char * config_valid_strval(char * name);
-char * config_valid_strval_profile(config_profile_t * profile, char *name);
-config_val_t * config_demand_val_profile(config_profile_t * profile, char * name);
-
 
 #endif					// GAP_UTILS_H_INCLUDED
 

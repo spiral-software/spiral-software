@@ -2076,7 +2076,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
 
     InstIntFunc( "WeakRef",     FunWeakRef   );
     InstIntFunc( "TabToList",   FunTabToList );
-    /*N  15-Jan-91 martin this function should not be here                 */
     InstIntFunc( "CoefficientsInt", FunCoefficients );
 
 	InitMemMgrFuncs();

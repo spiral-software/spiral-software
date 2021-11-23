@@ -70,7 +70,6 @@ set(SOURCES
     eval.c
     spiral_delay_ev.c
     spiral_fft.c
-    spiral_spl_prog.c
     spiral.c
     globals.c
     fft.c
@@ -169,7 +168,6 @@ set(SOURCES
     spiral_delay_ev.h
     spiral_fft.h
     spiral_fft.h
-    spiral_spl_prog.h
     statemen.h
     string4.h
     system.h

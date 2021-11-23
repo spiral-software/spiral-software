@@ -69,7 +69,6 @@ void GuSysDebug(const char *msg, ...);
  * */
 
 typedef enum exc_type {
-    ERR_IO_FILE_READ,
     ERR_OTHER,
     ERR_GAP, 
     ERR_ASSERTION_FAILED
@@ -211,12 +210,6 @@ char * config_valid_strval(char * name);
 char * config_valid_strval_profile(config_profile_t * profile, char *name);
 config_val_t * config_demand_val_profile(config_profile_t * profile, char * name);
 
-
-/* Check file exists; abort if not */
-void GuSysCheckExists(const char * fname);
-
-/* set an evironment variable to value */
-int GuSysSetenv(char* var, char* value, int i);
 
 #endif					// GAP_UTILS_H_INCLUDED
 

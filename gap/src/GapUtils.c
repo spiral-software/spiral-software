@@ -322,36 +322,6 @@ config_val_t * config_demand_val_profile(config_profile_t * profile, char * name
     return config_demand_val(name);
 }
 
-/*
- * Check that a named file exists, abort if it does not
- */
-
-void GuSysCheckExists(const char * fname)
-{
-    FILE *f = fopen(fname, "r");
-	if (!f)
-		Throw exc(ERR_IO_FILE_READ, fname);
-
-	fclose(f);
-	return;
-}
-
-/*
- * Set an environment variable to value
- */
-
-int GuSysSetenv(char *var, char *value, int i)
-{
-#ifdef _WIN32
-    char *assignment = GuMakeMessage("%s=%s", var, value);
-    if(putenv(assignment) != 0) gu_sys_fatal(0xff, "_putenv: failed");
-    free(assignment);
-    return 0;
-#else
-    return setenv(var, value, i);
-#endif
-}
-
 
 int sys_exists(const char *fname) {
     FILE * f = fopen(fname, "r");

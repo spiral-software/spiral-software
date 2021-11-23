@@ -1413,7 +1413,7 @@ void            InitSPIRAL (void) {
     InstIntFunc( "Try",  FunTry);
     InstIntFunc( "EditDef", FunEditDef);
     InstIntFunc( "FindRefs", FunFindRefs);
-    InstIntFunc(" ReadVal", FunReadVal);
+    InstIntFunc( "ReadVal", FunReadVal);
     
     InstIntFunc( "_ObjId", Fun_ObjId);
 

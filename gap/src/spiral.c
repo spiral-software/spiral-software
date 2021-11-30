@@ -11,6 +11,7 @@
 #include        "integer.h"             /* arbitrary size integers         */
 #include        "scanner.h"             /* Pr()                            */
 #include        "objects.h"
+#include        "read.h"
 #include		"string4.h"
 #include        "integer4.h"
 #include        "namespaces.h"

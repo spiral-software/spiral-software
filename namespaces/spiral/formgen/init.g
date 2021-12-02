@@ -19,7 +19,6 @@ Include(rule);
 Include(acarule);
 Include(ruletree);
 Include(implement);
-Include(external);
 Include(bug);
 
 

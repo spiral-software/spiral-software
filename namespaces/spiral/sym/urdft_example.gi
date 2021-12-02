@@ -277,7 +277,7 @@ vecRdft := function(unroll, split_complex_vector_opts)
     
     d := TestBench("rdft_" :: isa.name, List([2..10], x->ASP(-1).RDFT(2^x).withTags([AVecReg(isa)])), 
 	           opts, rec(timeBaseCases:=false, verbosity:=0));
-    d.fileTransform := (self, t, opts) >> self.outputDir :: Conf("path_sep") :: self.funcTransform(t, opts) :: ".c";
+    d.fileTransform := (self, t, opts) >> self.outputDir :: PATH_SEP :: self.funcTransform(t, opts) :: ".c";
     d.funcTransform := (self, t, opts) >> "rdft_" :: String(Rows(t));
     return d;
 end;

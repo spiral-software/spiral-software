@@ -20,22 +20,8 @@ int GuSysGetVerbose();
 void GuSysSetProgname(char *progname);
 char *GuSysGetProgname();
 void GuSysSetExitFunc(void (*exit_func)(int) );
-void (*GuSysGetExitFunc())(int);
+
 void GuFatalMsgExit(int exit_code, const char *err_msg, ...);
-
-/** Generates a unique temporary file name from template. Template must be
- * a simple filename (without directory paths), last six characters of
- * template must be XXXXXX, and these are replaced with a string that makes
- * the filename unique. 
- *
- * None of the parameters will be modified. The result will be allocated
- * with malloc(). It has to be deallocated by the callee with free().
- *
- * Note: on older Unices and Win32 tmpnam() is used so that template
- * parameter will be effectively ignored. 
- */
-
-char *GuSysTmpname(char *dir, char *pathsep, char *templat);
 
 
 /* Utilities to print messages */
@@ -82,31 +68,7 @@ void GuSysDebug(const char *msg, ...);
  *   Throw exc(ERR_OTHER, "your error message");
  * */
 
-/* here IO prefix does not indicate an error in io.c module. 
-   in fact io.c does not throw exceptions. IO prefix is used for clarity */
 typedef enum exc_type {
-    ERR_IO_FILE_READ,
-    ERR_IO_FILE_WRITE,
-    ERR_IO_TMPDIR_CREATE,
-    ERR_IO_TMPNAME,
-    ERR_MEM_ALLOC,
-    ERR_MEM_ALLOC_ZERO,
-    ERR_MEM_REALLOC,
-    ERR_MEM_REALLOC_ZERO,
-    ERR_MEM_FREE_NULL,
-    ERR_SYS_SPL_COMPILE,
-    ERR_SYS_TARGET_COMPILE,
-    ERR_SYS_LINK,   
-    ERR_SYS_DIMENSION,
-    ERR_SYS_DIMENSION_DET,
-    ERR_INVALID_KEYWORD,
-    ERR_CMDLINE,
-    ERR_CONFIG_PROFILE,
-    ERR_CONFIG_FILE,
-    ERR_CONFIG_ENV,
-    ERR_CONFIG_UNINIT_EXPAND,
-    ERR_CONFIG_DEMAND_NOT_VALID,
-    ERR_CONFIG_DEMAND_NOT_INIT,
     ERR_OTHER,
     ERR_GAP, 
     ERR_ASSERTION_FAILED
@@ -201,15 +163,7 @@ enum {
 
 /** Structures and types supporting get profile functions **/
 
-/** Exit code to use when fatal configuration related error 
-    is encountered. For instance - syntax error in config file */
-#define EXIT_CONFIG 0xF
 
-/** Character that separates profile from key name in the full key name */
-#define CONFIG_PROFILE_SEP '.'
-
-/** Character that starts a comment in configuration file */
-#define CONFIG_COMMENT_CHAR '#'
 
 /** key_name -> semantic meaning association. 
     Used for the table of keys. The value of each key
@@ -224,12 +178,6 @@ typedef struct config_key {
 
 /** default configuration keys */
 extern config_key_t conf_keys[]; 
-
-typedef enum config_profile_type {
-    PT_PROFILE,
-    PT_GROUP,
-    PT_LAST
-} config_profile_type_t;
 
 typedef struct config_profile {
     char * name;
@@ -251,77 +199,6 @@ typedef struct config_val {
     char * strval;
     double floatval;
 } config_val_t;
-
-/* Return the value of  an environment variable or else return an empty string */
-config_val_t *config_demand_val(char *key_name);
-
-config_val_t * config_get_val(char * name);
-config_val_t * config_get_val_profile(config_profile_t * profile, char * name);
-config_val_t * config_valid_val(char * name);
-config_val_t * config_valid_val_profile(config_profile_t * profile, char * name);
-
-char * config_valid_strval(char * name);
-char * config_valid_strval_profile(config_profile_t * profile, char *name);
-config_val_t * config_demand_val_profile(config_profile_t * profile, char * name);
-
-
-
-typedef enum input { 
-    INPUT_SPL_SOURCE, 
-    INPUT_TARGET_SOURCE, 
-    INPUT_OBJ, 
-    INPUT_LAST /* for validity check, i>=INPUT_LAST is invalid */
-} input_t;
-
-/* Check file exists; abort if not */
-void GuSysCheckExists(const char * fname);
-
-/* set an evironment variable to value */
-int GuSysSetenv(char* var, char* value, int i);
-
-
-/*
- * Required for InstIntFunc() handling
- */
-
-/* conf.h stuff */
-typedef enum config_src { 
-    SRC_CMDLINE, /* values from the command line */
-    SRC_ENV_VAR, /* environment variable values */
-    SRC_USER_CONFIG, /* values from user's configuration file */
-    SRC_GLOBAL_CONFIG, /* values from global configuration file */
-    SRC_DEFAULT, /* compiled-in defaults, may be determined by autoconf */
-    SRC_LAST /* dummy, if new source is added vals array will grow */
-} src_t;
-
-typedef enum config_semantic { 
-    SEM_NONE,      /* no semantic checking, always valid */
-    SEM_ENUM,      /* enumeration value, enum values determined by (char**)semantic_arg */
-    SEM_PROG,      /* program name possibly with arguments, valid if ?not empty? */
-    SEM_DIRNAME,   /* directory name, valid if directory exists */
-    SEM_RFILENAME, /* readable file, valid if file exists and is readable */
-    SEM_WFILENAME, /* writable file, valid if file exists and is writable */
-    SEM_CHAR,      /* character, valid if string has length 1 */
-    SEM_BOOL,      /* boolean value, valid values: 1, 0 or strings 1,0,true,false,yes,no */
-    SEM_POSINT,    /* positive integer, valid if intval > 0 */ 
-    SEM_POSINT0,   /* positive integer or 0, valid if intval >=0 */
-    SEM_STRING,    /* string, always valid, assert(val->type==VAL_STR) */
-    SEM_NESTRING,  /* non-empty string, valid if strlen(strval) > 0 */
-    SEM_LONG_STRING, /* same as SEM_STRING, but we expect a long value (useful for GUIs) */
-    SEM_LAST       /* dummy, used for error checking */
-} semantic_t;
-
-#ifdef QUOTIFY_SHELL_COMMAND 
-char *command_quotify_static(char * command);
-#else
-char *command_quotify_static(char * command);
-#endif
-
-char *file_quotify_static(char * fname);
-int sys_exists(const char *fname);
-int sys_mkdir(const char * name);
-int sys_rm(const char * name);
-void sys_check_exists(const char * fname);
 
 
 #endif					// GAP_UTILS_H_INCLUDED

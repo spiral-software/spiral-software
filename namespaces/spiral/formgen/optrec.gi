@@ -42,7 +42,6 @@
 #F spl options records should be used as follows:
 #F - create your desired spl options record R
 #F - merge with defaults, R1 := MergeSPLOptionsRecord(R)
-#F - create spl prog for external operations with ProgSPL(SPL, R)
 #F
 
 

@@ -45,12 +45,12 @@ Class(TestBench, rec(
     fftwVerify        := false,
     outputExhaustive  := false,
     outputDir         := ".",
-    fileTransform     := (self, t, opts) >> self.outputDir :: Conf("path_sep") :: self.name :: "_" 
+    fileTransform     := (self, t, opts) >> self.outputDir :: PATH_SEP :: self.name :: "_" 
                                                    :: Drop(CodeletName(CodeletShape(t)), 1) :: ".c",
     funcTransform     := (self, t, opts) >> "sub1",
     prodFileTransform := (self, t, opts) >> self.fileTransform(t, opts), # used in generateProductionCode
     prodFuncTransform := (self, t, opts) >> self.funcTransform(t, opts),
-    txtFileName       := (self, runMethod) >> self.outputDir :: Conf("path_sep") :: self.name :: "." 
+    txtFileName       := (self, runMethod) >> self.outputDir :: PATH_SEP :: self.name :: "." 
                                                   :: SubString(runMethod, 5) :: ".txt",
     ##
     ## Public methods
@@ -61,7 +61,7 @@ Class(TestBench, rec(
         local o;
 	o := CopyFields(opts); 
 	if not IsBound(o.hashTable) then o.hashTable := HashTableDP(); fi;
-	if not IsBound(o.hashFile)  then o.hashFile := Concat(self.outputDir, Conf("path_sep"), name, ".hash"); fi;
+	if not IsBound(o.hashFile)  then o.hashFile := Concat(self.outputDir, PATH_SEP, name, ".hash"); fi;
         return WithBases(self,
             rec(searchopts:=searchopts, opts:=o, transforms:=transforms, name:=name, verbosity:=1, callbacks:=[]));
     end,

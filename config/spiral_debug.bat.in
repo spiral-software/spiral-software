@@ -20,9 +20,6 @@ if "x%PROFILER_LOCAL_ARGS%" == "x" (
     set PROFILER_LOCAL_ARGS=--debug --keeptemp --workdir %SPIRAL_WORKDIR%
 )
 
-set SPIRAL_CONFIG_SPIRAL_DIR=%SPIRAL_DIR%
-set SPIRAL_CONFIG_PATH_SEP=\
-
 set OLDPATH=%PATH%
 set PATH=%PATH%;%SPIRAL_DIR%profiler\bin
 

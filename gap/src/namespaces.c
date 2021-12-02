@@ -381,11 +381,11 @@ Obj  FunCurrentDir ( Obj hdCall )
 		return Error(usage, 0, 0);
 
     if ( strcmp(file, "*stdin*")==0 || strcmp(file, "*stderr*")==0 )
-        return StringToHd(config_demand_val("spiral_dir")->strval );
+        return StringToHd(getenv("SPIRAL_DIR"));
 
     else {
         Int pos;
-		char path_sep = config_demand_val("path_sep")->strval[0];
+		char path_sep = PathSep();
 		Obj hd = StringToHd(file);
 
 		pos = strlen(file);

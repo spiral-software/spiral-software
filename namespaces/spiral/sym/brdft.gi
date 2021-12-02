@@ -267,7 +267,7 @@ B3_r_time := (n,a) -> DirectSum(List([0..Int(n/2)-1], i -> Mat(r_time(alphai(n,i
 # roots := List(PhiRoots(100, 1/(4*23)), ComplexCyc);
 # DoForAll(last, x->AppendTo("roots", ReComplex(x), " ", ImComplex(x), "\n"));
 # PrintTo("tmp.gnuplot", "plot 'roots' with lp");
-# SYS_EXEC("gnuplot tmp.gnuplot -");
+
 
 # m88:=MatSPL(M(16,2))*MatSPL(DFT3(16))*MatSPL(bruun2(16,1/4))^-1;
 scale := mat -> List(mat, x->x/x[1]);

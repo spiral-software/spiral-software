@@ -261,8 +261,8 @@ end;
 # change for spiral - start
 PKGNAME := SetPkgname( LIBNAME );
 
-Add(PKGNAME, ConcatenationString(Conf("spiral_dir"), Conf("path_sep")));
-Add(PKGNAME, ConcatenationString(Conf("spiral_dir"), Conf("path_sep"), "namespaces", Conf("path_sep")));
+Add(PKGNAME, ConcatenationString(SPIRAL_DIR, PATH_SEP));
+Add(PKGNAME, ConcatenationString(SPIRAL_DIR, PATH_SEP, "namespaces", PATH_SEP));
 # change for spiral - end
 
 

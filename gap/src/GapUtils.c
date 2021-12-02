@@ -21,6 +21,12 @@
 #include "conf.h"
 #include "GapUtils.h"
 
+// for GAP to C functions
+#include "system.h"
+#include "memmgr.h" 
+#include "integer.h"
+#include "args.h"
+
 
 struct gu_msg_utils {
 	int msg_verbose;
@@ -69,18 +75,7 @@ void GuSysSetExitFunc(void (*exit_func)(int) )
     gu_utils.sys_exit_func = exit_func;
 }
 
-/* Returns the exit function */
-void (*GuSysGetExitFunc())(int)
-{
-	if (gu_utils.sys_exit_func == (void *)0) {
-#ifndef DEBUG
-		gu_utils.sys_exit_func = (void *)exit;
-#else
-		gu_utils.sys_exit_func = (void *)gu_exit_abort;
-#endif
-	}
-	return gu_utils.sys_exit_func;
-}
+
 
 
 /*
@@ -121,23 +116,6 @@ char *GuMakeMessage(const char *fmt, ...) {
 }
 
 
-/* Message printing utilities */
-
-/* Print a message - depending on verbosity level */
-static void gu_sys_msg(int level, const char *msg, ...)
-{
-    va_list ap;
-    if (GuSysGetVerbose() >= level) {
-		if (GuSysGetProgname())
-			fprintf(stderr, "%s: ", GuSysGetProgname());
-		
-		va_start(ap, msg);
-		vfprintf(stderr, msg, ap);
-		va_end(ap);
-		fflush(stderr);
-    }
-	return;
-}
 
 /* prints err_msg to stderr, printing progname in front of err_msg */
 static void gu_sys_err(const char *err_msg, ...)
@@ -199,62 +177,6 @@ void GuSysStderr(const char *err_msg, ...)
 }
 
 
-/** Create a name for a temporary file. Storage is automatically
- * allocated. So the result has to be xfree'd, to prevent a leak 
- *
- * This is a tricky function to implement. On modern UNIX systems
- * mkstemp is available, which is ideal. However, on Win32 and older
- * Unices, there is no mkstemp. In these cases we use tmpnam() which
- * works differently, and is more dangerous. 
- */
-
-char *GuSysTmpname(char *dir, char *pathsep, char *template) 
-{
-#ifdef WIN32
-    char *name;
-
-	/* in Windows, _tempnam should do the same as mkstemp */
-    name = _tempnam(dir, template);
-
-    if(name == NULL)
-        gu_sys_fatal(EXIT_CMDLINE, "TEMP name generation failed!");
-
-	return name;
-#else
-#ifdef HAVE_MKSTEMP
-    int fd;
-    char *full_template = GuMakeMessage("%s%s%s", dir, pathsep, template);
-    fd = mkstemp(full_template);
-    if(fd==-1) {
-		gu_sys_err("template='%s'\n", full_template);
-		free(full_template);
-		Throw exc(ERR_IO_TMPNAME);
-		return NULL; /* never reached */
-    }
-    else {
-		/* mkstemp actually creates an empty file; remove it, we only want the name */
-		gu_sys_msg(1, "Unlinking %s\n", full_template);
-		unlink(full_template); 
-		close(fd); 
-		return full_template;
-    }
-#else
-    char * result = malloc(L_tmpnam);
-    char * retval;
-    retval = tmpnam(result);
-    if(retval==NULL) {
-		free(result);
-		Throw exc(ERR_IO_TMPNAME);
-		return NULL; /* never reached */
-    }
-    else {
-		return result;
-    }
-#endif
-#endif
-}
-
-
 
 /* Throw / Catch exception handling */
 /* Declaring as an array allows to avoid creating a separate pointer variable */
@@ -268,11 +190,11 @@ struct extended_exception_context the_extended_exception_context[1];
 static exc_msg_template_t * exc_find_msg_template (exc_type_t type) {
     int i;
     if(type==ERR_ASSERTION_FAILED) 
-	return & EXC_ASSERTION_TEMPLATE;
+	    return & EXC_ASSERTION_TEMPLATE;
 
     for(i=0; i < sizeof(EXC_MSG_TEMPLATES)/sizeof(exc_msg_template_t); ++i)
-	if(type==EXC_MSG_TEMPLATES[i].type)
-	    return & EXC_MSG_TEMPLATES[i];
+	    if(type==EXC_MSG_TEMPLATES[i].type)
+	        return & EXC_MSG_TEMPLATES[i];
 
     Throw exc(ERR_ASSERTION_FAILED, "'type' must be a known type");
 }
@@ -334,129 +256,6 @@ void exc_show ( )
 }
 
 
-/* Return the value of  an environment variable or else return an empty string */
-config_val_t *config_demand_val(char * name)
-{
-    char* env = NULL;
-    config_val_t* ret = (config_val_t *)malloc(sizeof(config_val_t));
-	// char *dmsg = GuMakeMessage("***   Message: # bytes allocated = %d, ptr = %p, value = %s\n", sizeof(config_val_t), (char *)ret, (char *)ret);
-
-	if (ret == (config_val_t *)NULL)
-		return ret;
-	
-    if (strcmp(name, "tmp_dir") == 0) {
-        env = getenv("SPIRAL_CONFIG_TMP_DIR");
-    } else if( strcmp(name, "spiral_dir") == 0) {
-        env = getenv("SPIRAL_CONFIG_SPIRAL_DIR");
-    } else if( strcmp(name, "exec_dir") == 0) {
-        env = getenv("SPIRAL_CONFIG_EXEC_DIR");
-    } else if( strcmp(name, "path_sep") == 0) {
-        env = getenv("SPIRAL_CONFIG_PATH_SEP");
-    } else if( strcmp(name, "gap_lib_dir") == 0) {
-        env = getenv("SPIRAL_GAP_LIB_DIR");
-    } else
-        return NULL;			// L-COMM: the function ConfHasVal in sys_conf.g
-								// requires NULL return to report missing key-value pair.
-
-    if (env == NULL) {
-        env = "";
-    }
-    ret->type = VAL_STR;
-    ret->strval = env;
-    return ret;
-}
-
-config_val_t * config_get_val(char * name) { 
-    return config_demand_val(name);
-}
-
-config_val_t * config_get_val_profile(config_profile_t * profile, char * name) {
-    return config_demand_val(name);
-}
-
-config_val_t * config_valid_val(char * name) { 
-    return config_demand_val(name);
-}
-
-config_val_t * config_valid_val_profile(config_profile_t * profile, char * name) {
-    return config_demand_val(name);
-}
-
-/** Same as config_valid_val, but returns a string value, or "" 
-    if value is not valid or type!=VAL_STR */
-char * config_valid_strval(char * name) {
-    config_val_t * temp = config_demand_val(name);
-    return temp->strval;
-}
-
-char * config_valid_strval_profile(config_profile_t * profile, char *name) {
-    return config_valid_strval(name);
-}
-
-config_val_t * config_demand_val_profile(config_profile_t * profile, char * name) {
-    return config_demand_val(name);
-}
-
-/*
- * Check that a named file exists, abort if it does not
- */
-
-void GuSysCheckExists(const char * fname)
-{
-    FILE *f = fopen(fname, "r");
-	if (!f)
-		Throw exc(ERR_IO_FILE_READ, fname);
-
-	fclose(f);
-	return;
-}
-
-/*
- * Set an environment variable to value
- */
-
-int GuSysSetenv(char *var, char *value, int i)
-{
-#ifdef _WIN32
-    char *assignment = GuMakeMessage("%s=%s", var, value);
-    if(putenv(assignment) != 0) gu_sys_fatal(0xff, "_putenv: failed");
-    free(assignment);
-    return 0;
-#else
-    return setenv(var, value, i);
-#endif
-}
-
-/*
- * Required for InstIntFunc() handling
- */
-
-static char *quotify(const char *str) {
-    char *buf = (char*) malloc(strlen(str) + 3);
-    sprintf(buf, "%c%s%c", QUOTIFY_CHAR, str, QUOTIFY_CHAR);
-    return buf;
-}
-
-static char *quotify_static(char *str) {
-    static char *buf = NULL;
-    if(buf!=NULL)
-	free(buf);
-    buf = quotify(str);
-    return buf;
-}
-
-/* Under Windows we need to quotify the command (Franz, why?) */
-#ifdef QUOTIFY_SHELL_COMMAND 
-char *command_quotify_static(char * command) { return quotify_static(command); }
-#else
-char *command_quotify_static(char * command) { return command; }
-#endif
-
-char *file_quotify_static(char * fname) { 
-    if(strchr(fname, ' ')!=NULL) return quotify_static(fname); 
-    else return fname; 
-}
-
 int sys_exists(const char *fname) {
     FILE * f = fopen(fname, "r");
     if(!f) return 0;
@@ -464,46 +263,79 @@ int sys_exists(const char *fname) {
     return 1;
 }
 
-int sys_mkdir(const char * name) {
-    char * cmd_mkdir = config_demand_val("cmd_mkdir")->strval;
-    char * command;
-    int result;
-#ifdef WIN32
-    /*
-	 * windows 'mkdir' fails if directory exists
-	 * and fopen() cannot be used to check if directory exists
-	 */
-    char * cwd = (char*) getcwd(0,0);	/* get current directory */
-    result = chdir(name);	/* see if 'name' already exists by chdir'ing */
-    chdir(cwd);				/* go back to where we started */
-    free(cwd); 
-    if(result!=-1) {
-		gu_sys_msg(1, "'%s' exists\n", name);
-		return 0;
-    }
-#endif
-    /* put directory name in quotes to handle names with spaces */
-    command = GuMakeMessage("%s \"%s\"\n", cmd_mkdir, name);
-    gu_sys_msg(1, command);
-    result = system(command);
-    free(command);
-    return result;
-}
 
 int sys_rm(const char * name) {
     if(sys_exists(name)) {
-		gu_sys_msg(2, "removing '%s'\n", name);
 		return remove(name);
     }
     else {
-		gu_sys_msg(2, "removing '%s' - file does not exist\n", name);
 		return 0;
     }
 }
 
-void sys_check_exists(const char * fname) {
-    if(!sys_exists(fname))
-	Throw exc(ERR_IO_FILE_READ, fname);
+
+char* PathSep()
+{
+#ifdef _WIN32
+    return "\\";
+#else
+    return "/";
+#endif
+}
+
+
+Bag FunFileExists(Bag argv) {
+    char* usage = "sys_exists (const char *fname)";
+    int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
+
+    int  _result;
+    char* _arg0;
+
+    if ((argc < 2) || (argc > 2)) {
+        return Error(usage, 0, 0);
+    }
+    
+    _arg0 = (char*)HdToString(ELM_ARGLIST(argv, 1),
+            "<fname> must be a String.\nUsage: %s", (Int)usage, 0);
+
+    _result = (int)sys_exists(_arg0);
+
+    return INT_TO_HD(_result);
+}
+
+
+Bag FunSysRm(Bag argv) {
+    char* usage = "sys_rm (const char *name)";
+    int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
+
+    int  _result;
+    char* _arg0;
+
+    if ((argc < 2) || (argc > 2)) {
+        return Error(usage, 0, 0);
+    }
+
+    _arg0 = (char*)HdToString(ELM_ARGLIST(argv, 1),
+            "<name> must be a String.\nUsage: %s", (Int)usage, 0);
+
+    _result = (int)sys_rm(_arg0);
+  
+    return INT_TO_HD(_result);
+}
+
+
+Bag FunPathSep(Bag hdCall) {
+    char* sep = PathSep();
+
+    return StringToHd(sep);
+}
+
+
+void     Init_GAP_Utils(void) {
+
+    InstIntFunc("FileExists", FunFileExists);
+    InstIntFunc("sys_rm", FunSysRm);
+    InstIntFunc("PathSep", FunPathSep);
 }
 
 

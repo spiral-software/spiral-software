@@ -2039,56 +2039,6 @@ return msecs - syStartTime;
 }
 
 
-/****************************************************************************
-**
-*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
-**
-**  'SyTmpname' creates and returns a new temporary name.
-*/
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include       <stdio.h>
-# define SYS_STDIO_H
-#endif
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 15.16  */
-extern  char *          tmpnam ( char * );
-#endif
-
-char *          SyTmpname (void)
-{
-#ifdef WIN32
-    return GuSysTmpname(config_demand_val("tmp_dir")->strval, 
-		config_demand_val("path_sep")->strval, 
-		"gap_XXXXXX");
-#else
-#ifdef HAVE_MKSTEMP
-    static char * result = NULL;
-    static int len = 0;
-    int fd;
-    if(result==NULL) {
-		char * tmp_dir = config_demand_val("tmp_dir")->strval;
-		char * path_sep = config_demand_val("path_sep")->strval;
-		result = GuMakeMessage("%s%sgap_XXXXXX", tmp_dir, path_sep);
-		len = strlen(result);
-    }
-    result[len-1] = 'X'; result[len-2] = 'X';  result[len-3] = 'X';
-    result[len-4] = 'X'; result[len-5] = 'X';  result[len-6] = 'X';
-
-    fd = mkstemp(result);
-    if (fd == -1)
-		return NULL;
-    else {
-		/* we are required to generate the name, but mkstemp actually      */
-		/* creates an empty file                                           */
-		unlink(result); 
-		close(fd); 
-		return result;
-    }
-#else
-    return tmpnam( (char*)0 );
-#endif
-#endif
-}
-
 
 /****************************************************************************
 **

@@ -11,13 +11,13 @@
 #include        "integer.h"             /* arbitrary size integers         */
 #include        "scanner.h"             /* Pr()                            */
 #include        "objects.h"
+#include        "read.h"
 #include		"string4.h"
 #include        "integer4.h"
 #include        "namespaces.h"
 #include        "record.h"
 #include        "function.h"            /* ChangeEnv()                     */
 #include        "spiral_fft.h"
-#include        "spiral_spl_prog.h"
 #include        "spiral_delay_ev.h"
 #include        "spiral_bag_list.h"
 #include        "statemen.h"
@@ -50,29 +50,17 @@ Bag     HdListClass = 0;          /* used by Fun_ObjId()              */
 **  ized to a valid string. maxLen should  contain the  available storage  of
 **  SyLibName.
 */
-void            InitLibName (char *progname, char *SyLibname, int maxLen)
+void  InitLibName (char *progname, char *SyLibname, int maxLen)
 {
     char *lib_ptr;
     char *path_sep;
 
-    // InitSysConf(progname);	don't need, only sets pgm name, called directly below.
 	GuSysSetProgname("gap");
 	
     if(SyLibname[0] == '\0') {
-        /* read gap_lib_dir from configuration */
-		config_val_t * temp = config_demand_val("gap_lib_dir");
-		if (temp != NULL)
-			lib_ptr = temp->strval;
-		else
-			lib_ptr = "";
-
-		temp = config_demand_val("path_sep");
-		if (temp != NULL)
-			path_sep = temp->strval;
-		else
-			path_sep = "";
-
-        strncat( SyLibname, lib_ptr, maxLen - strlen(SyLibname)-2 );
+        lib_ptr = getenv("SPIRAL_GAP_LIB_DIR");
+        path_sep = PathSep();
+		strncat( SyLibname, lib_ptr, maxLen - strlen(SyLibname)-2 );
         strncat( SyLibname, path_sep, maxLen - strlen(SyLibname)-2 );
     }
 }
@@ -757,33 +745,6 @@ Obj  FunBagsOfType ( Obj hdCall ) {
 }
 
 
-
-/****************************************************************************
-**
-*F  SetEnv( <name>, <value> ) . . . . . . . . .  set the environment variable
-**
-*/
-Bag       FunSetEnv (Bag hdCall)
-{
-    char * usage = "usage: SetEnv( <name>, <value> )";
-    Bag hdName;
-    Bag hdValue;
-    char * name;
-    char * value;
-
-    /* get and check the argument                                          */
-    if ( GET_SIZE_BAG(hdCall) != 3 * SIZE_HD )  return Error(usage, 0,0);
-    hdName = EVAL( PTR_BAG(hdCall)[1] );
-    hdValue = EVAL( PTR_BAG(hdCall)[2] );
-    if( GET_TYPE_BAG(hdName) != T_STRING ) return Error(usage,0,0);
-    if( GET_TYPE_BAG(hdValue) != T_STRING ) return Error(usage,0,0);
-
-    name = (char*) PTR_BAG(hdName);
-    value = (char*) PTR_BAG(hdValue);
-
-    return INT_TO_HD(GuSysSetenv(name, value, 1));
-}
-
 /****************************************************************************
 **
 *F  GetEnv( <name> ) . . . . . . . . . . . . . . get the environment variable
@@ -1017,7 +978,7 @@ Obj FunPathRelativeToSPIRAL( Obj hdCall ) {
      hdPath = EVAL( PTR_BAG(hdCall)[1] );
      if( GET_TYPE_BAG(hdPath) != T_STRING ) return Error(usage,0,0);
      path = strdup( (char*) PTR_BAG(hdPath) );
-     spiral_dir = config_demand_val("spiral_dir")->strval;
+     spiral_dir = getenv("SPIRAL_DIR");
 
      /* strip install directory */
      if ( strncmp(path, spiral_dir, strlen(spiral_dir)) == 0 ) {
@@ -1240,6 +1201,59 @@ Bag  FunFindRefs( Bag hdCall ) {
     return Error(usage, 0,0);
 }
 
+/****************************************************************************
+**
+*F  ReadVal( <fname> ) . . . . . . . . .  read a single GAP value from a file
+**
+*/
+
+extern void yypush_new_buffer_state();
+extern void yypop_buffer_state();
+
+int isReadValFromFile;
+int addEndOfLineOnlyOnce;
+
+Bag ReadValFromFile(char* fname)
+{
+    Bag hdResult;
+    /* Read and evaluate test output from temporary file                   */
+    isReadValFromFile = 1;
+    addEndOfLineOnlyOnce = 1;
+    int res = OpenInput(fname);
+    if (res == 0) {
+        return HdFalse;
+    }
+    yypush_new_buffer_state();
+    hdResult = ReadIt();
+    if (hdResult != NULL) {
+        hdResult = EVAL(hdResult);
+    }
+    if (hdResult == NULL || hdResult == HdVoid) {
+        hdResult = HdFalse;
+    }
+    yypop_buffer_state();
+    CloseInput();
+    isReadValFromFile = 0;
+    addEndOfLineOnlyOnce = 0;
+    return hdResult;
+}
+
+Bag FunReadVal(Bag hdCall)
+{
+    char* usage = "usage: ReadVal( <fname> )";
+    Bag hdFname;
+    char* fname;
+
+    /* get and check the argument                                          */
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) return Error(usage, 0, 0);
+    hdFname = EVAL(PTR_BAG(hdCall)[1]);
+    if (GET_TYPE_BAG(hdFname) != T_STRING)
+        return Error(usage, 0, 0);
+
+    fname = (char*)PTR_BAG(hdFname);
+    return ReadValFromFile(fname);
+}
+
 
 extern Bag       HdBases;
 extern Bag*   _FindRecnameRec_nobases ( Bag hdRec, Bag hdField );
@@ -1332,7 +1346,7 @@ Obj FunIsWindows(Obj hdCall) {
 **
 **  'InitSPIRAL' initializes packages needed by SPIRAL
 */
-extern void Init_sys_conf();
+extern void Init_GAP_Utils();
 extern void Init_types();
 extern void Init_Double();
 extern void Init_Complex();
@@ -1340,12 +1354,12 @@ extern void Init_Complex();
 void            InitSPIRAL (void) {
     InitSPIRAL_Paths();
     InitSPIRAL_FFT();
-    InitSPIRAL_SPLProg();
     InitSPIRAL_DelayEv();
     InitSPIRAL_BagList();
     Init_Double();
     Init_Complex();
     Init_types();
+    Init_GAP_Utils();
     /**/ GlobalPackage2("spiral", "util"); /**/
     InitGlobalBag( &HdListClass, "HdListClass" );
     InstIntFunc( "Apropos",          FunApropos );
@@ -1384,7 +1398,6 @@ void            InitSPIRAL (void) {
     InstIntFunc( "WinPathFixSpaces", FunWinPathFixSpaces);
 	InstIntFunc( "WinShortPathName", FunWinShortPathName);
 
-    InstIntFunc( "SetEnv",  FunSetEnv );
     InstIntFunc( "GetEnv",  FunGetEnv );
 
     InstIntFunc( "Props",              FunProps);
@@ -1401,19 +1414,16 @@ void            InitSPIRAL (void) {
     InstIntFunc( "Try",  FunTry);
     InstIntFunc( "EditDef", FunEditDef);
     InstIntFunc( "FindRefs", FunFindRefs);
+    InstIntFunc( "ReadVal", FunReadVal);
     
     InstIntFunc( "_ObjId", Fun_ObjId);
 
 	InstIntFunc("Exit", FunExit);
 
-    /**/ EndPackage(); /**/
-
     GuSysSetProgname("gap");
     GuSysSetExitFunc(ErrorExit);
 
-    /**/ GlobalPackage2("spiral", "sys_conf"); /**/
-	Init_sys_conf();
-    /**/ EndPackage(); /**/
+
 }
 
 /****************************************************************************

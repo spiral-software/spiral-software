@@ -3,13 +3,7 @@
 ##  Copyright (c) 2018-2021, Carnegie Mellon University
 ##  See LICENSE for details
 
-SPIRAL_DIR := Conf("spiral_dir");
-if ContainsElement(SPIRAL_DIR, ' ') then
-	tmpnspdir := WinShortPathName(SPIRAL_DIR);
-	if IsString(tmpnspdir) and Length(tmpnspdir) > 0 then
-		SPIRAL_DIR := tmpnspdir;
-	fi;
-fi;
+
 
 SPIRAL_PATHS := [  SPIRAL_DIR :: PATH_SEP :: "namespaces", "." ];
 
@@ -49,7 +43,7 @@ _Load := function(path, pkg)
     local init, dir, file, file_candidates, dir_candidates, ext, top, i, found;
 
     file_candidates := List(Concat(SPIRAL_PATHS, PACKAGES_PATHS, SPIRAL_LOAD_PATHS), base -> Concat(base, path, ".g"));
-    dir_candidates := List(Concat(SPIRAL_PATHS, PACKAGES_PATHS, SPIRAL_LOAD_PATHS), base -> Concat(base, path, Conf("path_sep")));
+    dir_candidates := List(Concat(SPIRAL_PATHS, PACKAGES_PATHS, SPIRAL_LOAD_PATHS), base -> Concat(base, path, PATH_SEP));
 
     if Global.LoadStack <> [] then
 		top := Last(Global.LoadStack);
@@ -67,7 +61,7 @@ _Load := function(path, pkg)
 
     for file in file_candidates do
 		InfoRead1( "#I  Load tries \"", file, "\"\n" );
-		if sys_exists(file)=1 and READ(file, pkg) then 
+		if FileExists(file)=1 and READ(file, pkg) then 
 			pkg.__file__ := file;
 			RemoveLast(Global.LoadStack, 1);
 			return file; 
@@ -79,7 +73,7 @@ _Load := function(path, pkg)
 		InfoRead1( "#I  Load tries (dir) \"", file, "\"\n" );
 		pkg.__files__ := [ file ];
 		pkg.__dir__ := dir;
-		if sys_exists(file)=1 and READ(file, pkg) then 
+		if FileExists(file)=1 and READ(file, pkg) then 
 			RemoveLast(Global.LoadStack, 1);
 			return file; 
 		fi;	
@@ -98,7 +92,7 @@ _Include := function(path, pkg)
     local file;
 
     file := path :: ".gi"; InfoRead1( "#I  Include tries \"", file, "\"\n" );
-    if sys_exists(file)=1 then 
+    if FileExists(file)=1 then 
         if READ(file, pkg) then 
             Add(pkg.__files__, file);
             return file; 
@@ -128,7 +122,7 @@ _LoadRedirect := function(path, pkg)
 		pkg.__packages__ := [];
     fi;
 
-    if sys_exists(file)=1 then 
+    if FileExists(file)=1 then 
 		Local.__dir__ := path :: PATH_SEP;
         if READ(file, pkg) then 
             Add(pkg.__files__, file);

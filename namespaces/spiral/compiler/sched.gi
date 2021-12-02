@@ -201,8 +201,8 @@ end;
 OutputDag := function(dag, file)
   if PRINTDAG then 
     PrintTo("temp", PrintDag(dag, false));
-    SYS_EXEC(Concat("dot -Tps -o",file," temp"));   
-    SYS_EXEC("rm temp");
+    Exec(Concat("dot -Tps -o",file," temp"));   
+    Exec("rm temp");
   fi;
 end;
 
@@ -583,23 +583,23 @@ FFTWScheduleAssignments := function(chain_obj)
 
   if PRINTDAG then   
     PrintTo("SA_dag", PrintDag(dag, false));
-    SYS_EXEC("dot -Tps -odag.ps SA_dag");
-    SYS_EXEC("rm SA_dag");
+    Exec("dot -Tps -odag.ps SA_dag");
+    Exec("rm SA_dag");
 
     PrintTo("SA_dag", PrintDag(dag, true));
-    SYS_EXEC("dot -Tps -oorder.ps SA_dag");
-    SYS_EXEC("rm SA_dag");
+    Exec("dot -Tps -oorder.ps SA_dag");
+    Exec("rm SA_dag");
 
     PrintTo("SA_pdag", PrintDag(pdag, false));
-    SYS_EXEC("dot -Tps -opdag.ps SA_pdag");
-    SYS_EXEC("rm SA_pdag");
+    Exec("dot -Tps -opdag.ps SA_pdag");
+    Exec("rm SA_pdag");
 
     PrintTo("SA_oldschedule", chain_obj);
     PrintTo("SA_newschedule", schedule);  
 
     PrintTo("SA_order", PrintDag(pdag, true));
-    SYS_EXEC("dot -Tps -oporder.ps SA_order");
-    SYS_EXEC("rm SA_order");
+    Exec("dot -Tps -oporder.ps SA_order");
+    Exec("rm SA_order");
   fi;
 
   return schedule; 
@@ -618,15 +618,15 @@ RandomScheduleAssignments := function(chain_obj)
 
   if PRINTDAG then 
     PrintTo("SA_dag", PrintDag(dag, false));
-    SYS_EXEC("dot -Tps -ordag.ps SA_dag");
-    SYS_EXEC("rm SA_dag");
+    Exec("dot -Tps -ordag.ps SA_dag");
+    Exec("rm SA_dag");
 
     PrintTo("SA_oldschedule", chain_obj);
     PrintTo("SA_newschedule", schedule);  
 
     PrintTo("SA_dag", PrintDag(dag, true));
-    SYS_EXEC("dot -Tps -ororder.ps SA_dag");
-    SYS_EXEC("rm SA_dag");
+    Exec("dot -Tps -ororder.ps SA_dag");
+    Exec("rm SA_dag");
 
   fi;
 

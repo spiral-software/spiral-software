@@ -669,7 +669,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			parent = Input;
 
 #ifdef _DEBUG
-            debugActive = true;
+            debugActive = 1;
 #else
             debugActive = (InDebugMode != 0);
 #endif
@@ -1499,30 +1499,6 @@ Bag       FunSizeScreen (Bag hdCall)
 
 /****************************************************************************
 **
-*F  FunTmpName( <hdCall> )  . . . . . . . . . . . internal function 'TmpName'
-**
-**  'TmpName()' returns a file names that can safely be used for a temporary
-**  file.  It returns 'false' in case of failure.
-*/
-Bag	FunTmpName (Bag hdCall)
-{
-    Bag       hdStr;
-    char          * str;
-
-    if ( GET_SIZE_BAG(hdCall) != SIZE_HD )
-	return Error( "usage: TmpName()", 0, 0 );
-    str = SyTmpname();
-    if ( str == (char*)0 )
-	return HdFalse;
-    hdStr = NewBag( T_STRING, strlen(str)+1 );
-    *((char*)PTR_BAG(hdStr)) = 0;
-    strncat( (char*)PTR_BAG(hdStr), str, strlen(str) );
-    return hdStr;
-}
-
-
-/****************************************************************************
-**
 *F  FunIsIdentical( <hdCall> )  . . . . . . . internal function 'IsIdentical'
 **
 **  'FunIsIdentical' implements 'IsIdentical'
@@ -2088,7 +2064,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     InstIntFunc( "IntExec",     FunIntExec     );
     InstIntFunc( "Runtime",     FunRuntime     );
     InstIntFunc( "SizeScreen",  FunSizeScreen  );
-    InstIntFunc( "TmpName",     FunTmpName     );
     InstIntFunc( "IsIdentical", FunIsIdentical );
     InstIntFunc( "HANDLE",      FunHANDLE      );
     InstIntFunc( "OBJ",         FunOBJ         );
@@ -2101,7 +2076,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
 
     InstIntFunc( "WeakRef",     FunWeakRef   );
     InstIntFunc( "TabToList",   FunTabToList );
-    /*N  15-Jan-91 martin this function should not be here                 */
     InstIntFunc( "CoefficientsInt", FunCoefficients );
 
 	InitMemMgrFuncs();

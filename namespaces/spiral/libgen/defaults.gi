@@ -3,7 +3,7 @@
 # See LICENSE for details
 
 
-#Concatenation(Conf("spiral_dir"), Conf("path_sep"), "libgen", Conf("path_sep"), 
+#Concatenation(SPIRAL_DIR, PATH_SEP, "libgen", PATH_SEP, 
 
 #F InitLibgen(<opts>)
 #F  opts must have a .libgen field.
@@ -65,8 +65,8 @@ LibgenDefaultsMixin := rec(
 
 	bases := _bases(34),
 	basesUnrolling := 2^16, 
-        basesHashFile := let(p:=Conf("path_sep"), 
-            Concat(Conf("spiral_dir"), p, "spiral", p, "libgen", p, "realbases.hash")),
+        basesHashFile := let(p:=PATH_SEP, 
+            Concat(SPIRAL_DIR, p, "spiral", p, "libgen", p, "realbases.hash")),
 	basesBreakdowns := rec(
 	    DFT    := [DFT_Base, DFT_CT, DFT_GoodThomas, DFT_PD, DFT_Rader],
 	    PRDFT  := [PRDFT1_Base2, PRDFT1_CT, PRDFT1_PF, PRDFT_Rader, PRDFT_PD],
@@ -95,8 +95,8 @@ CplxLibgenDefaults := CopyFields(CplxSpiralDefaults, LibgenDefaultsMixin, rec(
 	InfoNt := [Info_Base]),
     libgen := CopyFields(Copy(LibgenDefaultsMixin.libgen), rec(
 	bases := List([1..5], x->DFT(2^x)), 
-        basesHashFile := let(p:=Conf("path_sep"), 
-            Concat(Conf("spiral_dir"), p, "spiral", p, "libgen", p, "cplxbases.hash")),
+        basesHashFile := let(p:=PATH_SEP, 
+            Concat(SPIRAL_DIR, p, "spiral", p, "libgen", p, "cplxbases.hash")),
 	basesBreakdowns := rec(
 	    DFT    := [DFT_Base, DFT_PRDFT],
 	    PRDFT  := [PRDFT1_Base1, PRDFT1_Base2, PRDFT1_CT, PRDFT1_PF, PRDFT_PD, PRDFT_Rader],

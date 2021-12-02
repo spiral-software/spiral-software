@@ -11,9 +11,9 @@ GAP_DIR=$SPIRAL/gap
 GAP_MEM=@SPIRAL_MEMORY_POOL@
 
 export SPIRAL_CONFIG_TMP_DIR="/tmp/spiraltmp"
-export SPIRAL_CONFIG_SPIRAL_DIR="$SPIRAL"
+export SPIRAL_DIR="$SPIRAL"
 export SPIRAL_CONFIG_EXEC_DIR="/usr/local/bin"
-export SPIRAL_CONFIG_PATH_SEP="/"
+
 
 ##  Setup PROFILER_LOCAL_ARGS with the target used for CMeasure & CMatrix measurements
 ##  Don't specify target so can set target in script options:  --target @PROFILER_TARGET@"

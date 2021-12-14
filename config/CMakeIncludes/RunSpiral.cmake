@@ -23,10 +23,10 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 ##  SPIRAL/GAP shell script name
 if (WIN32)
-    file (TO_NATIVE_PATH ${SPIRAL_SOURCE_DIR}/spiral.bat SPIRAL_SCRIPT )
+    file (TO_NATIVE_PATH ${SPIRAL_SOURCE_DIR}/bin/spiral.bat SPIRAL_SCRIPT )
 else ()
     include(FindUnixCommands)
-    file (TO_NATIVE_PATH ${SPIRAL_SOURCE_DIR}/spiral SPIRAL_SCRIPT )
+    file (TO_NATIVE_PATH ${SPIRAL_SOURCE_DIR}/bin/spiral SPIRAL_SCRIPT )
 endif ()
 
 function (create_source_file input target)

@@ -40,7 +40,7 @@ be skipped.
 NOTE: Even if your system has no CUDA support **spiral** can still generate CUDA code (it just
 cannot be compiled and tested).
 
-Use the **spiral** script in the top directory to start SPIRAL.  You can run it from that directory
+Use the **spiral** script in the ```bin``` directory to start SPIRAL.  You can run it from that directory
 or set your path to include it and run **spiral** from elsewhere.  The actual executable is
 ```gap/bin/gap```, but it must be started with the **spiral** script in order to intialize and run
 correctly.
@@ -89,7 +89,7 @@ Use **spiral.bat** to launch Spiral.  You can create a shortcut to it (right cli
 shortcut) and move the shortcut to a convenient location, like the Desktop, renaming it if you
 desire.  Then you can edit the shortcut's properties (right click -> Properties) and set **Start
 in** to some directory other than the repository root.  The **Start in** directory is the default
-location for SPIRAL to write generated files.  You can also add the top directory of the SPIRAL
+location for SPIRAL to write generated files.  You can also add the top ```bin``` directory of the SPIRAL
 source tree to your path and run the batch script as **spiral** from a command window or script.
 
 To debug SPIRAL on Windows, build and install the Debug version, use **spiral_debug.bat** to start

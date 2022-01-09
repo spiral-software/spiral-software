@@ -30,7 +30,8 @@ for val in fils:
 cmdstr = cmdstr + '| ' + gap_exe
 ##  print ( cmdstr )
 
-spiral_path = os.getenv('SPIRAL_HOME', default=gap_dir)
+spiral_home_dflt = os.path.join(gap_dir, "..")
+spiral_path = os.getenv('SPIRAL_HOME', default=spiral_home_dflt)
 if sys.platform == 'win32':
     checkgpustr = spiral_path + '/gap/bin/checkforGpu.exe'
 else:

@@ -36,8 +36,7 @@ set (_p3_good FALSE)
 find_package (Python3 COMPONENTS Interpreter)
 if (${Python3_FOUND})
     ##  compare version ...
-    string (COMPARE LESS ${Python3_VERSION} ${Python3_MIN_REQUIRED_VERSION} _p3_old)
-    if (${_p3_old})
+    if (${Python3_VERSION} VERSION_LESS ${Python3_MIN_REQUIRED_VERSION})
 	##  Python3 version found is less than minimum required -- too old
 	message (STATUS "Found Python3: Version = ${Python3_VERSION}, Less than required version ${Python3_MIN_REQUIRED_VERSION}, do basic tests ONLY")
     else ()

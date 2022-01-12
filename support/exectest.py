@@ -21,16 +21,8 @@ fils = sys.argv[3:3+nscrpt]             ## all args after name and gap_exe
 ##  print ( sys.argv[0] + ': gap_exe = ' + gap_exe + ' gpu-required-flag = ' + gpu_flag + ' and ' + str(nscrpt) + ' input files: ' )
 ##  print ( fils )
 
-##  build a command string like this: cat gap_fil1 ... gap_filN | gap_exe
-
-cmdstr = 'cat '
-for val in fils:
-    cmdstr = cmdstr + val + ' '
-
-cmdstr = cmdstr + '| ' + gap_exe
-##  print ( cmdstr )
-
-spiral_path = os.getenv('SPIRAL_HOME', default=gap_dir)
+spiral_home_dflt = os.path.join(gap_dir, "..")
+spiral_path = os.getenv('SPIRAL_HOME', default=spiral_home_dflt)
 if sys.platform == 'win32':
     checkgpustr = spiral_path + '/gap/bin/checkforGpu.exe'
 else:
@@ -49,7 +41,8 @@ if (gpu_flag == 'True' or gpu_flag == 'true' or gpu_flag == 'TRUE'):
     ##  else:
     ##      print ( 'A GPU was found -- run the test' )
 
-result = subprocess.run ( cmdstr, shell=True, check=True )
+concat = ''.join([open(f).read() for f in fils])
+result = subprocess.run( gap_exe, input=concat, encoding='ascii', shell=True, check=True )
 res = result.returncode
 
 if (res != 0):

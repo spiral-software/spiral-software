@@ -11,4 +11,3 @@ Include(misc);
 Include(code);
 Include(unparse);
 Include(isa);
-Include(bench);

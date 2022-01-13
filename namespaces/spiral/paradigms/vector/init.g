@@ -36,5 +36,3 @@ Load(spiral.paradigms.vector.breakdown);
 Load(spiral.paradigms.vector.rewrite);
 
 Include(initfuncs);
-Include(bench);
-Include(experiments);

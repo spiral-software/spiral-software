@@ -53,7 +53,6 @@ Include(test);
 
 Load(spiral.sym);
 
-Include(bench);
 Include(debug);
 
 

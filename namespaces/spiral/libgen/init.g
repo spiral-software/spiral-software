@@ -19,4 +19,5 @@ Include(codegen);
 
 Include(defaults);
 Include(recgt);
+Include(recvector);
 

@@ -53,7 +53,6 @@ Include(test);
 
 Load(spiral.sym);
 
-Include(bench);
 Include(debug);
 
 
@@ -65,7 +64,6 @@ spiral.formgen := formgen;
 spiral.sigma := sigma;
 spiral.compiler := compiler;
 spiral.libgen := libgen;
-#spiral.web := web;
 spiral.platforms := platforms;
 spiral.paradigms := paradigms;
 spiral.profiler := profiler;

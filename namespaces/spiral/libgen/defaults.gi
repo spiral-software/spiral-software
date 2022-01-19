@@ -18,13 +18,6 @@ InitLibgen := function(opts)
             breakdownRules  := opts.libgen.basesBreakdowns, 
             hashFile        := opts.libgen.basesHashFile,
             benchTransforms := opts.libgen.bases));
-
-    bench:= CopyFields(DPBench(rec(bases := base_opts), rec(verbosity:=0)), 
-                       rec(generateCfiles := false, generateSums := true, matrixVerify := false));
-    bench.resumeAll();
-
-    opts.libgen.baseBench := bench;
-    opts.baseHashes := Concatenation(opts.baseHashes, [ CreateRecursBaseHash(bench.exp.bases.hashTable) ]);
     return opts;
 end;
 

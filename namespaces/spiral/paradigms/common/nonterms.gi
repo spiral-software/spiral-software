@@ -233,7 +233,6 @@ Class(TL, Tagged_tSPL_Container, rec(
     transpose := self >> TL(self.params[1], self.params[1]/self.params[2], self.params[3], self.params[4]).withTags(self.getTags()),
     isReal := self >> true,
     noCodelet := true,
-    # need that for DPBench!
     doNotMeasure := true,
     transposeSymmetric := False,
     isSymmetric := self >> self.params[2]^2 = self.params[1],

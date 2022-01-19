@@ -5,4 +5,4 @@
 Import(paradigms.vector);
 
 Include(ia);
-Include(core2);
+

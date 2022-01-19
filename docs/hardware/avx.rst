@@ -654,28 +654,6 @@ ISA Definition file ties everyting together
 	));
 
 
-Vector Benchmarking Infrastructure
-++++++++++++++++++++++++++++++++++
-
-LocalConfig provides unit tests.
-
-.. code-block:: none
-
-LocalConfig.bench;
-
-	Create a test and run it.
-
-.. code-block:: none
-
-	dpbench := LocalConfig.bench.AVX().4x64f.1d.dft_ic.medium();
-	dpbench.runAll();
-
-
-
-
-
-
-
 
 
 

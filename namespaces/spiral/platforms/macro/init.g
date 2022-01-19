@@ -9,5 +9,4 @@ Import(platforms.sse);
 Include(code);
 Include(unparse);
 Include(isa);
-Include(bench);
 

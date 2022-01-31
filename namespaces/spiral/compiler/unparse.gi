@@ -439,8 +439,8 @@ Class(CUnparserBase, Unparser, rec(
     bin_or := (self,o,i,is) >> Print("((", self.pinfix(List(o.args, x -> When(IsPtrT(x.t), tcast(TSym("size_t"),x) ,x)), ")|("), "))"),
     bin_xor := (self,o,i,is) >> Print("((", self(o.args[1],i,is), ")^(", self(o.args[2],i,is),"))"),
 	
-	bin_shl := (self,o,i,is) >> self.pinfix(o.args, "\<\<"),
-	bin_shr := (self,o,i,is) >> self.pinfix(o.args, ">>"),
+	bin_shl := (self,o,i,is) >> self.pinfix(o.args, " << "),
+	bin_shr := (self,o,i,is) >> self.pinfix(o.args, " >> "),
 
     abs := (self,o,i,is) >> Print("abs(", self(o.args[1],i,is), ")"),
 

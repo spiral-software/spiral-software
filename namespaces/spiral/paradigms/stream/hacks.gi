@@ -3,15 +3,6 @@
 # See LICENSE for details
 
 
-# DebugRewriting(true);
-# spiral.rewrite.RuleTrace := PrintLine;
-# spiral.rewrite.RuleStatus := Print;
-
-# s := SumsRuleTree(DFT(3), SpiralDefaults);
-# RecursiveFindBug(s, SpiralDefaults, (t,opts) -> t.free()=[]);
-# CompareCodeMat
-
-
 # If set to 1, the permutations will not use the patented
 # streaming permutation structures.
 avoidPermPatent := 0;  

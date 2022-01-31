@@ -52,7 +52,6 @@ Include(cgstrat);
 Include(unparse);
 
 Include(datatype);
-Include(bug);
 Include(vref);
 Include(regalloc);
 Include(two_op);

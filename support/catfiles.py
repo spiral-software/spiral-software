@@ -22,24 +22,10 @@ if os.path.exists(dest):
 nscrpt = len(sys.argv) - 2
 fils = sys.argv[2:2+nscrpt]             ## all args after name and dest
 
-##  print ( sys.argv[0] + ': dest = ' + dest + ' and ' + str(nscrpt) + ' input files: ' )
-##  print ( fils )
+concat = ''.join ( [open(f).read() for f in fils] )
+fconc  = open ( dest, 'w' )
+fconc.write ( concat )
+fconc.close ()
 
-##  build a command string like this: cat input1 ... inputN > dest
-
-cmdstr = 'cat '
-for val in fils:
-    cmdstr = cmdstr + val + ' '
-
-cmdstr = cmdstr + '> ' + dest
-##  print ( cmdstr )
-
-result = subprocess.run ( cmdstr, shell=True, check=True )
-res = result.returncode
-
-if (res != 0):
-    print ( result )
-    sys.exit ( res )
-
-sys.exit ( res )
+sys.exit ( 0 )
 

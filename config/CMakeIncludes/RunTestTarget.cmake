@@ -9,10 +9,10 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 ##  GAP shell script name
 if (WIN32)
-    file (TO_NATIVE_PATH ${SPIRAL_SOURCE_DIR}/spiral.bat TEST_GAP_EXEC_NAME )
+    file (TO_NATIVE_PATH ${SPIRAL_SOURCE_DIR}/bin/spiral.bat TEST_GAP_EXEC_NAME )
 else ()
     include(FindUnixCommands)
-    file (TO_NATIVE_PATH ${SPIRAL_SOURCE_DIR}/spiral TEST_GAP_EXEC_NAME )
+    file (TO_NATIVE_PATH ${SPIRAL_SOURCE_DIR}/bin/spiral TEST_GAP_EXEC_NAME )
 endif ()
 
 ##  Define a function to add a test target, given a test name, a current
@@ -38,7 +38,6 @@ function (RunTestTarget _gpu_reqd testname exdir)
     
     if (BASH)
         add_test (NAME ${testname}
-	    ##           COMMAND ${BASH} -c "cat ${_cat_fils} | ${TEST_GAP_EXEC_NAME}"
 	    COMMAND ${Python3_EXECUTABLE} ${SPIRAL_SOURCE_DIR}/gap/bin/exectest.py
 	            ${_gpu_reqd} ${TEST_GAP_EXEC_NAME} ${_cat_fils}
         )

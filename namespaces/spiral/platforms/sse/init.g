@@ -12,5 +12,4 @@ Include(unparse);
 Include(sreduce);
 Include(isa);
 Include(cvt);
-Include(bench);
 Include(bitcode);

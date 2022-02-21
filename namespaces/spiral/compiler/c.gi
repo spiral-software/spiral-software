@@ -324,32 +324,9 @@ end;
 
 CGen:=CGenScalarANSI_C;
 
-# CGenDMP is set to a dummy-value here.
-# Will be set to DMPUnparser.gen as soon as this is defined
-# CGenDMP:=CGenScalarANSI_C;
 
-CRuntimeTest := function ( testFunc, cmd, opts )
-    local prog, result, cgenFunc;
-    opts := Copy(opts);
-    Constraint(IsCommand(cmd));
-    Constraint(IsRec(opts));
-    if not IsBound(opts.dataType) then 
-	    opts.dataType := "real"; 
-	fi;
-    opts := DeriveSPLOptions(cmd, opts);
-    prog := ProgSPL(cmd, opts);
-    prog.type := ProgInputType.TargetSource;
 
-    cgenFunc := When(IsBound(opts.unparser), (f, cmd) -> opts.unparser.gen(f, cmd, opts), CGen);
-    PrintTo(prog.file, cgenFunc(prog.sub_name, cmd));
-    result := testFunc(cmd, opts, prog);
 
-    if IsBool(result) and result=false then
-        Error("Compiled code execution failed, offending program kept in '", prog.file, "'");
-    else
-        return result;
-    fi;
-end;
 
 
 Declare(CodeRuleTreeOpts);

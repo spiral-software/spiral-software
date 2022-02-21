@@ -3,6 +3,17 @@
 #  Copyright (c) 2018-2021, Carnegie Mellon University
 #  See LICENSE for details
 
-TEMPDIR=$PWD
+##  Use cmake to build the project (PROJECT=rdtsc_time) for C language (SUFFIX=c) 
 
-make -R -C ../../targets/darwin-x86 GAP="$TEMPDIR/testcode.c" STUB="$TEMPDIR/testcode.h" CC="gcc" CFLAGS="-O2 -Wall -fomit-frame-pointer -march=native -std=c99" OUTDIR="$TEMPDIR" -s > time.txt
+TEMPDIR=$PWD
+cp -f ../../targets/common/CMakeLists.txt $TEMPDIR/CMakeLists.txt
+rm -rf build && mkdir build && cd build
+cmake -DPROJECT:STRING=rdtsc_time -DSUFFIX:STRING=c -DEXFLAGS:STRING=-march\=native .. > /dev/null
+make install > /dev/null
+cd ..
+
+if [ -f ./rdtsc_time ]; then
+    ./rdtsc_time > time.txt
+else
+    touch time.txt
+fi

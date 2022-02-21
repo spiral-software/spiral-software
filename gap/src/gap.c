@@ -43,7 +43,6 @@
 #include        "namespaces.h"          /* InitNamespaces                  */
 #include        "args.h"
 
-#include        "interface.h"           /* New Spiral Interface            */
 #include        "iface.h"               
 #include        "tables.h"
 #include        "debug.h"
@@ -52,9 +51,6 @@
 
 extern Bag                  HdStack;
 extern UInt        TopStack;
-
-int CURR_INTERFACE = DEFAULT_INTERFACE;
-int LAST_INTERFACE = DEFAULT_INTERFACE;
 
 int ERROR_QUIET = 0;
 int BACKTRACE_DEFAULT_LEVEL = 5;
@@ -110,27 +106,21 @@ Int         DbgInBreakLoop = 0;
 **  expression, evaluates it and prints the value.  This continues until  the
 **  end of the input file.
 */
+
+
+extern void  InitGap(int argc, char** argv, int* stackBase);
+
 int             main (int argc, char **argv)
 {
-    extern void         InitGap (int argc, char **argv, int *stackBase);
     exc_type_t          e;
+    int exec_status, i;
+    char input[4096];
+    char output[4096];
 
-   
-    /* Save this information to reset */
-    CURR_INTERFACE = DEFAULT_INTERFACE;
-    interface_save_args(argc, argv);
- 
-	/*************************************************************************/
-	/* printf("message from gap...\n");										 */
-	/* char *p;																 */
-	/* Int n = 50 * sizeof(char *);											 */
-	/* p = (char *)malloc(n);												 */
-	/* strcpy(p, "1234567890ABCDEF FEDCBA0987654321");						 */
-	/* printf("# bytes allocated = %d, ptr = %X, value = %s\n", n, p, p);	 */
-	/*************************************************************************/
+    for (i = 0; i < 4096; ++i) {
+        input[i] = output[i] = 0;
+    }
 
-	GapRunTime.gap_start = clock();
-	
     Try {
 		/* initialize everything                                             */
 		InitGap( argc, argv, &argc );
@@ -139,6 +129,8 @@ int             main (int argc, char **argv)
 		exc_show();
 		return 1;
     }
+
+    GapRunTime.gap_start = SyTime();
 
     Try { 
 		HookSessionStart(); 
@@ -158,8 +150,11 @@ int             main (int argc, char **argv)
     /* Load static history buffer */
     SyLoadHistory();
  
-    /* Start Interface Main Evaluation here */
-    start_interface(CURR_INTERFACE);
+    /* main evaluation loop */
+    exec_status = EXEC_SUCCESS;
+    while (exec_status != EXEC_QUIT) {
+        exec_status = execute(input, output);
+    }
  
     /* Write static history buffer */
     SySaveHistory();
@@ -179,14 +174,7 @@ int             main (int argc, char **argv)
 		}
     }
 
-	//  GapRunTime.gap_end = clock();
-	//  PrintRuntimeStats(&GapRunTime);
-	
-     /* exit to the operating system, the return is there to please lint    */
-    if (NrHadSyntaxErrors && (LAST_INTERFACE == ID_BATCH)) 
-        SyExit(SYEXIT_WITH_SYNTAX_ERRORS);
-    else
-        SyExit(SYEXIT_OK);
+    SyExit(SYEXIT_OK);
 
     return SYEXIT_OK;
 }
@@ -616,7 +604,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 	extern char         * In;
 	TypInputFile        * parent;
 	exc_type_t          e;
-	Int                isBreakpoint;
+	Int           isBreakpoint;
+    Int           debugActive;
 
 	if ( ! ERROR_QUIET ) {
 
@@ -679,8 +668,13 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 
 			parent = Input;
 
+#ifdef _DEBUG
+            debugActive = 1;
+#else
+            debugActive = (InDebugMode != 0);
+#endif
 			/* if requested enter a break loop                                     */
-			if ( HdExec != 0 && OpenInput( "*errin*" ) ) {
+			if ( HdExec != 0 && debugActive && OpenInput( "*errin*" ) ) {
 
 				if(parent->packages) PushPackages(parent->packages);
 				if(parent->imports) PushNamespaces(parent->imports);
@@ -697,11 +691,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }
 				/* now enter a read-eval-print loop, just as in main               */
 				while ( Symbol != S_EOF ) {
-					if (CURR_INTERFACE == ID_BATCH) {
-						/* inconsistency in interfaces: ReadIt ignoring interfaces,
-						quit from here if we are in batch interface */
-						SyExit(SYEXIT_FROM_BRK);
-					}
 					/* read an expression                                          */
 					if (InBreakpoint) {
 						Prompt = DbgPrompt; 
@@ -747,11 +736,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				/* remove function definitions from the stack and close "*errin*"  */
 				LeaveDbgStack();
 				ignore = CloseInput();
-			} else {
-				if (CURR_INTERFACE == ID_BATCH) {
-					/* quit with the first error */
-					SyExit(SYEXIT_FROM_BRK);
-				}
 			}
 
 			while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
@@ -813,146 +797,6 @@ Bag       FunError (Bag hdCall)
     return Error("FunError", (Int)hdCall, 0 );
 }
 
-
-/****************************************************************************
-**
-*F  FunWindowCmd( <hdCall> )  . . . . . . . . . . .  execute a window command
-*/
-Bag	FunWindowCmd (Bag hdCall)
-{
-    Bag       hdStr;
-    Bag       hdTmp;
-    Bag       hdCmd;
-    Bag       hdLst;
-    Int            len;
-    Int            n,  m;
-    Int            i;
-    char          * ptr;
-    char          * qtr;
-
-    /* check arguments                                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-	return Error( "usage: WindowCmd( <cmds> )", 0, 0 );
-    hdCmd = EVAL(PTR_BAG(hdCall)[1]);
-    if ( !IsList(hdCmd) )
-	return Error( "usage: WindowCmd( <cmds> )", 0, 0 );
-    hdTmp = ELM_LIST(hdCmd,1);
-    if ( GET_TYPE_BAG(hdTmp) != T_STRING )
-	return Error( "<cmd> must be a string", 0, 0 );
-    if ( GET_SIZE_BAG(hdTmp) != 4 )
-	return Error( "<cmd> is not a valid command", 0, 0 );
-
-    /* compute size needed to store argument string                        */
-    len   = 13;
-    hdLst = NewBag( T_LIST, (LEN_LIST(hdCmd)+1)*SIZE_HD );
-    for ( i = LEN_LIST(hdCmd);  1 < i;  i-- )
-    {
-	hdTmp = ELM_LIST(hdCmd,i);
-	if ( GET_TYPE_BAG(hdTmp) != T_INT && ! IsString(hdTmp) )
-	    return Error("%d.th argument must be a string or integer",i,0);
-	SET_BAG(hdLst, i,  hdTmp );
-	if ( GET_TYPE_BAG(hdTmp) == T_INT )
-	    len += 12;
-	else
-	    len += 5 + 2*GET_SIZE_BAG(hdTmp);
-    }
-
-    /* convert <hdCall> into an argument string                            */
-    hdStr  = NewBag( T_STRING, len + 13 );
-    ptr    = (char*) PTR_BAG(hdStr);
-    *ptr   = '\0';
-
-    /* first the command name                                              */
-    strncat( ptr, (char*)PTR_BAG(ELM_LIST(hdCmd,1)), 3 );
-    ptr += 3;
-
-    /* and at last the arguments                                           */
-    for ( i = 2;  i < GET_SIZE_BAG(hdLst)/SIZE_HD;  i++ )
-    {
-	hdTmp = PTR_BAG(hdLst)[i];
-	if ( GET_TYPE_BAG(hdTmp) == T_INT )
-	{
-	    *ptr++ = 'I';
-	    m = HD_TO_INT(hdTmp);
-	    for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
-		*ptr++ = (m%10) + '0';
-	    if ( HD_TO_INT(hdTmp) < 0 )
-		*ptr++ = '-';
-	    else
-		*ptr++ = '+';
-	}
-	else
-	{
-	    *ptr++ = 'S';
-	    m = GET_SIZE_BAG(hdTmp)-1;
-	    for ( n = 7;  0 <= n;  n--, m /= 10 )
-		*ptr++ = (m%10) + '0';
-	    qtr = (char*) PTR_BAG(hdTmp);
-	    for ( m = GET_SIZE_BAG(hdTmp)-1;  0 < m;  m-- )
-		*ptr++ = *qtr++;
-	}
-    }
-    *ptr = 0;
-
-    /* compute correct length of argument string                           */
-    qtr = (char*) PTR_BAG(hdStr);
-    len = (Int)(ptr - qtr);
-
-    /* now call the window front end with the argument string              */
-    ptr = SyWinCmd( qtr, len );
-    len = strlen(ptr);
-
-    /* now convert result back into a list                                 */
-    hdLst = NewBag( T_LIST, SIZE_PLEN_PLIST(11) );
-    SET_LEN_PLIST( hdLst, 0 );
-    i = 1;
-    while ( 0 < len )
-    {
-	if ( *ptr == 'I' )
-	{
-	    ptr++;
-	    for ( n=0,m=1; '0' <= *ptr && *ptr <= '9'; ptr++,m *= 10,len-- )
-			n += ((Int)(*ptr) - (Int)'0') * m;
-	    if ( *ptr++ == '-' )
-		n *= -1;
-	    len -= 2;
-	    AssPlist( hdLst, i, INT_TO_HD(n) );
-	}
-	else if ( *ptr == 'S' )
-	{
-	    ptr++;
-	    for ( n = 0, m = 7;  0 <= m;  m-- )
-			n = n*10 + ((Int)ptr[m] - (Int)'0');
-	    hdTmp = NewBag( T_STRING, n+1 );
-	    *(char*)PTR_BAG(hdTmp) = '\0';
-	    ptr += 8;
-	    strncat( (char*)PTR_BAG(hdTmp), ptr, n );
-	    ptr += n;
-	    len -= n+9;
-	    AssPlist( hdLst, i, hdTmp );
-	}
-	else
-	    return Error( "unknown return value '%s'", (Int)ptr, 0 );
-	i++;
-    }
-
-    /* if the first entry is one signal an error */
-    if ( ELM_LIST(hdLst,1) == INT_TO_HD(1) )
-    {
-	hdStr = NewBag( T_STRING, 30 );
-	strncat( (char*) PTR_BAG(hdStr), "window system: ", 15 );
-	SET_ELM_PLIST( hdLst, 1, hdStr );
-	Resize( hdLst, i*SIZE_HD );
-	return Error( "FunError", (Int)hdLst, 0 );
-    }
-    else
-    {
-	for ( m = 1;  m <= i-2;  m++ )
-	    SET_ELM_PLIST( hdLst,m, ELM_LIST(hdLst,m+1) );
-	SET_LEN_PLIST( hdLst, i-2 );
-	return hdLst;
-    }
-}
 
 
 /****************************************************************************
@@ -1655,30 +1499,6 @@ Bag       FunSizeScreen (Bag hdCall)
 
 /****************************************************************************
 **
-*F  FunTmpName( <hdCall> )  . . . . . . . . . . . internal function 'TmpName'
-**
-**  'TmpName()' returns a file names that can safely be used for a temporary
-**  file.  It returns 'false' in case of failure.
-*/
-Bag	FunTmpName (Bag hdCall)
-{
-    Bag       hdStr;
-    char          * str;
-
-    if ( GET_SIZE_BAG(hdCall) != SIZE_HD )
-	return Error( "usage: TmpName()", 0, 0 );
-    str = SyTmpname();
-    if ( str == (char*)0 )
-	return HdFalse;
-    hdStr = NewBag( T_STRING, strlen(str)+1 );
-    *((char*)PTR_BAG(hdStr)) = 0;
-    strncat( (char*)PTR_BAG(hdStr), str, strlen(str) );
-    return hdStr;
-}
-
-
-/****************************************************************************
-**
 *F  FunIsIdentical( <hdCall> )  . . . . . . . internal function 'IsIdentical'
 **
 **  'FunIsIdentical' implements 'IsIdentical'
@@ -2225,7 +2045,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     InstIntFunc( "Backtrace",  FunBacktrace  );
     InstIntFunc( "Backtrace2", FunBacktrace2 );
     InstIntFunc( "BacktraceTo",FunBacktraceTo);
-    InstIntFunc( "WindowCmd",  FunWindowCmd  );
 
     InstIntFunc( "READ",       FunREAD       );
     InstIntFunc( "READSTR",    FunReadString );
@@ -2245,7 +2064,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     InstIntFunc( "IntExec",     FunIntExec     );
     InstIntFunc( "Runtime",     FunRuntime     );
     InstIntFunc( "SizeScreen",  FunSizeScreen  );
-    InstIntFunc( "TmpName",     FunTmpName     );
     InstIntFunc( "IsIdentical", FunIsIdentical );
     InstIntFunc( "HANDLE",      FunHANDLE      );
     InstIntFunc( "OBJ",         FunOBJ         );
@@ -2258,7 +2076,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
 
     InstIntFunc( "WeakRef",     FunWeakRef   );
     InstIntFunc( "TabToList",   FunTabToList );
-    /*N  15-Jan-91 martin this function should not be here                 */
     InstIntFunc( "CoefficientsInt", FunCoefficients );
 
 	InitMemMgrFuncs();

@@ -26,6 +26,7 @@ Class(I, Sym, rec(
     printlatex := self >> Print(" \\one_{",self.params[1],"} "),
     area := self >> self.params[1],
     normalizedArithCost := self >> 0,
+	matElem := (self,r,c) >> Cond(r=c,1,0),
 ));
 
 #F -----------------------------------------------------------------------------
@@ -48,6 +49,8 @@ Class(O, BaseMat, rec(
 
     toAMat := self >> AMatMat(NullMat(
 	EvalScalar(self.params[1]), EvalScalar(self.params[2]))),
+		
+	matElem := (self,r,c) >> 0,
 
     print := Sym.print,
     dims  := self >> [ self.params[1], self.params[2] ],
@@ -67,6 +70,8 @@ Class(RI, Sym, rec(
 
     transpose := self >> ApplyFunc(self.__bases__[1], Reversed(self.params)),
     conjTranspose := self >> ApplyFunc(self.__bases__[1], Reversed(self.params)),
+	
+	matElem := (self,r,c) >> Cond(r=c,1,0),
 ));
 
 #F -----------------------------------------------------------------------------

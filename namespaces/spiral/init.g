@@ -23,9 +23,6 @@ Declare(CMatrix);
 Load(spiral.compiler);
 Global.compiler := spiral.compiler;
 
-Load(spiral.fpgen);
-
-
 Include(defaults);
 Include(perfstat);
 
@@ -56,9 +53,6 @@ Include(test);
 
 Load(spiral.sym);
 
-Load(spiral.scriptgen);
-
-Include(bench);
 Include(debug);
 
 
@@ -70,7 +64,6 @@ spiral.formgen := formgen;
 spiral.sigma := sigma;
 spiral.compiler := compiler;
 spiral.libgen := libgen;
-#spiral.web := web;
 spiral.platforms := platforms;
 spiral.paradigms := paradigms;
 spiral.profiler := profiler;

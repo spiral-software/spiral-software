@@ -16,10 +16,6 @@ RC        .isBlockTransitive := true; #!!!
 Include(signature);
 Include(codelet);
 Include(codegen);
-Include(hacks);
-
-Include(dpbench); # NOTE: move out, problem: uses CodeletName/CodeletShape
-Include(testbench);
 
 Include(defaults);
 Include(recgt);

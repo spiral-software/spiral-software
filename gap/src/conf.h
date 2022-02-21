@@ -18,19 +18,12 @@
 #endif
 
 #ifdef WIN32
-#define QUOTIFY_SHELL_COMMAND 1
-#define QUOTIFY_CHAR '\"'
 #ifndef _MSC_VER
 #define vsnprintf _vsnprintf
 #endif
 #define getcwd _getcwd
 #define __func__ __FUNCTION__
-#else
-/* #undef QUOTIFY_SHELL_COMMAND */
-#define QUOTIFY_CHAR '\''
 #endif
-
-#define DEFAULT_CONFIG_FILE "spiral.conf"
 
 #endif /* CONF_H_INCLUDED */
 

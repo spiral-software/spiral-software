@@ -7,7 +7,6 @@ Import(compiler, code, spl, rewrite, sigma, search, formgen, profiler);
 Import(paradigms, paradigms.common);
 
 #   benchmark infrastructure
-Include(bench);
 Include(vec_ir);
 
 # SIMD vector architectures

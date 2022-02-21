@@ -41,7 +41,7 @@ else ()
     find_package ( CUDAToolkit )
     if ( ${CUDAToolkit_FOUND} )
 	message ( STATUS "CUDA Toolkit Found : Version = ${CUDAToolkit_VERSION}" )
-	message ( STATUS "Enabled CUDA, rt library = ${CUDA::cudart}" )
+	message ( STATUS "Enabled CUDA, rt library = CUDA::cudart" )
 	message ( STATUS "CUDA include dirs = ${CUDAToolkit_INCLUDE_DIRS}" )
 	message ( STATUS "CUDA library dir = ${CUDAToolkit_LIBRARY_DIR}" )
 

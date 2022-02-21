@@ -11,13 +11,7 @@ Import(libgen); # asp_*
 Include(symmetries);
 Include(brdft);
 Include(rewrite);
-#Include(unproj);
-#Include(proj);
 Include(bruun);
-#Include(rft);
 Include(asp_algebra);
 Include(asp_basis);
 Include(asp_fourier);
-Include(urdft_example);
-
-#Load(sym.rft);

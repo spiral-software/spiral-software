@@ -1112,31 +1112,6 @@ PrintResetRuntimeStats := function()
 end;
 
 
-#F CheckFileExists (file, folder)
-#F     If <folder> is not "" look in <folder> under "spiral_dir" for <file>
-#F     otherwise, look for a file named <file>
-#F     Return True is found, otherwise, False
-
-CheckFileExists := function(file, folder)
-    local path, res, sep;
-    res := false;
-    
-    if file = "" then
-	PrintLine("Usage: CheckFileExists (<file>, <folder>); file name required");
-	return res;
-    fi;
-    if folder <> "" then
-	path := Conf("spiral_dir");
-        sep  := Conf("path_sep"); 
-        path := Concat(path, sep, folder, sep, file);
-    else
-	path := file;
-    fi;
-
-    if sys_exists(path) <> 0 then res := true; else res := false; fi;
-    return res;
-end;
-
 #F IntFromHexString(<str>)
 #F     Accepts a hexadecimal string and returns the Integer value.
 #F     The string may optionally have a leading "0x" and both upper and lower
@@ -1298,3 +1273,32 @@ ElapsedTime := function(begt, endt)
     if delta < 0 then delta := delta + 86400; fi;
     return delta;
 end;
+
+#F IsNegativeZero(val)
+#F   return true if double val is -0.0
+
+IsNegativeZero := function(val)
+	return ((val = 0.0) and ((1.0 / val) = (1.0 / -0.0)));
+end;
+
+
+#F CopyFile(src, dst)
+#F     Copy src to dst and return status
+#F     src must be a file and can specify a full or relative path
+#F     if dst is a directory, src is copied to a file of the same name
+#F     if dst already exists, it is overwritten
+
+CopyFile := function(src, dst)
+    local cmd;
+
+    if IsWindows() then
+        cmd := Concat("copy /y ",src," ",dst);
+    else
+        cmd := Concat("cp -f ",src," ", dst);
+    fi;
+    
+    return IntExec(cmd);
+end;
+
+
+

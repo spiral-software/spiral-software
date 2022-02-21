@@ -15,6 +15,17 @@ REM  updated with that path.  If a user builds SPIRAL standalone the
 REM  PATH_FOR_PROFILER_COMPILER variable should be customized for the user's
 REM  environment. 
 
-make vector -R -C ../../targets/win-x86-llvm GAP=%SGBETEMPDIR%\testcode.c STUB=%SGBETEMPDIR%\testcode.h CC="clang" CFLAGS="-O2 -march=native -std=c99 -w" OUTDIR=%SGBETEMPDIR% -s > vector.txt
+COPY ..\..\targets\common\CMakeLists.txt %SGBETEMPDIR%\CMakeLists.txt
+IF EXIST .\build ( rd /s /q build )
+md build && cd build
+cmake -DPROJECT:STRING=cvector -DSUFFIX:STRING=c -T clangcl .. < nul
+cmake --build . --config Release --target install < nul
+cd ..
+
+IF EXIST .\cvector.exe (
+    .\cvector.exe > vector.txt
+) ELSE (
+    type nul > vector.txt
+)
 
 set PATH=%OLDPATH%

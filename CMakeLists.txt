@@ -11,11 +11,11 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, MinSizeRel")
 
 project(SPIRAL
-        VERSION 8.3.0
+        VERSION 8.3.1
         DESCRIPTION "SPIRAL Project"
         LANGUAGES C CXX)
 
-set(PROJECT_VERSION_TAG  )
+set(PROJECT_VERSION_TAG "d03")
 
 ##  Prevent building directly into the source tree
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" SPIRAL_COMPILE_INPLACE)
@@ -143,7 +143,7 @@ else ()
 endif ()
 
 install (FILES ${SPIRAL_STARTUP_FILES}
-         DESTINATION ${SPIRAL_SOURCE_DIR}
+         DESTINATION ${SPIRAL_SOURCE_DIR}/bin
          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                      GROUP_EXECUTE GROUP_READ
                      WORLD_EXECUTE WORLD_READ

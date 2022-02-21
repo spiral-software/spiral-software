@@ -2,24 +2,18 @@
  *  Copyright (c) 2018-2021, Carnegie Mellon University
  *  See LICENSE for details
  */
-/***************************************************************************
- * SPL Matrix                                                              *
- *                                                                         *
- * Computes matrix that corresponds to SPL generated routine               *
- ***************************************************************************/
+
 
 #include <limits.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef __APPLE__
+#include <malloc.h>
+#endif
 #include <assert.h>
+#include <math.h>
 
-#include "sys.h"
-#include "conf.h"
-#include "vector.h"
-#include "opt_macros.h"
-#include "xmalloc.h"
-#include "vector_def.h" /* data_type */
 
 #ifndef ROWS
 #error ROWS must be defined
@@ -28,44 +22,93 @@
 #error COLUMNS must be defined
 #endif
 
-vector_t * Input;
-vector_t * Output;
+#ifndef NZERO
+#define NZERO (1.0/(double)-INFINITY)
+#endif
+
+#ifndef DATATYPE
+#define DATATYPE double
+#endif
+
+#ifndef DATAFORMATSTRING
+#define DATAFORMATSTRING "FloatString(\"%.18g\")"
+#endif
+
+#ifndef BLOCKSIZE
+#define BLOCKSIZE 64
+#endif
+
+#ifdef _WIN32
+#define MEMALIGN(blksz, memsz) _aligned_malloc((memsz), (blksz))
+#elif defined (__APPLE__)
+#define MEMALIGN(blksz, memsz) malloc((memsz))
+#else
+#define MEMALIGN(blksz, memsz) memalign((blksz), (memsz))
+#endif
+
+#ifndef RUN_FUNC
+#define RUN_FUNC FUNC(Output, Input)
+#endif
 
 
-void initialize(int argc, char **argv) {
-	scalar_type_t *t = scalar_find_type(DATATYPE);
+DATATYPE * Input;
+DATATYPE * Output;
 
-	Output = vector_create_zero(t, ROWS);
-	Input = vector_create_zero(t, COLUMNS);
-
-	INITFUNC();
-}
-
-void finalize() {
-	vector_destroy(Output);
-	vector_destroy(Input);
-}
 
 void compute_matrix()
 {
-	scalar_type_t *t = scalar_find_type(DATATYPE);
-
-	int x, y;
+	DATATYPE nz = NZERO;
+	int x, y, i, counter;
+	int start_col, end_col, start_row, end_row;
+	
+#ifdef CMATRIX_UPPER_ROW
+	start_row = CMATRIX_UPPER_ROW - 1;
+#else
+	start_row = 0;
+#endif
+#ifdef CMATRIX_UPPER_COL
+	start_col = CMATRIX_UPPER_COL - 1;
+#else
+	start_col = 0;
+#endif	
+#ifdef CMATRIX_LOWER_ROW
+	end_row = CMATRIX_LOWER_ROW;
+#else
+	end_row = ROWS;
+#endif
+#ifdef CMATRIX_LOWER_COL
+	end_col = CMATRIX_LOWER_COL;
+#else
+	end_col = COLUMNS;
+#endif		
+	
+	
 	printf("[ ");
-	for (x = 0; x < COLUMNS; x++) {
-		vector_basis(Input, x);
-		FUNC(Output->data, Input->data);
-		if (x != 0) {
+	for (x = start_col; x < end_col; x++) {
+		for(i = 0; i < COLUMNS; i++) {
+			Input[i] = 0;
+		}
+		Input[x] = 1;
+		for (i = 0; i < ROWS; i++) {
+			Output[i] = nz;
+		}
+		RUN_FUNC;;
+		if (x != start_col) {
 			printf(",\n  [ ");
 		}
 		else {
 			printf("[ ");
 		}
-		for (y = 0; y < ROWS; y++) {
-			if (y != 0) {
+		counter = 0;
+		for (y = start_row; y < end_row; y++) {
+			if (counter != 0) {
+				if ((counter % 10) == 0) {
+					printf("\n");
+				}
 				printf(", ");
 			}
-			t->fprint_gap(t, stdout, NTH(Output, y));
+			printf(DATAFORMATSTRING, Output[y]);
+			counter++;
 		}
 		printf(" ]");
 	}
@@ -75,8 +118,12 @@ void compute_matrix()
 
 
 int main(int argc, char** argv) {
-	initialize(argc, argv);
+	Input  = (DATATYPE *) MEMALIGN(BLOCKSIZE, sizeof(DATATYPE) * COLUMNS);
+	Output = (DATATYPE *) MEMALIGN(BLOCKSIZE, sizeof(DATATYPE) * ROWS);
+
+    INITFUNC();
+	
 	compute_matrix();
-	finalize();
+	
 	return EXIT_SUCCESS;
 }

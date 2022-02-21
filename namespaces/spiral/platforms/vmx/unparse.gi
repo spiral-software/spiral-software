@@ -3,7 +3,7 @@
 # See LICENSE for details
 
 
-Import(compiler, code, fpgen);
+Import(compiler, code);
 
 # temporary fix to declare variables used in _mm_loadl_xx/_mm_loadh_xx
 CellCompileStrategyVector := Concatenation(

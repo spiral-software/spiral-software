@@ -2149,7 +2149,7 @@ UInt CollectBags ( UInt size, int spec_arena, char *caller_id )
     int             inewa = -1;			// new arena number if required
     ArenaBag_t     *par;                // Memory Arena pointer
 
-	GapRunTime.gc_in = clock();			// start timing GC run
+	GapRunTime.gc_in = SyTime();			// start timing GC run
 	GapRunTime.nrGCRuns++;				// increment number of times run
 	
     if (SyMemMgrTrace > 0)
@@ -2262,7 +2262,7 @@ UInt CollectBags ( UInt size, int spec_arena, char *caller_id )
         //  DumpBagsHistogram();
     }
 
-	GapRunTime.gc_out = clock();
+	GapRunTime.gc_out = SyTime();
 	GapRunTime.gc_cumulative += ( GapRunTime.gc_out - GapRunTime.gc_in );
 	
     // return success
@@ -2277,9 +2277,8 @@ void    PrintRuntimeStats ( TimeAnalyze_t *ptim)
 	DumpMemArenaData( 1 );
 	
 	double dtime, gctime;				// times in seconds
-	ptim->gap_end = clock();
-	dtime  = (double)(ptim->gap_end - ptim->gap_start) / CLOCKS_PER_SEC;
-	gctime = (double)(ptim->gc_cumulative) / CLOCKS_PER_SEC;
+	dtime  = SyTime() / 1000.0;         // convert milliseconds to seconds
+	gctime = ptim->gc_cumulative / 1000.0;
 	printf("Spiral total run time = %.1f seconds\n", dtime);
 	if (ptim->nrGCRuns > 0) {
 		printf("              GC time = %.1f seconds (avg time per iteration = %.4f)\n",
@@ -2351,7 +2350,7 @@ BagPtr_t        FunGetRuntimeStats (BagPtr_t hdCall)
 BagPtr_t        FunResetRuntimeStats (BagPtr_t hdCall)
 {
 	// reset all the time tracking values
-	GapRunTime.gap_start = clock();			// start timing GC run
+	GapRunTime.gap_start = SyTime();			// start timing GC run
 	GapRunTime.gap_end = 0;
 	GapRunTime.gc_in = GapRunTime.gc_out = GapRunTime.gc_cumulative = 0;
 	GapRunTime.nrGCRuns = 0;

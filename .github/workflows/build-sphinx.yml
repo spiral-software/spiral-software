@@ -8,7 +8,9 @@ env:
 ##  For now only re-gen docs when push to "develop" branch; change to "master" when release is done
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+      - develop
 
 jobs:
   build_sphinx_job:
@@ -19,7 +21,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: spiral-software/spiral-software
-        ref: master
+        ref: develop
         path: spiral
 
     - name: install dependencies

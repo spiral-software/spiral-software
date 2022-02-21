@@ -21,8 +21,8 @@ end;
 
 GetBasicProfilerTestFName := function(pf)
     local path, sep;
-    sep  := Conf("path_sep");
-    path := Conf("spiral_dir");
+    sep  := PATH_SEP;
+    path := SPIRAL_DIR;
     path := Concat(path, sep, "build");
     if pf then
         path := Concat(path, sep, "PROFILER_RUN_SUCCESS");
@@ -35,8 +35,8 @@ end;
 #F  ClearBasicProfilerTestResults () -- remove results of prior run(s) of basic profiler test
 
 ClearBasicProfilerTestResults := function()
-    SysRemove(GetBasicProfilerTestFName(true));
-    SysRemove(GetBasicProfilerTestFName(false));
+    sys_rm(GetBasicProfilerTestFName(true));
+    sys_rm(GetBasicProfilerTestFName(false));
     return;
 end;
 
@@ -59,7 +59,7 @@ end;
 CheckBasicProfilerTest := function()
     local res, file;
     file := GetBasicProfilerTestFName(true);
-    res  := CheckFileExists(file, "");
+    res  := FileExists(file);
     
     if SysVerbose() > 0 then
         Print("Marker file: ", file);
@@ -68,7 +68,7 @@ CheckBasicProfilerTest := function()
     if res then return res; fi;
     
     file := GetBasicProfilerTestFName(false);
-    res := CheckFileExists(file, "");
+    res := FileExists(file);
     if SysVerbose() > 0 then
         Print("Marker file: ", file);
         if res then PrintLine(" Found, return false"); else PrintLine(" NOT Found"); fi;

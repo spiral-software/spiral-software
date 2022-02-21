@@ -17,26 +17,12 @@ LocalConfig.cpuinfo := CopyFields(SupportedCPUs.@CPU_ARCH_TYPE@, rec(
 
 LocalConfig.osinfo := SupportedOSs.@SPIRAL_OS_NAME@;
 
-# set to true to use ICC or GCC for profiling, otherwise default to Visual Studio
+# set to true to use LLVM or NVCC for profiling, otherwise default to Visual Studio
 
-UseICC := @USE_COMPILER_ICC@;
-UseGCC := @USE_COMPILER_GCC@;
 UseLLVM := @USE_COMPILER_LLVM@;
 UseNVCC := @USE_COMPILER_NVCC@;
 
-if (UseICC) then
-	# ICC
-	SpiralDefaults.profile := spiral.profiler.default_profiles.win_x64_icc;
-	SpiralDefaults.target := rec(name:="win-x64-icc");
-	LocalConfig.compilerinfo := SupportedCompilers.IntelC;
- 
-elif (UseGCC) then
-	# GCC
-	SpiralDefaults.profile := spiral.profiler.default_profiles.win_x86_gcc;
-	SpiralDefaults.target := rec(name:="win-x86-gcc");
-	LocalConfig.compilerinfo := SupportedCompilers.GnuC;
- 
-elif (UseLLVM) then
+if (UseLLVM) then
 	# LLVM
 	SpiralDefaults.profile := spiral.profiler.default_profiles.win_x86_llvm;
 	SpiralDefaults.target := rec(name:="win-x86-llvm");

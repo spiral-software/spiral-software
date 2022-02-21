@@ -9,6 +9,20 @@ Class(SMP_MacroUnparser, SMP_UnparseMixin, CMacroUnparserProg);
 Class(OpenMP_Unparser,      OpenMP_UnparseMixin, CUnparserProg);
 Class(OpenMP_MacroUnparser, OpenMP_UnparseMixin, CMacroUnparserProg);
 
+
+LibgenHardcodeStrides := function()
+    H.codeletShape := self >> [H, self.params[4]];
+    H.codeletParNums := [3];
+    H.signature := self >> [IntVar("b")];
+    H.mkCodelet := self >> let(ss := self.signature(), H(self.params[1], self.params[2], ss[1], self.params[4]));
+
+    BH.codeletParNums := [2, 4];
+    BH.signature := self >> List(["R", "b"], IntVar);
+    BH.codeletShape := self >> [BH, self.params[5]];
+end;
+
+
+
 # suggested values: bufIters=64 (16 for older machines), maxRank=1 (larger value increases search space)
 # Example: opts := InitGTLibgen(64, 1)
 #

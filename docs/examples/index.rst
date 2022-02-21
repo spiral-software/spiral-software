@@ -14,6 +14,18 @@ Basic FFTs
    basic/ompfft.rst
    basic/dpsearch.rst
    basic/dpsearch3d.rst
+
+GPU Examples (using CUDA)
++++++++++++++++++++++++++
+
+.. toctree::
+   :maxdepth: 1
+
+   cuda/mddft-cuda.rst
+   cuda/mddft-batch-cuda.rst
+   cuda/mdprdft-cuda.rst
+   cuda/prdft-batch-cuda.rst
+   cuda/mdrconv-cuda.rst
    
 Advanced Examples from FFTX
 +++++++++++++++++++++++++++

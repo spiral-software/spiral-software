@@ -1,9 +1,9 @@
-#define SWIGCODE
+
 #include "system.h"
 #include "memmgr.h"
 #include "integer.h"
-#include        "objects.h"
-#include		"string4.h"
+#include "objects.h"
+#include "string4.h"
 #include "eval.h"
 #include "idents.h"
 #include "spiral.h"
@@ -14,107 +14,110 @@
 
 void Init_types(void) {
     GlobalPackage2("spiral", "types");
-#   define TYPES (FindIdentWr("TYPES"))
+	
+#define TYPES (FindIdentWr("TYPES"))
+
     SET_VAR_VALUE(TYPES, NewList(T_ILLEGAL+1));
-#   define SET(varname, value) \
+	
+#define SET(varname, value) \
     SET_VAR_VALUE(FindIdentWr(varname), IntToHd(value)); \
     SET_BAG(VAR_VALUE(TYPES), 1+value, StringToHd(varname));
 
-        SET("T_VOID", T_VOID);
-        SET("T_INT", T_INT);
-        SET("T_INTPOS", T_INTPOS);
-        SET("T_INTNEG", T_INTNEG);
-        SET("T_RAT", T_RAT);
-        SET("T_CYC", T_CYC);
-        SET("T_DOUBLE", T_DOUBLE);
-        SET("T_CPLX", T_CPLX);
-        SET("T_UNKNOWN", T_UNKNOWN);
-        SET("T_FFE", T_FFE);
-        SET("T_PERM16", T_PERM16);
-        SET("T_PERM32", T_PERM32);
-        SET("T_WORD", T_WORD);
-        SET("T_SWORD", T_SWORD);
-        SET("T_AGWORD", T_AGWORD);
-        SET("T_BOOL", T_BOOL);
-        SET("T_CHAR", T_CHAR);
-        SET("T_FUNCTION", T_FUNCTION);
-        SET("T_METHOD", T_METHOD);
-        SET("T_FUNCINT", T_FUNCINT);
-        SET("T_MUTABLE", T_MUTABLE);
-        SET("T_LIST", T_LIST);
-        SET("T_SET", T_SET);
-        SET("T_VECTOR", T_VECTOR);
-        SET("T_VECFFE", T_VECFFE);
-        SET("T_BLIST", T_BLIST);
-        SET("T_STRING", T_STRING);
-        SET("T_RANGE", T_RANGE);
-        SET("T_REC", T_REC);
-        SET("T_MATRIX", T_MATRIX);
-        SET("T_MATFFE", T_MATFFE);
-        SET("T_LISTX", T_LISTX);
-        SET("T_DELAY", T_DELAY);
-        SET("T_VAR", T_VAR);
-        SET("T_VARAUTO", T_VARAUTO);
-        SET("T_VARASS", T_VARASS);
-        SET("T_VARMAP", T_VARMAP);
-        SET("T_LISTELM", T_LISTELM);
-        SET("T_LISTELML", T_LISTELML);
-        SET("T_LISTELMS", T_LISTELMS);
-        SET("T_LISTELMSL", T_LISTELMSL);
-        SET("T_LISTASS", T_LISTASS);
-        SET("T_LISTASSL", T_LISTASSL);
-        SET("T_LISTASSS", T_LISTASSS);
-        SET("T_LISTASSSL", T_LISTASSSL);
-        SET("T_RECELM", T_RECELM);
-        SET("T_RECASS", T_RECASS);
-        SET("T_MULTIASS", T_MULTIASS);
-        SET("T_SUM", T_SUM);
-        SET("T_DIFF", T_DIFF);
-        SET("T_PROD", T_PROD);
-        SET("T_QUO", T_QUO);
-        SET("T_MOD", T_MOD);
-        SET("T_POW", T_POW);
-        SET("T_COMM", T_COMM);
-        SET("T_NOT", T_NOT);
-        SET("T_AND", T_AND);
-        SET("T_OR", T_OR);
-        SET("T_EQ", T_EQ);
-        SET("T_NE", T_NE);
-        SET("T_LT", T_LT);
-        SET("T_GE", T_GE);
-        SET("T_LE", T_LE);
-        SET("T_GT", T_GT);
-        SET("T_IN", T_IN);
-        SET("T_IS", T_IS);
-        SET("T_CONCAT", T_CONCAT);
-        SET("T_FUNCCALL", T_FUNCCALL);
-        SET("T_FUNCINT_CALL", T_FUNCINT_CALL);
-        SET("T_STATSEQ", T_STATSEQ);
-        SET("T_IF", T_IF);
-        SET("T_FOR", T_FOR);
-        SET("T_WHILE", T_WHILE);
-        SET("T_REPEAT", T_REPEAT);
-        SET("T_RETURN", T_RETURN);
-        SET("T_MAKEPERM", T_MAKEPERM);
-        SET("T_MAKEFUNC", T_MAKEFUNC);
-        SET("T_MAKEMETH", T_MAKEMETH);
-        SET("T_MAKELIST", T_MAKELIST);
-        SET("T_MAKESTRING", T_MAKESTRING);
-        SET("T_MAKERANGE", T_MAKERANGE);
-        SET("T_MAKEREC", T_MAKEREC);
-        SET("T_MAKETAB", T_MAKETAB);
-        SET("T_MAKELET", T_MAKELET);
-        SET("T_CYCLE", T_CYCLE);
-        SET("T_FF", T_FF);
-        SET("T_AGEN", T_AGEN);
-        SET("T_AGGRP", T_AGGRP);
-        SET("T_PCPRES", T_PCPRES);
-        SET("T_AGEXP", T_AGEXP);
-        SET("T_AGLIST", T_AGLIST);
-        SET("T_RECNAM", T_RECNAM);
-        SET("T_NAMESPACE", T_NAMESPACE);
-        SET("T_EXEC", T_EXEC);
-        SET("T_FREEBAG", T_FREEBAG);
-        SET("T_ILLEGAL", T_ILLEGAL);
+	SET("T_VOID", T_VOID);
+	SET("T_INT", T_INT);
+	SET("T_INTPOS", T_INTPOS);
+	SET("T_INTNEG", T_INTNEG);
+	SET("T_RAT", T_RAT);
+	SET("T_CYC", T_CYC);
+	SET("T_DOUBLE", T_DOUBLE);
+	SET("T_CPLX", T_CPLX);
+	SET("T_UNKNOWN", T_UNKNOWN);
+	SET("T_FFE", T_FFE);
+	SET("T_PERM16", T_PERM16);
+	SET("T_PERM32", T_PERM32);
+	SET("T_WORD", T_WORD);
+	SET("T_SWORD", T_SWORD);
+	SET("T_AGWORD", T_AGWORD);
+	SET("T_BOOL", T_BOOL);
+	SET("T_CHAR", T_CHAR);
+	SET("T_FUNCTION", T_FUNCTION);
+	SET("T_METHOD", T_METHOD);
+	SET("T_FUNCINT", T_FUNCINT);
+	SET("T_MUTABLE", T_MUTABLE);
+	SET("T_LIST", T_LIST);
+	SET("T_SET", T_SET);
+	SET("T_VECTOR", T_VECTOR);
+	SET("T_VECFFE", T_VECFFE);
+	SET("T_BLIST", T_BLIST);
+	SET("T_STRING", T_STRING);
+	SET("T_RANGE", T_RANGE);
+	SET("T_REC", T_REC);
+	SET("T_MATRIX", T_MATRIX);
+	SET("T_MATFFE", T_MATFFE);
+	SET("T_LISTX", T_LISTX);
+	SET("T_DELAY", T_DELAY);
+	SET("T_VAR", T_VAR);
+	SET("T_VARAUTO", T_VARAUTO);
+	SET("T_VARASS", T_VARASS);
+	SET("T_VARMAP", T_VARMAP);
+	SET("T_LISTELM", T_LISTELM);
+	SET("T_LISTELML", T_LISTELML);
+	SET("T_LISTELMS", T_LISTELMS);
+	SET("T_LISTELMSL", T_LISTELMSL);
+	SET("T_LISTASS", T_LISTASS);
+	SET("T_LISTASSL", T_LISTASSL);
+	SET("T_LISTASSS", T_LISTASSS);
+	SET("T_LISTASSSL", T_LISTASSSL);
+	SET("T_RECELM", T_RECELM);
+	SET("T_RECASS", T_RECASS);
+	SET("T_MULTIASS", T_MULTIASS);
+	SET("T_SUM", T_SUM);
+	SET("T_DIFF", T_DIFF);
+	SET("T_PROD", T_PROD);
+	SET("T_QUO", T_QUO);
+	SET("T_MOD", T_MOD);
+	SET("T_POW", T_POW);
+	SET("T_COMM", T_COMM);
+	SET("T_NOT", T_NOT);
+	SET("T_AND", T_AND);
+	SET("T_OR", T_OR);
+	SET("T_EQ", T_EQ);
+	SET("T_NE", T_NE);
+	SET("T_LT", T_LT);
+	SET("T_GE", T_GE);
+	SET("T_LE", T_LE);
+	SET("T_GT", T_GT);
+	SET("T_IN", T_IN);
+	SET("T_IS", T_IS);
+	SET("T_CONCAT", T_CONCAT);
+	SET("T_FUNCCALL", T_FUNCCALL);
+	SET("T_FUNCINT_CALL", T_FUNCINT_CALL);
+	SET("T_STATSEQ", T_STATSEQ);
+	SET("T_IF", T_IF);
+	SET("T_FOR", T_FOR);
+	SET("T_WHILE", T_WHILE);
+	SET("T_REPEAT", T_REPEAT);
+	SET("T_RETURN", T_RETURN);
+	SET("T_MAKEPERM", T_MAKEPERM);
+	SET("T_MAKEFUNC", T_MAKEFUNC);
+	SET("T_MAKEMETH", T_MAKEMETH);
+	SET("T_MAKELIST", T_MAKELIST);
+	SET("T_MAKESTRING", T_MAKESTRING);
+	SET("T_MAKERANGE", T_MAKERANGE);
+	SET("T_MAKEREC", T_MAKEREC);
+	SET("T_MAKETAB", T_MAKETAB);
+	SET("T_MAKELET", T_MAKELET);
+	SET("T_CYCLE", T_CYCLE);
+	SET("T_FF", T_FF);
+	SET("T_AGEN", T_AGEN);
+	SET("T_AGGRP", T_AGGRP);
+	SET("T_PCPRES", T_PCPRES);
+	SET("T_AGEXP", T_AGEXP);
+	SET("T_AGLIST", T_AGLIST);
+	SET("T_RECNAM", T_RECNAM);
+	SET("T_NAMESPACE", T_NAMESPACE);
+	SET("T_EXEC", T_EXEC);
+	SET("T_FREEBAG", T_FREEBAG);
+	SET("T_ILLEGAL", T_ILLEGAL);
     EndPackage();
 }

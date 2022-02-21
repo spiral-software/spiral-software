@@ -12,6 +12,5 @@ Declare(NEON_HALF);
 Include(misc);
 Include(code);
 Include(unparse);
-Include(bench);
 Include(rewrite);
 Include(isa);

@@ -179,7 +179,7 @@ Class(CUnparserBase, Unparser, rec(
     preprocess_init := (self, o) >> o,
 
     # example: includes := [ "<math.h>" ]
-    includes := [],
+    includes := [ "<stdint.h>" ],
 
     generated_by := Concat("\
 /*\
@@ -438,6 +438,9 @@ Class(CUnparserBase, Unparser, rec(
     bin_and := (self,o,i,is) >> Print("((", self.pinfix(List(o.args, x -> When(IsPtrT(x.t), tcast(TSym("size_t"),x) ,x)), ")&("), "))"),
     bin_or := (self,o,i,is) >> Print("((", self.pinfix(List(o.args, x -> When(IsPtrT(x.t), tcast(TSym("size_t"),x) ,x)), ")|("), "))"),
     bin_xor := (self,o,i,is) >> Print("((", self(o.args[1],i,is), ")^(", self(o.args[2],i,is),"))"),
+	
+	bin_shl := (self,o,i,is) >> self.pinfix(o.args, " << "),
+	bin_shr := (self,o,i,is) >> self.pinfix(o.args, " >> "),
 
     abs := (self,o,i,is) >> Print("abs(", self(o.args[1],i,is), ")"),
 
@@ -604,19 +607,19 @@ Class(CUnparserBase, Unparser, rec(
         )," ",self.infix(vars, ", ",i+is)),
 
     T_Int  := (self, t, vars, i, is) >> Print(Cond(
-            t.params[1] = 64, "__int64",
-            t.params[1] = 32, "__int32",
-            t.params[1] = 16, "__int16",
-            t.params[1] = 8, "__int8",
+            t.params[1] = 64, "int64_t",
+            t.params[1] = 32, "int32_t",
+            t.params[1] = 16, "int16_t",
+            t.params[1] = 8, "int8_t",
             Error("Type is not supported")
         ), " ", self.infix(vars, ", ",i+is)),
 
-    T_UInt  := (self, t, vars, i, is) >> Print("unsigned ", Cond(
-            t.params[1] = 64, "__int64",
-            t.params[1] = 32, "__int32",
-            t.params[1] = 16, "__int16",
-            t.params[1] = 8, "__int8",
-            t.params[1] = 1, "__bit",
+    T_UInt  := (self, t, vars, i, is) >> Print(Cond(
+            t.params[1] = 64, "uint64_t",
+            t.params[1] = 32, "uint32_t",
+            t.params[1] = 16, "uint16_t",
+            t.params[1] = 8, "uint8_t",
+            t.params[1] = 1, "unsigned __bit",
             Error("Type is not supported")
         ), " ", self.infix(vars, ", ",i+is)),
 
@@ -985,6 +988,7 @@ Class(CUnparser, CUnparserBase, rec(
                    o.id="destroy"   and IsBound(self.opts.subName),
                      Concat("destroy_",self.opts.subName),
                    o.id),
+		When ((IsBound(self.opts.wrapCFuncs) and self.opts.wrapCFuncs), Print("\nextern \"C\" {")),
         Print("\n", Blanks(i),
             self.opts.funcModifier, self.declare(o.ret, var(id, o.ret), i, is), "(",
             DoForAllButLast(parameters, p->Print(self.declare(p.t, p,i,is), ", ")),
@@ -993,7 +997,8 @@ Class(CUnparser, CUnparserBase, rec(
             When(IsBound(self.opts.postalign), DoForAll(parameters, p->self.opts.postalign(p,i+is,is))),
             self(o.cmd, i+is, is),
             Blanks(i),
-            "}\n")),
+            "}\n"),
+		When ((IsBound(self.opts.wrapCFuncs) and self.opts.wrapCFuncs), Print("}\n"))),
 
     # C99 style, loop var declared inside
     loop := (self, o, i, is) >> let(v := o.var, lo := o.range[1], hi := Last(o.range),

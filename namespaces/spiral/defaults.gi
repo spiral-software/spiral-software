@@ -203,46 +203,10 @@ IBMC99Mixin := rec(
 );
 
 
-# How do we determine if we're running on Windows or Linux?
-#Try(Load(iswindows));
-#Try(Load(islinux));
-
-#  NOTE: I'd like to pull that out into a function call, but failed to use load/include/read inside a function... => ask YSV
-#if LocalConfig.osinfo.isWindows() then
-#    Exec(let(sdir:=Conf("spiral_dir"), Concat("SubWCRev.exe ", sdir, " ", Concat(sdir, "\\spiral\\svn_win.src ", sdir, "\\spiral\\svn_info.g > NUL"))));
-#    Load(svn_info);
-#fi;
-#if LocalConfig.osinfo.isLinux() then
-# NOTE: For now, assume that any non-windows system is a linux system.
-#else
- #   Exec(let(sdir:=Conf("spiral_dir"), Concat(". ", sdir, "/spiral/svn_linux.src ", sdir, " > ", sdir, "/spiral/svn_info.g")));
-#    Load(svn_info);
-#fi;
 
 compiler.Unparser.fileinfo := meth(self, opts)
     local info;
 
-#    if IsBound(opts.fileinfo) then
-#        info := opts.fileinfo;
-#        Print("/*\tCPU: ");
-#        LocalConfig.cpuinfo.info();
-#        Print("\n\tOS: ");
-#        LocalConfig.osinfo.info();
-#        Print("\n\t");
-#        LocalConfig.svninfo.info();
-#        if IsBound(opts.profile) then
-#            Print("\n\tprofile: ", opts.profile.name, ", ", opts.profile.makeopts.CFLAGS);
-#        else
-#            Print("\n\tlanguage: ", opts.language);
-#        fi;
-#        PrintLine("\n\ttimestamp: ", let(t:=Date(), Concat(t[2]," ",StringInt(t[3]),", ",StringInt(t[1]), "; ",StringInt(t[4]),":",StringInt(t[5]),":",StringInt(t[6]))),
-#            "\n\ttransform: ", info.algorithm.node , "\n\t",
-#            "source file: \"", info.file, "(.c)\"\n\t",
-#            "performance: ", info.cycles, " cycles, ", spiral._compute_mflops(info.flops, info.cycles), " Mflop/s\n",
-#            "\nalgorithm: ", info.algorithm, "\n",
-#        "*/\n");
-#    fi;
-	
     if IsBound(opts.fileinfo) then
         info := opts.fileinfo;
         if IsBound(opts.profile) then

@@ -11,14 +11,13 @@
 #include		<stdlib.h>
 #include        "system.h"              /* declaration part of the package */
 #include        "spiral.h"              /* InitLibName() */
-#include        "interface.h"           /* Outside Interface */
 #include        "iface.h"
 #include		"GapUtils.h"
 
 
 #ifdef WIN32
 
-#define	WIN32_ANSICOLOR_EMU
+//#define	WIN32_ANSICOLOR_EMU
 #define WIN32_CTRLV_SUPPORT
 #include <direct.h> // for mkdir, getdrive, etc.
 #include <process.h> // for getpid()
@@ -49,14 +48,6 @@
 #  define SYS_CONST
 # endif
 #endif
-
-
-/***************
- * Interface flag 
- */
-
-extern int CURR_INTERFACE;
-extern struct gap_iface gap_interface[];
 
 
 
@@ -233,24 +224,9 @@ char            SyInitfiles [16] [256];
 
 /****************************************************************************
 **
-*V  syWindow  . . . . . . . . . . . . . . . .  running under a window handler
-**
-**  'syWindow' is 1 if GAP  is running under  a window handler front end such
-**  as 'xgap', and 0 otherwise.
-**
-**  If running under  a window handler front  end, GAP adds various  commands
-**  starting with '@' to the output to let 'xgap' know what is going on.
-*/
-Int            syWindow = 0;
-
-
-/****************************************************************************
-**
-*V  syStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
-*V  syStopTime  . . . . . . . . . . . . . . . . . . time when reading started
+*V  syStartTime . . . . . . . . . . . . . . time when GAP was started in msec
 */
 UInt   syStartTime;
-UInt   syStopTime;
 
 
 
@@ -480,14 +456,10 @@ extern  UInt   completion ( char *           name,
                                        UInt    len,
                                        UInt    rn );
 
-extern  void            syWinPut   ( Int fid, char * cmd, char * str );
-
 /* inBreakLoop from gap.c */
 extern Int     inBreakLoop();
 
 Int            syLineEdit = 1;         /* 0: no line editing              */
-                                        /* 1: line editing if terminal     */
-                                        /* 2: always line editing (EMACS)  */
 Int            syCTRD = 1;             /* true if '<ctr>-D' is <eof>      */
 Int            syNrchar;               /* nr of chars already on the line */
 char           syPrompt [1024];         /* upped from 256; characters alread on the line   */
@@ -542,37 +514,18 @@ char *          SyFgets (char line[], Int length, Int fid )
         return p;
     }
 
-    /* Joohoon Interface reader implementation here */
     
-    if( CURR_INTERFACE ){
-      syStopTime = SyTime();
-      p = interface_read_input_nolist( line );
-      syStartTime += SyTime() - syStopTime;
-      return p;
-    }
-
-    /* Should not get below this point with new interface */
-    /* Must clean up this part */
-
-
     /* no line editing if the user disabled it                             */
     if ( syLineEdit == 0 ) {
-      syStopTime = SyTime();
       p = fgets( line, (Int)length, syBuf[fid].fp );
-      syStartTime += SyTime() - syStopTime;
       return p;
     }
 
     /* no line editing if the file cannot be turned to raw mode            */
     if ( syLineEdit == 1 && ! syStartraw(fid) ) {
-        syStopTime = SyTime();
         p = fgets( line, (Int)length, syBuf[fid].fp );
-        syStartTime += SyTime() - syStopTime;
         return p;
     }
-
-    /* stop the clock, reading should take no time                         */
-    syStopTime = SyTime();
 
     /* the line starts out blank                                           */
     line[0] = '\0';  p = line;  h = syHistory;
@@ -1125,7 +1078,6 @@ char *          SyFgets (char line[], Int length, Int fid )
                             syEchoch( CTR('G'), fid );
                             // otherwise, display the candidates.
                         } else  {
-                            syWinPut( fid, "@c", "" );
                             syEchos( "\n    ", fid );
                             syEchos( buffer, fid );
                             
@@ -1139,7 +1091,6 @@ char *          SyFgets (char line[], Int length, Int fid )
                             for ( q = old; q < old+sizeof(old); ++q )
                                 *q = ' ';
                             oldc = 0;
-                            syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
                         }
                     } else if ( ! completion( buffer, p-q, rn ) ) 
 					{
@@ -1147,7 +1098,6 @@ char *          SyFgets (char line[], Int length, Int fid )
                             syEchoch( CTR('G'), fid );
                         else 
 						{
-                            syWinPut( fid, "@c", "" );
                             syEchos("\n    identifier has no completions\n",
                                     fid);
                             for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
@@ -1155,7 +1105,6 @@ char *          SyFgets (char line[], Int length, Int fid )
                             for ( q = old; q < old+sizeof(old); ++q )
                                 *q = ' ';
                             oldc = 0;
-                            syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
                         }
                     }
                     else 
@@ -1181,7 +1130,6 @@ char *          SyFgets (char line[], Int length, Int fid )
                             if ( last != CTR('I') )
                                 syEchoch( CTR('G'), fid );
                             else {
-                                syWinPut( fid, "@c", "" );
                                 buffer[t-q] = '\0';
                                 while ( completion( buffer, t-q, rn ) ) {
                                     syEchos( "\n    ", fid );
@@ -1193,7 +1141,6 @@ char *          SyFgets (char line[], Int length, Int fid )
                                 for ( q = old; q < old+sizeof(old); ++q )
                                     *q = ' ';
                                 oldc = 0;
-                                syWinPut( fid, (fid == 0 ? "@i" : "@e"), "");
                             }
                         }
                     }
@@ -1354,9 +1301,6 @@ char *          SyFgets (char line[], Int length, Int fid )
 	        syHi = syHistory+sizeof(syHistory)-2;
         }
     }
-    
-    /* send the whole line (unclipped) to the window handler               */
-    syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
 
     /* strip away prompts (usefull for pasting old stuff)                  */
     if (line[0]=='g'&&line[1]=='a'&&line[2]=='p'&&line[3]=='>'&&line[4]==' ')
@@ -1369,10 +1313,6 @@ char *          SyFgets (char line[], Int length, Int fid )
     /* switch back to cooked mode                                          */
     if ( syLineEdit == 1 )
         syStopraw(fid);
-
-    /* start the clock again                                               */
-    syStartTime += SyTime() - syStopTime;
-
 
     /* return the line (or '0' at end-of-file)                             */
     if ( *line == '\0' )
@@ -1469,13 +1409,6 @@ SYS_SIG_T       syAnswerTstp (int  signr )
 
 int             syStartraw ( Int fid )
 {
-    /* if running under a window handler, tell it that we want to read     */
-    if ( syWindow ) {
-        if      ( fid == 0 ) { syWinPut( fid, "@i", "" );  return 1; }
-        else if ( fid == 2 ) { syWinPut( fid, "@e", "" );  return 1; }
-        else {                                             return 0; }
-    }
-
     /* try to get the terminal attributes, will fail if not terminal       */
     if ( ioctl( fileno(syBuf[fid].fp), TIOCGETP, (char*)&syOld ) == -1 )
         return 0;
@@ -1511,10 +1444,6 @@ int             syStartraw ( Int fid )
 
 void            syStopraw ( Int fid )
 {
-    /* if running under a window handler, don't do nothing                 */
-    if ( syWindow )
-        return;
-
 #ifdef SIGTSTP
     /* remove signal handler for stop                                      */
     signal( SIGTSTP, SIG_DFL );
@@ -1536,21 +1465,7 @@ int             syGetch ( Int fid )
     /* read a character                                                    */
     while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
         ;
-
-    /* if running under a window handler, handle special characters        */
-    if ( syWindow && ch == '@' ) {
-        do {
-            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
-                ;
-        } while ( ch < '@' || 'z' < ch );
-        if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
-            ch = syGetch(fid);
-        }
-        else if ( 'A' <= ch && ch <= 'Z' )
-            ch = CTR(ch);
-    }
-    
+   
     /* return the character                                                */
     return ch;
 }
@@ -1562,23 +1477,11 @@ void            syEchoch ( int ch, Int fid )
     /* write the character to the associate echo output device             */
     ch2 = ch;
     write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-
-    /* if running under a window handler, duplicate '@'                    */
-    if ( syWindow && ch == '@' ) {
-        ch2 = ch;
-        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-    }
 }
 
 void            syEchos ( char *str, Int fid )
 {
-    /* if running under a window handler, send the line to it              */
-    if ( syWindow && fid < 4 )
-        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
-
-    /* otherwise, write it to the associate echo output device             */
-    else
-        write( fileno(syBuf[fid].echo), str, strlen(str) );
+    write( fileno(syBuf[fid].echo), str, strlen(str) );
 }
 
 #endif
@@ -1648,13 +1551,6 @@ SYS_SIG_T       syAnswerTstp ( int signr )
 
 int             syStartraw ( Int fid )
 {
-    /* if running under a window handler, tell it that we want to read     */
-    if ( syWindow ) {
-        if      ( fid == 0 ) { syWinPut( fid, "@i", "" );  return 1; }
-        else if ( fid == 2 ) { syWinPut( fid, "@e", "" );  return 1; }
-        else {                                             return 0; }
-    }
-
     /* try to get the terminal attributes, will fail if not terminal       */
     if ( ioctl( fileno(syBuf[fid].fp), TCGETA, &syOld ) == -1 )   return 0;
 
@@ -1684,10 +1580,6 @@ int             syStartraw ( Int fid )
 
 void            syStopraw ( Int fid )
 {
-    /* if running under a window handler, don't do nothing                 */
-    if ( syWindow )
-        return;
-
 #ifdef SIGTSTP
     /* remove signal handler for stop                                      */
     signal( SIGTSTP, SIG_DFL );
@@ -1706,20 +1598,6 @@ int             syGetch ( Int fid )
     while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
         ;
 
-    /* if running under a window handler, handle special characters        */
-    if ( syWindow && ch == '@' ) {
-        do {
-            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
-                ;
-        } while ( ch < '@' || 'z' < ch );
-        if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
-            ch = syGetch(fid);
-        }
-        else if ( 'A' <= ch && ch <= 'Z' )
-            ch = CTR(ch);
-    }
-
     /* return the character                                                */
     return ch;
 }
@@ -1731,23 +1609,11 @@ void            syEchoch ( int ch, Int fid )
     /* write the character to the associate echo output device             */
     ch2 = ch;
     write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-
-    /* if running under a window handler, duplicate '@'                    */
-    if ( syWindow && ch == '@' ) {
-        ch2 = ch;
-        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-    }
 }
 
 void            syEchos ( char *str, Int fid )
 {
-    /* if running under a window handler, send the line to it              */
-    if ( syWindow && fid < 4 )
-        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
-
-    /* otherwise, write it to the associate echo output device             */
-    else
-        write( fileno(syBuf[fid].echo), str, strlen(str) );
+    write( fileno(syBuf[fid].echo), str, strlen(str) );
 }
 
 #endif
@@ -1936,12 +1802,6 @@ void            SyFputs (char line[], Int fid )
 {
     Int                i;
 
-    /* Joohoon new interface implementation */
-    if( CURR_INTERFACE ){
-      gap_interface[CURR_INTERFACE].write_callback(line,syBuf[fid].fp);
-      interface_write_output_nolist(line);
-      return;
-    }
 
     /* if outputing to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {
@@ -1968,213 +1828,21 @@ void            SyFputs (char line[], Int fid )
             ;
     }
 
-    /* if running under a window handler, send the line to it              */
-    if ( syWindow && fid < 4 )
-        syWinPut( fid, (fid == 1 ? "@n" : "@f"), line );
-
-    /* otherwise, write it to the output file                              */
-    else
-        write( fileno(syBuf[fid].fp), line, i );
+    write( fileno(syBuf[fid].fp), line, i );
 }
 
 #endif
 
 #if WIN32
 
-#ifdef  WIN32_ANSICOLOR_EMU
-
-DWORD   DefaultConsoleAttributes = 0;
-
-void ANSIEscapeValueToColor(DWORD value, DWORD *mask, DWORD *flags)
+void  SyFputs ( char line[], Int fid )
 {
-    DWORD   color_table[8] = { 0, FOREGROUND_RED, FOREGROUND_GREEN, 
-                        FOREGROUND_RED | FOREGROUND_GREEN, FOREGROUND_BLUE,
-                        FOREGROUND_BLUE | FOREGROUND_RED, FOREGROUND_BLUE | FOREGROUND_GREEN,
-                        FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE };
-
-    if (value==0) {
-        *flags = DefaultConsoleAttributes; *mask = 0xFF;
-    } else if (value==1) {
-        *flags |= FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
-        //*mask |= FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
-    } else if (value>=30 && value<=37) {
-        *flags = (*flags & 0xFFFFFFF8) | color_table[value-30];
-        *mask |= 0x0F;
-    } else if (value == 39) {
-        *flags = (*flags & 0xFFFFFFF0) | (DefaultConsoleAttributes & 0x0F);
-        *mask |= 0x0F;
-    } else if (value>=40 && value<=47) {
-        *flags = (*flags & 0xFFFFFF8F) | (color_table[value-40] << 4);
-        *mask |= 0x0F0;
-    } else if (value == 49) {
-        *flags = (*flags & 0xFFFFFF0F) | (DefaultConsoleAttributes & 0x0F0);
-        *mask |= 0x0F0;
-    } else if (value == 7) {
-        *flags |= COMMON_LVB_REVERSE_VIDEO;
-        *mask |= COMMON_LVB_REVERSE_VIDEO;
-    } else if (value == 21) {
-        *flags |= COMMON_LVB_UNDERSCORE;
-        *mask |= COMMON_LVB_UNDERSCORE;
-    } else if (value == 24) {
-        *flags &= ~COMMON_LVB_UNDERSCORE;
-        *mask |= COMMON_LVB_UNDERSCORE;
-    }
-}
-
-#endif
-void            SyFputs ( char line[], Int fid )
-{
-
-    /* Joohoon new interface implementation */
-    if( CURR_INTERFACE ){
-      gap_interface[CURR_INTERFACE].write_callback(line, syBuf[fid].fp);
-      interface_write_output_nolist(line);
-      return;
-    }
-
-    /* handle the console                                                  */
-#ifndef WIN32
-    if ( isatty( fileno(syBuf[fid].fp) ) ) 
-	{
-	    char *s;
-	    Int i;
-
-        /* test whether this is a line with a prompt                       */
-        syNrchar = 0;
-        for ( i = 0; line[i] != '\0'; i++ ) {
-            if ( line[i] == '\n' )  syNrchar = 0;
-            else                    syPrompt[syNrchar++] = line[i];
-        }
-        syPrompt[syNrchar] = '\0';
-
-        /* handle stopped output                                           */
-        while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
-
-        /* output the line                                                 */
-        for ( s = line; *s != '\0'; s++ )
-            PUTCHAR( *s );
-    }
-
-    /* ordinary file                                                       */
-    else {
-#endif
-#ifdef  WIN32_ANSICOLOR_EMU
-        /* emulate ANSI color escape sequences */
-        if (syBuf[fid].fp == stdout || syBuf[fid].fp == stderr) {
-            char    *c = line;
-            char    *s = line;
-            int     state = 0;
-            int     value = 0;
-            DWORD   flags = 0;
-            DWORD   mask = 0;
-            CONSOLE_SCREEN_BUFFER_INFO  bf;
-            while (*c) {
-                if (*c==0x1B && state==0) {
-                    state = 1;
-                } else
-                if (*c==0x5B && state==1) {
-                    flags = 0;
-                    mask = 0;
-                    value = 0;
-                    state = 2;
-                } else
-                if (state>=2) { // reading escape sequence
-                    if (*c=='m') { // end of escape sequence
-                        ANSIEscapeValueToColor(value, &mask, &flags);
-                        // print line
-                        *(c-state) = 0;
-                        fputs( s, syBuf[fid].fp );
-                        *(c-state) = 0x1B;
-                        s = c+1;
-                        // assign new text attributes
-                        bf.wAttributes = 0;
-                        GetConsoleScreenBufferInfo(GetStdHandle(syBuf[fid].fp==stderr ? STD_ERROR_HANDLE: STD_OUTPUT_HANDLE), &bf);
-                        if (DefaultConsoleAttributes==0) DefaultConsoleAttributes = bf.wAttributes;
-                        SetConsoleTextAttribute(GetStdHandle(syBuf[fid].fp==stderr ? STD_ERROR_HANDLE: STD_OUTPUT_HANDLE), 
-                            bf.wAttributes & ~mask | flags & mask);
-                        state = 0;
-                    } else
-                    if (*c==';') { // got some value, modify flags
-                        ANSIEscapeValueToColor(value, &mask, &flags);
-                        value = 0;
-                        state++;
-                    } else
-                    if (*c-'0'<=9) { // reading decimal number
-                        value = value*10+(*c-'0');
-                        state++;
-                    } else { // error
-                        state = 0;
-                    }
-                } else
-                    state = 0;
-                c++;
-            }
-            if (s != c) // print remaining characters
-                fputs(s, syBuf[fid].fp );
-        } else
-#endif
         fputs( line, syBuf[fid].fp );
    		fflush( syBuf[fid].fp );		// typically the GAP internal output buffer has just been flushed, so flush file buffer, too
                                         // otherwise piped output gets delayed
-#ifndef WIN32
-    }
-#endif
-
 }
 
 #endif
-
-
-
-/****************************************************************************
-**
-*F  syWinPut(<fid>,<cmd>,<str>) . . . . . . send a line to the window handler
-**
-**  'syWinPut'  send the command   <cmd> and the  string  <str> to the window
-**  handler associated with the  file identifier <fid>.   In the string <str>
-**  '@'  characters are duplicated, and   control characters are converted to
-**  '@<chr>', e.g., <newline> is converted to '@J'.
-*/
-
-void            syWinPut (Int fid, char *cmd, char *str)
-{
-    Int                fd;             /* file descriptor                 */
-    char                tmp [130];      /* temporary buffer                */
-    char *              s;              /* pointer into the string         */
-    char *              t;              /* pointer into the temporary      */
-
-    /* if not running under a window handler, don't do nothing             */
-    if ( ! syWindow || 4 <= fid )
-        return;
-
-    /* get the file descriptor                                             */
-    if ( fid == 0 || fid == 2 )  fd = fileno(syBuf[fid].echo);
-    else                         fd = fileno(syBuf[fid].fp);
-
-    /* print the cmd                                                       */
-    write( fd, cmd, strlen(cmd) );
-
-    /* print the output line, duplicate '@' and handle <ctr>-<chr>         */
-    s = str;  t = tmp;
-    while ( *s != '\0' ) {
-        if ( *s == '@' ) {
-            *t++ = '@';  *t++ = *s++;
-        }
-        else if ( CTR('A') <= *s && *s <= CTR('Z') ) {
-            *t++ = '@';  *t++ = *s++ - CTR('A') + 'A';
-        }
-        else {
-            *t++ = *s++;
-        }
-        if ( 128 <= t-tmp ) {
-            write( fd, tmp, t-tmp );
-            t = tmp;
-        }
-    }
-    if ( 0 < t-tmp ) {
-        write( fd, tmp, t-tmp );
-    }
-}
 
 
 /****************************************************************************
@@ -2205,101 +1873,6 @@ void            SyPinfo (int nr, Int size)
     }
     *b++ = '+';
     *b = '\0';
-
-    /* send it to the window handler                                       */
-    syWinPut( 1, cmd, buf );
-}
-
-
-/****************************************************************************
-**
-*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . .  . execute a window cmd
-**
-**  'SyWinCmd' send   the  command <str> to  the   window  handler (<len>  is
-**  ignored).  In the string <str> '@' characters are duplicated, and control
-**  characters  are converted to  '@<chr>', e.g.,  <newline> is converted  to
-**  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
-**  that string.
-*/
-
-char            WinCmdBuffer [8000];
-
-char *          SyWinCmd (char *str, Int len)
-{
-    char                buf [130];      /* temporary buffer                */
-    char *              s;              /* pointer into the string         */
-    char *              b;              /* pointer into the temporary      */
-    UInt       i;              /* loop variable                   */
-
-    /* if not running under a window handler, don't do nothing             */
-    if ( ! syWindow )
-        return "I1+S52000000No Window Handler Present";
-
-    /* compute the length of the (expanded) string (and ignore argument)   */
-    len = 0;
-    for ( s = str; *s != '\0'; s++ )
-        len += 1 + (*s == '@' || (CTR('A') <= *s && *s <= CTR('Z')));
-
-    /* send the length to the window handler                               */
-    b = buf;
-    for ( i = 0; i < 8; i++ ) {
-        *b++ = (len % 10) + '0';
-        len /= 10;
-    }
-    *b = '\0';
-    syWinPut( 1, "@w", buf );
-
-    /* send the string to the window handler                               */
-    syWinPut( 1, "", str );
-
-    /* read the length of the answer                                       */
-    s = WinCmdBuffer;
-    i = 10;
-    do {
-        while ( 0 < i ) {
-            len = read( 0, s, i );
-            i  -= len;
-            s  += len;
-        }
-        if ( WinCmdBuffer[0] == '@' && WinCmdBuffer[1] == 'y' ) {
-            for ( i = 2;  i < 10;  i++ )
-                WinCmdBuffer[i-2] = WinCmdBuffer[i];
-            s -= 2;
-            i  = 2;
-        }
-    } while ( 0 < i );
-    if ( WinCmdBuffer[0] != '@' || WinCmdBuffer[1] != 'a' )
-        return "I1+S41000000Illegal Answer";
-    for ( len = 0, i = 9;  1 < i;  i-- )
-        len = len*10 + (WinCmdBuffer[i]-'0');
-
-    /* read the arguments of the answer                                    */
-    s = WinCmdBuffer;
-    i = len;
-    while ( 0 < i ) {
-        len = read( 0, s, i );
-        i  -= len;
-        s  += len;
-    }
-
-    /* shrink '@@' into '@'                                                */
-    for ( b = s = WinCmdBuffer;  0 < len;  len-- ) {
-        if ( *s == '@' ) {
-            s++;
-            if ( *s == '@' )
-                *b++ = '@';
-            else if ( 'A' <= *s && *s <= 'Z' )
-                *b++ = CTR(*s);
-            s++;
-        }
-        else {
-            *b++ = *s++;
-        }
-    }
-    *b = 0;
-
-    /* return the string                                                   */
-    return WinCmdBuffer;
 }
 
 
@@ -2426,9 +1999,7 @@ int             SyExec (char *cmd)
 {
     int status,result;
 
-    syWinPut( 0, "@z", "" );
     status = system( cmd );
-    syWinPut( 0, "@mAgIc", "" );
 #ifndef WIN32 // strange non-windows stuff.
 	result = WEXITSTATUS(status);
     if (WIFSIGNALED(status)) 
@@ -2447,1179 +2018,26 @@ int             SyExec (char *cmd)
 **
 **  'SyTime' returns the number of milliseconds spent by GAP so far.
 **
-**  Should be as accurate as possible,  because it  is  used  for  profiling.
 */
 
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For Berkeley UNIX the clock ticks in 1/60.  On some (all?) BSD systems we
-**  can use 'getrusage', which gives us a much better resolution.
-*/
-#if SYS_BSD
-#ifndef SYS_HAS_NO_GETRUSAGE
-
-#ifndef SYS_RESOURCE_H                  /* definition of 'struct rusage'   */
-# include       <sys/time.h>            /* definition of 'struct timeval'  */
-# include       <sys/resource.h>
-# define SYS_RESOURCE_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern  int             getrusage ( int, struct rusage * );
-#endif
 
 UInt   SyTime ()
 {
-    struct rusage       buf;
-
-    if ( getrusage( RUSAGE_SELF, &buf ) ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000 -syStartTime;
-}
-
-#endif
-
-#ifdef SYS_HAS_NO_GETRUSAGE
-
-#ifndef SYS_TIMES_H                     /* time functions                  */
-# include       <sys/types.h>
-# include       <sys/times.h>
-# define SYS_TIMES_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern  int             times ( struct tms * );
-#endif
-
-UInt   SyTime ()
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return 100 * tbuf.tms_utime / (60/10) - syStartTime;
-}
-
-#endif
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For UNIX System V and OS/2 the clock ticks in 1/HZ,  this is usually 1/60
-**  or 1/100.
-*/
-#if SYS_USG
-
-#ifndef SYS_TIMES_H                     /* time functions                  */
-# include       <sys/param.h>           /* definition of 'HZ'              */
-# include       <sys/types.h>
-# include       <sys/times.h>
-# define SYS_TIMES_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern  int             times ( struct tms * );
-#endif
-#include <errno.h>
-UInt   SyTime ()
-{
-    struct tms          tbuf;
-    if ( times( &tbuf ) == -1 ) {
-        perror("gap: panic 'SyTime' cannot get time");
-        SyExit( 1 );
-    }
-    return 100 * tbuf.tms_utime / (HZ / 10) - syStartTime;
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For Windows we use the function 'clock' and allow to stop the clock.
-*/
-#if WIN32
-
-#ifndef SYS_TIME_H                      /* time functions                  */
-# include       <time.h>
-# define SYS_TIME_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* ANSI/TRAD decl. from H&S 18.2    */
-# if SYS_ANSI
-extern  clock_t         clock ( void );
-# define SYS_CLOCKS     CLOCKS_PER_SEC
-# else
-extern  Int            clock ( void );
-#   define SYS_CLOCKS   100
-# endif
-#endif
+UInt msecs;
 
 #ifdef WIN32
-#define SYS_CLOCKS     CLOCKS_PER_SEC
-#endif
-
-UInt   SyTime ()
-{
-    return 100 * (UInt)clock() / (SYS_CLOCKS/10) - syStartTime;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
-**
-**  'SyTmpname' creates and returns a new temporary name.
-*/
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include       <stdio.h>
-# define SYS_STDIO_H
-#endif
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 15.16  */
-extern  char *          tmpnam ( char * );
-#endif
-
-char *          SyTmpname (void)
-{
-#ifdef WIN32
-    return GuSysTmpname(config_demand_val("tmp_dir")->strval, 
-		config_demand_val("path_sep")->strval, 
-		"gap_XXXXXX");
+    UInt ticks = (UInt)clock();
+    float factor = 1000.0 / CLOCKS_PER_SEC;
+    msecs = (UInt)(ticks * factor);
 #else
-#ifdef HAVE_MKSTEMP
-    static char * result = NULL;
-    static int len = 0;
-    int fd;
-    if(result==NULL) {
-		char * tmp_dir = config_demand_val("tmp_dir")->strval;
-		char * path_sep = config_demand_val("path_sep")->strval;
-		result = GuMakeMessage("%s%sgap_XXXXXX", tmp_dir, path_sep);
-		len = strlen(result);
-    }
-    result[len-1] = 'X'; result[len-2] = 'X';  result[len-3] = 'X';
-    result[len-4] = 'X'; result[len-5] = 'X';  result[len-6] = 'X';
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    msecs = (UInt)((now.tv_sec * 1000) + (now.tv_nsec / 1000000));
+#endif
 
-    fd = mkstemp(result);
-    if (fd == -1)
-		return NULL;
-    else {
-		/* we are required to generate the name, but mkstemp actually      */
-		/* creates an empty file                                           */
-		unlink(result); 
-		close(fd); 
-		return result;
-    }
-#else
-    return tmpnam( (char*)0 );
-#endif
-#endif
+return msecs - syStartTime;
 }
 
-
-/****************************************************************************
-**
-*F  SyHelp( <topic>, <fid> )  . . . . . . . . . . . . . . display online help
-**
-**  This function is of course way to large.  But what the  heck,  it  works.
-*/
-char            syChapnames [128][16];
-
-char            syLastTopics [16] [64] = { "Welcome to GAP" };
-
-short           syLastIndex = 0;
-
-void            SyHelp (char *topic, Int fin)
-                                        /* topic for which help is sought  */
-                                        /* file id of input and output     */
-{
-    char                filename [2048];/* filename of various files       */
-    Int                fid;            /* file identifier of various files*/
-    char                line [256];     /* single line from those files    */
-    UInt       chapnr;         /* number of the chapter           */
-    char                chapname [64];  /* name of the chapter             */
-    UInt       secnr;          /* number of the section           */
-    char                secname [1024]; /* name of the section             */
-    char                secline [128];  /* '\Section <secname>'            */
-    Int                match;          /* does the section match topic    */
-    Int                matches;        /* how many sections matched       */
-    char                last [256];     /* last line from table of contents*/
-    char                last2 [256];    /* last chapter line from toc      */
-    Int                offset;         /* '<' is -1, '>' is 1             */
-    char                ch;             /* char read after '-- <space> --' */
-    Int                spaces;         /* spaces to be inserted for just  */
-    char                status;         /* 'a', '$', '|', or '#'           */
-    char                * p, * q, * r;  /* loop variables                  */
-    UInt       i, j;           /* loop variables                  */
-    UInt       raw;            /* is input in raw mode?           */
-
-    /* try to switch the input into raw mode                               */
-    raw = (syLineEdit == 1 && syStartraw( fin ));
-
-    /* inform the window handler                                           */
-    syWinPut( fin, "@h", "" );
-
-    /* set 'SyHelpname' to 'SyLibname' with 'lib' replaced by 'doc'        */
-    if ( SyHelpname[0] == '\0' ) {
-        q = SyHelpname;
-        p = SyLibname;
-        while ( *p != '\0' )  *q++ = *p++;
-        *q = '\0';
-        for ( p = SyHelpname; *p != '\0'; p++ ) ;
-        while ( SyHelpname < p && (p[0]!='l' || p[1]!='i' || p[2]!='b') )
-            p--;
-        p[0] = 'd'; p[1] = 'o'; p[2] = 'c';
-    }
-
-    /* skip leading blanks in the topic                                    */
-    while ( *topic == ' ' )  topic++;
-
-    /* if the topic is empty take the last one again                       */
-    if ( topic[0] == '\0' ) {
-        topic = syLastTopics[ syLastIndex ];
-    }
-
-    /* if the topic is '<' we are interested in the one before 'LastTopic' */
-    offset = 0;
-    last[0] = '\0';
-    if ( strcmp( topic, "<" ) == 0 ) {
-        topic = syLastTopics[ syLastIndex ];
-        offset = -1;
-    }
-
-    /* if the topic is '>' we are interested in the one after 'LastTopic'  */
-    if ( strcmp( topic, ">" ) == 0 ) {
-        topic = syLastTopics[ syLastIndex ];
-        offset = 1;
-    }
-
-    /* if the topic is '<<' we are interested in the first section         */
-    last2[0] = '\0';
-    if ( strcmp( topic, "<<" ) == 0 ) {
-        topic = syLastTopics[ syLastIndex ];
-        offset = -2;
-    }
-
-    /* if the topic is '>>' we are interested in the next chapter          */
-    if ( strcmp( topic, ">>" ) == 0 ) {
-        topic = syLastTopics[ syLastIndex ];
-        offset = 2;
-    }
-
-    /* if the topic is '-' we are interested in the previous section again */
-    if ( topic[0] == '-' ) {
-        while ( *topic++ == '-' )
-            syLastIndex = (syLastIndex + 15) % 16;
-        topic = syLastTopics[ syLastIndex ];
-        if ( topic[0] == '\0' ) {
-            syEchos( "Help: this section has no previous section\n", fin );
-            syLastIndex = (syLastIndex + 1) % 16;
-            if ( raw )  syStopraw( fin );
-            return;
-        }
-        syLastIndex = (syLastIndex + 15) % 16;
-    }
-
-    /* if the topic is '+' we are interested in the last section again     */
-    if ( topic[0] == '+' ) {
-        while ( *topic++ == '+' )
-            syLastIndex = (syLastIndex + 1) % 16;
-        topic = syLastTopics[ syLastIndex ];
-        if ( topic[0] == '\0' ) {
-            syEchos( "Help: this section has no previous section\n", fin );
-            syLastIndex = (syLastIndex + 15) % 16;
-            if ( raw )  syStopraw( fin );
-            return;
-        }
-        syLastIndex = (syLastIndex + 15) % 16;
-    }
-
-    /* if the subject is 'Welcome to GAP' display a welcome message        */
-    if ( strcmp( topic, "Welcome to GAP" ) == 0 ) {
-
-        syEchos( "    Welcome to GAP ______________________________", fin );
-        syEchos( "_____________ Welcome to GAP\n",                    fin );
-        syEchos( "\n",                                                fin );
-        syEchos( "    Welcome to GAP.\n",                             fin );
-        syEchos( "\n",                                                fin );
-        syEchos( "    GAP is a system for computational group theor", fin );
-        syEchos( "y.\n",                                              fin );
-        syEchos( "\n",                                                fin );
-        syEchos( "    Enter '?About GAP'    for a step by step intr", fin );
-        syEchos( "oduction to GAP.\n",                                fin );
-        syEchos( "    Enter '?Help'         for information how to ", fin );
-        syEchos( "use the GAP help system.\n",                        fin );
-        syEchos( "    Enter '?Chapters'     for a list of the chapt", fin );
-        syEchos( "ers of the GAP help system.\n",                     fin );
-        syEchos( "    Enter '?Copyright'    for the terms under whi", fin );
-        syEchos( "ch you can use and copy GAP.\n",                    fin );
-        syEchos( "\n",                                                fin );
-        syEchos( "    In each case do *not* enter the single quotes", fin );
-        syEchos( "(') , they are  used in help\n",                    fin );
-        syEchos( "    sections only to delimit text that you actual", fin );
-        syEchos( "ly enter.\n",                                       fin );
-        syEchos( "\n",                                                fin );
-
-        /* remember this topic for the next time                           */
-        p = "Welcome to GAP";
-        syLastIndex = (syLastIndex + 1) % 16;
-        q = syLastTopics[ syLastIndex ];
-        while ( *p != '\0' )  *q++ = *p++;
-        *q = '\0';
-
-        if ( raw )  syStopraw( fin );
-        return;
-
-    }
-
-    /* if the topic is 'chapter' display the table of chapters             */
-    if ( strcmp(topic,"chapters")==0 || strcmp(topic,"Chapters")==0 ) {
-
-        /* open the table of contents file                                 */
-        filename[0] = '\0';
-        strncat( filename, SyHelpname, sizeof(filename)-12 );
-        strncat( filename, "online.toc", 11 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
-            syEchos( "Help: cannot open the table of contents file '",fin );
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
-            if ( raw )  syStopraw( fin );
-            return;
-        }
-
-        /* print the header line                                           */
-        syEchos( "    Table of Chapters _________________", fin );
-        syEchos( "____________________ Table of Contents\n", fin );
-
-        /* scan the table of contents for chapter lines                    */
-        offset = 2;
-        while ( SyFgets( line, sizeof(line), fid ) ) {
-
-            /* parse table of contents line                                */
-            for ( p = line; *p != '\0' && ! IsDigit(*p); p++ )  ;
-            for ( i = 0; IsDigit(*p); p++ )  i = 10*i+*p-'0';
-            if ( *p == '.' )  p++;
-            for ( j = 0; IsDigit(*p); p++ )  j = 10*j+*p-'0';
-            if ( *p == '}' )  p++;
-            if ( i == 0 || ! IsAlpha(*p) ) {
-              syEchos("Help: contentsline is garbage in 'online.toc'",fin);
-              SyFclose( fid );
-              if ( raw )  syStopraw( fin );
-              return;
-            }
-
-            /* skip nonchapter lines                                       */
-            if ( j != 0 )  continue;
-
-            /* stop every 24 lines                                         */
-            if ( offset == SyNrRows && raw ) {
-              syEchos( "    -- <space> for more --", fin );
-              ch = syGetch( fin );
-              syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                      fin);
-              syEchos( "                          ", fin );
-              syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                      fin);
-              if ( ch == 'q' )  {
-                  syEchos( "\n", fin );
-                  break;
-              }
-              else if ( ch == '\n' || ch == '\r' ) {
-                  offset = SyNrRows - 1;
-              }
-              else {
-                  offset = 2;
-              }
-            }
-
-            /* display the line                                            */
-            q = line;
-            while ( *p != '}' )  *q++ = *p++;
-            *q++ = '\n';
-            *q = '\0';
-            syEchos( "    ", fin );
-            syEchos( line, fin );
-            offset++;
-
-        }
-
-        /* remember this topic for the next time                           */
-        p = "Chapters";
-        syLastIndex = (syLastIndex + 1) % 16;
-        q = syLastTopics[ syLastIndex ];
-        while ( *p != '\0' )  *q++ = *p++;
-        *q = '\0';
-
-        SyFclose( fid );
-        if ( raw )  syStopraw( fin );
-        return;
-    }
-
-    /* if the topic is 'sections' display the table of sections            */
-    if ( strcmp(topic,"sections")==0 || strcmp(topic,"Sections")==0 ) {
-
-        /* open the table of contents file                                 */
-        filename[0] = '\0';
-        strncat( filename, SyHelpname, sizeof(filename)-12 );
-        strncat( filename, "online.toc", 11 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
-            syEchos( "Help: cannot open the table of contents file '",fin);
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
-            if ( raw )  syStopraw( fin );
-            return;
-        }
-
-        /* print the header line                                           */
-        syEchos( "    Table of Sections _________________", fin );
-        syEchos( "____________________ Table of Contents\n", fin );
-
-        /* scan the table of contents for chapter lines                    */
-        offset = 2;
-        while ( SyFgets( line, sizeof(line), fid ) ) {
-
-            /* parse table of contents line                                */
-            for ( p = line; *p != '\0' && ! IsDigit(*p); p++ )  ;
-            for ( i = 0; IsDigit(*p); p++ )  i = 10*i+*p-'0';
-            if ( *p == '.' )  p++;
-            for ( j = 0; IsDigit(*p); p++ )  j = 10*j+*p-'0';
-            if ( *p == '}' )  p++;
-            if ( i == 0 || ! IsAlpha(*p) ) {
-              syEchos("Help: contentsline is garbage in 'online.toc'",fin);
-              SyFclose( fid );
-              if ( raw )  syStopraw( fin );
-              return;
-            }
-
-            /* stop every 24 lines                                         */
-            if ( offset == SyNrRows && raw ) {
-              syEchos( "    -- <space> for more --", fin );
-              ch = syGetch( fin );
-              syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                      fin);
-              syEchos( "                          ", fin );
-              syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                      fin);
-              if ( ch == 'q' )  {
-                  syEchos( "\n", fin );
-                  break;
-              }
-              else if ( ch == '\n' || ch == '\r' ) {
-                  offset = SyNrRows - 1;
-              }
-              else {
-                  offset = 2;
-              }
-            }
-
-            /* display the line                                            */
-            q = line;
-            while ( *p != '}' )  *q++ = *p++;
-            *q++ = '\n';
-            *q = '\0';
-            if ( j == 0 )  syEchos( "    ", fin );
-            else            syEchos( "        ", fin );
-            syEchos( line, fin );
-            offset++;
-
-        }
-
-        /* remember this topic for the next time                           */
-        p = "Sections";
-        syLastIndex = (syLastIndex + 1) % 16;
-        q = syLastTopics[ syLastIndex ];
-        while ( *p != '\0' )  *q++ = *p++;
-        *q = '\0';
-
-        SyFclose( fid );
-        if ( raw )  syStopraw( fin );
-        return;
-    }
-
-    /* if the topic is 'Copyright' print the copyright                     */
-    if ( strcmp(topic,"copyright")==0 || strcmp(topic,"Copyright")==0 ) {
-
-        /* open the copyright file                                         */
-        filename[0] = '\0';
-        strncat( filename, SyHelpname, sizeof(filename)-14 );
-        strncat( filename, "copyrigh.tex", 13 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
-            syEchos( "Help: cannot open the copyright file '",fin);
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <helpname>'?\n", fin );
-            if ( raw )  syStopraw( fin );
-            return;
-        }
-
-        /* print the header line                                           */
-        syEchos( "    Copyright _________________________", fin );
-        syEchos( "____________________________ Copyright\n", fin );
-
-        /* print the contents of the file                                  */
-        offset = 2;
-        while ( SyFgets( line, sizeof(line), fid ) ) {
-
-            /* skip lines that begin with a '%'                            */
-            if ( line[0] == '%' )  continue;
-
-            /* skip the line that begins with '\thispagestyle'             */
-            p = line;
-            q = "\\thispagestyle";
-            while ( *p == *q ) { p++; q++; }
-            if ( *q == '\0' )  continue;
-
-            /* stop every 24 lines                                         */
-            if ( offset == SyNrRows && raw ) {
-              syEchos( "    -- <space> for more --", fin );
-              ch = syGetch( fin );
-              syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                      fin);
-              syEchos( "                          ", fin );
-              syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                      fin);
-              if ( ch == 'q' )  {
-                  syEchos( "\n", fin );
-                  break;
-              }
-              else if ( ch == '\n' || ch == '\r' ) {
-                  offset = SyNrRows - 1;
-              }
-              else {
-                  offset = 2;
-              }
-            }
-
-            /* fixup the copyright line                                    */
-            p = line;
-            q = "{\\large";
-            while ( *p == *q ) { p++; q++; }
-            if ( *q == '\0' ) {
-                syEchos( "    Copyright (c) 1992 ", fin );
-                syEchos( "by Lehrstuhl D fuer Mathematik\n", fin );
-                continue;
-            }
-
-            /* display the line                                            */
-            p = line;
-            q = last;
-            spaces = 0;
-            while ( *p != '\0' ) {
-                if ( *p == '\\' || *p == '{' || *p == '}' ) {
-                    if ( last < q && q[-1] == ' ' )
-                        *q++ = ' ';
-                    else
-                        spaces++;
-                }
-                else if ( *p == ' ' ) {
-                    *q++ = ' ';
-                    while ( 0 < spaces ) {
-                        *q++ = ' ';
-                        spaces--;
-                    }
-                }
-                else {
-                    *q++ = *p;
-                }
-                p++;
-            }
-            *q = '\0';
-            syEchos( "    ", fin );  syEchos( last, fin );
-            offset++;
-        }
-
-        /* remember this topic for the next time                           */
-        p = "Copyright";
-        syLastIndex = (syLastIndex + 1) % 16;
-        q = syLastTopics[ syLastIndex ];
-        while ( *p != '\0' )  *q++ = *p++;
-        *q = '\0';
-
-        SyFclose( fid );
-        if ( raw )  syStopraw( fin );
-        return;
-    }
-
-    /* if the topic is '?<string>' search the index                        */
-    if ( topic[0] == '?' ) {
-
-        /* skip leading blanks in the topic                                */
-        topic++;
-        while ( *topic == ' ' )  topic++;
-
-        /* open the index                                                  */
-        filename[0] = '\0';
-        strncat( filename, SyHelpname, sizeof(filename)-12 );
-        strncat( filename, "online.idx", 11 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
-            syEchos( "Help: cannot open the index file '", fin);
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
-            if ( raw )  syStopraw( fin );
-            return;
-        }
-
-        /* make a header line                                              */
-        line[0] = '\0';
-        strncat( line, topic, 40 );
-        strncat( line,
-        " _________________________________________________________________",
-                  73 - 5 );
-        line[72-5] = ' ';
-        line[73-5] = '\0';
-        strncat( line, "Index", 6 );
-        strncat( line, "\n", 2 );
-        syEchos( "    ", fin );
-        syEchos( line, fin );
-
-        /* scan the index                                                  */
-        offset = 2;
-        while ( SyFgets( line, sizeof(line), fid ) ) {
-
-            /* a '%' line tells us that the next entry is a section name   */
-            if ( line[0] == '%' ) {
-                while ( line[0] == '%' ) {
-                    if ( ! SyFgets( line, sizeof(line), fid ) ) {
-                        syEchos( "Help: index file is garbage\n", fin );
-                        SyFclose( fid );
-                        if ( raw )  syStopraw( fin );
-                        return;
-                    }
-                }
-                q = secname;
-                p = line + 12;
-                while ( *p != '}' )  *q++ = *p++;
-                *q = '\0';
-            }
-
-            /* skip this entry if we alread had an entry for this section  */
-            if ( secname[0] == '\0' )  continue;
-
-            /* try to match topic against this index entry                 */
-            for ( r = line + 12; *r != '\0'; r++ ) {
-                p = topic;
-                q = r;
-                while ( (*p | 0x20) == (*q | 0x20) ) { p++; q++; }
-                if ( *p == '\0' )  break;
-            }
-            if ( *r == '\0' )  continue;
-
-            /* stop every 24 lines                                         */
-            if ( offset == SyNrRows && raw ) {
-              syEchos( "    -- <space> for more --", fin );
-              ch = syGetch( fin );
-              syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                      fin);
-              syEchos( "                          ", fin );
-              syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                      fin);
-              if ( ch == 'q' )  {
-                  syEchos( "\n", fin );
-                  break;
-              }
-              else if ( ch == '\n' || ch == '\r' ) {
-                  offset = SyNrRows - 1;
-              }
-              else {
-                  offset = 2;
-              }
-            }
-
-            /* print the index line                                        */
-            syEchos( "    ", fin );
-            syEchos( secname, fin );
-            p = secname;
-            q = line + 12;
-            while ( *p == *q ) { p++; q++; }
-            if ( *p != '\0' ) {
-                syEchos( " (", fin );
-                for ( p = line + 12; *p != '}'; p++ ) ;
-                *p = '\0';
-                syEchos( line + 12, fin );
-                syEchos( ")", fin );
-            }
-            syEchos( "\n", fin );
-            offset++;
-
-            /* we dont want no more index entries for this section         */
-            secname[0] = '\0';
-
-        }
-
-        /* close the index again and return                                */
-        SyFclose( fid );
-        if ( raw )  syStopraw( fin );
-        return;
-
-    }
-
-    /* open the table of contents                                          */
-    filename[0] = '\0';
-    strncat( filename, SyHelpname, sizeof(filename)-12 );
-    strncat( filename, "online.toc", 11 );
-    fid = SyFopen( filename, "r" );
-    if ( fid == -1 ) {
-        syEchos( "Help: cannot open the table of contents file '", fin );
-        syEchos( filename, fin );
-        syEchos( "'\n", fin );
-        syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
-        if ( raw )  syStopraw( fin );
-        return;
-    }
-
-    /* search the table of contents                                        */
-    chapnr = 0;
-    secnr = 0;
-    secname[0] = '\0';
-    matches = 0;
-    while ( SyFgets( line, sizeof(line), fid ) ) {
-
-        /* parse table of contents line                                    */
-        for ( p = line; *p != '\0' && ! IsDigit(*p); p++ )  ;
-        for ( i = 0; IsDigit(*p); p++ )  i = 10*i+*p-'0';
-        if ( *p == '.' )  p++;
-        for ( j = 0; IsDigit(*p); p++ )  j = 10*j+*p-'0';
-        if ( *p == '}' )  p++;
-        if ( i == 0 || ! IsAlpha(*p) ) {
-          syEchos("Help: contentsline is garbage in 'online.toc'",fin);
-          SyFclose( fid );
-          return;
-        }
-
-        /* compare the line with the topic                                 */
-        q = topic;
-        match = 2;
-        while ( *p != '}' && match ) {
-            if ( *q != '\0' && (*p | 0x20) == (*q | 0x20) ) {
-                p++; q++;
-            }
-            else if ( *q == ' ' || *q == '\0' ) {
-                p++;
-                match = 1;
-            }
-            else {
-                match = 0;
-            }
-        }
-        if ( *q != '\0' )  match = 0;
-
-        /* if the offset is '-1' we are interested in the previous section */
-        if ( match == 2 && offset == -1 ) {
-            if ( last[0] == '\0' ) {
-                syEchos("Help: the last section is the first one\n", fin );
-                SyFclose( fid );
-                if ( raw )  syStopraw( fin );
-                return;
-            }
-            q = line;
-            p = last;
-            while ( *p != '\0' )  *q++ = *p++;
-            *q = '\0';
-        }
-
-        /* if the offset is '1' we are interested in the next section      */
-        if ( match == 2 && offset == 1 ) {
-            if ( ! SyFgets( line, sizeof(line), fid ) ) {
-                syEchos("Help: the last section is the last one\n", fin );
-                SyFclose( fid );
-                if ( raw )  syStopraw( fin );
-                return;
-            }
-        }
-
-        /* if the offset if '-2' we are interested in the first section    */
-        if ( match == 2 && offset == -2 ) {
-            if ( last2[0] == '\0' ) {
-                syEchos("Help: the last section is the first one\n", fin );
-                SyFclose( fid );
-                if ( raw )  syStopraw( fin );
-                return;
-            }
-            q = line;
-            p = last2;
-            while ( *p != '\0' )  *q++ = *p++;
-            *q = '\0';
-        }
-
-        /* if the offset is '2' we are interested in the next chapter      */
-        if ( match == 2 && offset == 2 ) {
-            while ( 1 ) {
-                if ( ! SyFgets( line, sizeof(line), fid ) ) {
-                  syEchos("Help: the last section is in the last chapter\n",
-                          fin );
-                  SyFclose( fid );
-                  if ( raw )  syStopraw( fin );
-                  return;
-                }
-                for ( p = line; *p != '\0' && ! IsDigit(*p); p++ )  ;
-                for ( ; *p != '}' && *p != '.'; p++ )  ;
-                if ( *p == '}' )  break;
-            }
-        }
-
-        /* parse table of contents line (again)                            */
-        for ( p = line; *p != '\0' && ! IsDigit(*p); p++ )  ;
-        for ( i = 0; IsDigit(*p); p++ )  i = 10*i+*p-'0';
-        if ( *p == '.' )  p++;
-        for ( j = 0; IsDigit(*p); p++ )  j = 10*j+*p-'0';
-        if ( *p == '}' )  p++;
-        if ( i == 0 || ! IsAlpha(*p) ) {
-          syEchos("Help: contentsline is garbage in 'online.toc'",fin);
-          SyFclose( fid );
-          if ( raw )  syStopraw( fin );
-          return;
-        }
-
-        /* if this is a precise match remember chapter and section number  */
-        if ( match == 2 ) {
-
-            /* remember the chapter and section number                     */
-            chapnr = i;
-            secnr  = j;
-
-            /* get the section name                                        */
-            q = secname;
-            while ( *p != '}' )  *q++ = *p++;
-            *q = '\0';
-
-            /* we dont have to look further                                */
-            matches = 1;
-            break;
-        }
-
-        /* append a weak match to the list of matches                      */
-        else if ( match == 1 ) {
-
-            /* remember the chapter and section number                     */
-            chapnr = i;
-            secnr  = j;
-
-            /* append the section name to the list of sections             */
-            q = secname;
-            while ( *q != '\0' )  q++;
-            if ( q != secname && q < secname+sizeof(secname)-1 )
-                *q++ = '\n';
-            while ( *p != '}' && q < secname+sizeof(secname)-1 )
-                *q++ = *p++;
-            *q = '\0';
-
-            /* we have to continue the search                              */
-            matches++;
-        }
-
-        /* copy this line into <last>                                      */
-        q = last;
-        p = line;
-        while ( *p != '\0' ) *q++ = *p++;
-        *q = '\0';
-
-        /* if the line is a chapter line copy it into <last2>              */
-        if ( j == 0 ) {
-            q = last2;
-            p = line;
-            while ( *p != '\0' )  *q++ = *p++;
-            *q = '\0';
-        }
-
-    }
-
-    /* close the table of contents file                                    */
-    SyFclose( fid );
-
-    /* if no section was found complain                                    */
-    if ( matches == 0 ) {
-        syEchos( "Help: no section with this name was found\n", fin );
-        if ( raw )  syStopraw( fin );
-        return;
-    }
-
-    /* if several sections were found return                               */
-    if ( 2 <= matches ) {
-        syEchos( "Help: several sections match this topic\n", fin );
-        syEchos( secname, fin );
-        syEchos( "\n", fin );
-        if ( raw )  syStopraw( fin );
-        return;
-    }
-
-    /* if this is the first time we help collect the chapter file names    */
-    if ( syChapnames[0][0] == '\0' ) {
-
-        /* open the 'online.tex' file                                      */
-        filename[0] = '\0';
-        strncat( filename, SyHelpname, sizeof(filename)-12 );
-        strncat( filename, "online.tex", 11 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
-            syEchos( "Help: cannot open the online manual file '", fin );
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
-            if ( raw )  syStopraw( fin );
-            return;
-        }
-
-        /* scan this file for '\Include' lines, each contains one chapter  */
-        offset = 0;
-        while ( SyFgets( line, sizeof(line), fid ) ) {
-            p = line;
-            q = "\\Include{";
-            while ( *p == *q ) { p++; q++; }
-            if ( *q == '\0' ) {
-                q = syChapnames[offset];
-                while ( *p != '}' )  *q++ = *p++;
-                *q = '\0';
-                offset++;
-            }
-        }
-
-        /* close the 'online.tex' file again                               */
-        SyFclose( fid );
-
-    }
-
-    /* try to open the chapter file                                        */
-    filename[0] = '\0';
-    strncat( filename, SyHelpname, sizeof(filename)-13 );
-    strncat( filename, syChapnames[chapnr-1], 9 );
-    strncat( filename, ".tex", 4 );
-    fid = SyFopen( filename, "r" );
-    if ( fid == -1 ) {
-        syEchos( "Help: cannot open the chapter file '", fin );
-        syEchos( filename, fin );
-        syEchos( "'\n", fin );
-        syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
-        if ( raw )  syStopraw( fin );
-        return;
-    }
-
-    /* create the line we are looking for                                  */
-    if ( secnr == 0 ) {
-        secline[0] = '\0';
-        strncat( secline, "\\Chapter{", 10 );
-        strncat( secline, secname, sizeof(secline)-10 );
-    }
-    else {
-        secline[0] = '\0';
-        strncat( secline, "\\Section{", 10 );
-        strncat( secline, secname, sizeof(secline)-10 );
-    }
-
-    /* search the file for the correct '\Chapter' or '\Section' line       */
-    match = 0;
-    while ( ! match && SyFgets( line, sizeof(line), fid ) ) {
-        p = line;
-        q = secline;
-        while ( *p == *q ) { p++; q++; }
-        match = (*q == '\0' && *p == '}');
-        p = line;
-        q = "\\Chapter{";
-        while ( *p == *q ) { p++; q++; }
-        if ( *q == '\0' ) {
-            q = chapname;
-            while ( *p != '}' )  *q++ = *p++;
-            *q = '\0';
-        }
-    }
-
-    /* raise an error if this line was not found                           */
-    if ( ! match ) {
-        syEchos( "Help: could not find section '", fin );
-        syEchos( secname, fin );
-        syEchos( "' in chapter file '", fin );
-        syEchos( filename, fin );
-        syEchos( "'\n", fin );
-        SyFclose( fid );
-        if ( raw )  syStopraw( fin );
-        return;
-    }
-
-    /* remember this topic for the next time                               */
-    p = secname;
-    syLastIndex = (syLastIndex + 1) % 16;
-    q = syLastTopics[ syLastIndex ];
-    while ( *p != '\0' )  *q++ = *p++;
-    *q = '\0';
-
-    /* make a header line                                                  */
-    line[0] = '\0';
-    strncat( line, secname, 40 );
-    strncat( line,
-    " _____________________________________________________________________",
-             73 - strlen(chapname) );
-    line[72-strlen(chapname)] = ' ';
-    line[73-strlen(chapname)] = '\0';
-    strncat( line, chapname, strlen(chapname)+1 );
-    strncat( line, "\n", 2 );
-    syEchos( "    ", fin );
-    syEchos( line, fin );
-
-    /* print everything from here to the next section line                 */
-    offset = 2;
-    status = 'a';
-    while ( SyFgets( line, sizeof(line), fid ) ) {
-
-        /* skip lines that begin with '\index{'                            */
-        p = line;
-        q = "\\index{";
-        while ( *p == *q ) { p++; q++; }
-        if ( *q == '\0' )  continue;
-
-        /* skip lines that begin with '\newpage'                           */
-        p = line;
-        q = "\\newpage";
-        while ( *p == *q ) { p++; q++; }
-        if ( *q == '\0' )  continue;
-
-        /* skip lines that begin with '\begin{'                            */
-        p = line;
-        q = "\\begin{";
-        while ( *p == *q ) { p++; q++; }
-        if ( *q == '\0' )  continue;
-
-        /* skip lines that begin with '\end{'                              */
-        p = line;
-        q = "\\end{";
-        while ( *p == *q ) { p++; q++; }
-        if ( *q == '\0' )  continue;
-
-        /* break if we reach a '%%%%%%%%%%%%%%%...' line                   */
-        p = line;
-        q = "%%%%%%%%%%%%%%%%";
-        while ( *p == *q ) { p++; q++; }
-        if ( *q == '\0' )  break;
-
-        /* skip other lines that begin with a '%'                          */
-        p = line;
-        q = "%";
-        while ( *p == *q ) { p++; q++; }
-        if ( *q == '\0' )  continue;
-
-        /* stop every 24 lines                                             */
-        if ( offset == SyNrRows && raw ) {
-            syEchos( "    -- <space> for more --", fin );
-            ch = syGetch( fin );
-            syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                    fin);
-            syEchos( "                          ", fin );
-            syEchos("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",
-                    fin);
-            if ( ch == 'q' )  {
-                syEchos( "\n", fin );
-                break;
-            }
-            else if ( ch == '\n' || ch == '\r' ) {
-                offset = SyNrRows - 1;
-            }
-            else {
-                offset = 2;
-            }
-        }
-
-        /* insert empty line for '\vspace{'                                */
-        p = line;
-        q = "\\vspace{";
-        while ( *p == *q ) { p++; q++; }
-        if ( *q == '\0' ) {
-            syEchos( "\n", fin );
-            offset++;
-            continue;
-        }
-
-        /* display the line                                                */
-        p = line;
-        q = last;
-        spaces = 0;
-        while ( *p != '\0' ) {
-            if ( *p == '\\' && status != '|' ) {
-                if ( last < q && q[-1] == ' ' )
-                    *q++ = ' ';
-                else
-                    spaces++;
-            }
-            else if ( *p=='{' && (line==p || p[-1]!='\\') && status!='|' ) {
-                if ( status == '$' )
-                    *q++ = '(';
-                else if ( last < q && q[-1] == ' ' )
-                    *q++ = ' ';
-                else
-                    spaces++;
-            }
-            else if ( *p=='}' && (line==p || p[-1]!='\\') && status!='|' ) {
-                if ( status == '$' )
-                    *q++ = ')';
-                else if ( last < q && q[-1] == ' ' )
-                    *q++ = ' ';
-                else
-                    spaces++;
-            }
-            else if ( *p=='$' && (line==p || p[-1]!='\\') && status!='|' ) {
-                if ( last < q && q[-1] == ' ' )
-                    *q++ = ' ';
-                else
-                    spaces++;
-                if ( status != '$' )
-                    status = '$';
-                else
-                    status = 'a';
-            }
-            else if ( *p == ' ' && status != '|' ) {
-                *q++ = ' ';
-                while ( 0 < spaces ) {
-                    *q++ = ' ';
-                    spaces--;
-                }
-            }
-            else if ( *p=='|' && (line==p || p[-1]!='\\'
-                                  || status=='|' || status=='#') ) {
-                if ( status == '|' || status == '#' )
-                    status = 'a';
-                else
-                    status = '|';
-                spaces++;
-            }
-            else if ( *p == '#' ) {
-                if ( status == '|' )
-                    status = '#';
-                *q++ = *p;
-            }
-            else if ( *p == '\n' ) {
-                if ( status == '#' )
-                    status = '|';
-                *q++ = *p;
-            }
-            else if ( *p == '>' && line!=p && p[-1]=='\\' ) {
-                spaces++;
-            }
-            else if ( *p == '=' && line!=p && p[-1]=='\\' ) {
-                spaces++;
-            }
-            else {
-                *q++ = *p;
-            }
-            p++;
-        }
-        *q = '\0';
-        syEchos( "    ", fin );  syEchos( last, fin );
-        offset++;
-
-    }
-
-    /* close the file again                                                */
-    SyFclose( fid );
-    if ( raw )  syStopraw( fin );
-}
 
 
 /****************************************************************************
@@ -3792,15 +2210,6 @@ void            InitSystem (int argc, char **argv)
             ++argv; --argc;
             break;
 
-        case 'i': /* '-i <interface>', set which interface will be used         */
-            if ( argc < 3 ) {
-                fputs("gap: option '-i' must have an argument.\n",stderr);
-                goto usage;
-            }
-	    InitInterface(argc, argv);
-            ++argv; --argc;
-            break;
-
         case 'a': /* '-a <memory>', set amount to pre'm*a*lloc'ate         */
             if ( argc < 3 ) {
                 fputs("gap: option '-a' must have an argument.\n",stderr);
@@ -3814,14 +2223,6 @@ void            InitSystem (int argc, char **argv)
               || argv[2][strlen(argv[2])-1] == 'M' )
                 pre = pre * 1024 * 1024;
             ++argv; --argc;
-            break;
-
-        case 'n': /* '-n', disable command line editing                    */
-            if ( ! syWindow )  syLineEdit = 0;
-            break;
-
-        case 'f': /* '-f', force line editing                              */
-            if ( ! syWindow )  syLineEdit = 2;
             break;
 
         case 'q': /* '-q', GAP should be quiet                             */
@@ -3847,19 +2248,8 @@ void            InitSystem (int argc, char **argv)
             break;
 
         case 'e': /* '-e', do not quit GAP on '<ctr>-D'                    */
-            if ( ! syWindow )  syCTRD = ! syCTRD;
+            syCTRD = ! syCTRD;
             break;
-
-#if SYS_BSD || SYS_USG
-        case 'p': /* '-p', start GAP package mode for output               */
-            syWindow     = 1;
-            syLineEdit   = 1;
-            syCTRD       = 1;
-            syWinPut( 0, "@p", "" );
-            syBuf[2].fp = stdin;  syBuf[2].echo = stdout;
-            syBuf[3].fp = stdout;
-            break;
-#endif
 
         case 'r': /* don't read the '.gaprc' file                          */
             gaprc = ! gaprc;
@@ -3936,8 +2326,17 @@ void            InitSystem (int argc, char **argv)
         ++argv;  --argc;
     }
 
-    /* start the clock                                                     */
-    syStartTime = SyTime();
+    /* this process's start time in msecs */
+#ifdef WIN32
+    UInt ticks = (UInt)clock();
+    float factor = 1000.0 / CLOCKS_PER_SEC;
+    syStartTime = (UInt)(ticks * factor);
+#else
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    syStartTime = (UInt)((now.tv_sec * 1000) + (now.tv_nsec / 1000000));
+#endif
+    
 
     /* now we start                                                        */
     return;
@@ -3946,8 +2345,7 @@ void            InitSystem (int argc, char **argv)
  usage:
     fputs("usage: gap [-l <libname>] [-h <hlpname>] [-m <gap_memory>]\n",stderr);
     fputs("           [-a <premalloc_memory>]\n",stderr);
-    fputs("           [-g] [-n] [-q] [-b] [-x <nr>]  [-y <nr>]\n",stderr);
-    fputs("           [-i <interface_name>]\n",stderr);
+    fputs("           [-g] [-q] [-b] [-x <nr>]  [-y <nr>]\n",stderr);
     fputs("           <file>...\n",stderr);
     fputs("  run the Groups, Algorithms and Programming system.\n",stderr);
     SyExit( 1 );

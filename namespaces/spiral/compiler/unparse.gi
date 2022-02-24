@@ -179,7 +179,7 @@ Class(CUnparserBase, Unparser, rec(
     preprocess_init := (self, o) >> o,
 
     # example: includes := [ "<math.h>" ]
-    includes := [],
+    includes := [ "<stdint.h>" ],
 
     generated_by := Concat("\
 /*\
@@ -607,19 +607,19 @@ Class(CUnparserBase, Unparser, rec(
         )," ",self.infix(vars, ", ",i+is)),
 
     T_Int  := (self, t, vars, i, is) >> Print(Cond(
-            t.params[1] = 64, "__int64",
-            t.params[1] = 32, "__int32",
-            t.params[1] = 16, "__int16",
-            t.params[1] = 8, "__int8",
+            t.params[1] = 64, "int64_t",
+            t.params[1] = 32, "int32_t",
+            t.params[1] = 16, "int16_t",
+            t.params[1] = 8, "int8_t",
             Error("Type is not supported")
         ), " ", self.infix(vars, ", ",i+is)),
 
-    T_UInt  := (self, t, vars, i, is) >> Print("unsigned ", Cond(
-            t.params[1] = 64, "__int64",
-            t.params[1] = 32, "__int32",
-            t.params[1] = 16, "__int16",
-            t.params[1] = 8, "__int8",
-            t.params[1] = 1, "__bit",
+    T_UInt  := (self, t, vars, i, is) >> Print(Cond(
+            t.params[1] = 64, "uint64_t",
+            t.params[1] = 32, "uint32_t",
+            t.params[1] = 16, "uint16_t",
+            t.params[1] = 8, "uint8_t",
+            t.params[1] = 1, "unsigned __bit",
             Error("Type is not supported")
         ), " ", self.infix(vars, ", ",i+is)),
 

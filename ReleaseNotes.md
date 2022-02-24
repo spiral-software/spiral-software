@@ -1,3 +1,65 @@
+## Release Notes for Spiral Version 8.4.0
+
+### Introduction
+
+These release notes for Spiral 8.4.0 provide an overview of the release and
+document any known issues.  For details of the changes applied since the last
+release, please see the **Change Summary** below.
+
+### Supported Platforms
+
+Spiral is supported on Windows, Linux, and MacOS.
+
+Spiral is configured using **cmake** and is expected to run on most UNIX-like systems.
+
+See the [**README**](./README.md) file for more information on how to build for
+a specific platform.
+
+### Get Spiral Version 8.4.0
+
+You can download the lastest release from:
+
+https://github.com/spiral-software/spiral-software.git
+
+## Change Summary
+
+### New Features
+
+#### General Cleanup
+* Numerous changes were made to clean up some old code, simplifying (removing
+when possible), relying on standard library functions, and providing a single
+method to perform a function instead of supporting multiple methods.
+* Reduced and simplified the number of environment variables that were (or could
+be) set to control Spiral's operation. 
+* Removed [old, deprecated, or unused] code.
+
+#### CUDA
+Several examples (also doubling as tests) added to demonstrate CUDA code generation and testing.
+
+#### Profiler
+Several enhancements to improve the performance of the profiler.
+Improved handling of matrices returned by profiler, added ability to specify
+upper/lower corners of a sub-matrix (test or verify a portion of a large
+matrix). 
+Get a list of the best timed ruletrees
+In addition, cmake is now the standard build tools across all platforms when
+profiling Spiral generated code. 
+
+### Bug Fixes
+
+* Fixed / improved several minor issues for profiler
+
+### Known Issues
+
+None at present.
+
+## License
+
+Spiral is open source software licensed under the terms of the Simplified BSD
+License (see the [**LICENSE**](./LICENSE) file for the full text). 
+
+----------------------------------------------------------------------------------------------------
+
 ## Release Notes for Spiral Version 8.3.0
 
 ### Introduction

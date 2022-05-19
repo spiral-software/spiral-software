@@ -3,13 +3,6 @@
 # See LICENSE for details
 
 
-# Here I try to be very clean, when defining functions.
-# For example, no longer use .size since this often contains info from .params.
-# Instead have explicit .domain / .range
-# use checkParams instead of def, default def will just set .params
-#
-
-
 #F dLin(<N>, <a>, <b>, <t>) - interval -> diagonal linear scaling function
 #F    f: i -> a*i + b,
 #F    dom(f) = interval(0..N-1)

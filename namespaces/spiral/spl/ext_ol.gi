@@ -3,11 +3,6 @@
 # See LICENSE for details
 
 
-#
-# NB: Contents of this file should be moved to a directory local to the 
-#     particular Spiral Extension
-#
-
 Class(f2DTr, Tr, rec(
     advdomain := self >> [[self.params[2], self.params[1]]],
     advrange := self >> [[self.params[1], self.params[2]]]

@@ -1,3 +1,4 @@
+#include        <stdio.h>
 #include        <stdlib.h>
 #include        <time.h>
 #ifdef WIN32
@@ -1019,19 +1020,19 @@ Obj FunVersion(Obj hdCall) {
 */
 
 Obj FunBuildInfo(Obj hdCall) {
-	Pr("Version : %s\n", SPIRAL_VERSION_STRING, 0);
-	Pr("GitHash : %s\n", SPIRAL_GIT_COMMIT_HASH, 0);
-	Pr("GitRemote : %s\n", SPIRAL_GIT_REMOTE_URL, 0);
-	Pr("GitBranch : %s\n", SPIRAL_GIT_COMMIT_BRANCH, 0);
-	Pr("DateTimeUTC : %s %s\n", SPIRAL_BUILD_DATE_UTC, SPIRAL_BUILD_TIME_UTC);
-    Pr("System   : %s on %s\n", SPIRAL_SYSTEM_NAME, SPIRAL_SYSTEM_PROCESSOR);
-    Pr("Compiler : %s %s\n", SPIRAL_C_COMPILER_ID, SPIRAL_C_COMPILER_VERSION);
+	printf("Version : %s\n", SPIRAL_VERSION_STRING);
+    printf("GitHash : %s\n", SPIRAL_GIT_COMMIT_HASH);
+    printf("GitRemote : %s\n", SPIRAL_GIT_REMOTE_URL);
+    printf("GitBranch : %s\n", SPIRAL_GIT_COMMIT_BRANCH);
+    printf("DateTimeUTC : %s %s\n", SPIRAL_BUILD_DATE_UTC, SPIRAL_BUILD_TIME_UTC);
+    printf("System   : %s on %s\n", SPIRAL_SYSTEM_NAME, SPIRAL_SYSTEM_PROCESSOR);
+    printf("Compiler : %s %s\n", SPIRAL_C_COMPILER_ID, SPIRAL_C_COMPILER_VERSION);
 #ifdef CMAKE_INTDIR
-    Pr("Configuration : %s\n", CMAKE_INTDIR, 0);
+    printf("Configuration : %s\n", CMAKE_INTDIR);
 #else
-    Pr("CMakeBuildType : %s\n", SPIRAL_BUILD_TYPE, 0);
+    printf("CMakeBuildType : %s\n", SPIRAL_BUILD_TYPE);
 #endif
-	Pr("CMakeVersion : %s\n", SPIRAL_CMAKE_VERSION, 0);
+    printf("CMakeVersion : %s\n", SPIRAL_CMAKE_VERSION);
     return HdVoid;
 }
 

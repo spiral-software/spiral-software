@@ -25,7 +25,7 @@ export PROFILER_LOCAL_ARGS=""
 ## add path to profiler
 export PATH="$PATH:$SPIRAL/profiler/bin"
 
-if [ $1 = "-B" ]; then
+if [ "$1" = "-B" ]; then
   ## show Build Info and exit
   exec "$INSTALL_PFX/bin/gap" -B
 else

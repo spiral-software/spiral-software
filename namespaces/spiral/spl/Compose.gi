@@ -16,6 +16,7 @@ ccFunc := function(list)
       return Flat(l);
 end;
 
+Global.PrintComposeFull := false;
 
 # ==========================================================================
 # Compose
@@ -83,20 +84,24 @@ Class(Compose, BaseOperation, rec(
     printSeparationChar := " * ",
     print := meth(self, indent, indentStep)
         local s, newline;
+		
+		if PrintComposeFull then
+			self._print(self.children(), indent, indentStep);
+		else
+			s := self.children();
+			if  (Length(s) = 2 and ((IsBound(s[1]._sym) and IsBound(s[2]._mat)) or 
+									(IsBound(s[2]._sym) and IsBound(s[1]._mat)))) 
+					or ForAll(s, x->IsBound(x._sym)) then
+				newline := Ignore;
+			else 
+				newline := self._newline; 
+			fi;
 
-    s := self.children();
-    if Length(s) = 2 and ((IsBound(s[1]._sym) and IsBound(s[2]._mat))
-                       or (IsBound(s[2]._sym) and IsBound(s[1]._mat)))
-       or ForAll(s, x->IsBound(x._sym))
-        then newline := Ignore;
-    else newline := self._newline; fi;
-
-        DoForAllButLast(s, c->Chain(SPLOps.Print(c, indent, indentStep),
-                                Print(self.printSeparationChar),
-                    newline(indent)));
-
-    Last(s).print(indent, indentStep);
-
+			DoForAllButLast(s, c->Chain(SPLOps.Print(c, indent, indentStep), 
+										Print(self.printSeparationChar), 
+										newline(indent)));
+			Last(s).print(indent, indentStep);
+		fi;
     end,
     #-----------------------------------------------------------------------
     arithmeticCost := (self, costMul, costAddMul) >>

@@ -16,7 +16,16 @@ ccFunc := function(list)
       return Flat(l);
 end;
 
-Global.PrintComposeFull := false;
+
+_composePrintFull := false;
+
+# 
+# ComposePrintFull(boolean) -- if true, Compose prints like other SPL objects
+# 
+ComposePrintFull := function(val)
+    _composePrintFull := val = true;
+end;
+
 
 # ==========================================================================
 # Compose
@@ -85,7 +94,7 @@ Class(Compose, BaseOperation, rec(
     print := meth(self, indent, indentStep)
         local s, newline;
 		
-		if PrintComposeFull then
+		if _composePrintFull then
 			self._print(self.children(), indent, indentStep);
 		else
 			s := self.children();

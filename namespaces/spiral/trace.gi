@@ -211,6 +211,8 @@ Class(TraceLogCollector, rec(
 Class(TraceLog, rec(
                         
         __call__ := (self) >> WithBases(self, rec(plugins := [])),
+        
+        active := (self) >> (Length(self.plugins) > 0),
                     
         addPlugin := (self, plugin) >>  Add(self.plugins, plugin),
                     

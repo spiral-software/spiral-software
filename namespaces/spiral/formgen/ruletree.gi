@@ -820,7 +820,9 @@ ApplyRuleTreeStep := function ( rt, recurse )
 	    S := TransposedSPL(S); 
 	fi;
 
-    trace_log.addTreeExpansion(rt.rule,nt,S,rt.children,CopyFields(rt.node, rec(params := C)), var);
+    if trace_log.active() then
+        trace_log.addTreeExpansion(rt.rule,nt,S,rt.children,CopyFields(rt.node, rec(params := C)), var);
+    fi;
 
     S.root := rt.node;
     return S;

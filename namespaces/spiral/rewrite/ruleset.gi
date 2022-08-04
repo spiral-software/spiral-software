@@ -365,7 +365,7 @@ apply_rules := function(rules, expr, context)
 		while PatternMatch(expr, lhs, context) and context.rlimit <> 0 do
 			context.rlimit := context.rlimit - 1;
 			context.applied := context.applied + 1;
-            if trace_log.active() then
+            if TraceIsActive() then
                 old := Copy(expr);
             fi;
 			RuleTrace(rule);
@@ -392,7 +392,7 @@ apply_rules_ni := function(rules, expr, context)
 		if PatternMatch(expr, lhs, context) and context.rlimit <> 0 then
 			context.rlimit := context.rlimit - 1;
 			context.applied := context.applied + 1;
-            if trace_log.active() then
+            if TraceIsActive() then
                 old := Copy(expr);
             fi;
 			RuleTrace(rule);

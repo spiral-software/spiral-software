@@ -25,8 +25,13 @@ export PROFILER_LOCAL_ARGS=""
 ## add path to profiler
 export PATH="$PATH:$SPIRAL/profiler/bin"
 
-## Start SPIRAL
-exec "$INSTALL_PFX/bin/gap" -m $GAP_MEM -x 1000 -l "$GAP_DIR/lib/" -h "$GAP_DIR/doc/"  $SPIRAL/bin/_spiral.g
+if [ "$1" = "-B" ]; then
+  ## show Build Info and exit
+  exec "$INSTALL_PFX/bin/gap" -B
+else
+  ## Start SPIRAL
+  exec "$INSTALL_PFX/bin/gap" -m $GAP_MEM -x 1000 -l "$GAP_DIR/lib/" -h "$GAP_DIR/doc/"  $SPIRAL/bin/_spiral.g
+fi
 
 ## /gap/lib is being added using -l "$GAP_DIR/lib/" but it can also be added using
 ## export SPIRAL_GAP_LIB_DIR=*input_path_to_gap/lib*

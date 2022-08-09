@@ -211,6 +211,8 @@ Class(TraceLogCollector, rec(
 Class(TraceLog, rec(
                         
         __call__ := (self) >> WithBases(self, rec(plugins := [])),
+        
+        active := (self) >> (Length(self.plugins) > 0),
                     
         addPlugin := (self, plugin) >>  Add(self.plugins, plugin),
                     
@@ -291,6 +293,16 @@ TraceToFile := function(filename)
     trace_log.addPlugin(TraceLogToFile(filename));
 end;
 
+# TraceToNewFile(filename)
+#   Stop all other tracing and begin tracing to new/truncated file
+# 
+TraceToNewFile := function(filename)
+    PrintTo(filename, "");
+    trace_log.plugins := [];
+    trace_log.addPlugin(TraceLogToFile(filename));
+end;
+
+
 trace_collector := TraceLogCollector();
 TraceToMemory := function() 
     trace_log.addPlugin(trace_collector);
@@ -299,6 +311,20 @@ end;
 
 TraceNote := function(note)
 	trace_log.addNote(note);
+end;
+
+# TraceIsActive()
+#   return true if tracing is active
+# 
+TraceIsActive := function()
+    return trace_log.active();
+end;
+
+# TraceTurnOff()
+#   Stop all tracing
+#
+TraceTurnOff := function()
+    trace_log.plugins := [];
 end;
 
   

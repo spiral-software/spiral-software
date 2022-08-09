@@ -29,25 +29,9 @@ HashLookup := function( hashTable, key )
       pos := PositionProperty( entry, a -> hashTable.equalFun(a.key, key) );
 
       if pos = false then
-	  return false;
+        return false;
       else
- #      # catch the case of hash-identical but not identical spls
-#       elif IsSPL(key) and not IsIdenticalSPL(entry[pos].key, key) then
-#             chash := Copy(entry[pos].data); 
-#             if(IsList(chash)) then
-#                for index in [1..Length(chash)] do
-#                   chash[index].ruletree := 
-# 		  # NOTE:
-#                   spiral.formgen.ApplyRuleTreeSPL(entry[pos].data[index].ruletree, key);
-#                od;
-#             else
-# 		# NOTE:
-#                chash.ruletree := 
-#                spiral.formgen.ApplyRuleTreeSPL(entry[pos].data.ruletree, key);
-#             fi; 
-#             return chash;
-#       else
-      return entry[pos].data;
+        return entry[pos].data;
       fi;
    else
       return false;

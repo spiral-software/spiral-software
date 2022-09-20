@@ -3,16 +3,6 @@
 # See LICENSE for details
 
 
-# Here I define the new layer of "index-free" Sigma-SPL.  I will use
-# this for library generation. The goal of index-free formulas is to
-# eliminate loop indices completely. In such formulas objects may
-# still depend on the loop indices, because gather/scatter/diagonal
-# functions become multivariate (vs. univariate) functions, taking
-# loop indices + point index as arguments. 
-#
-# See "Generalized Problem Spec" write-up.
-#
-
 Class(GTIndexFunction, FuncClass, rec(
     isGTIndexFunction := true,
 

@@ -60,63 +60,69 @@ Class(CSE, rec(
     # returns a pair [lst, index]
     _lookup := meth(self, exp)
         local op, pos, args, lst;
-	if not IsRec(exp) or not IsBound(exp.rChildren) or IsParam(exp) then 
-	    return false; 
-	fi;
-	args := exp.rChildren();
-	op   := self._op(ObjId(exp), args); 
+		if not IsRec(exp) or not IsBound(exp.rChildren) or IsParam(exp) then 
+			return false; 
+		fi;
+		args := exp.rChildren();
+		op   := self._op(ObjId(exp), args); 
         if not IsBound(self.csetab.(op)) then 
-	    return false;
-	else 
-	    lst := self.csetab.(op);
-	    pos := PositionProperty(lst, ent -> ent.args=args);
-	    return When(pos=false, false, [lst, pos]);
-	fi;
+			return false;
+		else 
+			lst := self.csetab.(op);
+			pos := PositionProperty(lst, ent -> ent.args=args);
+			return When(pos=false, false, [lst, pos]);
+		fi;
     end,
 
     _add := meth(self, loc, oid, args)
         local op, ent;
-	op := self._op(oid, args); 
-	ent := rec(loc := loc, args := args);
+		op := self._op(oid, args); 
+		ent := rec(loc := loc, args := args);
         if not IsBound(self.csetab.(op)) then 
             self.csetab.(op) := [ent];
-	else 
+		else 
             Add(self.csetab.(op), ent);
-	fi;
+		fi;
     end,
 
     cseLookup := meth(self, exp) 
         local lkup, lst, idx;
-	lkup := self._lookup(exp);
-	if lkup = false then return false;
-	else 
-	    [lst, idx] := lkup;
-	    return lst[idx].loc;
-	fi;
+		lkup := self._lookup(exp);
+		if lkup = false then 
+			return false;
+		else 
+			[lst, idx] := lkup;
+			return lst[idx].loc;
+		fi;
     end,
 
     cseInvalidate := meth(self, exp)
         local lkup, lst, idx;
-	lkup := self._lookup(exp);
-	if lkup = false then return false;
-	else 
-	    [lst, idx] := lkup;
-	    Unbind(lst[idx]); # this introduces holes to the list, which gap allows
-	fi;
+		lkup := self._lookup(exp);
+		if lkup = false then 
+			return false;
+		else 
+			[lst, idx] := lkup;
+			Unbind(lst[idx]); # this introduces holes to the list, which gap allows
+		fi;
     end,
 
     cseAdd := meth(self, loc, exp)
         local ent, v, co, args, a, b;
-	if not IsBound(exp.isExpComposite) then return; fi;
-	args := exp.rChildren(); 
-	if ForAny(args, IsVolatileExp) then return; fi;
+		if not IsBound(exp.isExpComposite) then 
+			return; 
+		fi;
+		args := exp.rChildren(); 
+		if ForAny(args, IsVolatileExp) then 
+			return; 
+		fi;
 
-	self._add(loc, ObjId(exp), args);
+		self._add(loc, ObjId(exp), args);
 
-	if ObjId(exp) = mul and exp.t.isSigned() and Length(exp.args)=2 and IsValue(exp.args[1]) then
-	    v := Copy(exp.args[1]);
-	    v.v := -v.v; # negate
-	    self._add(neg(loc), mul, [v, exp.args[2]]);
+		if ObjId(exp) = mul and exp.t.isSigned() and Length(exp.args)=2 and IsValue(exp.args[1]) then
+			v := Copy(exp.args[1]);
+			v.v := -v.v; # negate
+			self._add(neg(loc), mul, [v, exp.args[2]]);
 
         elif ObjId(exp) in [add,sub] and Length(exp.args)=2 and not IsValue(exp.args[1]) and not IsValue(exp.args[2]) then
             ent := loc;
@@ -137,10 +143,10 @@ Class(CSE, rec(
             fi;
 
             if ent<>false and co<>false then 
-		self._add( 2 * a, add, [ent, co]);
-		self._add( 2 * a, add, [co, ent]);
-		self._add( 2 * b, sub, [ent, co]);
-		self._add(-2 * b, sub, [co, ent]);
+				self._add( 2 * a, add, [ent, co]);
+				self._add( 2 * a, add, [co, ent]);
+				self._add( 2 * b, sub, [ent, co]);
+				self._add(-2 * b, sub, [co, ent]);
             fi;
 
         fi;
@@ -148,20 +154,19 @@ Class(CSE, rec(
 
     cseCmd := meth(self, cmd)
         local lkup;
-	lkup := self.cseLookup(cmd.exp); 
-	if lkup <> false then
-	    cmd.exp := lkup;
-	else
-	    self.cseAdd(cmd.loc, cmd.exp);
-	fi;
+		lkup := self.cseLookup(cmd.exp); 
+		if lkup <> false then
+			cmd.exp := lkup;
+		else
+			self.cseAdd(cmd.loc, cmd.exp);
+		fi;
     end,
 
     init :=  self >> WithBases(self, rec(csetab := tab())),
 
     __call__ := meth(self, code)
         self.csetab := tab();
-	DoForAll( Collect(code, assign), 
-	          cmd -> self.cseCmd(cmd));
-	return code;
+		DoForAll( Collect(code, assign), cmd -> self.cseCmd(cmd));
+		return code;
     end
 ));

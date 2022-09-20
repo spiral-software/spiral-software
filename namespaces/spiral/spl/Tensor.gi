@@ -24,17 +24,6 @@ Class(Tensor, BaseOperation, rec(
         #DoForAll(L, x -> Constraint(IsSPL(x)));
 	if Length(L)=1 then return L[1]; fi;
 
-	#if Length(L)=2 then
-	#    scl := Cond(Dimensions(L[1])=[1,1], 1,
-	#	        Dimensions(L[2])=[1,1], 2,
-	#		false);
-	#    if scl <> false then
-	#	mat := L [ When(scl=1, 2, 1) ];
-	#	scl := MatSPL(L[scl])[1][1];
-	#	
-	#	return When(scl=1, mat, spiral.spl.operators.Scale(scl, mat));
-	#    fi;
-	#fi;
 
         return SPL(WithBases( self, 
 	    rec( _children := L,

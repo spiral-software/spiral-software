@@ -52,41 +52,12 @@ Class(IntelC, CompilerDefaults, rec(
 
     modes := ["ia32", "em64t"],
 
-    # WinGetValue is only defined under windows. If the call works, it takes
-    # the returned path, adds "bin" onto it, and then appends
-    # the iclvars batch file redirected to nul.
     ia32 := self >> CopyFields(default_profiles.win_x86_icc, rec(
-        premake := Concat(
-            "\"",
-            let(a := Try(WinGetValue("SYSTEM/CurrentControlSet/Control/Session Manager/Environment/ICPP_COMPILER15")),
-                b := Try(WinGetValue("SYSTEM/CurrentControlSet/Control/Session Manager/Environment/ICPP_COMPILER14")),
-                When(a[1],
-                    Concat(a[2], "bin\\"),
-                    When(b[1],
-                        Concat(b[2], "bin\\"),
-                        ""
-                    )
-                )
-            ),
-            "iclvars.bat\" > nul"
-        )
+        premake := "iclvars.bat\" > nul"
     )),
 
     em64t := self >> CopyFields(default_profiles.win_x64_icc, rec(
-        premake := Concat(
-            "\"",
-            let(a := Try(WinGetValue("SYSTEM/CurrentControlSet/Control/Session Manager/Environment/ICPP_COMPILER15")),
-                b := Try(WinGetValue("SYSTEM/CurrentControlSet/Control/Session Manager/Environment/ICPP_COMPILER14")),
-                When(a[1],
-                    Concat(a[2], "bin\\"),
-                    When(b[1],
-                        Concat(b[2], "bin\\"),
-                        ""
-                    )
-                )
-            ),
-            "iclvars.bat\" intel64 > nul"
-        )
+        premake := "iclvars.bat\" intel64 > nul"
     ))
 ));
 

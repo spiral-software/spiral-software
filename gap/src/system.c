@@ -2493,54 +2493,8 @@ int SuperMakeDir(char *dirname)
 }
 #endif
 
-#ifdef WIN32
-#include <shlwapi.h>
 
-int WinGetValue(char *key, void *val, int valsize)
-{
-	#define TMPBUF 1024
 
-	DWORD dwvalsize = valsize;
-	DWORD valtype;
-	char *keypath = key;
-	char zero = 0;
-	char tmpbuf[TMPBUF];
-
-	// check input.
-	if(key == NULL || val == NULL)
-		return 0;
-
-	// separate the key from the path and reverse the
-	// slashes.
-	key = strrchr(keypath, '/');
-
-	if(!key)
-	{
-		key = keypath;
-		keypath = &zero;
-	}
-	else
-	{
-		*(key) = 0;
-
-		// make sure we don't overrun our buffer.
-		if(strlen(keypath) >= TMPBUF/2)
-			return 0;
-
-		SlashToBackslash(tmpbuf, keypath);
-		keypath = tmpbuf;
-
-		*(key++) = '/';
-	}
-
-	// get the type. 
-    if(ERROR_SUCCESS != SHGetValue(HKEY_LOCAL_MACHINE, keypath, key, &valtype, val, &valsize))
-        return 0;
-
-	return (valtype == REG_DWORD) ? -valsize : ((valtype == REG_SZ) ? valsize : 0);
-}
-
-#endif
 
 /****************************************************************************
  **

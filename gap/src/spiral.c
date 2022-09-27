@@ -1340,6 +1340,47 @@ Obj FunIsWindows(Obj hdCall) {
 }
 
 
+Bag FunGetPid(Bag hd)
+{
+	Int pid;
+	Bag hdPid;
+
+	pid = SyGetPid();
+	hdPid = INT_TO_HD(pid);
+
+	return hdPid;
+}
+
+
+
+Bag FunMakeDir(Bag hdString)
+{
+	char str[512];
+
+	// make sure we get one argument.
+	if(GET_SIZE_BAG(hdString) != 2 * SIZE_HD)
+		return Error("usage: MakeDir( <dirname> )", 0, 0);
+
+	// eval the argument
+    hdString = EVAL( PTR_BAG(hdString)[1] );
+	
+	// make sure it's a string
+	if(GET_TYPE_BAG(hdString) != T_STRING)
+		return Error("<dirname> must be a string", 0, 0);
+	
+	// since we have to copy the string, make sure its not too long.
+	if(strlen(HD_TO_STRING(hdString)) >= 512)
+		return Error("<dirname> must be less than 511 chars long!", 0, 0);
+
+	strcpy(str, HD_TO_STRING(hdString));
+
+	if(!SuperMakeDir(str))
+		return Error("could not create the directory!", 0, 0);
+
+	return INT_TO_HD(1);
+}
+
+
 
 /****************************************************************************
 **
@@ -1389,15 +1430,8 @@ void            InitSPIRAL (void) {
     InstIntFunc( "When",             FunWhen);
     InstIntFunc( "Cond",             FunCond);
     InstIntFunc( "Same",             FunSame);
-    InstIntFunc( "MD5File",          FunMD5File);
-    InstIntFunc( "MD5String",        FunMD5String);
-    InstIntFunc( "FileTime",         FunFileMTime);
     InstIntFunc( "GetPid",           FunGetPid);
     InstIntFunc( "MakeDir",          FunMakeDir);
-
-    InstIntFunc( "WinGetValue",      FunWinGetValue);
-    InstIntFunc( "WinPathFixSpaces", FunWinPathFixSpaces);
-	InstIntFunc( "WinShortPathName", FunWinShortPathName);
 
     InstIntFunc( "GetEnv",  FunGetEnv );
 

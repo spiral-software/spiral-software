@@ -86,7 +86,6 @@ set(SOURCES
     buf_list.c
     iface.c
     debug.c
-    md5.c
     hash.c
     namespaces_bin.c
     integer.c
@@ -148,7 +147,6 @@ set(SOURCES
     integer4.h
     list.h
     machine_endian.h
-    md5.h
     memmgr.h
     namespaces.h
     namespaces_bin.h

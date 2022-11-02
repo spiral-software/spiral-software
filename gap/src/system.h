@@ -508,22 +508,6 @@ void SySaveHistory();
 
 /****************************************************************************
 **
-
-*V  SYS_ANSI  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  ANSI C
-*/
-#ifdef SYS_HAS_ANSI
-# define SYS_ANSI       SYS_HAS_ANSI
-#else
-# ifdef __STDC__
-#  define SYS_ANSI      1
-# else
-#  define SYS_ANSI      0
-# endif
-#endif
-
-
-/****************************************************************************
-**
 *V  SYS_BSD . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . BSD
 */
 #ifdef SYS_IS_BSD

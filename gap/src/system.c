@@ -29,15 +29,6 @@
 # include <unistd.h>
 #endif
 
-#ifdef SYS_HAS_ANSI
-# define SYS_ANSI       SYS_HAS_ANSI
-#else
-# ifdef __STDC__
-#  define SYS_ANSI      1
-# else
-#  define SYS_ANSI      0
-# endif
-#endif
 
 #ifdef SYS_HAS_CONST
 # define SYS_CONST      SYS_HAS_CONST
@@ -1911,11 +1902,9 @@ typedef SYS_SIG_T       sig_handler_t ( int );
 # define SYS_TIME_H
 #endif
 #ifndef SYS_HAS_TIME_PROTO              /* ANSI/TRAD decl. from H&S 18.1    */
-# if SYS_ANSI
+
 extern  time_t          time ( time_t * buf );
-# else
-extern  Int            time ( Int * buf );
-# endif
+
 #endif
 
 UInt   syLastIntr;             /* time of the last interrupt      */
@@ -2052,12 +2041,7 @@ return msecs - syStartTime;
 **  scans the command line for options, tries to  find  'LIBNAME/init.g'  and
 **  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
 */
-#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
-# if SYS_ANSI
-#  include      <stdlib.h>
-# endif
-# define SYS_STDLIB_H
-#endif
+
 #ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 20, 13 */
 #ifndef WIN32
 extern  char *          getenv ( SYS_CONST char * );
@@ -2069,12 +2053,6 @@ extern  int             isatty ( int );
 extern  char *          ttyname ( int );
 #endif
 
-#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
-# if SYS_ANSI
-#  include      <stdlib.h>
-# endif
-# define SYS_STDLIB_H
-#endif
 #ifndef SYS_HAS_MALLOC_PROTO
 # if SYS_ANSI                           /* ANSI decl. from H&S 16.1, 16.2  */
 extern  void *          malloc ( size_t );
@@ -2534,15 +2512,6 @@ void SySaveHistory(){
   fclose(fp);
 }
 
-
-
-
-#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
-# if SYS_ANSI
-#  include      <stdlib.h>
-# endif
-# define SYS_STDLIB_H
-#endif
 
 
 /****************************************************************************

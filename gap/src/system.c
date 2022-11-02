@@ -30,18 +30,6 @@
 #endif
 
 
-#ifdef SYS_HAS_CONST
-# define SYS_CONST      SYS_HAS_CONST
-#else
-# ifdef __STDC__
-#  define SYS_CONST     const
-# else
-#  define SYS_CONST
-# endif
-#endif
-
-
-
 /****************************************************************************
 **
 *V  SyStackSpace  . . . . . . . . . . . . . . . . . . . amount of stack space
@@ -2042,25 +2030,9 @@ return msecs - syStartTime;
 **  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
 */
 
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 20, 13 */
 #ifndef WIN32
-extern  char *          getenv ( SYS_CONST char * );
-extern  int             atoi ( SYS_CONST char * );
-#endif
-#endif
-#ifndef SYS_HAS_MISC_PROTO              /* UNIX decl. from 'man'           */
-extern  int             isatty ( int );
-extern  char *          ttyname ( int );
-#endif
-
-#ifndef SYS_HAS_MALLOC_PROTO
-# if SYS_ANSI                           /* ANSI decl. from H&S 16.1, 16.2  */
-extern  void *          malloc ( size_t );
-extern  void            free ( void * );
-# else                                  /* TRAD decl. from H&S 16.1, 16.2  */
-extern  char *          malloc ( unsigned );
-extern  void            free ( char * );
-# endif
+extern  char *          getenv ( const char * );
+extern  int             atoi ( const char * );
 #endif
 
 void            InitSystem (int argc, char **argv)
@@ -2640,16 +2612,6 @@ void SyAbortBags(
 **  scans the command line for options, tries to  find  'LIBNAME/init.g'  and
 **  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
 */
-
-#ifndef SYS_HAS_MALLOC_PROTO
-# if SYS_ANSI                           /* ANSI decl. from H&S 16.1, 16.2  */
-extern void* malloc(size_t);
-extern void   free(void*);
-# else                                  /* TRAD decl. from H&S 16.1, 16.2  */
-extern char* malloc(unsigned);
-extern void   free(char*);
-# endif
-#endif
 
 static UInt ParseMemory(Char* s)
 {

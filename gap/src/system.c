@@ -16,13 +16,10 @@
 
 
 #ifdef WIN32
-
-//#define	WIN32_ANSICOLOR_EMU
 #define WIN32_CTRLV_SUPPORT
 #include <direct.h> // for mkdir, getdrive, etc.
 #include <process.h> // for getpid()
 #include <windows.h>
-
 #endif
 
 #ifdef HAVE_UNISTD_H
@@ -1885,15 +1882,8 @@ void            SyPinfo (int nr, Int size)
 typedef SYS_SIG_T       sig_handler_t ( int );
 #endif
 
-#ifndef SYS_TIME_H                      /* time functions                  */
-# include       <time.h>
-# define SYS_TIME_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* ANSI/TRAD decl. from H&S 18.1    */
+#include       <time.h>
 
-extern  time_t          time ( time_t * buf );
-
-#endif
 
 UInt   syLastIntr;             /* time of the last interrupt      */
 

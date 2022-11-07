@@ -285,7 +285,7 @@ char* PathSep()
 
 
 Bag FunFileExists(Bag argv) {
-    char* usage = "sys_exists (const char *fname)";
+    char* usage = "FileExists (const char *fname)";
     int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
 
     int  _result;

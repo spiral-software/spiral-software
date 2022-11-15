@@ -39,7 +39,7 @@ extern Bag       HdTime;
 
 typedef void handler_t(int);
 
-int execute(char *input, char *output)
+int execute()
 {
   Bag		    hd;
   UInt     start;

@@ -114,12 +114,7 @@ int             main (int argc, char **argv)
 {
     exc_type_t          e;
     int exec_status, i;
-    char input[4096];
-    char output[4096];
-
-    for (i = 0; i < 4096; ++i) {
-        input[i] = output[i] = 0;
-    }
+    // ISSUE :: BAD CODING :: 8K of space built for Input/Output space
 
     Try {
 		/* initialize everything                                             */
@@ -153,7 +148,7 @@ int             main (int argc, char **argv)
     /* main evaluation loop */
     exec_status = EXEC_SUCCESS;
     while (exec_status != EXEC_QUIT) {
-        exec_status = execute(input, output);
+        exec_status = execute();
     }
  
     /* Write static history buffer */

@@ -2091,7 +2091,7 @@ void            InitSystem (int argc, char **argv)
 
         case 'B': /* Print build info and exit */
             FunBuildInfo((Obj)0);
-            SyExit(1);
+            SyExit(SYEXIT_OK);
             break;
 
         case 'b': /* '-b', supress the banner                              */

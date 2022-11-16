@@ -222,7 +222,6 @@ UInt   syStartTime;
 struct {
     FILE *      fp;                     /* file pointer for this file      */
     FILE *      echo;                   /* file pointer for the echo       */
-    char        buf [BUFSIZ];           /* the buffer for this file        */
 }       syBuf [16];
 
 
@@ -282,9 +281,6 @@ Int            SyFopen (char * name, char *mode )
     if ( syBuf[fid].fp == (FILE*)0 )
         return (Int)-1;
 
-    /* allocate the buffer                                                 */
-    setbuf( syBuf[fid].fp, syBuf[fid].buf );
-
     /* return file identifier                                              */
     return fid;
 }
@@ -318,8 +314,6 @@ void            SyFclose (Int fid )
 
     /* mark the buffer as unused                                           */
     syBuf[fid].fp = (FILE*)0;
-
-	syBuf[fid].buf[0] = '\0';
 }
 
 Int	SyChDir(const char* filename)
@@ -2036,31 +2030,27 @@ void            InitSystem (int argc, char **argv)
 
     /* open the standard files                                             */
 #if SYS_BSD || SYS_USG
-    syBuf[0].fp = stdin;   setbuf( stdin, syBuf[0].buf );
+    syBuf[0].fp = stdin;
     if ( isatty( fileno(stdin) ) ) {
         if ( isatty( fileno(stdout) )
           && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stdout)) ) )
             syBuf[0].echo = stdout;
         else
             syBuf[0].echo = fopen( ttyname(fileno(stdin)), "w" );
-        if ( syBuf[0].echo != (FILE*)0 && syBuf[0].echo != stdout )
-            setbuf( syBuf[0].echo, (char*)0 );
     }
     else {
         syBuf[0].echo = stdout;
     }
-    syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
+    syBuf[1].fp = stdout;
     if ( isatty( fileno(stderr) ) ) {
         if ( isatty( fileno(stdin) )
           && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
             syBuf[2].fp = stdin;
         else
             syBuf[2].fp = fopen( ttyname(fileno(stderr)), "r" );
-        if ( syBuf[2].fp != (FILE*)0 && syBuf[2].fp != stdin )
-            setbuf( syBuf[2].fp, syBuf[2].buf );
         syBuf[2].echo = stderr;
     }
-    syBuf[3].fp = stderr;  setbuf( stderr, (char*)0 );
+    syBuf[3].fp = stderr;
 #endif
 #if WIN32
     syBuf[0].fp = stdin;

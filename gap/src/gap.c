@@ -117,7 +117,6 @@ int             main (int argc, char **argv)
 {
     exc_type_t          e;
     int exec_status, i;
-    // ISSUE :: BAD CODING :: 8K of space built for Input/Output space
 
     Try {
 		/* initialize everything                                             */

@@ -92,21 +92,6 @@ FileManager := rec(
     addFile := (self,f) >> Add(self.files, f)
 );
 
-ProgressBar := rec(
-     __call__ := (self, events_per_dot) >> 
-         _moveBasesUp(rec(__bases__ := [self], n:=0, events_per_dot:=events_per_dot, done:=false)),
-
-    advance := meth(self)
-        self.n := self.n + 1;
-	if not self.done and (self.n mod self.events_per_dot = 0) then
-	    PrintTo("*errout*", "."); 
-	fi;
-    end
-);
-     
-_fileProgress := ProgressBar(10);
-
-Add(HooksAfterOpenInput, arg -> _fileProgress.advance());
 Add(HooksAfterOpenInput, function(arg) CurrentFile().id := false; end);
 
 WarnUndefined := function(path, pkg)
@@ -1074,4 +1059,3 @@ fi;
 
 Read(Concat(SPIRAL_DIR, PATH_SEP, "namespaces", PATH_SEP, "init.g"));
 
-_fileProgress.done := true;

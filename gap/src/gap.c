@@ -49,13 +49,16 @@
 #include		"GapUtils.h"
 
 
-extern Bag                  HdStack;
+extern Bag         HdStack;
 extern UInt        TopStack;
 
 int ERROR_QUIET = 0;
 int BACKTRACE_DEFAULT_LEVEL = 5;
 /*V HdLastErrorMsg */
 Obj HdLastErrorMsg;
+
+// Global error counter
+int ErrorCount = 0;
 
 /****************************************************************************
 **
@@ -131,6 +134,7 @@ int             main (int argc, char **argv)
 		HookSessionStart(); 
     }
     Catch(e) {
+        ErrorCount++;
 		/* exceptions raised using Error() are already printed at this point */
 		if(e!=ERR_GAP) 
 		{ 
@@ -158,6 +162,7 @@ int             main (int argc, char **argv)
 		HookSessionEnd();
     }
     Catch(e) {
+        ErrorCount++;
 		/* exceptions raised using Error() are already printed at this point */
 		if(e!=ERR_GAP) 
 		{ 
@@ -169,9 +174,14 @@ int             main (int argc, char **argv)
 		}
     }
 
-    SyExit(SYEXIT_OK);
-
-    return SYEXIT_OK;
+    if (ErrorCount == 0) {
+        SyExit(SYEXIT_OK);
+        return SYEXIT_OK;
+    }
+    else {
+        SyExit(1);
+        return(1);
+    }
 }
 
 /****************************************************************************
@@ -601,6 +611,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 	exc_type_t          e;
 	Int           isBreakpoint;
     Int           debugActive;
+
+    ErrorCount++;
 
 	if ( ! ERROR_QUIET ) {
 

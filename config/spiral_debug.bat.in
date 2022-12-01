@@ -38,4 +38,6 @@ set PATH=%PATH%;%SPIRAL_DIR%profiler\bin
 
 set PATH=%OLDPATH%
 
+EXIT /B %ERRORLEVEL%
+
 :end

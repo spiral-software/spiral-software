@@ -27,3 +27,4 @@ BagStats := function(bags)
     return res;
 end;
 
+Exit(0);

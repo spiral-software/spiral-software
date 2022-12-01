@@ -384,7 +384,7 @@ typedef struct {
     Int        importTop;
     Int        packageTop;
     Int        global;
-
+    FILE       *fileHandler;
     Int        file;
     char        name [1024];
     char        line [2048];
@@ -398,6 +398,7 @@ extern char            * In;
 
 
 typedef struct {
+    FILE       *fileHandler;
     Int        file;
     char        *line;
     Int        pos;

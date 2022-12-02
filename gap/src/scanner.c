@@ -1197,7 +1197,7 @@ Int            OpenInput (char *filename)
 
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
-    if (file == (FILE*)0) // (FILE*)0  or Null
+    if (file == (FILE*)0)
         return 0;
 
     /* remember the current position in the current file                   */
@@ -1281,7 +1281,6 @@ extern Int            OpenStringOutput ()
 
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
-
     Output->fid = -5;
     Output->file = (FILE*)0;
     Output->line[0] = '\0';

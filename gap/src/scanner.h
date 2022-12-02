@@ -377,19 +377,19 @@ void            Pr ( char * format, Int arg1, Int arg2 );
 #define SCANNER_INPUTS      16
 
 typedef struct {
-    Obj         package;
-    Obj         packages;
-    Obj         imports;
-    Obj         data;
-    Int        importTop;
-    Int        packageTop;
-    Int        global;
-    FILE       *fileHandler;
-    Int        file;
-    char        name [1024];
-    char        line [2048];
-    char        * ptr;
-    Int        number;
+	Obj   package;
+	Obj   packages;
+	Obj   imports;
+	Obj   data;
+	Int   importTop;
+	Int   packageTop;
+	Int   global;
+	Int   fid;
+	Int   number;
+	FILE *file;
+	char  name[1024];
+	char  line[2048];
+	char *ptr;
 } TypInputFile;
 
 extern TypInputFile    InputFiles [SCANNER_INPUTS];
@@ -398,23 +398,22 @@ extern char            * In;
 
 
 typedef struct {
-    FILE       *fileHandler;
-    Int        file;
-    char        *line;
-    Int        pos;
-    Int        indent;
-    Int        spos;
-    Int        sindent;
-    char*       mem; /* holds memory buffer if output goes into memory         */
-                     /* first UInt is the buffer size without 2*sizeof(UInt);  */
-                     /* second UInt is the number of characters written        */
-                     /* (without terminating zero);                            */
-                     /* null terminated characters array;                      */
+    FILE *file;
+    Int   fid;
+    char *line;
+    Int   pos;
+    Int   indent;
+    Int   spos;
+    Int   sindent;
+    char *mem; /* holds memory buffer if output goes into memory         */
+               /* first UInt is the buffer size without 2*sizeof(UInt);  */
+               /* second UInt is the number of characters written        */
+               /* (without terminating zero);                            */
+               /* null terminated characters array;                      */
+    Bag	hdList;
+} TypOutputFile;
 
-    Bag		hdList;
-}       TypOutputFile;
-
-extern TypOutputFile   * Output;
+extern TypOutputFile * Output;
 
 /****************************************************************************
 **

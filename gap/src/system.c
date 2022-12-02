@@ -438,7 +438,7 @@ int             syCTRO;                 /* number of '<ctr>-O' pending     */
 extern int isReadValFromFile;
 extern int addEndOfLineOnlyOnce;
 
-char *          SyFgets (char line[], Int length, FILE *file )
+char *          SyFgets (char *line, Int length, FILE *file )
 {
     Int                 ch,  ch2,  ch3, last;
     char                * p,  * q,  * r,  * s,  * t;
@@ -457,7 +457,7 @@ char *          SyFgets (char line[], Int length, FILE *file )
     Int                rep;
     char                buffer [512];
     Int                rn;
-    Int fid = 0; //GS4 this is to be removed when input/output file struct is finished. 
+    
     
     /* no line editing if the file is not '*stdin*' or '*errin*'           */
     if (file != stdin) {
@@ -488,6 +488,9 @@ char *          SyFgets (char line[], Int length, FILE *file )
         return p;
     }
 
+
+    Int fid = 0; //GS4 this is to be removed when input/output file struct is finished. 
+    // After this is mimicing reading from console
     /* the line starts out blank                                           */
     line[0] = '\0';  p = line;  h = syHistory;
     for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';

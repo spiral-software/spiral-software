@@ -347,7 +347,7 @@ Int            InputLogfile = -1;
 char            GetLine (void)
 {
     /* if file is '*stdin*' print the prompt and flush it     */
-    if (Input->fileHandler == stdin) {
+    if (Input->file == stdin) {
         if (!SyQuiet) Pr("%s%c", (Int)Prompt, (Int)'\03');
         else             Pr("%c", (Int)'\03', 0);
     }
@@ -362,15 +362,15 @@ char            GetLine (void)
 
  
     /* try to read a line                                        */
-   if ( ! SyFgets( In, sizeof(Input->line), Input->fileHandler) ) {
+   if ( ! SyFgets( In, sizeof(Input->line), Input->file) ) {
         In[0] = '\377';  In[1] = '\0';
         return *In;
     }
 
     /* if neccessary echo the line to the logfile                          */
-    if ( Logfile != -1 && (Input->fileHandler == stdin) )
+    if ( Logfile != -1 && (Input->file == stdin) )
         SyFputs( In, Logfile );
-    if ( InputLogfile != -1 && (Input->fileHandler == stdin) )
+    if ( InputLogfile != -1 && (Input->file == stdin) )
         SyFputs( In, InputLogfile );
 
         /* return the current character                                        */
@@ -806,9 +806,9 @@ void            PutLine(void)
 	Bag	hd;
 	char* str;
 	Int	slen;
-    //GS4 Figure out -5
-	if (Output->file == -5) {
 
+	if (Output->fid == -5) {
+        // Special handling for FunPrintToString() 
 		str = malloc((strlen(Output->line) + 1) * sizeof(char));
 		i = 0;
 		while (Output->line[i++] == ' ');
@@ -832,8 +832,8 @@ void            PutLine(void)
 
 		free(str);
 	}
-	else if (Output->fileHandler) {
-		SyFputs(Output->line, Output->fileHandler);
+	else if (Output->file) {
+		SyFputs(Output->line, Output->file);
 	}
 	else if (Output->mem) {
 		/* write to memory */
@@ -852,7 +852,7 @@ void            PutLine(void)
 
 
 	/* if neccessary echo it to the logfile                                */
-	if (Logfile != -1 && (Output->fileHandler == stdout || Output->fileHandler == stderr))
+	if (Logfile != -1 && (Output->file == stdout || Output->file == stderr))
 		SyFputs(Output->line, Logfile);
 }
 
@@ -880,7 +880,7 @@ void            PutChr (char ch)
     if ( ch == '\01' ) {
 
         /* if this is a better place to split the line remember it         */
-        if ( (Output->fileHandler == stdout || Output->fileHandler == stderr)
+        if ( (Output->file == stdout || Output->file == stderr)
           && Output->indent < Output->pos
           && SyNrCols-Output->pos  + 16*Output->indent
           <= SyNrCols-Output->spos + 16*Output->sindent ) {
@@ -896,7 +896,7 @@ void            PutChr (char ch)
     else if ( ch == '\02' ) {
 
         /* if this is a better place to split the line remember it         */
-        if ( (Output->fileHandler == stdout || Output->fileHandler == stderr)
+        if ( (Output->file == stdout || Output->file == stderr)
           && Output->indent < Output->pos
           && SyNrCols-Output->pos  + 16*Output->indent
           <= SyNrCols-Output->spos + 16*Output->sindent ) {
@@ -1206,7 +1206,7 @@ Int            OpenInput (char *filename)
 
     /* enter the file identifier and the file name                         */
     Input++;
-    Input->fileHandler = file;
+    Input->file = file;
     Input->name[0] = '\0';
     strncat( Input->name, filename, sizeof(Input->name) );
 
@@ -1255,7 +1255,7 @@ Int            CloseInput (void)
     /**/HookBeforeCloseInput();/**/
 
     /* close the input file                                                */
-    SyFclose( Input->fileHandler);
+    SyFclose( Input->file);
 
     /* revert to last file                                                 */
     Input--;
@@ -1281,7 +1281,9 @@ extern Int            OpenStringOutput ()
 
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
-    Output->file    = -5;
+
+    Output->fid = -5;
+    Output->file = (FILE*)0;
     Output->line[0] = '\0';
     Output->pos     = 0;
     Output->indent  = 0;
@@ -1306,7 +1308,7 @@ Bag		GReadFile()
 
 	hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
 
-	while(SyFgets(Input->line, 2048, Input->fileHandler)) {
+	while(SyFgets(Input->line, 2048, Input->file)) {
 		slen = strlen(Input->line);
 		Input->line[slen-1] = '\0';
 		hd = NewBag( T_STRING, slen );
@@ -1367,7 +1369,7 @@ Int            OpenOutput (char *filename)
 
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
-    Output->fileHandler = file;
+    Output->file = file;
     Output->line[0] = '\0';
     Output->pos     = 0;
     Output->indent  = 0;
@@ -1407,10 +1409,10 @@ Int            CloseOutput (void)
 
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0 );
-    SyFclose( Output->fileHandler);
+    SyFclose( Output->file);
 
     /* revert to previous output file and indicate success                 */
-    Output->fileHandler = (FILE*)0;
+    Output->file = (FILE*)0;
     if (Output->mem) {
         free(Output->mem);
         Output->mem = 0;
@@ -1510,7 +1512,7 @@ Int            OpenMemory ()
     *(mem + 2*sizeof(UInt)) = '\0';
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
-    Output->fileHandler = (FILE*)0;
+    Output->file = (FILE*)0;
     Output->file    = 0;
     Output->line[0] = '\0';
     Output->pos     = 0;
@@ -1578,7 +1580,7 @@ Int            OpenAppend (char *filename)
 
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
-    Output->fileHandler    = file;
+    Output->file = file;
     Output->line[0] = '\0';
     Output->pos     = 0;
     Output->indent  = 0;
@@ -1726,7 +1728,7 @@ void            InitScanner (void)
     for(i = 0; i < SCANNER_OUTPUTS; ++i) {
         /* OutputFiles[i].line = (char*) xmalloc(sizeof(char)*OutputLineLen); */
         OutputFiles[i].line = (char*) malloc(sizeof(char)*OutputLineLen);
-        OutputFiles[i].fileHandler = (FILE*)0;
+        OutputFiles[i].file = (FILE*)0;
         OutputFiles[i].file = 0;
         OutputFiles[i].indent = 0;
         OutputFiles[i].pos = 0;

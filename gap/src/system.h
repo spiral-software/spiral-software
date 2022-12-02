@@ -16,6 +16,7 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
+#include <stdio.h> 
 #include		"system_types.h"
 
 /****************************************************************************
@@ -196,6 +197,7 @@ extern  char            SyInitfiles [16] [256];
 #define IsDigit(ch)     (isdigit((int)ch))
 
 
+
 /****************************************************************************
 **
 *F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
@@ -205,8 +207,8 @@ extern  char            SyInitfiles [16] [256];
 **  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
 **  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
 **
-**  'SyFopen' returns an integer used by the scanner to  identify  the  file.
-**  'SyFopen' returns -1 if it cannot open the file.
+**  'SyFopen' returns an file pointer used by the scanner to  identify  the  file.
+**  'SyFopen' returns null if it cannot open the file.
 **
 **  The following standard files names and file identifiers  are  guaranteed:
 **  'SyFopen( "*stdin*", "r")' returns 0 identifying the standard input file.
@@ -218,23 +220,23 @@ extern  char            SyInitfiles [16] [256];
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary  mode.
 */
-extern  Int            SyFopen ( char * name, char * mode );
+extern  FILE*            SyFopen ( char * name, char * mode );
 
 
 /****************************************************************************
 **
-*F  SyFclose( <fid> ) . . . . . . . . . . . . . . . . .  close the file <fid>
+*F  SyFclose( <file pointer> ) . . . . . . . . . . . . . . . . .  close the file
 **
-**  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
+**  'SyFclose' closes the file with the identifier <file pointer>  which  is  obtained
 **  from 'SyFopen'.
 */
-extern  void            SyFclose ( Int fid );
+extern  void            SyFclose (FILE* file);
 
 
 
 /****************************************************************************
 **
-*F  SyFgets( <line>, <lenght>, <fid> )  . . . . .  get a line from file <fid>
+*F  SyFgets( <line>, <lenght>, <file pointer> )  . . . . .  get a line from file <file pointer>
 **
 **  'SyFgets' is called to read a line from the file  with  identifier <fid>.
 **  'SyFgets' (like 'fgets') reads characters until either  <length>-1  chars
@@ -289,16 +291,16 @@ extern  void            SyFclose ( Int fid );
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
-extern  char *          SyFgets ( char * line,  Int length,  Int fid );
+extern  char *          SyFgets ( char * line,  Int length, FILE* file );
 
 
 /****************************************************************************
 **
-*V  SyFputs( <line>, <fid> )  . . . . . . . .  write a line to the file <fid>
+*V  SyFputs( <line>, <file pointer> )  . . . . . . . .  write a line to the file <file pointer>
 **
-**  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
+**  'SyFputs' is called to put the  <line>  to the file identified  by <file pointer>.
 */
-extern  void            SyFputs ( char * line, Int fid );
+extern  void            SyFputs ( char * line, FILE* file );
 
 
 /****************************************************************************

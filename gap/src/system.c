@@ -220,7 +220,7 @@ UInt   syStartTime;
 #endif
 
 struct {
-    FILE *      fp;                     /* file pointer for this file      */
+    //FILE *      fp;                     /* file pointer for this file      */
     FILE *      echo;                   /* file pointer for the echo       */
 }       syBuf [16];
 
@@ -247,42 +247,34 @@ struct {
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary  mode.
 */
-Int            SyFopen (char * name, char *mode )
+FILE *            SyFopen (char * name, char *mode )
 {
-    Int                fid;
+    FILE *file;
 
     /* handle standard files                                               */
-    if ( strcmp( name, "*stdin*" ) == 0 ) {
-        if ( strcmp( mode, "r" ) != 0 )  return -1;
-        return 0;
+    if(strcmp(name, "*stdin*") == 0) {
+        if (strcmp(mode, "r") != 0)  return -1;
+        return stdin;
     }
-    else if ( strcmp( name, "*stdout*" ) == 0 ) {
-        if ( strcmp( mode, "w" ) != 0 )  return -1;
-        return 1;
+    else if (strcmp(name, "*stdout*") == 0) {
+        if (strcmp(mode, "w") != 0)  return -1;
+        return stdout;
     }
-    else if ( strcmp( name, "*errin*" ) == 0 ) {
-        if ( strcmp( mode, "r" ) != 0 )  return -1;
-        if ( syBuf[2].fp == (FILE*)0 )  return -1;
-        return 2;
+    else if (strcmp(name, "*errin*") == 0) {
+        if (strcmp(mode, "r") != 0)  return -1;
+        //  if ( syBuf[2].fp == (FILE*)0 )  return -1;
+        return stdin;
     }
-    else if ( strcmp( name, "*errout*" ) == 0 ) {
-        if ( strcmp( mode, "w" ) != 0 )  return -1;
-        return 3;
+    else if (strcmp(name, "*errout*") == 0) {
+        if (strcmp(mode, "w") != 0)  return -1;
+        return stderr;
     }
-
-    /* try to find an unused file identifier                               */
-    for ( fid = 4; fid < sizeof(syBuf)/sizeof(syBuf[0]); ++fid )
-        if ( syBuf[fid].fp == (FILE*)0 )  break;
-    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) )
-        return (Int)-1;
 
     /* try to open the file                                                */
-    syBuf[fid].fp = fopen( name, mode );
-    if ( syBuf[fid].fp == (FILE*)0 )
-        return (Int)-1;
+    file = fopen( name, mode );
 
-    /* return file identifier                                              */
-    return fid;
+    /* return file                                              */
+    return file;
 }
 
 
@@ -293,27 +285,25 @@ Int            SyFopen (char * name, char *mode )
 **  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
 **  from 'SyFopen'.
 */
-void            SyFclose (Int fid )
+void            SyFclose (FILE *file)
 {
     /* check file identifier                                               */
-    if ( syBuf[fid].fp == (FILE*)0 ) {
+    if ( file == (FILE*)0 ) {
         fputs("gap: panic 'SyFclose' asked to close closed file!\n",stderr);
         SyExit( 1 );
     }
 
     /* refuse to close the standard files                                  */
-    if ( fid == 0 || fid == 1 || fid == 2 || fid == 3 ) {
+    if (file == stdout || file == stdin || file == stderr ) {
         return;
     }
 
     /* try to close the file                                               */
-    if ( fclose( syBuf[fid].fp ) == EOF ) {
+    if ( fclose(file) == EOF ) {
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
     }
 
-    /* mark the buffer as unused                                           */
-    syBuf[fid].fp = (FILE*)0;
 }
 
 Int	SyChDir(const char* filename)
@@ -413,7 +403,7 @@ UInt SyGetPid(void)
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
-extern  int             syStartraw ( Int fid );
+extern  int             syStartraw ( FILE *file);
 extern  void            syStopraw  ( Int fid );
 extern  int             syGetch    ( Int fid );
 extern  void            syEchoch   ( int ch, Int fid );
@@ -448,7 +438,7 @@ int             syCTRO;                 /* number of '<ctr>-O' pending     */
 extern int isReadValFromFile;
 extern int addEndOfLineOnlyOnce;
 
-char *          SyFgets (char line[], Int length, Int fid )
+char *          SyFgets (char *line, Int length, FILE *file )
 {
     Int                 ch,  ch2,  ch3, last;
     char                * p,  * q,  * r,  * s,  * t;
@@ -468,9 +458,10 @@ char *          SyFgets (char line[], Int length, Int fid )
     char                buffer [512];
     Int                rn;
     
+    
     /* no line editing if the file is not '*stdin*' or '*errin*'           */
-    if ( fid != 0 && fid != 2 ) {
-        p = fgets( line, (Int)length, syBuf[fid].fp );
+    if (file != stdin) {
+        p = fgets( line, (Int)length, file);
 		if(isReadValFromFile){
  			if(!p){
 				if(addEndOfLineOnlyOnce){
@@ -487,16 +478,19 @@ char *          SyFgets (char line[], Int length, Int fid )
     
     /* no line editing if the user disabled it                             */
     if ( syLineEdit == 0 ) {
-      p = fgets( line, (Int)length, syBuf[fid].fp );
+      p = fgets( line, (Int)length, file);
       return p;
     }
 
     /* no line editing if the file cannot be turned to raw mode            */
-    if ( syLineEdit == 1 && ! syStartraw(fid) ) {
-        p = fgets( line, (Int)length, syBuf[fid].fp );
+    if ( syLineEdit == 1 && ! syStartraw(file) ) {
+        p = fgets( line, (Int)length, file);
         return p;
     }
 
+
+    Int fid = 0; //GS4 this is to be removed when input/output file struct is finished. 
+    // After this is mimicing reading from console
     /* the line starts out blank                                           */
     line[0] = '\0';  p = line;  h = syHistory;
     for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';
@@ -1628,10 +1622,10 @@ char            syTypeahead [256];      /* characters read by 'SyIsIntr'   */
 
 char            syAltMap [35] = "QWERTYUIOP    ASDFGHJKL     ZXCVBNM";
 
-int             syStartraw ( Int fid )
+int             syStartraw ( FILE *file )
 {
     /* check if the file is a terminal                                     */
-    if ( ! isatty( fileno(syBuf[fid].fp) ) )
+    if ( ! isatty( fileno(file) ) )
         return 0;
 
     /* indicate success                                                    */
@@ -1805,10 +1799,10 @@ void            SyFputs (char line[], Int fid )
 
 #if WIN32
 
-void  SyFputs ( char line[], Int fid )
+void  SyFputs ( char line[], FILE *file )
 {
-        fputs( line, syBuf[fid].fp );
-   		fflush( syBuf[fid].fp );		// typically the GAP internal output buffer has just been flushed, so flush file buffer, too
+        fputs( line, file );
+   		fflush( file );		// typically the GAP internal output buffer has just been flushed, so flush file buffer, too
                                         // otherwise piped output gets delayed
 }
 
@@ -2052,12 +2046,6 @@ void            InitSystem (int argc, char **argv)
     }
     syBuf[3].fp = stderr;
 #endif
-#if WIN32
-    syBuf[0].fp = stdin;
-    syBuf[1].fp = stdout;
-    syBuf[2].fp = stdin;
-    syBuf[3].fp = stderr;
-#endif
 
     /* install the signal handler for '<ctr>-C'                            */
 #if SYS_BSD || SYS_USG  || WIN32
@@ -2214,7 +2202,7 @@ void            InitSystem (int argc, char **argv)
         }
         strncat( SyInitfiles[0], SyLibname+i, k-i );
         strncat( SyInitfiles[0], "init.g", 6 );
-        if ( (fid = SyFopen( SyInitfiles[0], "r" )) != -1 )
+        if ( (fid = SyFopen( SyInitfiles[0], "r" )) != (FILE*)0)
             SyFclose( fid );
         i = k + 1;
     }

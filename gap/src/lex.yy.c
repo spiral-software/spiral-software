@@ -67,15 +67,12 @@ extern FILE* yyin, * yyout;
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
 
-#define YY_LESS_LINENO(n)
-
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
 	do \
 		{ \
 		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
 		*yy_cp = (yy_hold_char); \
 		YY_RESTORE_YY_MORE_OFFSET \
 		(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
@@ -511,7 +508,7 @@ int yy_flex_debug = 0;
 #define REJECT reject_used_but_not_detected
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
-#define YY_RESTORE_YY_MORE_OFFSET
+
 char* yytext;
 
 #include <string.h>
@@ -662,35 +659,9 @@ static int input(void);
 
 /* end tables serialization structures and prototypes */
 
-/* Default declaration of generated scanner - a define so the user can
- * easily add parameters.
- */
-#ifndef YY_DECL
-#define YY_DECL_IS_OURS 1
 
-extern int yylex(void);
-
-#define YY_DECL int yylex (void)
-#endif /* !YY_DECL */
-
-/* Code executed at the beginning of each rule, after yytext and yyleng
- * have been set up.
- */
-#ifndef YY_USER_ACTION
-#define YY_USER_ACTION
-#endif
-
- /* Code executed at the end of each rule. */
-#ifndef YY_BREAK
-#define YY_BREAK break;
-#endif
-
-#define YY_RULE_SETUP \
-	YY_USER_ACTION
-
-/** The main scanner function which does all the work.
- */
-YY_DECL
+// main scanner function
+int yylex(void)
 {
 	register yy_state_type yy_current_state;
 	register char* yy_cp,* yy_bp;
@@ -797,72 +768,72 @@ YY_DECL
 
 	case 1:
 		/* rule 1 can match eol */
-		YY_RULE_SETUP
+		
 		{ /* ignore */ }
-			YY_BREAK
+			break;
 		case 2:
-		YY_RULE_SETUP
+		
 
 		{ BEGIN(comment); AppendCommentBuffer(yytext, strlen(yytext)); }
-			YY_BREAK
+			break;
 		case 3:
 			/* rule 3 can match eol */
-			YY_RULE_SETUP
+			
 			#line 78 "scan.l"
 			{ AppendCommentBuffer(yytext, strlen(yytext)); }
-				YY_BREAK
+				break;
 			case 4:
 				/* rule 4 can match eol */
-				YY_RULE_SETUP
+				
 				#line 79 "scan.l"
 				{ AppendCommentBuffer(yytext, strlen(yytext)); }
-					YY_BREAK
+					break;
 				case 5:
-				YY_RULE_SETUP
+				
 				#line 80 "scan.l"
 				{ AppendCommentBuffer(yytext, strlen(yytext)); BEGIN(INITIAL); }
-					YY_BREAK
+					break;
 				case 6:
 					/* rule 6 can match eol */
-					YY_RULE_SETUP
+					
 					#line 82 "scan.l"
 					{ /* single line comment */
 							  AppendCommentBuffer(yytext, strlen(yytext)); }
-						YY_BREAK
+						break;
 					case 7:
-					YY_RULE_SETUP
+					
 					#line 85 "scan.l"
 					{ /* single line comment */
 					  AppendCommentBuffer(yytext, strlen(yytext)); }
-						YY_BREAK
+						break;
 					case 8:
-					YY_RULE_SETUP
+					
 					#line 89 "scan.l"
 					{ BEGIN(str);
 							  string_buf_ptr = Value;
 							  string_buf_end = Value + (sizeof(Value) / sizeof(char) - 1);
 							}
-						YY_BREAK
+						break;
 					case 9:
-					YY_RULE_SETUP
+					
 					#line 94 "scan.l"
 					{ /* saw closing quote, all done */
 							  BEGIN(INITIAL);
 							  *string_buf_ptr = '\0';
 							  return S_STRING; }
-						YY_BREAK
+						break;
 					case 10:
 						/* rule 10 can match eol */
-						YY_RULE_SETUP
+						
 						#line 99 "scan.l"
 						{ SyntaxError("unterminated string constant");
 								  BEGIN(INITIAL);
 								  *string_buf_ptr = '\0';
 								  return S_STRING;  }
-							YY_BREAK
+							break;
 						case 11:
 							/* rule 11 can match eol */
-							YY_RULE_SETUP
+							
 							#line 104 "scan.l"
 							{ if (string_buf_ptr != string_buf_end) {
 												 *string_buf_ptr++ = decode_backslashed(yytext[1]);
@@ -872,9 +843,9 @@ YY_DECL
 												 }
 											 }
 										   }
-								YY_BREAK
+								break;
 							case 12:
-							YY_RULE_SETUP
+							
 							#line 113 "scan.l"
 							{ char* yptr = yytext;
 											   if (string_buf_ptr != string_buf_end) {
@@ -886,338 +857,338 @@ YY_DECL
 												   }
 											   }
 											 }
-								YY_BREAK
+								break;
 							case 13:
-							YY_RULE_SETUP
+							
 							#line 124 "scan.l"
 							{ return S_CONCAT; }
-								YY_BREAK
+								break;
 							case 14:
-							YY_RULE_SETUP
+							
 							#line 125 "scan.l"
 							{ return S_AND; }
-								YY_BREAK
+								break;
 							case 15:
-							YY_RULE_SETUP
+							
 							#line 126 "scan.l"
 							{ return S_DO; }
-								YY_BREAK
+								break;
 							case 16:
-							YY_RULE_SETUP
+							
 							#line 127 "scan.l"
 							{ return S_ELIF; }
-								YY_BREAK
+								break;
 							case 17:
-							YY_RULE_SETUP
+							
 							#line 128 "scan.l"
 							{ return S_ELSE; }
-								YY_BREAK
+								break;
 							case 18:
-							YY_RULE_SETUP
+							
 							#line 129 "scan.l"
 							{ return S_END; }
-								YY_BREAK
+								break;
 							case 19:
-							YY_RULE_SETUP
+							
 							#line 130 "scan.l"
 							{ return S_FI; }
-								YY_BREAK
+								break;
 							case 20:
-							YY_RULE_SETUP
+							
 							#line 131 "scan.l"
 							{ return S_FOR; }
-								YY_BREAK
+								break;
 							case 21:
-							YY_RULE_SETUP
+							
 							#line 132 "scan.l"
 							{ return S_FUNCTION; }
-								YY_BREAK
+								break;
 							case 22:
-							YY_RULE_SETUP
+							
 							#line 133 "scan.l"
 							{ return S_IF; }
-								YY_BREAK
+								break;
 							case 23:
-							YY_RULE_SETUP
+							
 							#line 134 "scan.l"
 							{ return S_IN; }
-								YY_BREAK
+								break;
 							case 24:
-							YY_RULE_SETUP
+							
 							#line 135 "scan.l"
 							{ return S_IS; }
-								YY_BREAK
+								break;
 							case 25:
-							YY_RULE_SETUP
+							
 							#line 136 "scan.l"
 							{ return S_LOCAL; }
-								YY_BREAK
+								break;
 							case 26:
-							YY_RULE_SETUP
+							
 							#line 137 "scan.l"
 							{ return S_MOD; }
-								YY_BREAK
+								break;
 							case 27:
-							YY_RULE_SETUP
+							
 							#line 138 "scan.l"
 							{ return S_METHOD; }
-								YY_BREAK
+								break;
 							case 28:
-							YY_RULE_SETUP
+							
 							#line 139 "scan.l"
 							{ return S_NOT; }
-								YY_BREAK
+								break;
 							case 29:
-							YY_RULE_SETUP
+							
 							#line 140 "scan.l"
 							{ return S_OD; }
-								YY_BREAK
+								break;
 							case 30:
-							YY_RULE_SETUP
+							
 							#line 141 "scan.l"
 							{ return S_OR; }
-								YY_BREAK
+								break;
 							case 31:
-							YY_RULE_SETUP
+							
 							#line 142 "scan.l"
 							{ return S_REPEAT; }
-								YY_BREAK
+								break;
 							case 32:
-							YY_RULE_SETUP
+							
 							#line 143 "scan.l"
 							{ return S_RETURN; }
-								YY_BREAK
+								break;
 							case 33:
-							YY_RULE_SETUP
+							
 							#line 144 "scan.l"
 							{ return S_THEN; }
-								YY_BREAK
+								break;
 							case 34:
-							YY_RULE_SETUP
+							
 							#line 145 "scan.l"
 							{ return S_UNTIL; }
-								YY_BREAK
+								break;
 							case 35:
-							YY_RULE_SETUP
+							
 							#line 146 "scan.l"
 							{ return S_WHILE; }
-								YY_BREAK
+								break;
 							case 36:
-							YY_RULE_SETUP
+							
 							#line 147 "scan.l"
 							{ return S_QUIT; }
-								YY_BREAK
+								break;
 							case 37:
-							YY_RULE_SETUP
+							
 							#line 149 "scan.l"
 							{ return S_MAPTO_METH; }
-								YY_BREAK
+								break;
 							case 38:
-							YY_RULE_SETUP
+							
 							#line 150 "scan.l"
 							{ return S_MAPTO; }
-								YY_BREAK
+								break;
 							case 39:
-							YY_RULE_SETUP
+							
 							#line 151 "scan.l"
 							{ return S_ASSIGN_MAP; }
-								YY_BREAK
+								break;
 							case 40:
-							YY_RULE_SETUP
+							
 							#line 152 "scan.l"
 							{ return S_ASSIGN; }
-								YY_BREAK
+								break;
 							case 41:
-							YY_RULE_SETUP
+							
 							#line 154 "scan.l"
 							{ return S_LE; }
-								YY_BREAK
+								break;
 							case 42:
-							YY_RULE_SETUP
+							
 							#line 155 "scan.l"
 							{ return S_GE; }
-								YY_BREAK
+								break;
 							case 43:
-							YY_RULE_SETUP
+							
 							#line 156 "scan.l"
 							{ return S_NE; }
-								YY_BREAK
+								break;
 							case 44:
-							YY_RULE_SETUP
+							
 							#line 157 "scan.l"
 							{ return S_LT; }
-								YY_BREAK
+								break;
 							case 45:
-							YY_RULE_SETUP
+							
 							#line 158 "scan.l"
 							{ return S_GT; }
-								YY_BREAK
+								break;
 							case 46:
-							YY_RULE_SETUP
+							
 							#line 159 "scan.l"
 							{ return S_EQ; }
-								YY_BREAK
+								break;
 							case 47:
 							*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
 							(yy_c_buf_p) = yy_cp = yy_bp + 1;
 							YY_DO_BEFORE_ACTION; /* set up yytext again */
-							YY_RULE_SETUP
+							
 							#line 161 "scan.l"
 							{ GAP_SILENT = 1; return S_SEMICOLON; }
-								YY_BREAK
+								break;
 							case 48:
-							YY_RULE_SETUP
+							
 							#line 162 "scan.l"
 							{ GAP_SILENT = 0; return S_SEMICOLON; }
-								YY_BREAK
+								break;
 							case 49:
-							YY_RULE_SETUP
+							
 							#line 164 "scan.l"
 							{ fill_Value(yytext, strlen(yytext));
 									 return S_IDENT; }
-								YY_BREAK
+								break;
 							case 50:
-							YY_RULE_SETUP
+							
 							#line 166 "scan.l"
 							{ return S_DOTDOT; }
-								YY_BREAK
+								break;
 							case 51:
-							YY_RULE_SETUP
+							
 							#line 167 "scan.l"
 							{ return S_BACKQUOTE; }
-								YY_BREAK
+								break;
 							case 52:
-							YY_RULE_SETUP
+							
 							#line 168 "scan.l"
 							{ return S_PLUS; }
-								YY_BREAK
+								break;
 							case 53:
-							YY_RULE_SETUP
+							
 							#line 169 "scan.l"
 							{ return S_MINUS; }
-								YY_BREAK
+								break;
 							case 54:
-							YY_RULE_SETUP
+							
 							#line 170 "scan.l"
 							{ return S_MULT; }
-								YY_BREAK
+								break;
 							case 55:
-							YY_RULE_SETUP
+							
 							#line 171 "scan.l"
 							{ return S_DIV; }
-								YY_BREAK
+								break;
 							case 56:
-							YY_RULE_SETUP
+							
 							#line 172 "scan.l"
 							{ return S_POW; }
-								YY_BREAK
+								break;
 							case 57:
-							YY_RULE_SETUP
+							
 							#line 173 "scan.l"
 							{ return S_COMMA; }
-								YY_BREAK
+								break;
 							case 58:
-							YY_RULE_SETUP
+							
 							#line 174 "scan.l"
 							{ return S_DOT; }
-								YY_BREAK
+								break;
 							case 59:
-							YY_RULE_SETUP
+							
 							#line 175 "scan.l"
 							{ return S_LBRACK; }
-								YY_BREAK
+								break;
 							case 60:
-							YY_RULE_SETUP
+							
 							#line 176 "scan.l"
 							{ return S_RBRACK; }
-								YY_BREAK
+								break;
 							case 61:
-							YY_RULE_SETUP
+							
 							#line 177 "scan.l"
 							{ return S_LPAREN; }
-								YY_BREAK
+								break;
 							case 62:
-							YY_RULE_SETUP
+							
 							#line 178 "scan.l"
 							{ return S_RPAREN; }
-								YY_BREAK
+								break;
 							case 63:
-							YY_RULE_SETUP
+							
 							#line 179 "scan.l"
 							{ return S_LBRACE; }
-								YY_BREAK
+								break;
 							case 64:
-							YY_RULE_SETUP
+							
 							#line 180 "scan.l"
 							{ return S_RBRACE; }
-								YY_BREAK
+								break;
 							case 65:
-							YY_RULE_SETUP
+							
 							#line 181 "scan.l"
 							{ Value[0] = '~'; Value[1] = '\0'; return S_IDENT; }
-								YY_BREAK
+								break;
 							case 66:
-							YY_RULE_SETUP
+							
 							#line 183 "scan.l"
 							{ Value[0] = yytext[1]; Value[1] = '\0';
 										  return S_CHAR; }
-								YY_BREAK
+								break;
 							case 67:
-							YY_RULE_SETUP
+							
 							#line 186 "scan.l"
 							{ Value[0] = decode_backslashed(yytext[2]); Value[1] = '\0';
 											return S_CHAR; }
-								YY_BREAK
+								break;
 							case 68:
-							YY_RULE_SETUP
+							
 							#line 189 "scan.l"
 							{ Value[0] = yytext[1]; Value[1] = '\0';
 										   SyntaxError("misplaced single-quote in character constant");
 										   return S_CHAR; }
-								YY_BREAK
+								break;
 							case 69:
-							YY_RULE_SETUP
+							
 							#line 193 "scan.l"
 							{ fill_Value(yytext, strlen(yytext));
 										   return S_INT; }
-								YY_BREAK
+								break;
 											   /*0x[0-9a-fA-F]+ { i = strtol(yytext,0,0); return S_INT; }*/
 
 											   /*0X[0-9a-fA-F]+ { i = strtol(yytext,0,0); return S_INT; }*/
 
 											   case 70:
-											   YY_RULE_SETUP
+											   
 											   #line 201 "scan.l"
 											   { fill_Value(yytext, strlen(yytext));
 																					 return S_DOUBLE; }
-												   YY_BREAK
+												   break;
 											   case 71:
-											   YY_RULE_SETUP
+											   
 											   #line 204 "scan.l"
 											   { fill_Value(yytext, strlen(yytext));
 															   return S_IDENT; }
-												   YY_BREAK
+												   break;
 											   case 72:
-											   YY_RULE_SETUP
+											   
 											   #line 207 "scan.l"
 											   { *In = '\0'; /*fprintf(stderr, "matched eof."); */ return S_EOF; }
-												   YY_BREAK
+												   break;
 											   case YY_STATE_EOF(INITIAL):
 											   case YY_STATE_EOF(comment):
 											   case YY_STATE_EOF(str):
 											   #line 208 "scan.l"
 											   { *In = '\0'; /*fprintf(stderr, "matched eof.");*/ return S_EOF; }
-												   YY_BREAK
+												   break;
 											   case 73:
-											   YY_RULE_SETUP
+											   
 											   #line 210 "scan.l"
 											   { Value[0] = yytext[0]; Value[1] = '\0';  return S_ILLEGAL; }
-												   YY_BREAK
+												   break;
 											   case 74:
-											   YY_RULE_SETUP
+											   
 											   #line 213 "scan.l"
 											   ECHO;
-												   YY_BREAK
+												   break;
 											   #line 1379 "lex.yy.c"
 
 												   case YY_END_OF_BUFFER:
@@ -1227,8 +1198,6 @@ YY_DECL
 
 													   /* Undo the effects of YY_DO_BEFORE_ACTION. */
 													   *yy_cp = (yy_hold_char);
-													   YY_RESTORE_YY_MORE_OFFSET
-
 													   if (YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW)
 														   {
 														   /* We're scanning a new file or input source.  It's
@@ -2035,7 +2004,6 @@ static void yy_fatal_error(const char* msg)
 		{ \
 		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
 		yytext[yyleng] = (yy_hold_char); \
 		(yy_c_buf_p) = yytext + yyless_macro_arg; \
 		(yy_hold_char) = *(yy_c_buf_p); \

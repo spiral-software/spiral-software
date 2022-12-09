@@ -778,45 +778,31 @@ int yylex(void)
 			break;
 		case 3:
 			/* rule 3 can match eol */
-			
-			#line 78 "scan.l"
 			{ AppendCommentBuffer(yytext, strlen(yytext)); }
 				break;
 			case 4:
 				/* rule 4 can match eol */
-				
-				#line 79 "scan.l"
 				{ AppendCommentBuffer(yytext, strlen(yytext)); }
 					break;
 				case 5:
-				
-				#line 80 "scan.l"
 				{ AppendCommentBuffer(yytext, strlen(yytext)); BEGIN(INITIAL); }
 					break;
 				case 6:
 					/* rule 6 can match eol */
-					
-					#line 82 "scan.l"
 					{ /* single line comment */
 							  AppendCommentBuffer(yytext, strlen(yytext)); }
 						break;
 					case 7:
-					
-					#line 85 "scan.l"
 					{ /* single line comment */
 					  AppendCommentBuffer(yytext, strlen(yytext)); }
 						break;
 					case 8:
-					
-					#line 89 "scan.l"
 					{ BEGIN(str);
 							  string_buf_ptr = Value;
 							  string_buf_end = Value + (sizeof(Value) / sizeof(char) - 1);
 							}
 						break;
 					case 9:
-					
-					#line 94 "scan.l"
 					{ /* saw closing quote, all done */
 							  BEGIN(INITIAL);
 							  *string_buf_ptr = '\0';
@@ -824,8 +810,6 @@ int yylex(void)
 						break;
 					case 10:
 						/* rule 10 can match eol */
-						
-						#line 99 "scan.l"
 						{ SyntaxError("unterminated string constant");
 								  BEGIN(INITIAL);
 								  *string_buf_ptr = '\0';
@@ -833,8 +817,6 @@ int yylex(void)
 							break;
 						case 11:
 							/* rule 11 can match eol */
-							
-							#line 104 "scan.l"
 							{ if (string_buf_ptr != string_buf_end) {
 												 *string_buf_ptr++ = decode_backslashed(yytext[1]);
 												 if (string_buf_ptr == string_buf_end) {
@@ -845,8 +827,6 @@ int yylex(void)
 										   }
 								break;
 							case 12:
-							
-							#line 113 "scan.l"
 							{ char* yptr = yytext;
 											   if (string_buf_ptr != string_buf_end) {
 												   do *string_buf_ptr++ = *yptr++;
@@ -859,296 +839,182 @@ int yylex(void)
 											 }
 								break;
 							case 13:
-							
-							#line 124 "scan.l"
 							{ return S_CONCAT; }
 								break;
 							case 14:
-							
-							#line 125 "scan.l"
 							{ return S_AND; }
 								break;
 							case 15:
-							
-							#line 126 "scan.l"
 							{ return S_DO; }
 								break;
 							case 16:
-							
-							#line 127 "scan.l"
 							{ return S_ELIF; }
 								break;
 							case 17:
-							
-							#line 128 "scan.l"
 							{ return S_ELSE; }
 								break;
 							case 18:
-							
-							#line 129 "scan.l"
 							{ return S_END; }
 								break;
 							case 19:
-							
-							#line 130 "scan.l"
 							{ return S_FI; }
 								break;
 							case 20:
-							
-							#line 131 "scan.l"
 							{ return S_FOR; }
 								break;
 							case 21:
-							
-							#line 132 "scan.l"
 							{ return S_FUNCTION; }
 								break;
 							case 22:
-							
-							#line 133 "scan.l"
 							{ return S_IF; }
 								break;
 							case 23:
-							
-							#line 134 "scan.l"
 							{ return S_IN; }
 								break;
 							case 24:
-							
-							#line 135 "scan.l"
 							{ return S_IS; }
 								break;
 							case 25:
-							
-							#line 136 "scan.l"
 							{ return S_LOCAL; }
 								break;
 							case 26:
-							
-							#line 137 "scan.l"
 							{ return S_MOD; }
 								break;
 							case 27:
-							
-							#line 138 "scan.l"
 							{ return S_METHOD; }
 								break;
 							case 28:
-							
-							#line 139 "scan.l"
 							{ return S_NOT; }
 								break;
 							case 29:
-							
-							#line 140 "scan.l"
 							{ return S_OD; }
 								break;
 							case 30:
-							
-							#line 141 "scan.l"
 							{ return S_OR; }
 								break;
 							case 31:
-							
-							#line 142 "scan.l"
 							{ return S_REPEAT; }
 								break;
 							case 32:
-							
-							#line 143 "scan.l"
 							{ return S_RETURN; }
 								break;
 							case 33:
-							
-							#line 144 "scan.l"
 							{ return S_THEN; }
 								break;
 							case 34:
-							
-							#line 145 "scan.l"
 							{ return S_UNTIL; }
 								break;
 							case 35:
-							
-							#line 146 "scan.l"
 							{ return S_WHILE; }
 								break;
 							case 36:
-							
-							#line 147 "scan.l"
 							{ return S_QUIT; }
 								break;
 							case 37:
-							
-							#line 149 "scan.l"
 							{ return S_MAPTO_METH; }
 								break;
 							case 38:
-							
-							#line 150 "scan.l"
 							{ return S_MAPTO; }
 								break;
 							case 39:
-							
-							#line 151 "scan.l"
 							{ return S_ASSIGN_MAP; }
 								break;
 							case 40:
-							
-							#line 152 "scan.l"
 							{ return S_ASSIGN; }
 								break;
 							case 41:
-							
-							#line 154 "scan.l"
 							{ return S_LE; }
 								break;
 							case 42:
-							
-							#line 155 "scan.l"
 							{ return S_GE; }
 								break;
 							case 43:
-							
-							#line 156 "scan.l"
 							{ return S_NE; }
 								break;
 							case 44:
-							
-							#line 157 "scan.l"
 							{ return S_LT; }
 								break;
 							case 45:
-							
-							#line 158 "scan.l"
 							{ return S_GT; }
 								break;
 							case 46:
-							
-							#line 159 "scan.l"
 							{ return S_EQ; }
 								break;
 							case 47:
 							*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
 							(yy_c_buf_p) = yy_cp = yy_bp + 1;
 							YY_DO_BEFORE_ACTION; /* set up yytext again */
-							
-							#line 161 "scan.l"
 							{ GAP_SILENT = 1; return S_SEMICOLON; }
 								break;
 							case 48:
-							
-							#line 162 "scan.l"
 							{ GAP_SILENT = 0; return S_SEMICOLON; }
 								break;
 							case 49:
-							
-							#line 164 "scan.l"
 							{ fill_Value(yytext, strlen(yytext));
 									 return S_IDENT; }
 								break;
 							case 50:
-							
-							#line 166 "scan.l"
 							{ return S_DOTDOT; }
 								break;
 							case 51:
-							
-							#line 167 "scan.l"
 							{ return S_BACKQUOTE; }
 								break;
 							case 52:
-							
-							#line 168 "scan.l"
 							{ return S_PLUS; }
 								break;
 							case 53:
-							
-							#line 169 "scan.l"
 							{ return S_MINUS; }
 								break;
 							case 54:
-							
-							#line 170 "scan.l"
 							{ return S_MULT; }
 								break;
 							case 55:
-							
-							#line 171 "scan.l"
 							{ return S_DIV; }
 								break;
 							case 56:
-							
-							#line 172 "scan.l"
 							{ return S_POW; }
 								break;
 							case 57:
-							
-							#line 173 "scan.l"
 							{ return S_COMMA; }
 								break;
 							case 58:
-							
-							#line 174 "scan.l"
 							{ return S_DOT; }
 								break;
 							case 59:
-							
-							#line 175 "scan.l"
 							{ return S_LBRACK; }
 								break;
 							case 60:
-							
-							#line 176 "scan.l"
 							{ return S_RBRACK; }
 								break;
 							case 61:
-							
-							#line 177 "scan.l"
 							{ return S_LPAREN; }
 								break;
 							case 62:
-							
-							#line 178 "scan.l"
 							{ return S_RPAREN; }
 								break;
 							case 63:
-							
-							#line 179 "scan.l"
 							{ return S_LBRACE; }
 								break;
 							case 64:
-							
-							#line 180 "scan.l"
 							{ return S_RBRACE; }
 								break;
 							case 65:
-							
-							#line 181 "scan.l"
 							{ Value[0] = '~'; Value[1] = '\0'; return S_IDENT; }
 								break;
 							case 66:
-							
-							#line 183 "scan.l"
 							{ Value[0] = yytext[1]; Value[1] = '\0';
 										  return S_CHAR; }
 								break;
 							case 67:
-							
-							#line 186 "scan.l"
 							{ Value[0] = decode_backslashed(yytext[2]); Value[1] = '\0';
 											return S_CHAR; }
 								break;
 							case 68:
-							
-							#line 189 "scan.l"
 							{ Value[0] = yytext[1]; Value[1] = '\0';
 										   SyntaxError("misplaced single-quote in character constant");
 										   return S_CHAR; }
 								break;
 							case 69:
-							
-							#line 193 "scan.l"
 							{ fill_Value(yytext, strlen(yytext));
 										   return S_INT; }
 								break;
@@ -1157,39 +1023,27 @@ int yylex(void)
 											   /*0X[0-9a-fA-F]+ { i = strtol(yytext,0,0); return S_INT; }*/
 
 											   case 70:
-											   
-											   #line 201 "scan.l"
 											   { fill_Value(yytext, strlen(yytext));
 																					 return S_DOUBLE; }
 												   break;
 											   case 71:
-											   
-											   #line 204 "scan.l"
 											   { fill_Value(yytext, strlen(yytext));
 															   return S_IDENT; }
 												   break;
 											   case 72:
-											   
-											   #line 207 "scan.l"
 											   { *In = '\0'; /*fprintf(stderr, "matched eof."); */ return S_EOF; }
 												   break;
 											   case YY_STATE_EOF(INITIAL):
 											   case YY_STATE_EOF(comment):
 											   case YY_STATE_EOF(str):
-											   #line 208 "scan.l"
 											   { *In = '\0'; /*fprintf(stderr, "matched eof.");*/ return S_EOF; }
 												   break;
 											   case 73:
-											   
-											   #line 210 "scan.l"
 											   { Value[0] = yytext[0]; Value[1] = '\0';  return S_ILLEGAL; }
 												   break;
 											   case 74:
-											   
-											   #line 213 "scan.l"
 											   ECHO;
 												   break;
-											   #line 1379 "lex.yy.c"
 
 												   case YY_END_OF_BUFFER:
 													   {
@@ -2189,8 +2043,6 @@ void yyfree(void* ptr)
 }
 
 #define YYTABLES_NAME "yytables"
-
-#line 213 "scan.l"
 
 
 

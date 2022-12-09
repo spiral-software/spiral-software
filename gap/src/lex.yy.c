@@ -666,7 +666,7 @@ int yylex(void)
 	register yy_state_type yy_current_state;
 	register char* yy_cp, * yy_bp;
 	register int yy_act;
-
+	char* yptr;
 
 	/* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
 	 * is returned in "result".
@@ -814,7 +814,7 @@ int yylex(void)
 			}
 			break;
 		case 12:
-			char* yptr = yytext;
+			yptr = yytext;
 			if (string_buf_ptr != string_buf_end) {
 				do *string_buf_ptr++ = *yptr++;
 				while (*yptr && string_buf_ptr != string_buf_end);

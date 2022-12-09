@@ -664,14 +664,14 @@ static int input(void);
 int yylex(void)
 {
 	register yy_state_type yy_current_state;
-	register char* yy_cp,* yy_bp;
+	register char* yy_cp, * yy_bp;
 	register int yy_act;
 
 
 	/* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
 	 * is returned in "result".
 	 */
-	#define YY_INPUT(buf,result,max_size) { \
+#define YY_INPUT(buf,result,max_size) { \
 	       int len; \
 	       In=In+1; \
 	       if(*In=='\0') GetLine(); \
@@ -682,494 +682,485 @@ int yylex(void)
 	       In=In+len-1;\
 	    }
 
-	  char* string_buf_ptr;
-	  char* string_buf_end;
+	char* string_buf_ptr;
+	char* string_buf_end;
 
 
-		if (!(yy_init))
-			{
-			(yy_init) = 1;
+	if (!(yy_init))
+	{
+		(yy_init) = 1;
 
-	#ifdef YY_USER_INIT
-			YY_USER_INIT;
-	#endif
+#ifdef YY_USER_INIT
+		YY_USER_INIT;
+#endif
 
-			if (!(yy_start))
-				(yy_start) = 1;	/* first start state */
+		if (!(yy_start))
+			(yy_start) = 1;	/* first start state */
 
-			if (!yyin)
-				yyin = stdin;
+		if (!yyin)
+			yyin = stdin;
 
-			if (!yyout)
-				yyout = stdout;
+		if (!yyout)
+			yyout = stdout;
 
-			if (!YY_CURRENT_BUFFER) {
-				yyensure_buffer_stack();
-				YY_CURRENT_BUFFER_LVALUE =
-					yy_create_buffer(yyin,YY_BUF_SIZE);
-			}
+		if (!YY_CURRENT_BUFFER) {
+			yyensure_buffer_stack();
+			YY_CURRENT_BUFFER_LVALUE =
+				yy_create_buffer(yyin, YY_BUF_SIZE);
+		}
 
-			yy_load_buffer_state();
-			}
+		yy_load_buffer_state();
+	}
 
-		while (1)		/* loops until end-of-file is reached */
-			{
-			yy_cp = (yy_c_buf_p);
+	while (1)		/* loops until end-of-file is reached */
+	{
+		yy_cp = (yy_c_buf_p);
 
-			/* Support of yytext. */
-			*yy_cp = (yy_hold_char);
+		/* Support of yytext. */
+		*yy_cp = (yy_hold_char);
 
-			/* yy_bp points to the position in yy_ch_buf of the start of
-			 * the current run.
-			 */
-			yy_bp = yy_cp;
+		/* yy_bp points to the position in yy_ch_buf of the start of
+		 * the current run.
+		 */
+		yy_bp = yy_cp;
 
-			yy_current_state = (yy_start);
+		yy_current_state = (yy_start);
 	yy_match:
-			do
-				{
-				register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
-				if (yy_accept[yy_current_state])
-					{
-					(yy_last_accepting_state) = yy_current_state;
-					(yy_last_accepting_cpos) = yy_cp;
-					}
-				while (yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state)
-					{
-					yy_current_state = (int)yy_def[yy_current_state];
-					if (yy_current_state >= 164)
-						yy_c = yy_meta[(unsigned int)yy_c];
-					}
-				yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int)yy_c];
-				++yy_cp;
-				} while (yy_base[yy_current_state] != 435);
+		do
+		{
+			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			if (yy_accept[yy_current_state])
+			{
+				(yy_last_accepting_state) = yy_current_state;
+				(yy_last_accepting_cpos) = yy_cp;
+			}
+			while (yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state)
+			{
+				yy_current_state = (int)yy_def[yy_current_state];
+				if (yy_current_state >= 164)
+					yy_c = yy_meta[(unsigned int)yy_c];
+			}
+			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int)yy_c];
+			++yy_cp;
+		} while (yy_base[yy_current_state] != 435);
 
 	yy_find_action:
+		yy_act = yy_accept[yy_current_state];
+		if (yy_act == 0)
+		{ /* have to back up */
+			yy_cp = (yy_last_accepting_cpos);
+			yy_current_state = (yy_last_accepting_state);
 			yy_act = yy_accept[yy_current_state];
-			if (yy_act == 0)
-				{ /* have to back up */
-				yy_cp = (yy_last_accepting_cpos);
-				yy_current_state = (yy_last_accepting_state);
-				yy_act = yy_accept[yy_current_state];
-				}
+		}
 
-			YY_DO_BEFORE_ACTION;
+		YY_DO_BEFORE_ACTION;
 
 	do_action:	/* This label is used only to access EOF actions. */
 
-			switch (yy_act)
-		{ /* beginning of action switch */
-				case 0: /* must back up */
-				/* undo the effects of YY_DO_BEFORE_ACTION */
-				*yy_cp = (yy_hold_char);
-				yy_cp = (yy_last_accepting_cpos);
-				yy_current_state = (yy_last_accepting_state);
-				goto yy_find_action;
-
-	case 1:
-		/* rule 1 can match eol */
-		
-		{ /* ignore */ }
+		switch (yy_act)
+		{
+		case 0: /* must back up */
+		/* undo the effects of YY_DO_BEFORE_ACTION */
+			*yy_cp = (yy_hold_char);
+			yy_cp = (yy_last_accepting_cpos);
+			yy_current_state = (yy_last_accepting_state);
+			goto yy_find_action;
+			break;
+		case 1:
 			break;
 		case 2:
-		
-
-		{ BEGIN(comment); AppendCommentBuffer(yytext, strlen(yytext)); }
+			BEGIN(comment);
+			AppendCommentBuffer(yytext, strlen(yytext));
 			break;
 		case 3:
-			/* rule 3 can match eol */
-			{ AppendCommentBuffer(yytext, strlen(yytext)); }
+			AppendCommentBuffer(yytext, strlen(yytext));
+			break;
+		case 4:
+			AppendCommentBuffer(yytext, strlen(yytext));
+			break;
+		case 5:
+			AppendCommentBuffer(yytext, strlen(yytext));
+			BEGIN(INITIAL);
+			break;
+		case 6:
+			AppendCommentBuffer(yytext, strlen(yytext));
+			break;
+		case 7:
+			AppendCommentBuffer(yytext, strlen(yytext));
+			break;
+		case 8:
+			BEGIN(str);
+			string_buf_ptr = Value;
+			string_buf_end = Value + (sizeof(Value) / sizeof(char) - 1);
+			break;
+		case 9:
+			BEGIN(INITIAL);
+			*string_buf_ptr = '\0';
+			return S_STRING;
+			break;
+		case 10:
+			SyntaxError("unterminated string constant");
+			BEGIN(INITIAL);
+			*string_buf_ptr = '\0';
+			return S_STRING;
+			break;
+		case 11:
+			if (string_buf_ptr != string_buf_end) {
+				*string_buf_ptr++ = decode_backslashed(yytext[1]);
+				if (string_buf_ptr == string_buf_end) {
+					SyntaxError("string is too long");
+					BEGIN(INITIAL);
+				}
+			}
+			break;
+		case 12:
+			char* yptr = yytext;
+			if (string_buf_ptr != string_buf_end) {
+				do *string_buf_ptr++ = *yptr++;
+				while (*yptr && string_buf_ptr != string_buf_end);
+				if (string_buf_ptr == string_buf_end) {
+					SyntaxError("string is too long");
+					BEGIN(INITIAL);
+				}
+			}
+			break;
+		case 13:
+			return S_CONCAT;
+			break;
+		case 14:
+			return S_AND;
+			break;
+		case 15:
+			return S_DO;
+			break;
+		case 16:
+			return S_ELIF;
+			break;
+		case 17:
+			return S_ELSE;
+			break;
+		case 18:
+			return S_END;
+			break;
+		case 19:
+			return S_FI;
+			break;
+		case 20:
+			return S_FOR;
+			break;
+		case 21:
+			return S_FUNCTION;
+			break;
+		case 22:
+			return S_IF;
+			break;
+		case 23:
+			return S_IN;
+			break;
+		case 24:
+			return S_IS;
+			break;
+		case 25:
+			return S_LOCAL;
+			break;
+		case 26:
+			return S_MOD;
+			break;
+		case 27:
+			return S_METHOD;
+			break;
+		case 28:
+			return S_NOT;
+			break;
+		case 29:
+			return S_OD;
+			break;
+		case 30:
+			return S_OR;
+			break;
+		case 31:
+			return S_REPEAT;
+			break;
+		case 32:
+			return S_RETURN;
+			break;
+		case 33:
+			return S_THEN;
+			break;
+		case 34:
+			return S_UNTIL;
+			break;
+		case 35:
+			return S_WHILE;
+			break;
+		case 36:
+			return S_QUIT;
+			break;
+		case 37:
+			return S_MAPTO_METH;
+			break;
+		case 38:
+			return S_MAPTO;
+			break;
+		case 39:
+			return S_ASSIGN_MAP;
+			break;
+		case 40:
+			return S_ASSIGN;
+			break;
+		case 41:
+			return S_LE;
+			break;
+		case 42:
+			return S_GE;
+			break;
+		case 43:
+			return S_NE;
+			break;
+		case 44:
+			return S_LT;
+			break;
+		case 45:
+			return S_GT;
+			break;
+		case 46:
+			return S_EQ;
+			break;
+		case 47:
+			*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
+			(yy_c_buf_p) = yy_cp = yy_bp + 1;
+			YY_DO_BEFORE_ACTION; /* set up yytext again */
+			GAP_SILENT = 1;
+			return S_SEMICOLON;
+			break;
+		case 48:
+			GAP_SILENT = 0;
+			return S_SEMICOLON;
+			break;
+		case 49:
+			fill_Value(yytext, strlen(yytext));
+			return S_IDENT;
+			break;
+		case 50:
+			return S_DOTDOT;
+			break;
+		case 51:
+			return S_BACKQUOTE;
+			break;
+		case 52:
+			return S_PLUS;
+			break;
+		case 53:
+			return S_MINUS;
+			break;
+		case 54:
+			return S_MULT;
+			break;
+		case 55:
+			return S_DIV;
+			break;
+		case 56:
+			return S_POW;
+			break;
+		case 57:
+			return S_COMMA;
+			break;
+		case 58:
+			return S_DOT;
+			break;
+		case 59:
+			return S_LBRACK;
+			break;
+		case 60:
+			return S_RBRACK;
+			break;
+		case 61:
+			return S_LPAREN;
+			break;
+		case 62:
+			return S_RPAREN;
+			break;
+		case 63:
+			return S_LBRACE;
+			break;
+		case 64:
+			return S_RBRACE;
+			break;
+		case 65:
+			Value[0] = '~'; Value[1] = '\0';
+			return S_IDENT;
+			break;
+		case 66:
+			Value[0] = yytext[1];
+			Value[1] = '\0';
+			return S_CHAR;
+			break;
+		case 67:
+			Value[0] = decode_backslashed(yytext[2]);
+			Value[1] = '\0';
+			return S_CHAR;
+			break;
+		case 68:
+			Value[0] = yytext[1];
+			Value[1] = '\0';
+			SyntaxError("misplaced single-quote in character constant");
+			return S_CHAR;
+			break;
+		case 69:
+			fill_Value(yytext, strlen(yytext));
+			return S_INT;
+			break;
+		case 70:
+			fill_Value(yytext, strlen(yytext));
+			return S_DOUBLE;
+			break;
+		case 71:
+			fill_Value(yytext, strlen(yytext));
+			return S_IDENT;
+			break;
+		case 72:
+			*In = '\0';
+			return S_EOF;
+			break;
+		case YY_STATE_EOF(INITIAL):
+		case YY_STATE_EOF(comment):
+		case YY_STATE_EOF(str):
+			*In = '\0';
+			return S_EOF;
+			break;
+		case 73:
+			Value[0] = yytext[0]; Value[1] = '\0';
+			return S_ILLEGAL;
+			break;
+		case 74:
+			ECHO;
+			break;
+
+		case YY_END_OF_BUFFER:
+		{
+			/* Amount of text matched not including the EOB char. */
+			int yy_amount_of_matched_text = (int)(yy_cp - (yytext_ptr)) - 1;
+
+			/* Undo the effects of YY_DO_BEFORE_ACTION. */
+			*yy_cp = (yy_hold_char);
+			if (YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW)
+			{
+				/* We're scanning a new file or input source.  It's
+				 * possible that this happened because the user
+				 * just pointed yyin at a new source and called
+				 * yylex().  If so, then we have to assure
+				 * consistency between YY_CURRENT_BUFFER and our
+				 * globals.  Here is the right place to do so, because
+				 * this is the first action (other than possibly a
+				 * back-up) that will match for the new input source.
+				 */
+				(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+				YY_CURRENT_BUFFER_LVALUE->yy_input_file = yyin;
+				YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
+			}
+
+			/* Note that here we test for yy_c_buf_p "<=" to the position
+			 * of the first EOB in the buffer, since yy_c_buf_p will
+			 * already have been incremented past the NUL character
+			 * (since all states make transitions on EOB to the
+			 * end-of-buffer state).  Contrast this with the test
+			 * in input().
+			 */
+			if ((yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)])
+			{ /* This was really a NUL. */
+				yy_state_type yy_next_state;
+
+				(yy_c_buf_p) = (yytext_ptr)+yy_amount_of_matched_text;
+
+				yy_current_state = yy_get_previous_state();
+
+				/* Okay, we're now positioned to make the NUL
+				 * transition.  We couldn't have
+				 * yy_get_previous_state() go ahead and do it
+				 * for us because it doesn't know how to deal
+				 * with the possibility of jamming (and we don't
+				 * want to build jamming into it because then it
+				 * will run more slowly).
+				 */
+
+				yy_next_state = yy_try_NUL_trans(yy_current_state);
+
+				yy_bp = (yytext_ptr)+YY_MORE_ADJ;
+
+				if (yy_next_state)
+				{
+					/* Consume the NUL. */
+					yy_cp = ++(yy_c_buf_p);
+					yy_current_state = yy_next_state;
+					goto yy_match;
+				}
+
+				else
+				{
+					yy_cp = (yy_c_buf_p);
+					goto yy_find_action;
+				}
+			}
+
+			else switch (yy_get_next_buffer())
+			{
+			case EOB_ACT_END_OF_FILE:
+			{
+				(yy_did_buffer_switch_on_eof) = 0;
+
+				if (yywrap())
+				{
+					/* Note: because we've taken care in
+					 * yy_get_next_buffer() to have set up
+					 * yytext, we can now set up
+					 * yy_c_buf_p so that if some total
+					 * hoser (like flex itself) wants to
+					 * call the scanner after we return the
+					 * YY_NULL, it'll still work - another
+					 * YY_NULL will get returned.
+					 */
+					(yy_c_buf_p) = (yytext_ptr)+YY_MORE_ADJ;
+
+					yy_act = YY_STATE_EOF(YY_START);
+					goto do_action;
+				}
+
+				else
+				{
+					if (!(yy_did_buffer_switch_on_eof))
+						YY_NEW_FILE;
+				}
 				break;
-			case 4:
-				/* rule 4 can match eol */
-				{ AppendCommentBuffer(yytext, strlen(yytext)); }
-					break;
-				case 5:
-				{ AppendCommentBuffer(yytext, strlen(yytext)); BEGIN(INITIAL); }
-					break;
-				case 6:
-					/* rule 6 can match eol */
-					{ /* single line comment */
-							  AppendCommentBuffer(yytext, strlen(yytext)); }
-						break;
-					case 7:
-					{ /* single line comment */
-					  AppendCommentBuffer(yytext, strlen(yytext)); }
-						break;
-					case 8:
-					{ BEGIN(str);
-							  string_buf_ptr = Value;
-							  string_buf_end = Value + (sizeof(Value) / sizeof(char) - 1);
-							}
-						break;
-					case 9:
-					{ /* saw closing quote, all done */
-							  BEGIN(INITIAL);
-							  *string_buf_ptr = '\0';
-							  return S_STRING; }
-						break;
-					case 10:
-						/* rule 10 can match eol */
-						{ SyntaxError("unterminated string constant");
-								  BEGIN(INITIAL);
-								  *string_buf_ptr = '\0';
-								  return S_STRING;  }
-							break;
-						case 11:
-							/* rule 11 can match eol */
-							{ if (string_buf_ptr != string_buf_end) {
-												 *string_buf_ptr++ = decode_backslashed(yytext[1]);
-												 if (string_buf_ptr == string_buf_end) {
-													 SyntaxError("string is too long");
-													 BEGIN(INITIAL);
-												 }
-											 }
-										   }
-								break;
-							case 12:
-							{ char* yptr = yytext;
-											   if (string_buf_ptr != string_buf_end) {
-												   do *string_buf_ptr++ = *yptr++;
-												   while (*yptr && string_buf_ptr != string_buf_end);
-												   if (string_buf_ptr == string_buf_end) {
-													   SyntaxError("string is too long");
-													   BEGIN(INITIAL);
-												   }
-											   }
-											 }
-								break;
-							case 13:
-							{ return S_CONCAT; }
-								break;
-							case 14:
-							{ return S_AND; }
-								break;
-							case 15:
-							{ return S_DO; }
-								break;
-							case 16:
-							{ return S_ELIF; }
-								break;
-							case 17:
-							{ return S_ELSE; }
-								break;
-							case 18:
-							{ return S_END; }
-								break;
-							case 19:
-							{ return S_FI; }
-								break;
-							case 20:
-							{ return S_FOR; }
-								break;
-							case 21:
-							{ return S_FUNCTION; }
-								break;
-							case 22:
-							{ return S_IF; }
-								break;
-							case 23:
-							{ return S_IN; }
-								break;
-							case 24:
-							{ return S_IS; }
-								break;
-							case 25:
-							{ return S_LOCAL; }
-								break;
-							case 26:
-							{ return S_MOD; }
-								break;
-							case 27:
-							{ return S_METHOD; }
-								break;
-							case 28:
-							{ return S_NOT; }
-								break;
-							case 29:
-							{ return S_OD; }
-								break;
-							case 30:
-							{ return S_OR; }
-								break;
-							case 31:
-							{ return S_REPEAT; }
-								break;
-							case 32:
-							{ return S_RETURN; }
-								break;
-							case 33:
-							{ return S_THEN; }
-								break;
-							case 34:
-							{ return S_UNTIL; }
-								break;
-							case 35:
-							{ return S_WHILE; }
-								break;
-							case 36:
-							{ return S_QUIT; }
-								break;
-							case 37:
-							{ return S_MAPTO_METH; }
-								break;
-							case 38:
-							{ return S_MAPTO; }
-								break;
-							case 39:
-							{ return S_ASSIGN_MAP; }
-								break;
-							case 40:
-							{ return S_ASSIGN; }
-								break;
-							case 41:
-							{ return S_LE; }
-								break;
-							case 42:
-							{ return S_GE; }
-								break;
-							case 43:
-							{ return S_NE; }
-								break;
-							case 44:
-							{ return S_LT; }
-								break;
-							case 45:
-							{ return S_GT; }
-								break;
-							case 46:
-							{ return S_EQ; }
-								break;
-							case 47:
-							*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
-							(yy_c_buf_p) = yy_cp = yy_bp + 1;
-							YY_DO_BEFORE_ACTION; /* set up yytext again */
-							{ GAP_SILENT = 1; return S_SEMICOLON; }
-								break;
-							case 48:
-							{ GAP_SILENT = 0; return S_SEMICOLON; }
-								break;
-							case 49:
-							{ fill_Value(yytext, strlen(yytext));
-									 return S_IDENT; }
-								break;
-							case 50:
-							{ return S_DOTDOT; }
-								break;
-							case 51:
-							{ return S_BACKQUOTE; }
-								break;
-							case 52:
-							{ return S_PLUS; }
-								break;
-							case 53:
-							{ return S_MINUS; }
-								break;
-							case 54:
-							{ return S_MULT; }
-								break;
-							case 55:
-							{ return S_DIV; }
-								break;
-							case 56:
-							{ return S_POW; }
-								break;
-							case 57:
-							{ return S_COMMA; }
-								break;
-							case 58:
-							{ return S_DOT; }
-								break;
-							case 59:
-							{ return S_LBRACK; }
-								break;
-							case 60:
-							{ return S_RBRACK; }
-								break;
-							case 61:
-							{ return S_LPAREN; }
-								break;
-							case 62:
-							{ return S_RPAREN; }
-								break;
-							case 63:
-							{ return S_LBRACE; }
-								break;
-							case 64:
-							{ return S_RBRACE; }
-								break;
-							case 65:
-							{ Value[0] = '~'; Value[1] = '\0'; return S_IDENT; }
-								break;
-							case 66:
-							{ Value[0] = yytext[1]; Value[1] = '\0';
-										  return S_CHAR; }
-								break;
-							case 67:
-							{ Value[0] = decode_backslashed(yytext[2]); Value[1] = '\0';
-											return S_CHAR; }
-								break;
-							case 68:
-							{ Value[0] = yytext[1]; Value[1] = '\0';
-										   SyntaxError("misplaced single-quote in character constant");
-										   return S_CHAR; }
-								break;
-							case 69:
-							{ fill_Value(yytext, strlen(yytext));
-										   return S_INT; }
-								break;
-											   /*0x[0-9a-fA-F]+ { i = strtol(yytext,0,0); return S_INT; }*/
+			}
 
-											   /*0X[0-9a-fA-F]+ { i = strtol(yytext,0,0); return S_INT; }*/
+			case EOB_ACT_CONTINUE_SCAN:
+				(yy_c_buf_p) =
+					(yytext_ptr)+yy_amount_of_matched_text;
 
-											   case 70:
-											   { fill_Value(yytext, strlen(yytext));
-																					 return S_DOUBLE; }
-												   break;
-											   case 71:
-											   { fill_Value(yytext, strlen(yytext));
-															   return S_IDENT; }
-												   break;
-											   case 72:
-											   { *In = '\0'; /*fprintf(stderr, "matched eof."); */ return S_EOF; }
-												   break;
-											   case YY_STATE_EOF(INITIAL):
-											   case YY_STATE_EOF(comment):
-											   case YY_STATE_EOF(str):
-											   { *In = '\0'; /*fprintf(stderr, "matched eof.");*/ return S_EOF; }
-												   break;
-											   case 73:
-											   { Value[0] = yytext[0]; Value[1] = '\0';  return S_ILLEGAL; }
-												   break;
-											   case 74:
-											   ECHO;
-												   break;
+				yy_current_state = yy_get_previous_state();
 
-												   case YY_END_OF_BUFFER:
-													   {
-													   /* Amount of text matched not including the EOB char. */
-													   int yy_amount_of_matched_text = (int)(yy_cp - (yytext_ptr)) - 1;
+				yy_cp = (yy_c_buf_p);
+				yy_bp = (yytext_ptr)+YY_MORE_ADJ;
+				goto yy_match;
 
-													   /* Undo the effects of YY_DO_BEFORE_ACTION. */
-													   *yy_cp = (yy_hold_char);
-													   if (YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW)
-														   {
-														   /* We're scanning a new file or input source.  It's
-															* possible that this happened because the user
-															* just pointed yyin at a new source and called
-															* yylex().  If so, then we have to assure
-															* consistency between YY_CURRENT_BUFFER and our
-															* globals.  Here is the right place to do so, because
-															* this is the first action (other than possibly a
-															* back-up) that will match for the new input source.
-															*/
-														   (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-														   YY_CURRENT_BUFFER_LVALUE->yy_input_file = yyin;
-														   YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
-														   }
+			case EOB_ACT_LAST_MATCH:
+				(yy_c_buf_p) =
+					&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
 
-													   /* Note that here we test for yy_c_buf_p "<=" to the position
-														* of the first EOB in the buffer, since yy_c_buf_p will
-														* already have been incremented past the NUL character
-														* (since all states make transitions on EOB to the
-														* end-of-buffer state).  Contrast this with the test
-														* in input().
-														*/
-													   if ((yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)])
-														   { /* This was really a NUL. */
-														   yy_state_type yy_next_state;
+				yy_current_state = yy_get_previous_state();
 
-														   (yy_c_buf_p) = (yytext_ptr)+yy_amount_of_matched_text;
+				yy_cp = (yy_c_buf_p);
+				yy_bp = (yytext_ptr)+YY_MORE_ADJ;
+				goto yy_find_action;
+			}
+			break;
+		}
 
-														   yy_current_state = yy_get_previous_state();
-
-														   /* Okay, we're now positioned to make the NUL
-															* transition.  We couldn't have
-															* yy_get_previous_state() go ahead and do it
-															* for us because it doesn't know how to deal
-															* with the possibility of jamming (and we don't
-															* want to build jamming into it because then it
-															* will run more slowly).
-															*/
-
-														   yy_next_state = yy_try_NUL_trans(yy_current_state);
-
-														   yy_bp = (yytext_ptr)+YY_MORE_ADJ;
-
-														   if (yy_next_state)
-															   {
-															   /* Consume the NUL. */
-															   yy_cp = ++(yy_c_buf_p);
-															   yy_current_state = yy_next_state;
-															   goto yy_match;
-															   }
-
-														   else
-															   {
-															   yy_cp = (yy_c_buf_p);
-															   goto yy_find_action;
-															   }
-														   }
-
-													   else switch (yy_get_next_buffer())
-														   {
-														   case EOB_ACT_END_OF_FILE:
-															   {
-															   (yy_did_buffer_switch_on_eof) = 0;
-
-															   if (yywrap())
-																   {
-																   /* Note: because we've taken care in
-																	* yy_get_next_buffer() to have set up
-																	* yytext, we can now set up
-																	* yy_c_buf_p so that if some total
-																	* hoser (like flex itself) wants to
-																	* call the scanner after we return the
-																	* YY_NULL, it'll still work - another
-																	* YY_NULL will get returned.
-																	*/
-																   (yy_c_buf_p) = (yytext_ptr)+YY_MORE_ADJ;
-
-																   yy_act = YY_STATE_EOF(YY_START);
-																   goto do_action;
-																   }
-
-															   else
-																   {
-																   if (!(yy_did_buffer_switch_on_eof))
-																	   YY_NEW_FILE;
-																   }
-															   break;
-															   }
-
-														   case EOB_ACT_CONTINUE_SCAN:
-															   (yy_c_buf_p) =
-																   (yytext_ptr)+yy_amount_of_matched_text;
-
-															   yy_current_state = yy_get_previous_state();
-
-															   yy_cp = (yy_c_buf_p);
-															   yy_bp = (yytext_ptr)+YY_MORE_ADJ;
-															   goto yy_match;
-
-														   case EOB_ACT_LAST_MATCH:
-															   (yy_c_buf_p) =
-															   &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
-
-															   yy_current_state = yy_get_previous_state();
-
-															   yy_cp = (yy_c_buf_p);
-															   yy_bp = (yytext_ptr)+YY_MORE_ADJ;
-															   goto yy_find_action;
-														   }
-													   break;
-													   }
-
-												   default:
-													   YY_FATAL_ERROR(
-														   "fatal flex scanner internal error--no action found");
-												   } /* end of action switch */
-													   } /* end of scanning one token */
+		default:
+			YY_FATAL_ERROR(
+				"fatal flex scanner internal error--no action found");
+		} /* end of action switch */
+	} /* end of scanning one token */
 } /* end of yylex */
 
 /* yy_get_next_buffer - try to read in a new buffer
@@ -1179,7 +1170,7 @@ int yylex(void)
  *	EOB_ACT_CONTINUE_SCAN - continue scanning from current position
  *	EOB_ACT_END_OF_FILE - end of file
  */
-	static int yy_get_next_buffer(void)
+static int yy_get_next_buffer(void)
 {
 	register char* dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
 	register char* source = (yytext_ptr);
@@ -1468,15 +1459,15 @@ static int input(void)
 				(yy_c_buf_p) = (yytext_ptr)+offset;
 				break;
 			}
+			}
 		}
-	}
 
 	c = *(unsigned char*)(yy_c_buf_p);	/* cast for 8-bit char's */
 	*(yy_c_buf_p) = '\0';	/* preserve yytext */
 	(yy_hold_char) = *++(yy_c_buf_p);
 
 	return c;
-}
+	}
 #endif	/* ifndef YY_NO_INPUT */
 
 /** Immediately switch to a different input stream.

@@ -17,20 +17,15 @@
  */
 #define YY_SC_TO_UI(c) ((unsigned int) (unsigned char) c)
 
- /* Enter a start condition.  This macro really ought to take a parameter,
-  * but we do it the disgusting crufty way forced on us by the ()-less
-  * definition of BEGIN.
-  */
-#define BEGIN (yy_start) = 1 + 2 *
+/* Enter a start condition. */
+#define BEGIN(v) ((yy_start) = 1 + 2 * (v))
 
-  /* Translate the current start state into a value that can be later handed
-   * to BEGIN to return to the state.  The YYSTATE alias is for lex
-   * compatibility.
-   */
+/* Translate the current start state into a value that can be later handed
+ * to BEGIN to return to the state.
+ */
 #define YY_START (((yy_start) - 1) / 2)
-#define YYSTATE YY_START
 
-   /* Action number for EOF rule of a given start state. */
+/* Action number for EOF rule of a given start state. */
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
 
 /* Special action meaning "start processing a new file". */
@@ -548,9 +543,9 @@ static void fill_Value(char* src, int maxlen) {
 	*val = '\0';
 }
 
-#define INITIAL 0
-#define comment 1
-#define str 2
+#define STATE_INITIAL 0
+#define STATE_COMMENT 1
+#define STATE_STR     2
 
 #ifndef YY_NO_UNISTD_H
 /* Special case for "unistd.h", since it is non-ANSI. We include it way
@@ -769,7 +764,7 @@ int yylex(void)
 		case 1:
 			break;
 		case 2:
-			BEGIN(comment);
+			BEGIN(STATE_COMMENT);
 			AppendCommentBuffer(yytext, strlen(yytext));
 			break;
 		case 3:
@@ -780,7 +775,7 @@ int yylex(void)
 			break;
 		case 5:
 			AppendCommentBuffer(yytext, strlen(yytext));
-			BEGIN(INITIAL);
+			BEGIN(STATE_INITIAL);
 			break;
 		case 6:
 			AppendCommentBuffer(yytext, strlen(yytext));
@@ -789,18 +784,18 @@ int yylex(void)
 			AppendCommentBuffer(yytext, strlen(yytext));
 			break;
 		case 8:
-			BEGIN(str);
+			BEGIN(STATE_STR);
 			string_buf_ptr = Value;
 			string_buf_end = Value + (sizeof(Value) / sizeof(char) - 1);
 			break;
 		case 9:
-			BEGIN(INITIAL);
+			BEGIN(STATE_INITIAL);
 			*string_buf_ptr = '\0';
 			return S_STRING;
 			break;
 		case 10:
 			SyntaxError("unterminated string constant");
-			BEGIN(INITIAL);
+			BEGIN(STATE_INITIAL);
 			*string_buf_ptr = '\0';
 			return S_STRING;
 			break;
@@ -809,7 +804,7 @@ int yylex(void)
 				*string_buf_ptr++ = decode_backslashed(yytext[1]);
 				if (string_buf_ptr == string_buf_end) {
 					SyntaxError("string is too long");
-					BEGIN(INITIAL);
+					BEGIN(STATE_INITIAL);
 				}
 			}
 			break;
@@ -820,7 +815,7 @@ int yylex(void)
 				while (*yptr && string_buf_ptr != string_buf_end);
 				if (string_buf_ptr == string_buf_end) {
 					SyntaxError("string is too long");
-					BEGIN(INITIAL);
+					BEGIN(STATE_INITIAL);
 				}
 			}
 			break;
@@ -1022,9 +1017,9 @@ int yylex(void)
 			*In = '\0';
 			return S_EOF;
 			break;
-		case YY_STATE_EOF(INITIAL):
-		case YY_STATE_EOF(comment):
-		case YY_STATE_EOF(str):
+		case YY_STATE_EOF(STATE_INITIAL):
+		case YY_STATE_EOF(STATE_COMMENT):
+		case YY_STATE_EOF(STATE_STR):
 			*In = '\0';
 			return S_EOF;
 			break;
@@ -1473,7 +1468,7 @@ static int input(void)
 /** Immediately switch to a different input stream.
  * @param input_file A readable stream.
  *
- * @note This function does not reset the start condition to @c INITIAL .
+ * @note This function does not reset the start condition to @c STATE_INITIAL .
  */
 void yyrestart(FILE* input_file)
 {

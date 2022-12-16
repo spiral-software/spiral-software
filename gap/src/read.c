@@ -36,6 +36,11 @@
 #include		"GapUtils.h"
 #include        "namespaces_bin.h"
 
+#include "tables.h"
+#include "namespaces.h"
+#include "args.h"
+#include "list.h"
+
 extern UInt TopStack;
 
 /****************************************************************************
@@ -437,11 +442,6 @@ Obj  _RdRec ( TypSymbolSet follow, int type )
     if ( NrError >= 1 )  return 0;
     return hdRec;
 }
-
-#include "tables.h"
-#include "namespaces.h"
-#include "args.h"
-#include "list.h"
 
 Obj  RdLet ( TypSymbolSet follow ) {
 

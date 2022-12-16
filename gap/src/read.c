@@ -55,24 +55,30 @@ Bag       RdStats ( TypSymbolSet follow );
 **  'BinBag' makes a new bag of the type <type> with the  two  objects  <hdL>
 **  and <hdR>.  No bag is made if an error has occured  during  the  parsing.
 */
-Obj  BinBag ( unsigned int type, Obj hdL, Obj hdR ) {
+Obj  BinBag ( unsigned int type, Obj hdL, Obj hdR ) 
+{
     Obj hdRes;
+
     if ( NrError >= 1 )  return 0;
     hdRes = NewBag(type, 2 * SIZE_HD);
     SET_BAG(hdRes, 0,  hdL );  SET_BAG(hdRes, 1,  hdR );
     return hdRes;
 }
 
-Obj  UniBag ( unsigned int type, Obj hd0 ) {
+Obj  UniBag ( unsigned int type, Obj hd0 ) 
+{
     Obj hdRes;
+
     if ( NrError >= 1 )  return 0;
     hdRes = NewBag(type, SIZE_HD);
     SET_BAG(hdRes, 0,  hd0 );
     return hdRes;
 }
 
-Obj  TriBag ( unsigned int type, Obj hd0, Obj hd1, Obj hd2 ) {
+Obj  TriBag ( unsigned int type, Obj hd0, Obj hd1, Obj hd2 ) 
+{
     Obj hdRes;
+
     if ( NrError >= 1 )  return 0;
     hdRes = NewBag(type, 3 * SIZE_HD);
     SET_BAG(hdRes, 0,  hd0 );  SET_BAG(hdRes, 1,  hd1 );  SET_BAG(hdRes, 2,  hd2 );
@@ -105,16 +111,16 @@ static int PermBegin = 0;
 
 Bag       RdVar (UInt backq, TypSymbolSet follow)
 {
-    Bag           hdVar,  hd;
-    Bag           hdTmp;
-    Int                level;
-    Int                i;
+    Bag     hdVar;
+    Bag     hd;
+    Bag     hdTmp;
+    Int     level = 0;
+    Int     i;
 
     /* all variables must begin with an identifier                         */
     if ( Symbol == S_IDENT )  hdVar = FindIdent( Value );
     else                      hdVar = 0;
     Match( S_IDENT, "identifier", follow );
-    level = 0;
 
     /* complain about undefined global variables                           */
     if ( IsUndefinedGlobal && !NoWarnUndefined && !PermBegin &&
@@ -253,16 +259,14 @@ Bag       RdVar (UInt backq, TypSymbolSet follow)
 */
 Bag       RdList (TypSymbolSet follow)
 {
-    Bag           hdList;         /* handle of the result            */
-    UInt       len;            /* logical length of the list      */
-    Bag           hd;             /* temporary handle                */
-    UInt       i;              /* loop variable                   */
+    Bag     hdList;         /* handle of the result            */
+    Bag     hd;             /* temporary handle                */
+    UInt    len = 0;            /* logical length of the list      */
+    UInt    i = 0;              /* loop variable                   */
 
     /* '['                                                                 */
     Match( S_LBRACK, "", NUM_TO_UINT(0) );
     hdList = NewBag( T_MAKELIST, 4 * SIZE_HD );
-    i = 0;
-    len = 0;
 
     /* [ <Expr> ]                                                          */
     if ( Symbol != S_RBRACK ) {
@@ -337,9 +341,12 @@ Bag       RdList (TypSymbolSet follow)
 
 Obj  _RdRec ( TypSymbolSet follow, int type )
 {
-    Bag           hdRec,  hd, hdDoc, hdDocRecname;
-    UInt       i;
-    char * str;
+    Bag     hdRec;
+    Bag     hd;
+    Bag     hdDoc;
+    Bag     hdDocRecname;
+    UInt    i = 1; 
+    char    *str;
 
     /* 'rec('                                                              */
     Match( S_IDENT, "", NUM_TO_UINT(0) );
@@ -357,8 +364,6 @@ Obj  _RdRec ( TypSymbolSet follow, int type )
     hdDocRecname = FindRecname("__doc__");
     SET_BAG(hdRec, 0,  hdDocRecname );
     SET_BAG(hdRec, 1,  hdDoc );
-
-    i = 1;
 
     /* [ <Ident> ':=' <Expr>                                               */
     if ( Symbol != S_RPAREN ) {
@@ -439,10 +444,14 @@ Obj  _RdRec ( TypSymbolSet follow, int type )
 #include "list.h"
 
 Obj  RdLet ( TypSymbolSet follow ) {
-    Obj  hdNS, hd, hdIdent;
-    Obj  hdStmts = NewList(0);
-    UInt i = 1;
-    UInt no_warn_old = NoWarnUndefined;
+
+    Obj     hdNS;
+    Obj     hd;
+    Obj     hdIdent;
+    Obj     hdStmts = NewList(0);
+    UInt    i = 1;
+    UInt    no_warn_old = NoWarnUndefined;
+    
     /* 'let('                                                              */
     Match( S_IDENT, "", NUM_TO_UINT(0) );
     Match( S_LPAREN, "(", follow|S_RPAREN|S_COMMA );
@@ -543,8 +552,14 @@ Obj  RdLet ( TypSymbolSet follow ) {
 */
 Bag       RdPerm (Bag hdFirst, TypSymbolSet follow)
 {
-    Bag           hdPerm,  hdCyc,  hd;
-    UInt       i,  k,  m,  isConst;
+    Bag     hdPerm;
+    Bag     hdCyc;
+    Bag     hd;
+    UInt    i;
+    UInt    k;
+    UInt    m;
+    UInt    isConst;
+
     isConst = (hdFirst != 0) && (GET_TYPE_BAG(hdFirst) == T_INT);
     hdPerm = NewBag( T_MAKEPERM, 256*SIZE_HD );  i = 1;
 
@@ -617,8 +632,11 @@ Bag       RdPerm (Bag hdFirst, TypSymbolSet follow)
 */
 Bag       RdFunc (TypSymbolSet follow)
 {
-    Bag           hdFun, hd, hdLoc;
-    short               nrArg = 0,  nrLoc = 0;
+    Bag     hdFun;
+    Bag     hd;
+    Bag     hdLoc;
+    short   nrArg = 0;
+    short   nrLoc = 0;
 
     /* 'function', make the local names know to the symbol tables          */
     if( Symbol == S_FUNCTION )
@@ -720,10 +738,11 @@ double DblString(char *st);
 
 Bag       RdAtom (TypSymbolSet follow)
 {
-    Bag           hdAt;
-    Int                i;
-    UInt       nr, pow;
-    UInt       backq = 0;
+    Bag     hdAt;
+    Int     i;
+    UInt    nr;
+    UInt    pow;
+    UInt    backq = 0;
 
     /* Leading backquotes */
     while ( Symbol == S_BACKQUOTE ) {
@@ -856,11 +875,13 @@ Bag       RdAtom (TypSymbolSet follow)
 */
 Bag       RdFactor (TypSymbolSet follow)
 {
-    Bag           hdFac,  hdAt;
-    Int                sign1,  sign2;
+    Bag     hdFac;
+    Bag     hdAt;
+    Int     sign1 = 0; 
+    Int     sign2;
 
     /* { '+'|'-' }  leading sign                                           */
-    sign1 = 0;
+
     while ( Symbol == S_MINUS  || Symbol == S_PLUS ) {
         if ( sign1 == 0 )  sign1 = 1;
         if ( Symbol == S_MINUS ) sign1 = - sign1;
@@ -922,8 +943,9 @@ Bag       RdFactor (TypSymbolSet follow)
 */
 Bag       RdTerm (TypSymbolSet follow)
 {
-    Bag           hdTer,  hdFac;
-    unsigned int        type;
+    Bag             hdTer;
+    Bag             hdFac;
+    unsigned int    type;
 
     /* <Factor>                                                            */
     hdTer = RdFactor( follow );
@@ -957,8 +979,9 @@ Bag       RdTerm (TypSymbolSet follow)
 */
 Bag       RdAri (TypSymbolSet follow)
 {
-    Bag           hdAri,  hdTer;
-    unsigned int        type;
+    Bag             hdAri;
+    Bag             hdTer;
+    unsigned int    type;
 
     /* <Term>                                                              */
     hdAri = RdTerm( follow );
@@ -987,9 +1010,10 @@ Bag       RdAri (TypSymbolSet follow)
 */
 Bag       RdRel (TypSymbolSet follow)
 {
-    Bag           hdRel,  hdAri;
-    unsigned int        type;
-    short               isNot;
+    Bag             hdRel;
+    Bag             hdAri;
+    short           isNot;
+    unsigned int    type;
 
     /* { 'not' }                                                           */
     isNot = 0;
@@ -1035,7 +1059,8 @@ Bag       RdRel (TypSymbolSet follow)
 */
 Bag       RdAnd (TypSymbolSet follow)
 {
-    Bag           hdAnd,  hdRel;
+    Bag     hdAnd;
+    Bag     hdRel;
 
     /* <Rel>                                                               */
     hdAnd = RdRel( follow );
@@ -1062,7 +1087,8 @@ Bag       RdAnd (TypSymbolSet follow)
 */
 Bag       RdLog (TypSymbolSet follow)
 {
-    Bag           hdLog,  hdAnd;
+    Bag     hdLog;
+    Bag     hdAnd;
 
     /* <And>                                                               */
     hdLog = RdAnd( follow );
@@ -1101,7 +1127,9 @@ Bag       CopyVarIfNoError (Bag hdVar)
 
 Bag       RdExpr (TypSymbolSet follow)
 {
-    Bag           hdExp,  hdFun,  hdTmp;
+    Bag     hdExp;
+    Bag     hdFun;
+    Bag     hdTmp;
 
     /* <Var>                                                               */
     hdExp = RdLog( follow|S_MAPTO|S_MAPTO_METH );
@@ -1255,7 +1283,10 @@ Bag       RdIf (TypSymbolSet follow)
 */
 Bag       RdFor (TypSymbolSet follow)
 {
-    Bag           hdVar,  hdList,  hdStats,  hdFor;
+    Bag     hdVar;
+    Bag     hdList;
+    Bag     hdStats;
+    Bag     hdFor;
 
     /* 'for' <Var>                                                         */
     Match( S_FOR, "", NUM_TO_UINT(0) );
@@ -1303,7 +1334,9 @@ Bag       RdFor (TypSymbolSet follow)
 */
 Bag       RdWhile (TypSymbolSet follow)
 {
-    Bag       hdCond,  hdStats,  hdWhile;
+    Bag     hdCond;
+    Bag     hdStats;
+    Bag     hdWhile;
 
     /* 'while' <Expr>  'do'                                                */
     Match( S_WHILE, "", NUM_TO_UINT(0) );
@@ -1337,7 +1370,9 @@ Bag       RdWhile (TypSymbolSet follow)
 */
 Bag       RdRepeat (TypSymbolSet follow)
 {
-    Bag       hdStats,  hdCond,  hdRep;
+    Bag     hdStats;
+    Bag     hdCond;
+    Bag     hdRep;
 
     /* 'repeat' <Statments>                                                */
     Match( S_REPEAT, "", NUM_TO_UINT(0) );
@@ -1370,7 +1405,8 @@ Bag       RdRepeat (TypSymbolSet follow)
 */
 Bag       RdReturn (TypSymbolSet follow)
 {
-    Bag           hdRet,  hdExpr;
+    Bag     hdRet;
+    Bag     hdExpr;
 
     /* skip the return symbol                                              */
     Match( S_RETURN, "", NUM_TO_UINT(0) );
@@ -1406,7 +1442,8 @@ Bag       RdReturn (TypSymbolSet follow)
 */
 Bag       RdQuit (TypSymbolSet follow)
 {
-    Bag           hdQuit;
+    Bag     hdQuit;
+
     Match( S_QUIT, "", follow );
     hdQuit = NewBag( T_RETURN, SIZE_HD );
     SET_BAG(hdQuit, 0,  HdReturn );
@@ -1435,8 +1472,14 @@ Bag       RdQuit (TypSymbolSet follow)
 
 Bag       RdStat (TypSymbolSet follow)
 {
-    Bag           hd,  hdExpr,  hdAss,  hdComment=0, hdElm;
-    UInt t, i, plen;
+    Bag     hd;
+    Bag     hdExpr;
+    Bag     hdAss;
+    Bag     hdElm;
+    Bag     hdComment = 0;
+    UInt    t;
+    UInt    i;
+    UInt    plen;
 
     /* handle those cases where the statement has a unique prefix symbol   */
     if ( Symbol == S_IF      )  return RdIf( follow );
@@ -1533,8 +1576,9 @@ Bag       RdStat (TypSymbolSet follow)
 */
 Bag       RdStats (TypSymbolSet follow)
 {
-    Bag           hdStats,  hd [1024];
-    short               i = 0;
+    Bag     hdStats;
+    Bag     hd[1024];
+    short   i = 0;
 
     /* a single semicolon is an empty statement sequence                   */
     if ( Symbol == S_SEMICOLON ) {
@@ -1587,7 +1631,7 @@ Bag       RdStats (TypSymbolSet follow)
 */
 Bag       ReadIt (void)
 {
-    Bag           hd;
+    Bag     hd;
 
     /* get the first symbol from the input                                 */
     Match( Symbol, "", NUM_TO_UINT(0) );

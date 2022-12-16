@@ -412,11 +412,8 @@ void            GetSymbol ( void );
 
 void            GetIdent (void)
 {
-    Int                i;
-    Int                isQuoted;
-
-    /* initially it could be a keyword                                     */
-    isQuoted = 0;
+    Int     i;
+    Int     isQuoted = 0;
 
     /* read all characters into 'Value'                                    */
     for ( i=0; IsAlpha(*In) || IsDigit(*In) || *In=='_' || *In=='\\' || *In=='@'; i++ ) {
@@ -523,9 +520,9 @@ void            GetIdent (void)
 */
 void            GetInt (void)
 {
-    enum { INT, IDENT } state = INT;
-    Int i  = 0;
-    char ch = *In;
+    enum    { INT, IDENT } state = INT;
+    Int     i  = 0;
+    char    ch = *In;
 
     /* read the digits into 'Value'                                        */
     while(IsDigit(ch) || IsAlpha(ch) || ch=='_' || ch=='\\') {
@@ -585,7 +582,7 @@ void            GetInt (void)
 */
 void            GetStr (void)
 {
-    Int                i = 0;
+    Int     i = 0;
 
     /* skip '"'                                                            */
     GET_CHAR();
@@ -680,9 +677,9 @@ void            GetSymbol (void)
 */
 void            SyntaxError (char *msg)
 {
-    Int                i;
-    Int                isStdIn = (strcmp( "*stdin*", Input->name ) == 0 );
-    static Int         launchedEdit = 0;
+    Int             i;
+    Int             isStdIn = (strcmp( "*stdin*", Input->name ) == 0 );
+    static Int      launchedEdit = 0;
 
     /* one more error                                                      */
     NrError++;
@@ -761,7 +758,7 @@ void            SyntaxError (char *msg)
 */
 void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
 {
-    char                errmsg [256];
+    char        errmsg [256];
 
     /* if 'Symbol' is the expected symbol match it away                    */
     if ( symbol == Symbol ) {
@@ -802,10 +799,12 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
 */
 void            PutLine(void)
 {
-	Int 	plen, i, k;
-	Bag	hd;
-	char* str;
-	Int	slen;
+    Int      plen;
+	Int	     slen;
+    Int      i;
+    Int      k;
+	Bag	     hd;
+	char    *str;
 
 	if (Output->fid == -5) {
         // Special handling for FunPrintToString() 
@@ -871,10 +870,10 @@ void            PutLine(void)
 */
 void            PutChr (char ch)
 {
-    Int                i;
-//    char                str [ 256 ];
-    char s0, s1;
-    int n;
+    Int     i;
+    char    s0;
+    char    s1;
+    int     n;
 
     /* '\01', increment indentation level                                  */
     if ( ch == '\01' ) {
@@ -1050,9 +1049,11 @@ void            PutChr (char ch)
 */
 void            Pr (char *format, Int arg1, Int arg2)
 {
-    char                * p,  * q;
-    Int                prec,  n;
-    char                fill;
+    char    *p;
+    char    *q;
+    char     fill;
+    Int      prec;
+    Int      n;
 
     /* loop over the characters of the <format> string                     */
     for ( p = format; *p != '\0'; p++ ) {
@@ -1187,7 +1188,7 @@ Int	ChDir(const char* filename)
 */
 Int            OpenInput (char *filename)
 {
-    FILE* file;
+    FILE    *file;
 
     /* fail if we can not handle another open input file                   */
     if ( Input+1 == InputFiles+(sizeof(InputFiles)/sizeof(InputFiles[0])) )
@@ -1273,7 +1274,7 @@ Int            CloseInput (void)
 
 extern Int            OpenStringOutput ()
 {
-    Int                file;
+    Int     file;
 
     /* fail if we can not handle another open output file                  */
     if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
@@ -1302,8 +1303,10 @@ extern Int            OpenStringOutput ()
 
 Bag		GReadFile()
 {
-	Bag	hd, hdList;
-	Int	slen, plen;
+    Bag	hd;
+    Bag hdList;
+    Int	slen;
+    Int plen;
 
 	hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
 
@@ -1355,7 +1358,7 @@ Bag		GReadFile()
 */
 Int            OpenOutput (char *filename)
 {
-    Int                file;
+    Int     file;
 
     /* fail if we can not handle another open output file                  */
     if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
@@ -1425,9 +1428,12 @@ Int            CloseOutput (void)
 
 extern Bag            ReturnStringOutput ()
 {
-	Bag		hd;
-	Int		plen, i, k, slen;
-	char		*str;
+	Bag      hd;
+    Int		 plen;
+    Int      i;
+    Int      k;
+    Int      slen;
+	char	*str;
 
 	if (Output->pos > 0) {
 		Output->line[Output->pos] = '\0';
@@ -1494,7 +1500,7 @@ extern Int            CloseStringOutput (void)
 
 Int            OpenMemory ()
 {
-    char* mem;
+    char    *mem;
     /* fail if we can not handle another open output file                  */
     if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
         return 0;
@@ -1565,7 +1571,7 @@ Int            CloseMemory(Obj* hdStr) {
 */
 Int            OpenAppend (char *filename)
 {
-    Int                file;
+    Int     file;
 
     /* fail if we can not handle another open output file                  */
     if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
@@ -1721,7 +1727,8 @@ Int            CloseInputLog (void)
 */
 void            InitScanner (void)
 {
-    Int                ignore, i;
+    Int     ignore;
+    Int     i;
 
     OutputLineLen = SyNrCols < 1000 ? 1000 : SyNrCols + 1;
     for(i = 0; i < SCANNER_OUTPUTS; ++i) {

@@ -207,9 +207,11 @@ int             main (int argc, char **argv)
 **      Called from Backtrace to print single T_EXEC bag
 */
 
-UInt DbgExecStackDepth() {
-    Obj	    hdExec;
+UInt DbgExecStackDepth() 
+{
+    Obj     hdExec;
     UInt    result = 0;
+
     for ( hdExec=HdDbgStackRoot; hdExec!=0; hdExec=PTR_BAG(hdExec)[4] ) {
         result++;
     }
@@ -218,8 +220,10 @@ UInt DbgExecStackDepth() {
 
 void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt printValues )
 {
-    int         nrArg,  nrLoc,  i;
-    Bag   hdDef;
+    int     nrArg;
+    int     nrLoc;
+    int     i;
+    Bag     hdDef;
     
     if (execDepth==execStackDepth-DbgStackTop)
         Pr("* ", 0, 0);
@@ -289,8 +293,10 @@ void PrintBacktraceEval(Bag hdExec)
 Bag       FunBacktrace (Bag hdCall)
 {
     Int	    level;
-    UInt    depth = 0, execStackDepth;
-    Bag     hdExec, hdDef;
+    UInt    depth = 0;
+    UInt    execStackDepth;
+    Bag     hdExec;
+    Bag     hdDef;
     
     /* so that it is possible to call it FunBacktrace(INT_TO_HD(<level>))  */
     if ( hdCall != (Bag) 0 && GET_TYPE_BAG(hdCall) == T_INT ) {
@@ -345,8 +351,10 @@ Bag       FunBacktrace (Bag hdCall)
 Bag       FunBacktrace2 (Bag hdCall)
 {
     Int	    level;
-    UInt    depth = 0, execStackDepth;
-    Bag           hdExec, hdDef;
+    UInt    depth = 0;
+    UInt    execStackDepth;
+    Bag     hdExec;
+    Bag     hdDef;
     
     /* so that it is possible to call it FunBacktrace2(INT_TO_HD(<level>))  */
     if ( hdCall != (Bag) 0 && GET_TYPE_BAG(hdCall) == T_INT ) {
@@ -411,7 +419,8 @@ Bag       FunBacktrace2 (Bag hdCall)
 */
 Bag       FunBacktraceTo (Bag hdCall)
 {
-    Bag           hdName, hdLevel;
+    Bag     hdName;
+    Bag     hdLevel;
 
     char * usage = "usage: BacktraceTo( <file>, <level> )";
     /* check the number and type of the arguments, nothing special         */
@@ -447,9 +456,11 @@ Int     inBreakLoop()
     return DbgInBreakLoop != 0;
 }
 
-Obj  DbgStackExec() {
+Obj  DbgStackExec() 
+{
     Obj root = HdDbgStackRoot; 
     int top = DbgStackTop;
+
     while (root != 0 && top>0) {
         root = PTR_BAG(root)[4];
         top--;
@@ -467,8 +478,9 @@ void EmptyStack() {
  */
 
 void PopulateStack() {
-    Obj hd, hdRoot;
-    int i;
+    Obj     hd;
+    Obj     hdRoot;
+    int     i;
     
     EmptyStack();
     
@@ -601,15 +613,15 @@ static char DbgPrompt[80] = "dbg> ";
 
 Bag       Error (char *msg, Int arg1, Int arg2)
 {
-	Bag           hd;
-	Bag           hdTilde; 
-	Int                ignore;
-	extern Bag    FunPrint(Bag hdCall);
-	extern char         * In;
-	TypInputFile        * parent;
-	exc_type_t          e;
-	Int           isBreakpoint;
-    Int           debugActive;
+	Bag            hd;
+	Bag            hdTilde; 
+	Int            ignore;
+    Int            debugActive;
+	Int            isBreakpoint;
+	exc_type_t     e;
+	extern char   *In;
+	TypInputFile  *parent;
+	extern Bag     FunPrint(Bag hdCall);
 
     ErrorCount++;
 
@@ -833,11 +845,13 @@ Bag       FunError (Bag hdCall)
 */
 Bag       FunREAD (Bag hdCall)
 {
-    Bag           hd,  hdName,  hdPkg;
-    TypInputFile * parent;
-    exc_type_t e;
+    Bag           hd;
+    Bag           hdName;
+    Bag           hdPkg;
+    TypInputFile *parent;
+    exc_type_t    e;
+	UInt          processInclude;
 
-	UInt processInclude;
 
     /* check the number and type of arguments                              */
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD && GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
@@ -889,7 +903,9 @@ Bag       FunREAD (Bag hdCall)
 
 Bag     FunChangeDir (Bag hdCall)
 {
-    Bag           hd,  hdName,  hdPkg;
+    Bag        hd;
+    Bag        hdName;
+    Bag        hdPkg;
     exc_type_t e;
 
     /* check the number and type of arguments                              */
@@ -907,8 +923,9 @@ Bag     FunChangeDir (Bag hdCall)
 
 Bag       FunReadString (Bag hdCall)
 {
-    Bag           hdList,  hdName;
-    TypInputFile * parent;
+    Bag           hdList;
+    Bag           hdName;
+    TypInputFile *parent;
 
     /* check the number and type of arguments                              */
     if ( GET_SIZE_BAG(hdCall) != SIZE_HD && GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
@@ -958,8 +975,9 @@ Bag       FunReadString (Bag hdCall)
 */
 Bag       FunAUTO (Bag hdCall)
 {
-    Bag           hdExpr,  hdVar;
-    Int                i;
+    Bag     hdExpr;
+    Bag     hdVar;
+    Int     i;
 
     /* check the number of arguments                                       */
     if ( GET_SIZE_BAG(hdCall) < 3 * SIZE_HD )
@@ -1017,8 +1035,8 @@ Bag       FunAUTO (Bag hdCall)
 */
 Bag       FunPrint (Bag hdCall)
 {
-    Bag           hd;
-    Int                i;
+    Bag     hd;
+    Int     i;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
@@ -1049,8 +1067,8 @@ Bag       FunPrint (Bag hdCall)
 
 Bag       Fun_Pr (Bag hdCall)
 {
-    Bag           hd;
-    Int                i;
+    Bag     hd;
+    Int     i;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
@@ -1093,8 +1111,8 @@ Bag       Fun_Pr (Bag hdCall)
 */
 Bag       FunPrntTo (Bag hdCall)
 {
-    Bag           hd;
-    Int                i;
+    Bag     hd;
+    Int     i;
 
     /* check the number and type of the arguments, nothing special         */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
@@ -1133,8 +1151,9 @@ Int            CloseStringOutput (void);
 
 Bag       FunPrntToString (Bag hdCall)
 {
-    Bag           hd, hdList;
-    Int                i;
+    Bag     hd;
+    Bag     hdList;
+    Int     i;
 
     /* check the number and type of the arguments, nothing special         */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
@@ -1211,8 +1230,8 @@ Bag FunStringPrint (Bag hdCall)
 */
 Bag       FunAppendTo (Bag hdCall)
 {
-    Bag           hd;
-    Int                i;
+    Bag     hd;
+    Int     i;
 
     /* check the number and type of the arguments, nothing special         */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
@@ -1266,7 +1285,7 @@ Bag       FunAppendTo (Bag hdCall)
 */
 Bag       FunLogTo (Bag hdCall)
 {
-    Bag           hdName;
+    Bag     hdName;
 
     /* 'LogTo()'                                                           */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD ) {
@@ -1306,7 +1325,7 @@ Bag       FunLogTo (Bag hdCall)
 */
 Bag       FunLogInputTo (Bag hdCall)
 {
-    Bag           hdName;
+    Bag     hdName;
 
     /* 'LogInputTo()'                                                      */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD ) {
@@ -1364,7 +1383,8 @@ Bag       FunHelp (Bag hdCall)
 */
 Bag       FunExec (Bag hdCall)
 {
-    Bag           hdCmd;
+    Bag     hdCmd;
+
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
         return Error("usage: Exec( <command> )",0,0);
     hdCmd = EVAL( PTR_BAG(hdCall)[1] );
@@ -1391,8 +1411,8 @@ Bag       FunExec (Bag hdCall)
 */
 Bag       FunIntExec (Bag hdCall)
 {
-    Bag           hdCmd;
-    int status;
+    Bag     hdCmd;
+    int     status;
 
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
         return Error("usage: Exec( <command> )",0,0);
@@ -1446,9 +1466,9 @@ Bag       FunRuntime (Bag hdCall)
 */
 Bag       FunSizeScreen (Bag hdCall)
 {
-    Bag           hdSize;         /* argument and result list        */
-    Int                len;            /* length of lines on the screen   */
-    Int                nr;             /* number of lines on the screen   */
+    Bag     hdSize;         /* argument and result list        */
+    Int     len;            /* length of lines on the screen   */
+    Int     nr;             /* number of lines on the screen   */
 
     /* check the arguments                                                 */
     if ( GET_SIZE_BAG(hdCall) != SIZE_HD && GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
@@ -1511,8 +1531,8 @@ Bag       FunSizeScreen (Bag hdCall)
 */
 Bag       FunIsIdentical (Bag hdCall)
 {
-    Bag           hdL;
-    Bag           hdR;
+    Bag     hdL;
+    Bag     hdR;
 
     if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
         return Error( "usage: IsIdentical( <l>, <r> )", 0, 0 );
@@ -1540,8 +1560,8 @@ Bag       FunIsIdentical (Bag hdCall)
 */
 Bag       FunHANDLE (Bag hdCall)
 {
-    Bag           hdHD;
-    Bag           hdObj;
+    Bag     hdHD;
+    Bag     hdObj;
 
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
         return Error("usage: HANDLE( <obj> )",0,0);
@@ -1569,8 +1589,8 @@ Bag       FunHANDLE (Bag hdCall)
 */
 Bag       FunOBJ (Bag hdCall)
 {
-    Bag           hdObj;
-    Bag           hdHD;
+    Bag     hdObj;
+    Bag     hdHD;
 
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
         return Error("usage: OBJ( <hd> )",0,0);
@@ -1595,8 +1615,8 @@ Bag       FunOBJ (Bag hdCall)
 */
 Bag       FunTYPE (Bag hdCall)
 {
-    Bag           hdType;
-    Bag           hdObj;
+    Bag     hdType;
+    Bag     hdObj;
 
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
         return Error("usage: GET_TYPE_BAG( <obj> )",0,0);
@@ -1635,7 +1655,7 @@ Bag       FunTYPE (Bag hdCall)
 */
 void            MarkObj (Bag hdObj)
 {
-    UInt       i;
+    UInt    i;
 
     /* void and small integers do not have a handle structure              */
     if ( hdObj == 0 || GET_TYPE_BAG(hdObj) == T_INT || GET_TYPE_BAG(hdObj)==T_NAMESPACE)
@@ -1682,8 +1702,8 @@ UInt   SizeObj (Bag hdObj)
 
 Bag       FunSIZE (Bag hdCall)
 {
-    UInt       size;
-    Bag           hdObj;
+    Bag     hdObj;
+    UInt    size;
 
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
         return Error("usage: GET_SIZE_BAG( <obj> )",0,0);
@@ -1706,11 +1726,11 @@ Bag       FunSIZE (Bag hdCall)
 */
 Bag       FunGASMAN (Bag hdCall)
 {
-    Bag     hdCmd;				        // handle of an argument
-    UInt    i,  k;						// loop variables
-	Bag     hdRet = HdVoid;				// return value
-	char *usageMessage =
-		"usage: GASMAN( \"display\"|\"clear\"|\"collect\"|\"message\"|\"messageSTAT\"|\"traceON\"|\"traceOFF\"|\"traceSTAT\" )";
+    Bag      hdCmd;				    // handle of an argument
+    UInt     i;                      // loop variables
+    UInt     k;						// loop variables
+	Bag      hdRet = HdVoid;			// return value
+	char    *usageMessage = "usage: GASMAN( \"display\"|\"clear\"|\"collect\"|\"message\"|\"messageSTAT\"|\"traceON\"|\"traceOFF\"|\"traceSTAT\" )";
 
     /* check the argument                                                  */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
@@ -1868,8 +1888,12 @@ Bag       FunGASMAN (Bag hdCall)
 */
 Bag       FunCoefficients (Bag hdCall)
 {
-    Int                pos, num, val;
-    Bag           hdRes, hdList, hdInt;
+    Int     pos;
+    Int     num;
+    Int     val;
+    Bag     hdRes;
+    Bag     hdList;
+    Bag     hdInt;
 
 
     if ( GET_SIZE_BAG( hdCall ) != 3 * SIZE_HD )
@@ -1921,8 +1945,8 @@ Bag       FunCoefficients (Bag hdCall)
 */
 Bag       FunNUMBERHANDLES (Bag hdCall)
 {
-    Int                typ;
-    Bag           hdTyp;
+    Int     typ;
+    Bag     hdTyp;
 
 
     if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD )
@@ -1951,9 +1975,8 @@ Bag       FunNUMBERHANDLES (Bag hdCall)
 */
 Bag       FunSIZEHANDLES (Bag hdCall)
 {
-    Int                typ;
-    Bag           hdTyp;
-
+    Int     typ;
+    Bag     hdTyp;
 
     if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD )
         return Error("usage: SIZE_HANDLES( <type> )",0,0);
@@ -1972,7 +1995,7 @@ Bag       FunSIZEHANDLES (Bag hdCall)
 
 Bag       FunWeakRef(Bag hdCall)
 {
-    Bag           hd;
+    Bag     hd;
 
     if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD )
         return Error("usage: WeakRef( <obj> )",0,0);
@@ -1981,8 +2004,10 @@ Bag       FunWeakRef(Bag hdCall)
     return hd;
 }
 
-Bag     FunTabToList(Bag hdCall) {
-    Bag hd;
+Bag     FunTabToList(Bag hdCall) 
+{
+    Bag     hd;
+
     if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD )
         return Error("usage: TabToList( <table> )",0,0);
     hd = EVAL( PTR_BAG(hdCall)[1] );
@@ -1998,13 +2023,14 @@ Bag     FunTabToList(Bag hdCall) {
 **
 **  'InitGap' initializes GAP.
 */
-void            InitGap (int argc, char** argv, int* stackBase) {
-    Bag           hd;
-    Int                i;
-    Int                ignore;
-    char *              version;
-    exc_type_t          e;
-    char*		prompt;
+void            InitGap (int argc, char** argv, int* stackBase) 
+{
+    Bag          hd;
+    Int          i;
+    Int          ignore;
+    char        *version;
+    char        *prompt;
+    exc_type_t   e;
     /* Initialize all subpackages of GAP.                                  */
 
 #ifdef DEBUG

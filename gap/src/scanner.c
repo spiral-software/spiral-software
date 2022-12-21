@@ -347,33 +347,49 @@ Int            InputLogfile = -1;
 char            GetLine (void)
 {
     /* if file is '*stdin*' print the prompt and flush it     */
-    if (Input->file == stdin) {
-        if (!SyQuiet) Pr("%s%c", (Int)Prompt, (Int)'\03');
-        else             Pr("%c", (Int)'\03', 0);
+    if (Input->file == stdin) 
+    {
+        if (!SyQuiet)
+        {
+            Pr("%s%c", (Int)Prompt, (Int)'\03');
+        }
+        else
+        {
+            Pr("%c", (Int)'\03', 0);
+        }
     }
 
     /* bump the line number                                                */
-    if ( Input->line < In && (*(In-1) == '\n' || *(In-1) == '\r') )
+    if (Input->line < In && (*(In - 1) == '\n' || *(In - 1) == '\r'))
+    {
         Input->number++;
+    }
 
     /* initialize 'In', no errors on this line so far                      */
-    In = Input->line;  In[0] = '\0';
+    In = Input->line;  
+    In[0] = '\0';
     NrErrLine = 0;
 
  
     /* try to read a line                                        */
-   if ( ! SyFgets( In, sizeof(Input->line), Input->file) ) {
-        In[0] = '\377';  In[1] = '\0';
+   if ( ! SyFgets( In, sizeof(Input->line), Input->file) ) 
+   {
+        In[0] = '\377';  
+        In[1] = '\0';
         return *In;
     }
 
     /* if neccessary echo the line to the logfile                          */
-    if ( Logfile != -1 && (Input->file == stdin) )
-        SyFputs( In, Logfile );
-    if ( InputLogfile != -1 && (Input->file == stdin) )
-        SyFputs( In, InputLogfile );
+   if (Logfile != -1 && (Input->file == stdin))
+   {
+       SyFputs(In, Logfile);
+   }
+   if (InputLogfile != -1 && (Input->file == stdin))
+   {
+       SyFputs(In, InputLogfile);
+   }
 
-        /* return the current character                                        */
+    /* return the current character                                        */
     return *In;
 }
 
@@ -416,24 +432,51 @@ void            GetIdent (void)
     Int     isQuoted = 0;
 
     /* read all characters into 'Value'                                    */
-    for ( i=0; IsAlpha(*In) || IsDigit(*In) || *In=='_' || *In=='\\' || *In=='@'; i++ ) {
-
+    for ( i=0; IsAlpha(*In) || IsDigit(*In) || *In=='_' || *In=='\\' || *In=='@'; i++ ) 
+    {
         /* handle escape sequences                                         */
-        if ( *In == '\\' ) {
+        if ( *In == '\\' ) 
+        {
             GET_CHAR();
-            if      ( *In == '\n' && i == 0 )  { GetSymbol();  return; }
-            else if ( *In == '\n' && i < sizeof(Value)-1 )  i--;
-            else if ( *In == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
-            else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
-            else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
-            else if ( *In == 'b'  && i < sizeof(Value)-1 )  Value[i] = '\b';
-            else if (                i < sizeof(Value)-1 )  Value[i] = *In;
+            if ( *In == '\n' && i == 0 ) 
+            {
+                GetSymbol(); 
+                return; 
+            }
+            else if ((*In == '\n') && (i < sizeof(Value) - 1))
+            {
+                i--;
+            }
+            else if ((*In == 'n') && (i < sizeof(Value) - 1))
+            {
+                Value[i] = '\n';
+            }
+            else if ((*In == 't') && (i < sizeof(Value) - 1))
+            {
+                Value[i] = '\t';
+            }
+            else if ((*In == 'r') && (i < sizeof(Value) - 1))
+            { 
+                Value[i] = '\r'; 
+            }
+            else if ((*In == 'b') && (i < sizeof(Value) - 1)) 
+            { 
+                Value[i] = '\b'; 
+            }
+            else if (i < sizeof(Value) - 1) 
+            { 
+                Value[i] = *In; 
+            }
+
             isQuoted = 1;
         }
-
         /* put normal chars into 'Value' but only if there is room         */
-        else {
-            if ( i < sizeof(Value)-1 )  Value[i] = *In;
+        else 
+        {
+            if (i < sizeof(Value) - 1) 
+            { 
+                Value[i] = *In; 
+            }
         }
 
         /* read the next character                                         */
@@ -442,56 +485,190 @@ void            GetIdent (void)
     }
 
     /* terminate the identifier and lets assume that it is not a keyword   */
-    if ( i < sizeof(Value)-1 )  Value[i] = '\0';
+    if (i < sizeof(Value) - 1) 
+    { 
+        Value[i] = '\0'; 
+    }
+
     Symbol = S_IDENT;
 
     /* now check if 'Value' holds a keyword                                */
-    switch ( 256*Value[0]+Value[i-1] ) {
-    case 256*'a'+'d': if(!strcmp(Value,"and"))     Symbol=S_AND;     break;
-    case 256*'d'+'o': if(!strcmp(Value,"do"))      Symbol=S_DO;      break;
-    case 256*'e'+'f': if(!strcmp(Value,"elif"))    Symbol=S_ELIF;    break;
-    case 256*'e'+'e': if(!strcmp(Value,"else"))    Symbol=S_ELSE;    break;
-    case 256*'e'+'d': if(!strcmp(Value,"end"))     Symbol=S_END;     break;
-    case 256*'f'+'i': if(!strcmp(Value,"fi"))      Symbol=S_FI;      break;
-    case 256*'f'+'r': if(!strcmp(Value,"for"))     Symbol=S_FOR;     break;
-    case 256*'f'+'n': if(!strcmp(Value,"function"))Symbol=S_FUNCTION;break;
-    case 256*'i'+'f': if(!strcmp(Value,"if"))      Symbol=S_IF;      break;
-    case 256*'i'+'n': if(!strcmp(Value,"in"))      Symbol=S_IN;      break;
-    case 256*'l'+'l': if(!strcmp(Value,"local"))   Symbol=S_LOCAL;   break;
-    case 256*'m'+'d': if(!strcmp(Value,"mod"))     Symbol=S_MOD;     break;
-    case 256*'m'+'h': if(!strcmp(Value,"meth"))    Symbol=S_METHOD;  break;
-    case 256*'n'+'t': if(!strcmp(Value,"not"))     Symbol=S_NOT;     break;
-    case 256*'o'+'d': if(!strcmp(Value,"od"))      Symbol=S_OD;      break;
-    case 256*'o'+'r': if(!strcmp(Value,"or"))      Symbol=S_OR;      break;
-    case 256*'r'+'t': if(!strcmp(Value,"repeat"))  Symbol=S_REPEAT;  break;
-    case 256*'r'+'n': if(!strcmp(Value,"return"))  Symbol=S_RETURN;  break;
-    case 256*'t'+'n': if(!strcmp(Value,"then"))    Symbol=S_THEN;    break;
-    case 256*'u'+'l': if(!strcmp(Value,"until"))   Symbol=S_UNTIL;   break;
-    case 256*'w'+'e': if(!strcmp(Value,"while"))   Symbol=S_WHILE;   break;
-    case 256*'q'+'t': if(!strcmp(Value,"quit"))    Symbol=S_QUIT;    break;
-    case 256*'d'+'l': if(!strcmp(Value,"dbl"))     {
-        /* read in a double. This dirty way seems to be the only plausible
-           solution in this kind of a scanner. This scanner must be ported
-           to use flex, then it would be nicer */
-        Match(Symbol, "", NUM_TO_UINT(0));
-        if(Symbol!=S_LPAREN)
-            Match(0, "(", EXPRBEGIN);
-        else {
-            Int i = 0;
-            char ch = *In;
-            while(i < sizeof(Value)-1 && ch != ')' &&
-                  (IsDigit(ch) || ch=='.' || ch=='e' || ch=='+'|| ch=='-')) {
-                Value[i++] = ch;
-                GET_CHAR(); ch = *In;
-            }
-            if(i < sizeof(Value)-1)
-                Value[i] = '\0';
-            if(ch!=')') Match(0, ")", EXPRBEGIN);
-            else Match(Symbol, "", NUM_TO_UINT(0));
-            Symbol=S_DOUBLE;
-            break;
+    switch ( 256*Value[0]+Value[i-1] ) 
+    {
+    case 256*'a'+'d': 
+        if (!strcmp(Value, "and"))
+        { 
+            Symbol = S_AND; 
+        }     
+        break;
+    case 256*'d'+'o': 
+        if (!strcmp(Value, "do")) 
+        { 
+            Symbol = S_DO; 
+        }      
+        break;
+    case 256*'e'+'f': 
+        if (!strcmp(Value, "elif")) 
+        { 
+            Symbol = S_ELIF; 
+        }   
+        break;
+    case 256*'e'+'e': 
+        if (!strcmp(Value, "else")) 
+        { 
+            Symbol = S_ELSE;
+        }  
+        break;
+    case 256*'e'+'d': 
+        if (!strcmp(Value, "end")) 
+        { 
+            Symbol = S_END; 
+        }   
+        break;
+    case 256*'f'+'i': 
+        if (!strcmp(Value, "fi")) 
+        { 
+            Symbol = S_FI; 
+        }   
+        break;
+    case 256*'f'+'r': 
+        if (!strcmp(Value, "for")) 
+        { 
+            Symbol = S_FOR; 
+        }  
+        break;
+    case 256*'f'+'n': 
+        if (!strcmp(Value, "function")) 
+        { 
+            Symbol = S_FUNCTION;
         }
-    }
+        break;
+    case 256*'i'+'f': 
+        if (!strcmp(Value, "if")) 
+        { 
+            Symbol = S_IF; 
+        }  
+        break;
+    case 256*'i'+'n': 
+        if (!strcmp(Value, "in")) 
+        { 
+            Symbol = S_IN; 
+        } 
+        break;
+    case 256*'l'+'l': 
+        if (!strcmp(Value, "local")) 
+        { 
+            Symbol = S_LOCAL;
+        } 
+        break;
+    case 256*'m'+'d': 
+        if (!strcmp(Value, "mod")) 
+        { 
+            Symbol = S_MOD; 
+        } 
+        break;
+    case 256*'m'+'h': 
+        if (!strcmp(Value, "meth")) 
+        { 
+            Symbol = S_METHOD; 
+        }
+        break;
+    case 256*'n'+'t': 
+        if (!strcmp(Value, "not")) 
+        { 
+            Symbol = S_NOT; 
+        }
+        break;
+    case 256*'o'+'d': 
+        if (!strcmp(Value, "od"))
+        { 
+            Symbol = S_OD; 
+        }
+        break;
+    case 256*'o'+'r':
+        if (!strcmp(Value, "or"))
+        { 
+            Symbol = S_OR; 
+        }  
+        break;
+    case 256*'r'+'t': 
+        if (!strcmp(Value, "repeat")) 
+        { 
+            Symbol = S_REPEAT;
+        }  
+        break;
+    case 256*'r'+'n':
+        if (!strcmp(Value, "return"))
+        {
+            Symbol = S_RETURN; 
+        } 
+        break;
+    case 256*'t'+'n': 
+        if (!strcmp(Value, "then"))
+        { 
+            Symbol = S_THEN;
+        } 
+        break;
+    case 256*'u'+'l': 
+        if (!strcmp(Value, "until"))
+        { 
+            Symbol = S_UNTIL;
+        }
+        break;
+    case 256*'w'+'e':
+        if (!strcmp(Value, "while"))
+        { 
+            Symbol = S_WHILE;
+        } 
+        break;
+    case 256*'q'+'t':
+        if (!strcmp(Value, "quit")) 
+        { 
+            Symbol = S_QUIT;
+        }  
+        break;
+    case 256*'d'+'l': 
+        if(!strcmp(Value,"dbl"))     
+        {
+            /* read in a double. This dirty way seems to be the only plausible
+               solution in this kind of a scanner. This scanner must be ported
+               to use flex, then it would be nicer */
+            Match(Symbol, "", NUM_TO_UINT(0));
+
+            if (Symbol != S_LPAREN)
+            {
+                Match(0, "(", EXPRBEGIN);
+            }
+            else 
+            {
+                Int i = 0;
+                char ch = *In;
+                while(i < sizeof(Value)-1 && ch != ')' &&
+                      (IsDigit(ch) || ch=='.' || ch=='e' || ch=='+'|| ch=='-')) 
+                {
+                    Value[i++] = ch;
+                    GET_CHAR(); ch = *In;
+                }
+
+                if (i < sizeof(Value) - 1)
+                {
+                    Value[i] = '\0';
+                }
+
+                if (ch != ')')
+                {
+                    Match(0, ")", EXPRBEGIN);
+                }
+                else
+                {
+                    Match(Symbol, "", NUM_TO_UINT(0));
+                }
+                Symbol=S_DOUBLE;
+            }
+        }
+        break;
+    default:
+        break;
     }
 
     /* if it is quoted it is an identifier                                 */
@@ -525,38 +702,78 @@ void            GetInt (void)
     char    ch = *In;
 
     /* read the digits into 'Value'                                        */
-    while(IsDigit(ch) || IsAlpha(ch) || ch=='_' || ch=='\\') {
+    while(IsDigit(ch) || IsAlpha(ch) || ch=='_' || ch=='\\')
+    {
         /* handle escape sequences                                         */
-        if ( ch == '\\' ) {
+        if ( ch == '\\' )
+        {
             GET_CHAR();
-            if      ( ch == '\n' && i < sizeof(Value)-1 )  i--;
-            else if ( ch == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
-            else if ( ch == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
-            else if ( ch == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
-            else if ( ch == 'b'  && i < sizeof(Value)-1 )  Value[i] = '\b';
-            else if ( ch == 'c'  && i < sizeof(Value)-1 )  Value[i] = '\03';
-            else if (               i < sizeof(Value)-1 )  Value[i] = ch;
+            if (ch == '\n' && i < sizeof(Value) - 1) 
+            { 
+                i--; 
+            }
+            else if (ch == 'n' && i < sizeof(Value) - 1) 
+            { 
+                Value[i] = '\n';
+            }
+            else if (ch == 't' && i < sizeof(Value) - 1) 
+            { 
+                Value[i] = '\t'; 
+            }
+            else if (ch == 'r' && i < sizeof(Value) - 1) 
+            { 
+                Value[i] = '\r';
+            }
+            else if (ch == 'b' && i < sizeof(Value) - 1)
+            {
+                Value[i] = '\b'; 
+            }
+            else if (ch == 'c' && i < sizeof(Value) - 1)
+            { 
+                Value[i] = '\03';
+            }
+            else if (i < sizeof(Value) - 1)
+            { 
+                Value[i] = ch; 
+            }
         }
         /* put normal chars into 'Value' if there is room                  */
-        else if ( i < sizeof(Value)-1 )
+        else if (i < sizeof(Value) - 1)
+        {
             Value[i] = ch;
+        }
 
         /* if the characters contain non digits it is a variable           */
-        if ( ! IsDigit(ch) && ch != '\n' )  state = IDENT;
+        if (!IsDigit(ch) && ch != '\n') 
+        { 
+            state = IDENT; 
+        }
 
-        GET_CHAR(); ch = *In; ++i;
+        GET_CHAR(); 
+        ch = *In; 
+        ++i;
     }
 
     /* check for numbers with too many digits                              */
-    if ( sizeof(Value)-1 <= i )
+    if (sizeof(Value) - 1 <= i)
+    {
         SyntaxError("integer must have less than 1024 digits");
+    }
 
     /* terminate the integer                                               */
-    if ( i < sizeof(Value)-1 )  Value[i] = '\0';
+    if (i < sizeof(Value) - 1) 
+    {
+        Value[i] = '\0'; 
+    }
 
-    switch(state) {
-    case INT  : Symbol = S_INT; break;
-    case IDENT: Symbol = S_IDENT; break;
+    switch(state) 
+    {
+        case INT: 
+            Symbol = S_INT; 
+            break;
+        case IDENT: 
+            Symbol = S_IDENT;
+            break;
     }
 }
 
@@ -588,23 +805,47 @@ void            GetStr (void)
     GET_CHAR();
 
     /* read all characters into 'Value'                                    */
-    for ( i = 0; *In != '"' && *In != '\n' && *In != '\377'; i++ ) {
-
+    for ( i = 0; *In != '"' && *In != '\n' && *In != '\377'; i++ )
+    {
         /* handle escape sequences                                         */
-        if ( *In == '\\' ) {
+        if ( *In == '\\' ) 
+        {
             GET_CHAR();
-            if      ( *In == '\n' && i < sizeof(Value)-1 )  i--;
-            else if ( *In == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
-            else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
-            else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
-            else if ( *In == 'b'  && i < sizeof(Value)-1 )  Value[i] = '\b';
-            else if ( *In == 'c'  && i < sizeof(Value)-1 )  Value[i] = '\03';
-            else if (                i < sizeof(Value)-1 )  Value[i] = *In;
+            if (*In == '\n' && i < sizeof(Value) - 1) 
+            { 
+                i--; 
+            }
+            else if (*In == 'n' && i < sizeof(Value) - 1) 
+            { 
+                Value[i] = '\n'; 
+            }
+            else if (*In == 't' && i < sizeof(Value) - 1)
+            { 
+                Value[i] = '\t'; 
+            }
+            else if (*In == 'r' && i < sizeof(Value) - 1) 
+            { 
+                Value[i] = '\r'; 
+            }
+            else if (*In == 'b' && i < sizeof(Value) - 1)
+            { 
+                Value[i] = '\b'; 
+            }
+            else if (*In == 'c' && i < sizeof(Value) - 1) 
+            { 
+                Value[i] = '\03'; 
+            }
+            else if (i < sizeof(Value) - 1) 
+            {
+                Value[i] = *In; 
+            }
         }
-
         /* put normal chars into 'Value' but only if there is room         */
         else {
-            if ( i < sizeof(Value)-1 )  Value[i] = *In;
+            if (i < sizeof(Value) - 1)
+            {
+                Value[i] = *In; 
+            }
         }
 
         /* read the next character                                         */
@@ -613,17 +854,31 @@ void            GetStr (void)
     }
 
     /* check for error conditions                                          */
-    if ( *In == '\n'  )
+    if (*In == '\n')
+    {
         SyntaxError("string must not include <newline>");
-    if ( *In == '\377' )
+    }
+    if (*In == '\377')
+    {
         SyntaxError("string must end with \" before end of file");
-    if ( sizeof(Value)-1 <= i )
+    }
+    if (sizeof(Value) - 1 <= i)
+    {
         SyntaxError("string must have less than 1024 characters");
+    }
 
     /* terminate the string, set 'Symbol' and skip trailing '"'            */
-    if ( i < sizeof(Value)-1 )  Value[i] = '\0';
+    if (i < sizeof(Value) - 1) 
+    {
+        Value[i] = '\0'; 
+    }
+
     Symbol = S_STRING;
-    if ( *In == '"' )  GET_CHAR();
+
+    if (*In == '"') 
+    { 
+        GET_CHAR();
+    }
 }
 
 
@@ -686,28 +941,43 @@ void            SyntaxError (char *msg)
     NrErrLine++;
 
     /* do not print a message if we found one already on the current line  */
-    if ( NrErrLine != 1 )
+    if (NrErrLine != 1)
+    {
         return;
+    }
 
     /* print the message and the filename, unless it is '*stdin*'          */
     Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
-    if ( !isStdIn ) {
+
+    if ( !isStdIn ) 
+    {
         Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
-	if(!launchedEdit) {
-	    launchedEdit = 1;
-	    HooksEditFile(Input->name, (int)Input->number);
-	}
+	
+        if(!launchedEdit)
+        {
+	        launchedEdit = 1;
+	        HooksEditFile(Input->name, (int)Input->number);
+	    }
     }
+
     Pr( "\n", 0, 0 );
 
     /* print the current line                                              */
     Pr( "%s", (Int)Input->line, 0 );
 
     /* print a '^' pointing to the current position                        */
-    for ( i = 0; i < In - Input->line - 1; i++ ) {
-        if ( Input->line[i] == '\t' )  Pr("\t",0,0);
-        else  Pr(" ",0,0);
+    for ( i = 0; i < In - Input->line - 1; i++ ) 
+    {
+        if (Input->line[i] == '\t')
+        { 
+            Pr("\t", 0, 0);
+        }
+        else 
+        { 
+            Pr(" ", 0, 0);
+        }
     }
+
     Pr( "^\n", 0, 0 );
 
 }
@@ -761,19 +1031,22 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
     char        errmsg [256];
 
     /* if 'Symbol' is the expected symbol match it away                    */
-    if ( symbol == Symbol ) {
+    if ( symbol == Symbol ) 
+    {
         GetSymbol();
     }
-
     /* else generate an error message and skip to a symbol in <skipto>     */
-    else {
+    else 
+    {
         errmsg[0] ='\0';
         strncat( errmsg, msg, sizeof(errmsg)-1 );
-        strncat( errmsg, " expected",
-                  (Int)(sizeof(errmsg)-1-strlen(errmsg)) );
+        strncat( errmsg, " expected", (Int)(sizeof(errmsg)-1-strlen(errmsg)) );
         SyntaxError( errmsg );
-        while ( ! IS_IN( Symbol, skipto ) )
+
+        while (!IS_IN(Symbol, skipto))
+        {
             GetSymbol();
+        }
     }
 
 }
@@ -806,15 +1079,19 @@ void            PutLine(void)
 	Bag	     hd;
 	char    *str;
 
-	if (Output->fid == -5) {
+	if (Output->fid == -5) 
+    {
         // Special handling for FunPrintToString() 
 		str = malloc((strlen(Output->line) + 1) * sizeof(char));
 		i = 0;
-		while (Output->line[i++] == ' ');
-		--i;
-		for (k = 0; (i < strlen(Output->line)) && (Output->line[i] != '\n'); ++i, ++k) {
+		while (Output->line[i++] == ' '); //GS4 Keep going till we doing hit a blank spot
+		--i; //GS4 
+
+		for (k = 0; (i < strlen(Output->line)) && (Output->line[i] != '\n'); ++i, ++k) 
+        {
 			str[k] = Output->line[i];
 		}
+
 		str[k] = '\0';
 
 		slen = strlen(str);
@@ -831,28 +1108,35 @@ void            PutLine(void)
 
 		free(str);
 	}
-	else if (Output->file) {
+	else if (Output->file) 
+    {
 		SyFputs(Output->line, Output->file);
 	}
-	else if (Output->mem) {
+	else if (Output->mem) 
+    {
 		/* write to memory */
 		UInt len = strlen(Output->line);
 		UInt mem_sz = ((UInt*)(Output->mem))[0];
 		UInt mem_chrs = ((UInt*)(Output->mem))[1];
-		if (mem_sz + len + 1 > mem_chrs) {
+
+		if (mem_sz + len + 1 > mem_chrs) 
+        {
 			/* no error handling */
 			mem_sz = (mem_sz > len) ? mem_sz * 2 : (mem_sz + len + 1);
 			Output->mem = realloc(Output->mem, 2 * sizeof(UInt) + mem_sz);
 			((UInt*)(Output->mem))[0] = mem_sz;
 		}
+
 		strncpy(Output->mem + 2 * sizeof(UInt) + mem_chrs, Output->line, len + 1);
 		((UInt*)(Output->mem))[1] = mem_chrs + len;
 	}
 
 
 	/* if neccessary echo it to the logfile                                */
-	if (Logfile != -1 && (Output->file == stdout || Output->file == stderr))
-		SyFputs(Output->line, Logfile);
+    if (Logfile != -1 && (Output->file == stdout || Output->file == stderr))
+    {
+        SyFputs(Output->line, Logfile);
+    }
 }
 
 
@@ -876,40 +1160,38 @@ void            PutChr (char ch)
     int     n;
 
     /* '\01', increment indentation level                                  */
-    if ( ch == '\01' ) {
-
+    if ( ch == '\01' ) 
+    {
         /* if this is a better place to split the line remember it         */
         if ( (Output->file == stdout || Output->file == stderr)
           && Output->indent < Output->pos
           && SyNrCols-Output->pos  + 16*Output->indent
-          <= SyNrCols-Output->spos + 16*Output->sindent ) {
+          <= SyNrCols-Output->spos + 16*Output->sindent )
+        {
             Output->spos     = Output->pos;
             Output->sindent  = Output->indent;
         }
 
         Output->indent++;
-
     }
-
     /* '\02', decrement indentation level                                  */
-    else if ( ch == '\02' ) {
-
+    else if ( ch == '\02' )
+    {
         /* if this is a better place to split the line remember it         */
         if ( (Output->file == stdout || Output->file == stderr)
           && Output->indent < Output->pos
           && SyNrCols-Output->pos  + 16*Output->indent
-          <= SyNrCols-Output->spos + 16*Output->sindent ) {
+          <= SyNrCols-Output->spos + 16*Output->sindent )
+        {
             Output->spos     = Output->pos;
             Output->sindent  = Output->indent;
         }
 
         Output->indent--;
-
     }
-
     /* '\03', print line                                                   */
-    else if ( ch == '\03' ) {
-
+    else if ( ch == '\03' ) 
+    {
         /* print the line                                                  */
         Output->line[ Output->pos ] = '\0';
         PutLine();
@@ -920,12 +1202,10 @@ void            PutChr (char ch)
         /* first character is a very bad place to split                    */
         Output->spos     = 0;
         Output->sindent  = 660;
-
     }
-
     /* <newline> or <return>, print line, indent next                      */
-    else if ( ch == '\n' || ch == '\r' ) {
-
+    else if ( ch == '\n' || ch == '\r' )
+    {
         /* put the character on the line and terminate it                  */
         Output->line[ Output->pos++ ] = ch;
         Output->line[ Output->pos   ] = '\0';
@@ -941,12 +1221,10 @@ void            PutChr (char ch)
         /* set up new split positions                                      */
         Output->spos     = 0;
         Output->sindent  = 660;
-
     }
-
     /* normal character, room on the current line                          */
-    else if ( Output->pos < SyNrCols-2 ) {
-
+    else if ( Output->pos < SyNrCols-2 ) 
+    {
         /* put the character on this line                                  */
         Output->line[ Output->pos++ ] = ch;
 
@@ -993,15 +1271,16 @@ void            PutChr (char ch)
         Output->sindent  = 660;
 
     }
-
     /* full line, no splitt position                                       */
-    else {
-
+    else 
+    {
         /* append a '\', and print the line                                */
-        if ( Output->file == 1 || Output->file == 3 ) {
+        if ( Output->file == 1 || Output->file == 3 ) 
+        {
             Output->line[ Output->pos++ ] = '\\';
             Output->line[ Output->pos++ ] = '\n';
         }
+
         Output->line[ Output->pos   ] = '\0';
         PutLine();
 
@@ -1056,90 +1335,135 @@ void            Pr (char *format, Int arg1, Int arg2)
     Int      n;
 
     /* loop over the characters of the <format> string                     */
-    for ( p = format; *p != '\0'; p++ ) {
-
+    for ( p = format; *p != '\0'; p++ ) 
+    {
         /* if the character is '%' do something special                    */
-        if ( *p == '%' ) {
-
+        if ( *p == '%' ) 
+        {
             /* first look for a precision field                            */
             p++;
-            if ( *p == '0' )  fill = '0';  else fill = ' ';
-            for ( prec = 0; IsDigit(*p); p++ )
+            if (*p == '0') 
+            { 
+                fill = '0';
+            }
+            else 
+            {
+                fill = ' '; 
+            }
+
+            for (prec = 0; IsDigit(*p); p++)
+            {
                 prec = 10 * prec + *p - '0';
+            }
 
             /* '%d' print an integer                                       */
-            if ( *p == 'd' ) {
-                if ( arg1 < 0 ) {
+            if ( *p == 'd' ) 
+            {
+                if ( arg1 < 0 ) 
+                {
                     prec--;
-                    for ( n=1; n <= -(arg1/10); n*=10 )
+
+                    for (n = 1; n <= -(arg1 / 10); n *= 10)
+                    {
                         prec--;
-                    while ( --prec > 0 )  PutChr(fill);
+                    }
+
+                    while (--prec > 0) 
+                    { 
+                        PutChr(fill); 
+                    }
+
                     PutChr('-');
-                    for ( ; n > 0; n /= 10 )
-                        PutChr( (char)(-((arg1/n)%10) + '0') );
+
+                    for (; n > 0; n /= 10)
+                    {
+                        PutChr((char)(-((arg1 / n) % 10) + '0'));
+                    }
+
                     arg1 = arg2;
                 }
                 else {
-                    for ( n=1; n<=arg1/10; n*=10 )
+                    for (n=1; n <= (arg1/10); n *= 10)
+                    {
                         prec--;
-                    while ( --prec > 0 )  PutChr(fill);
-                    for ( ; n > 0; n /= 10 )
+                    }
+
+                    while (--prec > 0) 
+                    { 
+                        PutChr(fill);
+                    }
+
+                    for ( ; n > 0; n /= 10 ) //GS4 WHAT???????
                         PutChr( (char)(((arg1/n)%10) + '0') );
                     arg1 = arg2;
                 }
             }
 
             /* '%s' print a string                                         */
-            else if ( *p == 's' ) {
-                for ( q = (char*)arg1; *q != '\0'; q++ )
+            else if ( *p == 's' ) 
+            {
+                for (q = (char*)arg1; *q != '\0'; q++)
+                {
                     prec--;
-                while ( prec-- > 0 )  PutChr(' ');
-                for ( q = (char*)arg1; *q != '\0'; q++ )
-                    PutChr( *q );
+                }
+
+                while (prec-- > 0)
+                { 
+                    PutChr(' '); 
+                }
+
+                for (q = (char*)arg1; *q != '\0'; q++)
+                {
+                    PutChr(*q);
+                }
+
                 arg1 = arg2;
             }
-
             /* '%g' print a GAP object                                     */
-            else if ( *p == 'g' ) {
+            else if ( *p == 'g' ) 
+            {
                 Print( (Bag)arg1 );
                 arg1 = arg2;
             }
-
             /* '%c' print a character                                      */
             else if ( *p == 'c' ) {
                 PutChr( (char)arg1 );
                 arg1 = arg2;
             }
-
             /* '%>' increment the indentation level                        */
             else if ( *p == '>' ) {
                 PutChr( '\01' );
-                while ( --prec > 0 )
-                    PutChr( '\01' );
+                while (--prec > 0)
+                {
+                    PutChr('\01');
+                }
             }
-
             /* '%<' decrement the indentation level                        */
-            else if ( *p == '<' ) {
+            else if ( *p == '<' ) 
+            {
                 PutChr( '\02' );
-                while ( --prec > 0 )
-                    PutChr( '\02' );
+                while (--prec > 0)
+                {
+                    PutChr('\02');
+                }
             }
-
             /* '%%' print a '%' character                                  */
-            else if ( *p == '%' ) {
+            else if ( *p == '%' ) 
+            {
                 PutChr( '%' );
             }
-
             /* else raise an error                                         */
-            else {
-                for ( p = "%format error"; *p != '\0'; p++ )
-                    PutChr( *p );
+            else 
+            {
+                for (p = "%format error"; *p != '\0'; p++)
+                {
+                    PutChr(*p);
+                }
             }
-
         }
-
         /* not a '%' character, simply print it                            */
-        else {
+        else 
+        {
             PutChr( *p );
         }
 
@@ -1191,19 +1515,26 @@ Int            OpenInput (char *filename)
     FILE    *file;
 
     /* fail if we can not handle another open input file                   */
-    if ( Input+1 == InputFiles+(sizeof(InputFiles)/sizeof(InputFiles[0])) )
+    if (Input + 1 == InputFiles + (sizeof(InputFiles) / sizeof(InputFiles[0])))
+    {
         return 0;
+    }
 
     /**/HookBeforeOpenInput();/**/
 
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
+
     if (file == (FILE*)0)
+    {
         return 0;
+    }
 
     /* remember the current position in the current file                   */
-    if ( Input != InputFiles-1 )
+    if (Input != InputFiles - 1)
+    {
         Input->ptr = In;
+    }
 
     /* enter the file identifier and the file name                         */
     Input++;
@@ -1250,8 +1581,10 @@ Int            OpenInput (char *filename)
 Int            CloseInput (void)
 {
     /* refuse to close the initial input file                              */
-    if ( Input == InputFiles )
+    if (Input == InputFiles)
+    {
         return 0;
+    }
 
     /**/HookBeforeCloseInput();/**/
 
@@ -1277,8 +1610,10 @@ extern Int            OpenStringOutput ()
     Int     file;
 
     /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
+    if (Output + 1 == OutputFiles + (sizeof(OutputFiles) / sizeof(OutputFiles[0])))
+    {
         return 0;
+    }
 
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
@@ -1310,18 +1645,19 @@ Bag		GReadFile()
 
 	hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
 
-	while(SyFgets(Input->line, 2048, Input->file)) {
+	while(SyFgets(Input->line, 2048, Input->file)) 
+    {
 		slen = strlen(Input->line);
 		Input->line[slen-1] = '\0';
 		hd = NewBag( T_STRING, slen );
 
-                *( (char*) PTR_BAG( hd ) ) = '\0';
-                strncpy( (char*) PTR_BAG( hd ), Input->line, slen );
+        *( (char*) PTR_BAG( hd ) ) = '\0';
+        strncpy( (char*) PTR_BAG( hd ), Input->line, slen );
 
-                plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(hdList) );
-                Resize( hdList, SIZE_PLEN_PLIST( plen + 1 ) );
-                SET_LEN_PLIST( hdList, plen + 1 );
-                SET_BAG( hdList ,  plen + 1 ,  hd );
+        plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(hdList) );
+        Resize( hdList, SIZE_PLEN_PLIST( plen + 1 ) );
+        SET_LEN_PLIST( hdList, plen + 1 );
+        SET_BAG( hdList ,  plen + 1 ,  hd );
 
 	}
 
@@ -1361,13 +1697,17 @@ Int            OpenOutput (char *filename)
     Int     file;
 
     /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
+    if (Output + 1 == OutputFiles + (sizeof(OutputFiles) / sizeof(OutputFiles[0])))
+    {
         return 0;
+    }
 
     /* try to open the file                                                */
     file = SyFopen( filename, "w" );
-    if ( file == -1 )
+    if (file == -1)
+    {
         return 0;
+    }
 
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
@@ -1405,8 +1745,10 @@ Int            OpenOutput (char *filename)
 Int            CloseOutput (void)
 {
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( Output == OutputFiles )
+    if (Output == OutputFiles)
+    {
         return 0;
+    }
 
 
     /* flush output and close the file                                     */
@@ -1415,7 +1757,9 @@ Int            CloseOutput (void)
 
     /* revert to previous output file and indicate success                 */
     Output->file = (FILE*)0;
-    if (Output->mem) {
+
+    if (Output->mem) 
+    {
         free(Output->mem);
         Output->mem = 0;
     }
@@ -1435,29 +1779,34 @@ extern Bag            ReturnStringOutput ()
     Int      slen;
 	char	*str;
 
-	if (Output->pos > 0) {
+	if (Output->pos > 0) 
+    {
 		Output->line[Output->pos] = '\0';
 
+        // Special handling for FunPrintToString() GS4 Keep going till we doing hit a blank spot
 		str = malloc((strlen(Output->line)+1)*sizeof(char));
 		i = 0;
 		while(Output->line[i++] == ' ');
 		--i;
-		for(k = 0; i < strlen(Output->line); ++i, ++k) {
+
+		for(k = 0; i < strlen(Output->line); ++i, ++k)
+        {
 			str[k] = Output->line[i];
 		}
+
 		str[k] = '\0';
 
 		slen = strlen(str);
 
-	        hd = NewBag( T_STRING, slen + 1 );
+	    hd = NewBag( T_STRING, slen + 1 );
 
-       		*( (char*) PTR_BAG( hd ) ) = '\0';
-	        strncpy( (char*) PTR_BAG( hd ), str, slen );
+       	*( (char*) PTR_BAG( hd ) ) = '\0';
+	    strncpy( (char*) PTR_BAG( hd ), str, slen );
 
-        	plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(Output->hdList) );
-	        Resize( Output->hdList, SIZE_PLEN_PLIST( plen + 1 ) );
-        	SET_LEN_PLIST( Output->hdList, plen + 1 );
-	        SET_BAG( Output->hdList ,  plen + 1 ,  hd );
+        plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(Output->hdList) );
+	    Resize( Output->hdList, SIZE_PLEN_PLIST( plen + 1 ) );
+        SET_LEN_PLIST( Output->hdList, plen + 1 );
+	    SET_BAG( Output->hdList ,  plen + 1 ,  hd );
 
 		free(str);
 	}
@@ -1469,13 +1818,16 @@ extern Bag            ReturnStringOutput ()
 extern Int            CloseStringOutput (void)
 {
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( Output == OutputFiles )
+    if (Output == OutputFiles)
+    {
         return 0;
+    }
 
 
     /* revert to previous output file and indicate success                 */
     Output->file = 0;
-    if (Output->mem) {
+    if (Output->mem) 
+    {
         free(Output->mem);
         Output->mem = 0;
     }
@@ -1502,19 +1854,24 @@ Int            OpenMemory ()
 {
     char    *mem;
     /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
+    if (Output + 1 == OutputFiles + (sizeof(OutputFiles) / sizeof(OutputFiles[0])))
+    {
         return 0;
+    }
 
     /* alloc buffer, first UInt there is buffer size without two UInts     */
     /* second UInt is number of number of characters in the buffer         */
     mem = malloc(2*sizeof(UInt) + INITIAL_MEM_SIZE);
 
-    if (mem==0)
+    if (mem == 0)
+    {
         return 0;
+    }
         
     ((UInt*)mem)[0] = INITIAL_MEM_SIZE;
     ((UInt*)mem)[1] = 0;
     *(mem + 2*sizeof(UInt)) = '\0';
+
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
     Output->file = (FILE*)0;
@@ -1540,8 +1897,10 @@ Int            OpenMemory ()
 **  accumulated output as string in hdStr.
 */
 
-Int            CloseMemory(Obj* hdStr) {
-    if (Output->mem) {
+Int            CloseMemory(Obj* hdStr)
+{
+    if (Output->mem) 
+    {
         Obj hd = 0;
         UInt mem_chars;
         /* flush output                                                    */
@@ -1552,7 +1911,9 @@ Int            CloseMemory(Obj* hdStr) {
         SET_LEN_STRING(hd, mem_chars);
         strncpy(CHARS_STRING(hd), Output->mem + 2*sizeof(UInt), mem_chars+1 );
         *hdStr = hd;
-    } else {
+    } 
+    else 
+    {
         *hdStr = NewBag( T_STRING, SIZEBAG_STRINGLEN(0)); 
     }
     return CloseOutput();
@@ -1574,13 +1935,17 @@ Int            OpenAppend (char *filename)
     Int     file;
 
     /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
+    if (Output + 1 == OutputFiles + (sizeof(OutputFiles) / sizeof(OutputFiles[0])))
+    {
         return 0;
+    }
 
     /* try to open the file                                                */
     file = SyFopen( filename, "a" );
-    if (file == (FILE*)0) 
+    if (file == (FILE*)0)
+    {
         return 0;
+    }
 
 
     /* put the file on the stack, start at position 0 on an empty line     */
@@ -1620,13 +1985,17 @@ Int            OpenLog (char *filename)
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( Logfile != -1 )
+    if (Logfile != -1)
+    {
         return 0;
+    }
 
     /* try to open the file                                                */
     Logfile = SyFopen( filename, "w" );
-    if ( Logfile == -1 )
+    if (Logfile == -1)
+    {
         return 0;
+    }
 
     /* otherwise indicate success                                          */
     return 1;
@@ -1647,8 +2016,10 @@ Int            OpenLog (char *filename)
 Int            CloseLog (void)
 {
     /* refuse to close a non existent logfile                              */
-    if ( Logfile == -1 )
+    if (Logfile == -1)
+    {
         return 0;
+    }
 
     /* close the logfile                                                   */
     SyFclose( Logfile );
@@ -1678,13 +2049,17 @@ Int            OpenInputLog (char *filename)
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( InputLogfile != -1 )
+    if (InputLogfile != -1)
+    {
         return 0;
+    }
 
     /* try to open the file                                                */
     InputLogfile = SyFopen( filename, "w" );
-    if ( InputLogfile == -1 )
+    if (InputLogfile == -1)
+    {
         return 0;
+    }
 
     /* otherwise indicate success                                          */
     return 1;
@@ -1705,8 +2080,10 @@ Int            OpenInputLog (char *filename)
 Int            CloseInputLog (void)
 {
     /* refuse to close a non existent logfile                              */
-    if ( InputLogfile == -1 )
+    if (InputLogfile == -1)
+    {
         return 0;
+    }
 
     /* close the logfile                                                   */
     SyFclose( InputLogfile );
@@ -1731,7 +2108,8 @@ void            InitScanner (void)
     Int     i;
 
     OutputLineLen = SyNrCols < 1000 ? 1000 : SyNrCols + 1;
-    for(i = 0; i < SCANNER_OUTPUTS; ++i) {
+    for(i = 0; i < SCANNER_OUTPUTS; ++i)
+    {
         /* OutputFiles[i].line = (char*) xmalloc(sizeof(char)*OutputLineLen); */
         OutputFiles[i].line = (char*) malloc(sizeof(char)*OutputLineLen);
         OutputFiles[i].file = (FILE*)0;
@@ -1743,8 +2121,10 @@ void            InitScanner (void)
         OutputFiles[i].mem = 0;
     }
 
-    Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
-    Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
+    Input  = InputFiles-1;   
+    ignore = OpenInput(  "*stdin*"  );
+    Output = OutputFiles-1;  
+    ignore = OpenOutput( "*stdout*" );
 
     Logfile = -1;  
     InputLogfile = -1;

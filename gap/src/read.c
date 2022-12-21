@@ -452,6 +452,7 @@ Obj  _RdRec ( TypSymbolSet follow, int type )
 
     /* 'rec('                                                              */
     Match( S_IDENT, "", NUM_TO_UINT(0) );
+
     if ( SAVE_DEF_LINE ) 
     {
         str = GuMakeMessage("[[ defined in %s:%d ]]\n", Input->name, Input->number);
@@ -573,8 +574,8 @@ Obj  _RdRec ( TypSymbolSet follow, int type )
     return hdRec;
 }
 
-Obj  RdLet ( TypSymbolSet follow ) {
-
+Obj  RdLet ( TypSymbolSet follow )
+{
     Obj     hdNS;
     Obj     hd;
     Obj     hdIdent;
@@ -714,6 +715,7 @@ Bag       RdPerm (Bag hdFirst, TypSymbolSet follow)
         {
             Resize( hdCyc, (k+15)*SIZE_HD );
         }
+
         hd = RdExpr( S_RPAREN|follow );
         SET_BAG(hdCyc, k-1,  hd );
         isConst = isConst && (hd != 0) && (GET_TYPE_BAG(hd) == T_INT);
@@ -750,6 +752,7 @@ Bag       RdPerm (Bag hdFirst, TypSymbolSet follow)
             {
                 Resize( hdCyc, (k+15) * SIZE_HD );
             }
+
             hd = RdExpr( S_RPAREN|follow );
             SET_BAG(hdCyc, k-1,  hd );
             isConst = isConst && (hd != 0) && (GET_TYPE_BAG(hd) == T_INT);
@@ -1069,9 +1072,11 @@ Bag       RdAtom (TypSymbolSet follow)
     PermBegin = 0;
 
     /* return the <Atom> bag                                               */
-    if (NrError >= 1) {
+    if (NrError >= 1) 
+    {
         return 0;
     }
+
     return hdAt;
 }
 
@@ -1094,9 +1099,17 @@ Bag       RdFactor (TypSymbolSet follow)
 
     /* { '+'|'-' }  leading sign                                           */
 
-    while ( Symbol == S_MINUS  || Symbol == S_PLUS ) {
-        if ( sign1 == 0 )  sign1 = 1;
-        if ( Symbol == S_MINUS ) sign1 = - sign1;
+    while ( Symbol == S_MINUS  || Symbol == S_PLUS ) 
+    {
+        if (sign1 == 0)
+        {
+            sign1 = 1;
+        }
+
+        if (Symbol == S_MINUS)
+        {
+            sign1 = -sign1;
+        }
 
         Match( Symbol, "", NUM_TO_UINT(0) );
     }
@@ -1105,16 +1118,26 @@ Bag       RdFactor (TypSymbolSet follow)
     hdFac = RdAtom( follow );
 
     /* ['^' <Atom> ] implemented as {'^' <Atom> } for better error message */
-    while ( Symbol == S_POW ) {
+    while ( Symbol == S_POW ) 
+    {
 
         /* match the '^' away                                              */
         Match( S_POW, "", NUM_TO_UINT(0) );
 
         /* { '+'|'-' }  leading sign                                       */
         sign2 = 0;
-        while ( Symbol == S_MINUS  || Symbol == S_PLUS ) {
-            if ( sign2 == 0 )  sign2 = 1;
-            if ( Symbol == S_MINUS ) sign2 = - sign2;
+        while ( Symbol == S_MINUS  || Symbol == S_PLUS ) 
+        {
+            if (sign2 == 0)
+            {
+                sign2 = 1;
+            }
+
+            if (Symbol == S_MINUS)
+            {
+                sign2 = -sign2;
+            }
+
             Match( Symbol, "", NUM_TO_UINT(0) );
         }
 
@@ -1122,22 +1145,35 @@ Bag       RdFactor (TypSymbolSet follow)
         hdAt = RdAtom(follow);
 
         /* add the unary minus bag                                         */
-        if ( sign2 == -1 && NrError == 0 && GET_TYPE_BAG(hdFac) <= T_INTNEG )
-            hdAt = ProdInt( INT_TO_HD(-1), hdAt );
-        else if ( sign2 == -1 && NrError == 0 )
-            hdAt = BinBag( T_PROD, INT_TO_HD(-1), hdAt );
+        if (sign2 == -1 && NrError == 0 && GET_TYPE_BAG(hdFac) <= T_INTNEG)
+        {
+            hdAt = ProdInt(INT_TO_HD(-1), hdAt);
+        }
+        else if (sign2 == -1 && NrError == 0)
+        {
+            hdAt = BinBag(T_PROD, INT_TO_HD(-1), hdAt);
+        }
 
         /* create the power bag                                            */
         hdFac = BinBag( T_POW, hdFac, hdAt );
-        if ( Symbol == S_POW )  SyntaxError("'^' is not associative");
+        
+        if (Symbol == S_POW)
+        {
+            SyntaxError("'^' is not associative");
+        }
+
 
     }
 
     /* add the unary minus bag                                             */
-    if ( sign1 == -1 && NrError == 0 && GET_TYPE_BAG(hdFac) <= T_INTNEG )
-        hdFac = ProdInt( INT_TO_HD(-1), hdFac );
-    else if ( sign1 == -1 && NrError == 0 )
-        hdFac = BinBag( T_PROD, INT_TO_HD(-1), hdFac );
+    if (sign1 == -1 && NrError == 0 && GET_TYPE_BAG(hdFac) <= T_INTNEG)
+    {
+        hdFac = ProdInt(INT_TO_HD(-1), hdFac);
+    }
+    else if (sign1 == -1 && NrError == 0)
+    {
+        hdFac = BinBag(T_PROD, INT_TO_HD(-1), hdFac);
+    }
 
     /* return the <Factor> bag                                             */
     return hdFac;
@@ -1164,12 +1200,21 @@ Bag       RdTerm (TypSymbolSet follow)
 
     /* { '*'|'/'|'mod' <Factor> }                                          */
     /* do not use 'IS_IN', since 'IS_IN(S_POW,S_MULT|S_DIV|S_MOD)' is true */
-    while ( Symbol==S_MULT || Symbol==S_DIV || Symbol==S_MOD ) {
-        switch ( Symbol ) {
-        case S_MULT:  type = T_PROD;  break;
-        case S_DIV:   type = T_QUO;   break;
-        default:      type = T_MOD;   break;
+    while ( Symbol==S_MULT || Symbol==S_DIV || Symbol==S_MOD )
+    {
+        switch ( Symbol ) 
+        {
+        case S_MULT:  
+            type = T_PROD;  
+            break;
+        case S_DIV:   
+            type = T_QUO;   
+            break;
+        default:      
+            type = T_MOD;   
+            break;
         }
+
         Match( Symbol, "", NUM_TO_UINT(0) );
         hdFac = RdFactor( follow );
         hdTer = BinBag( type, hdTer, hdFac );
@@ -1199,8 +1244,10 @@ Bag       RdAri (TypSymbolSet follow)
     hdAri = RdTerm( follow );
 
     /* { '+'|'-' <Term> }                                                  */
-    while ( IS_IN(Symbol,S_PLUS|S_MINUS|S_CONCAT) ) {
+    while ( IS_IN(Symbol,S_PLUS|S_MINUS|S_CONCAT) )
+    {
         type = (Symbol == S_PLUS) ?  T_SUM :  (Symbol==S_MINUS ? T_DIFF : T_CONCAT);
+
         Match( Symbol, "", NUM_TO_UINT(0) );
         hdTer = RdTerm( follow );
         hdAri = BinBag( type, hdAri, hdTer );
@@ -1229,23 +1276,46 @@ Bag       RdRel (TypSymbolSet follow)
 
     /* { 'not' }                                                           */
     isNot = 0;
-    while ( Symbol == S_NOT ) { isNot = ! isNot;  Match( S_NOT, "", NUM_TO_UINT(0) ); }
+    while ( Symbol == S_NOT ) 
+    { 
+        isNot = ! isNot;  
+        Match( S_NOT, "", NUM_TO_UINT(0) ); 
+    }
 
     /* <Arith>                                                             */
     hdRel = RdAri( follow );
 
     /* { '=|<>|<|>|<=|>=|in' <Arith> }                                     */
-    if ( IS_IN(Symbol,S_EQ|S_LT|S_GT|S_NE|S_LE|S_GE|S_IN|S_IS) ) {
-        switch ( Symbol ) {
-        case S_EQ:  type = T_EQ;  break;
-        case S_LT:  type = T_LT;  break;
-        case S_GT:  type = T_GT;  break;
-        case S_NE:  type = T_NE;  break;
-        case S_LE:  type = T_LE;  break;
-        case S_GE:  type = T_GE;  break;
-        case S_IN:  type = T_IN;  break;
-        default:    type = T_IS;  break;
+    if ( IS_IN(Symbol,S_EQ|S_LT|S_GT|S_NE|S_LE|S_GE|S_IN|S_IS) ) 
+    {
+        switch ( Symbol ) 
+        {
+            case S_EQ:  
+                 type = T_EQ; 
+                 break;
+            case S_LT:  
+                type = T_LT;  
+                break;
+            case S_GT:  
+                type = T_GT;  
+                break;
+            case S_NE:  
+                type = T_NE;  
+                break;
+            case S_LE:  
+                type = T_LE;  
+                break;
+            case S_GE:  
+                type = T_GE;  
+                break;
+            case S_IN:  
+                type = T_IN;  
+                break;
+            default:    
+                type = T_IS;  
+                break;
         }
+
         Match( Symbol, "", NUM_TO_UINT(0) );
         hdAri = RdAri( follow );
         hdRel = BinBag( type, hdRel, hdAri );

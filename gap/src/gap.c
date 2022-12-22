@@ -1055,32 +1055,6 @@ Bag       FunPrint (Bag hdCall)
     return HdVoid;
 }
 
-/****************************************************************************
-**
-*F  Fun_Pr( <hdCall> ) . . . . . . . . . . . . . . . internal function '_Pr'
-**
-**  'Fun_Pr' implements direct interface for Pr() function. It can print
-**  strings only. String passed directly into Pr() without any processing.
-**
-**  _Pr( <string>, <string>, ... )
-*/
-
-Bag       Fun_Pr (Bag hdCall)
-{
-    Bag     hd;
-    Int     i;
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-	Int type;
-        hd = EVAL( PTR_BAG(hdCall)[i] );
-	type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  Pr( CSTR_STRING (hd), 0, 0 );
-        else  /*hd = Error("function must return a value",0,0);*/;
-    }
-
-    return HdVoid;
-}
 
 /****************************************************************************
 **
@@ -2017,7 +1991,6 @@ void            InitGap (int argc, char** argv, int* stackBase)
     InstIntFunc( "CHANGEDIR",  FunChangeDir  );
     InstIntFunc( "AUTO",       FunAUTO       );
     InstIntFunc( "Print",      FunPrint      );
-    InstIntFunc( "_Pr",        Fun_Pr        );
     InstIntFunc( "PrintTo",    FunPrntTo     );
     InstIntFunc( "AppendTo",   FunAppendTo   );
     InstIntFunc( "LogTo",      FunLogTo      );

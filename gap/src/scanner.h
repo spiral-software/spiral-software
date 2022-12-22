@@ -405,11 +405,6 @@ typedef struct {
     Int   indent;
     Int   spos;
     Int   sindent;
-    char *mem; /* holds memory buffer if output goes into memory         */
-               /* first UInt is the buffer size without 2*sizeof(UInt);  */
-               /* second UInt is the number of characters written        */
-               /* (without terminating zero);                            */
-               /* null terminated characters array;                      */
     Bag	hdList;
 } TypOutputFile;
 
@@ -565,28 +560,6 @@ Int            CloseOutput ( void );
 */
 Int            OpenAppend ( char * filename );
 
-/****************************************************************************
-**
-*F  OpenMemory( )  . . . . . . . . . . . redirecting output into memory block
-**
-**  'OpenMemory' uses memory buffer as current output.
-**  All subsequent output will go to that memory buffer, until either   
-**  it is  closed with 'CloseMemory'/'CloseOutput' or  another  file is  
-**  opened with 'OpenOutput'. The size of memory buffer grows to hold all 
-**  redirected data.
-*/
-
-Int            OpenMemory ();
-
-/****************************************************************************
-**
-*F  CloseMemory( )  . . . . . . . . . . . close current output memory buffer
-**
-**  CloseMemory(Obj* hdStr) closing current output and returns all 
-**  accumulated output as string in hdStr.
-*/
-
-Int            CloseMemory(Obj* hdStr);
 
 /****************************************************************************
 **

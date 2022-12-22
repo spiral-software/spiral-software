@@ -1148,32 +1148,6 @@ Bag       FunPrntTo (Bag hdCall)
 
 /****************************************************************************
 **
-*F  FunStringPrint( <hdCall> ) . . . . . . . . . .  Prints to a string
-**
-****************************************************************************/
-
-Bag FunStringPrint (Bag hdCall)
-{
-    Obj hdRes = 0;
-    
-    /* try to to redirect output to a memory buffer                        */
-    if ( OpenMemory() == 0 )
-        return Error("StringPrint: can not redirect output to string.",0,0);
-
-    /* Print the stuff */
-    FunPrint(hdCall);
-    
-    /* close the output and return string                                  */
-    if ( ! CloseMemory(&hdRes) )
-        Error("StringPrint: can not close output, this should not happen",0,0);
-
-    return hdRes; 
-}
-
-
-
-/****************************************************************************
-**
 *F  FunAppendTo( <hdCall> ) . . . . . . . . . .  internal function 'AppendTo'
 **
 **  'FunAppendTo' implements the internal function 'AppendTo'.
@@ -2045,7 +2019,6 @@ void            InitGap (int argc, char** argv, int* stackBase)
     InstIntFunc( "Print",      FunPrint      );
     InstIntFunc( "_Pr",        Fun_Pr        );
     InstIntFunc( "PrintTo",    FunPrntTo     );
-    InstIntFunc( "StringPrint",FunStringPrint);
     InstIntFunc( "AppendTo",   FunAppendTo   );
     InstIntFunc( "LogTo",      FunLogTo      );
     InstIntFunc( "LogInputTo", FunLogInputTo );

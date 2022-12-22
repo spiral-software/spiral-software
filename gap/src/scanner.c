@@ -1083,25 +1083,6 @@ void            PutLine(void)
     {
 		SyFputs(Output->line, Output->file);
 	}
-	else if (Output->mem) 
-    {
-		/* write to memory */
-		UInt len = strlen(Output->line);
-		UInt mem_sz = ((UInt*)(Output->mem))[0];
-		UInt mem_chrs = ((UInt*)(Output->mem))[1];
-
-		if (mem_sz + len + 1 > mem_chrs) 
-        {
-			/* no error handling */
-			mem_sz = (mem_sz > len) ? mem_sz * 2 : (mem_sz + len + 1);
-			Output->mem = realloc(Output->mem, 2 * sizeof(UInt) + mem_sz);
-			((UInt*)(Output->mem))[0] = mem_sz;
-		}
-
-		strncpy(Output->mem + 2 * sizeof(UInt) + mem_chrs, Output->line, len + 1);
-		((UInt*)(Output->mem))[1] = mem_chrs + len;
-	}
-
 
 	/* if neccessary echo it to the logfile                                */
     if (Logfile != -1 && (Output->file == stdout || Output->file == stderr))
@@ -1658,7 +1639,6 @@ Int            OpenOutput (char *filename)
     Output->line[0] = '\0';
     Output->pos     = 0;
     Output->indent  = 0;
-    Output->mem     = 0;
     /* variables related to line splitting, very bad place to split        */
     Output->spos    = 0;
     Output->sindent = 660;
@@ -1700,97 +1680,11 @@ Int            CloseOutput (void)
 
     /* revert to previous output file and indicate success                 */
     Output->file = (FILE*)0;
-
-    if (Output->mem) 
-    {
-        free(Output->mem);
-        Output->mem = 0;
-    }
-    
+        
     Output--;
     return 1;
 }
 
-
-/****************************************************************************
-**
-*F  OpenMemory( )  . . . . . . . . . . . redirecting output into memory block
-**
-**  'OpenMemory' uses memory buffer as current output.
-**  All subsequent output will go to that memory buffer, until either   
-**  it is  closed with 'CloseMemory'/'CloseOutput' or  another  file is  
-**  opened with 'OpenOutput'. The size of memory buffer grows to hold all 
-**  redirected data.
-*/
-
-Int            OpenMemory ()
-{
-    char    *mem;
-    /* fail if we can not handle another open output file                  */
-    if (Output + 1 == OutputFiles + (sizeof(OutputFiles) / sizeof(OutputFiles[0])))
-    {
-        return 0;
-    }
-
-    /* alloc buffer, first UInt there is buffer size without two UInts     */
-    /* second UInt is number of number of characters in the buffer         */
-    mem = malloc(2*sizeof(UInt) + INITIAL_MEM_SIZE);
-
-    if (mem == 0)
-    {
-        return 0;
-    }
-        
-    ((UInt*)mem)[0] = INITIAL_MEM_SIZE;
-    ((UInt*)mem)[1] = 0;
-    *(mem + 2*sizeof(UInt)) = '\0';
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file = (FILE*)0;
-    Output->file    = 0;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-    Output->mem     = mem;
-
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 660;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-/****************************************************************************
-**
-*F  CloseMemory( )  . . . . . . . . . . . close current output memory buffer
-**
-**  CloseMemory(Obj* hdStr) closing current output and returns all 
-**  accumulated output as string in hdStr.
-*/
-
-Int            CloseMemory(Obj* hdStr)
-{
-    if (Output->mem) 
-    {
-        Obj hd = 0;
-        UInt mem_chars;
-        /* flush output                                                    */
-        Pr( "%c", (Int)'\03', 0 );
-        mem_chars = ((UInt*)(Output->mem))[1];
-        /* grab memory to string                                           */
-        hd = NewBag( T_STRING, SIZEBAG_STRINGLEN(mem_chars)); 
-        SET_LEN_STRING(hd, mem_chars);
-        strncpy(CHARS_STRING(hd), Output->mem + 2*sizeof(UInt), mem_chars+1 );
-        *hdStr = hd;
-    } 
-    else 
-    {
-        *hdStr = NewBag( T_STRING, SIZEBAG_STRINGLEN(0)); 
-    }
-    return CloseOutput();
-}
 
 /****************************************************************************
 **
@@ -1827,7 +1721,6 @@ Int            OpenAppend (char *filename)
     Output->line[0] = '\0';
     Output->pos     = 0;
     Output->indent  = 0;
-    Output->mem     = 0;
     
     /* variables related to line splitting, very bad place to split        */
     Output->spos    = 0;
@@ -1991,7 +1884,6 @@ void            InitScanner (void)
         OutputFiles[i].pos = 0;
         OutputFiles[i].sindent = 0;
         OutputFiles[i].spos = 0;
-        OutputFiles[i].mem = 0;
     }
 
     Input  = InputFiles-1;   

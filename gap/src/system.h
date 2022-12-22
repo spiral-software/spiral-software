@@ -646,5 +646,10 @@ typedef void            (*TNumAbortFuncBags) (
 
 extern  TNumAbortFuncBags       AbortFuncBags;
 
+
+extern int SyFmtPrint(FILE* stream, const char* format, ...);
+
+
+
 #endif // _SYSTEM_H
 

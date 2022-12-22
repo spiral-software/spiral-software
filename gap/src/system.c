@@ -9,6 +9,7 @@
 */
 
 #include		<stdlib.h>
+#include        <stdarg.h>
 #include        "system.h"              /* declaration part of the package */
 #include        "spiral.h"              /* InitLibName() */
 #include        "iface.h"
@@ -2676,4 +2677,18 @@ fullusage:
     FPUTS_TO_STDERR("\n");
     SyExit(1);
 }
+
+
+int SyFmtPrint(FILE* stream, const char* format, ...)
+{
+    int result;
+    va_list arglist;
+    va_start(arglist, format);
+
+    result = vfprintf(stream, format, arglist);
+
+    va_end(arglist);
+    return result;
+}
+
 

@@ -1145,46 +1145,6 @@ Bag       FunPrntTo (Bag hdCall)
     return HdVoid;
 }
 
-Int            OpenStringOutput ();
-Bag            ReturnStringOutput ();
-Int            CloseStringOutput (void);
-
-Bag       FunPrntToString (Bag hdCall)
-{
-    Bag     hd;
-    Bag     hdList;
-    Int     i;
-
-    /* check the number and type of the arguments, nothing special         */
-    if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
-        return Error("usage: PrintTo( <file>, <obj>, <obj>... )",0,0);
-    //hd = EVAL( PTR_BAG(hdCall)[1] );
-
-    /* try to open the given output file, raise an error if you can not    */
-    if ( OpenStringOutput( ) == 0 )
-        return Error("PrintTo: can not open the file for writing",0,0);
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-        Int type;
-        hd = EVAL( PTR_BAG(hdCall)[i] );
-        type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  PrintString( hd );
-        else if ( type == T_MAKEFUNC )           PrintFunction( hd );
-        else if ( type == T_FUNCTION )           PrintFunction( hd );
-        else if ( type == T_MAKEMETH )           PrintMethod( hd );
-        else if ( type == T_METHOD )             PrintMethod( hd );
-        else if ( type != T_VOID )               Print( hd );
-        else                                           Pr("",0,0);
-    }
-
-    hdList = ReturnStringOutput();
-
-    /* close the output file again, and return nothing                     */
-    if ( ! CloseStringOutput() )
-        Error("PrintTo: can not close output, this should not happen",0,0);
-    return hdList;
-}
 
 /****************************************************************************
 **
@@ -2083,7 +2043,6 @@ void            InitGap (int argc, char** argv, int* stackBase)
     InstIntFunc( "CHANGEDIR",  FunChangeDir  );
     InstIntFunc( "AUTO",       FunAUTO       );
     InstIntFunc( "Print",      FunPrint      );
-    InstIntFunc( "PrintToString",    FunPrntToString     );
     InstIntFunc( "_Pr",        Fun_Pr        );
     InstIntFunc( "PrintTo",    FunPrntTo     );
     InstIntFunc( "StringPrint",FunStringPrint);

@@ -1079,36 +1079,7 @@ void            PutLine(void)
 	Bag	     hd;
 	char    *str;
 
-	if (Output->fid == -5) 
-    {
-        // Special handling for FunPrintToString() 
-		str = malloc((strlen(Output->line) + 1) * sizeof(char));
-		i = 0;
-		while (Output->line[i++] == ' '); //GS4 Keep going till we doing hit a blank spot
-		--i; //GS4 
-
-		for (k = 0; (i < strlen(Output->line)) && (Output->line[i] != '\n'); ++i, ++k) 
-        {
-			str[k] = Output->line[i];
-		}
-
-		str[k] = '\0';
-
-		slen = strlen(str);
-
-		hd = NewBag(T_STRING, slen + 1);
-
-		*((char*)PTR_BAG(hd)) = '\0';
-		strncpy((char*)PTR_BAG(hd), str, slen);
-
-		plen = PLEN_SIZE_PLIST(GET_SIZE_BAG(Output->hdList));
-		Resize(Output->hdList, SIZE_PLEN_PLIST(plen + 1));
-		SET_LEN_PLIST(Output->hdList, plen + 1);
-		SET_BAG(Output->hdList, plen + 1, hd);
-
-		free(str);
-	}
-	else if (Output->file) 
+    if (Output->file) 
     {
 		SyFputs(Output->line, Output->file);
 	}
@@ -1605,35 +1576,7 @@ Int            CloseInput (void)
 }
 
 
-extern Int            OpenStringOutput ()
-{
-    Int     file;
 
-    /* fail if we can not handle another open output file                  */
-    if (Output + 1 == OutputFiles + (sizeof(OutputFiles) / sizeof(OutputFiles[0])))
-    {
-        return 0;
-    }
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->fid = -5;
-    Output->file = (FILE*)0;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-    Output->mem     = 0;
-
-    Output->hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
-
-
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 660;
-
-    /* indicate success                                                    */
-    return 1;
-}
 
 
 Bag		GReadFile()
@@ -1767,76 +1710,6 @@ Int            CloseOutput (void)
     Output--;
     return 1;
 }
-
-
-
-extern Bag            ReturnStringOutput ()
-{
-	Bag      hd;
-    Int		 plen;
-    Int      i;
-    Int      k;
-    Int      slen;
-	char	*str;
-
-	if (Output->pos > 0) 
-    {
-		Output->line[Output->pos] = '\0';
-
-        // Special handling for FunPrintToString() GS4 Keep going till we doing hit a blank spot
-		str = malloc((strlen(Output->line)+1)*sizeof(char));
-		i = 0;
-		while(Output->line[i++] == ' ');
-		--i;
-
-		for(k = 0; i < strlen(Output->line); ++i, ++k)
-        {
-			str[k] = Output->line[i];
-		}
-
-		str[k] = '\0';
-
-		slen = strlen(str);
-
-	    hd = NewBag( T_STRING, slen + 1 );
-
-       	*( (char*) PTR_BAG( hd ) ) = '\0';
-	    strncpy( (char*) PTR_BAG( hd ), str, slen );
-
-        plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(Output->hdList) );
-	    Resize( Output->hdList, SIZE_PLEN_PLIST( plen + 1 ) );
-        SET_LEN_PLIST( Output->hdList, plen + 1 );
-	    SET_BAG( Output->hdList ,  plen + 1 ,  hd );
-
-		free(str);
-	}
-
-	return Output->hdList;
-
-}
-
-extern Int            CloseStringOutput (void)
-{
-    /* refuse to close the initial output file '*stdout*'                  */
-    if (Output == OutputFiles)
-    {
-        return 0;
-    }
-
-
-    /* revert to previous output file and indicate success                 */
-    Output->file = 0;
-    if (Output->mem) 
-    {
-        free(Output->mem);
-        Output->mem = 0;
-    }
-    
-    Output--;
-    return 1;
-}
-
-
 
 
 /****************************************************************************

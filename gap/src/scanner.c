@@ -351,7 +351,8 @@ char            GetLine (void)
     {
         if (!SyQuiet)
         {
-            Pr("%s%c", (Int)Prompt, (Int)'\03');
+           // Pr("%s%c", (Int)Prompt, (Int)'\03');
+            SyFmtPrint(OUTFILE, "%s", Prompt);
         }
         else
         {

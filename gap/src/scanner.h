@@ -410,6 +410,8 @@ typedef struct {
 
 extern TypOutputFile * Output;
 
+#define OUTFILE (Output->file)
+
 /****************************************************************************
 **
 *F  GetLine() . . . . . . . . . . . . . . . . . . . . . . . get a line, local

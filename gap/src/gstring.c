@@ -595,45 +595,53 @@ void        PrString(Bag hdStr)
 {
     char    *p;
 
-    Pr("\"",0,0);
-
+    //Pr("\"",0,0);
+    SyFmtPrint(OUTFILE, "\"");
     for ( p = (char*)PTR_BAG(hdStr); *p != '\0'; ++p ) 
     {
         if (*p == '\n') 
         {
-            Pr("\\n", 0, 0);
+            //Pr("\\n", 0, 0);
+            SyFmtPrint(OUTFILE, "\\n");
         }
         else if (*p == '\t')
         {
-            Pr("\\t", 0, 0); 
+            //Pr("\\t", 0, 0); 
+            SyFmtPrint(OUTFILE, "\\t");
         }
         else if (*p == '\r') 
         { 
-            Pr("\\r", 0, 0);
+            //Pr("\\r", 0, 0);
+            SyFmtPrint(OUTFILE, "\\r");
         }
         else if (*p == '\b')
         { 
-            Pr("\\b", 0, 0);
+            //Pr("\\b", 0, 0);
+            SyFmtPrint(OUTFILE, "\\b");
         }
         else if (*p == '\03')
         { 
-            Pr("\\c", 0, 0); 
+            //Pr("\\c", 0, 0); 
+            SyFmtPrint(OUTFILE, "\\c");
         }
         else if (*p == '"')
         {
-            Pr("\\\"", 0, 0); 
+            //Pr("\\\"", 0, 0); 
+            SyFmtPrint(OUTFILE, "\\\"");
         }
         else if (*p == '\\')
         {
-            Pr("\\\\", 0, 0);
+            //Pr("\\\\", 0, 0);
+            SyFmtPrint(OUTFILE, "\\\\");
         }
         else 
         { 
-            Pr("%c", (Int)*p, 0);
+            //Pr("%c", (Int)*p, 0);
+            SyFmtPrint(OUTFILE, "%c", *p);
         }
     }
-
-    Pr("\"",0,0);
+    //Pr("\"",0,0);
+    SyFmtPrint(OUTFILE, "\"");
 }
 
 
@@ -644,9 +652,10 @@ void        PrString(Bag hdStr)
 **  'PrintString' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-void        PrintString(Bag hdStr)
+void    PrintString(Bag hdStr)
 {
-    Pr( "%s", (Int)(char*)PTR_BAG(hdStr), 0 );
+    //Pr( "%s", (Int)(char*)PTR_BAG(hdStr), 0 );
+    SyFmtPrint(OUTFILE, "%s", (char*)PTR_BAG(hdStr));
 }
 
 

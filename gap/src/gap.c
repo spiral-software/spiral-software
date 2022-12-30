@@ -1738,9 +1738,14 @@ Bag       FunLogInputTo(Bag hdCall)
 */
 Bag       FunHelp(Bag hdCall)
 {
-    Pr("Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n"
-       "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n"
-       "Use ?<func> or Doc(<func>) to learn about a function or a package\n", 0, 0);
+    //Pr("Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n"
+    //   "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n"
+    //   "Use ?<func> or Doc(<func>) to learn about a function or a package\n", 0, 0);
+    char *helpString = "Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n" 
+        "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n" 
+        "Use ?<func> or Doc(<func>) to learn about a function or a package\n";
+
+    SyFmtPrint(OUTFILE, "%s", helpString);
     return HdVoid;
 }
 
@@ -2221,30 +2226,45 @@ Bag       FunGASMAN(Bag hdCall)
             Int sumSizeLive = 0;
             Int sumNrAll = 0;
             Int sumSizeAll = 0;
-            Pr("\t\t    type     alive     size     total     size\n",0,0);
+            //Pr("\t\t    type     alive     size     total     size\n",0,0);
+            SyFmtPrint(OUTFILE, "%s", "\t\t    type     alive     size     total     size\n");
 
             for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) 
             {
-                Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
+                //Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
+                SyFmtPrint(OUTFILE, "%24s", InfoBags[k].name);
                 sumNrLive += InfoBags[k].nrLive;
                 sumSizeLive += InfoBags[k].sizeLive;
 
-                Pr("%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10, (Int)InfoBags[k].sizeLive >> 10);
+                //Pr("%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10, (Int)InfoBags[k].sizeLive >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk ", InfoBags[k].nrLive >> 10, InfoBags[k].sizeLive >> 10);
                 sumNrAll += InfoBags[k].nrAll;
                 sumSizeAll += InfoBags[k].sizeAll;
 
-                Pr("%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10, (Int)InfoBags[k].sizeAll >> 10);
+                //Pr("%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10, (Int)InfoBags[k].sizeAll >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk\n", InfoBags[k].nrAll >> 10, InfoBags[k].sizeAll >> 10);
             }
-            Pr("%24s  ",   (Int)"SUMMARY", 0 );
-            if (sumSizeLive<1000000000) {
-                Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
-            } else {
-                Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
+            //Pr("%24s  ",   (Int)"SUMMARY", 0 );
+            SyFmtPrint(OUTFILE, "%24s  ", "SUMMARY");
+            if (sumSizeLive<1000000000) 
+            {
+                //Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
+                SyFmtPrint(OUTFILE, "%9d %9d  ", sumNrLive, sumSizeLive);
+            } 
+            else 
+            {
+                //Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10);
             }
-            if (sumSizeAll<1000000000) {
-                Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
-            } else {
-                Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
+            if (sumSizeAll<1000000000) 
+            {
+                //Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
+                SyFmtPrint(OUTFILE, "%9d %9d\n", sumNrAll, sumSizeAll);
+            } 
+            else
+            {
+                //Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10);
             }
         } 
         else if ( strcmp( (char*)PTR_BAG(hdCmd), "display1" ) == 0 ) 
@@ -2254,23 +2274,26 @@ Bag       FunGASMAN(Bag hdCall)
             Int sumNrAll = 0;
             Int sumSizeAll = 0;
            
-            Pr("\t\t    type     alive     size     total     size\n",0,0);
-            
+           // Pr("\t\t    type     alive     size     total     size\n",0,0);
+            SyFmtPrint(OUTFILE, "%s", "\t\t    type     alive     size     total     size\n");
             for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) 
             {
                     if ( (InfoBags[k].sizeLive > 0) && (InfoBags[k].sizeAll > 0) ) 
                     {
-                        Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
+                        //Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
+                        SyFmtPrint(OUTFILE, "%24s  ", InfoBags[k].name);
                         sumNrLive += InfoBags[k].nrLive;
                         sumSizeLive += InfoBags[k].sizeLive;
 
                         if (InfoBags[k].sizeLive < 1000000000)
                         {
-                            Pr("%9d %9d  ", (Int)InfoBags[k].nrLive, (Int)InfoBags[k].sizeLive);
+                            //Pr("%9d %9d  ", (Int)InfoBags[k].nrLive, (Int)InfoBags[k].sizeLive);
+                            SyFmtPrint(OUTFILE, "%9d %9d  ", InfoBags[k].nrLive, InfoBags[k].sizeLive);
                         }
                         else
                         {
-                            Pr("%8dk %8dk  ", (Int)InfoBags[k].nrLive >> 10, (Int)InfoBags[k].sizeLive >> 10);
+                            //Pr("%8dk %8dk  ", (Int)InfoBags[k].nrLive >> 10, (Int)InfoBags[k].sizeLive >> 10);
+                            SyFmtPrint(OUTFILE, "%8dk %8dk  ", InfoBags[k].nrLive >> 10, InfoBags[k].sizeLive >> 10);
                         }
 
                         sumNrAll += InfoBags[k].nrAll;
@@ -2278,30 +2301,37 @@ Bag       FunGASMAN(Bag hdCall)
 
                         if (InfoBags[k].sizeAll < 1000000000)
                         {
-                            Pr("%9d %9d\n", (Int)InfoBags[k].nrAll, (Int)InfoBags[k].sizeAll);
+                            //Pr("%9d %9d\n", (Int)InfoBags[k].nrAll, (Int)InfoBags[k].sizeAll);
+                            SyFmtPrint(OUTFILE, "%9d %9d\n", InfoBags[k].nrAll, InfoBags[k].sizeAll);
                         }
                         else
                         {
-                            Pr("%8dk %8dk\n", (Int)InfoBags[k].nrAll >> 10, (Int)InfoBags[k].sizeAll >> 10);
+                            //Pr("%8dk %8dk\n", (Int)InfoBags[k].nrAll >> 10, (Int)InfoBags[k].sizeAll >> 10);
+                            SyFmtPrint(OUTFILE, "%8dk %8dk\n", InfoBags[k].nrAll >> 10, InfoBags[k].sizeAll >> 10);
                         }
                 }
             }
-            Pr("%24s  ",   (Int)"SUMMARY", 0 );
+            //Pr("%24s  ",   (Int)"SUMMARY", 0 );
+            SyFmtPrint(OUTFILE, "%24s  ", "SUMMARY");
 
             if (sumSizeLive<1000000000) 
             {
-                Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
+                //Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
+                SyFmtPrint(OUTFILE, "%9d %9d  ", sumNrLive, sumSizeLive);
             } 
             else 
             {
-                Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
+                //Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10);
             }
 
             if (sumSizeAll<1000000000)
             {
-                Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
+                //Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
+                SyFmtPrint(OUTFILE, "%9d %9d\n", sumNrAll, sumSizeAll);
             } else {
-                Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
+                //Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10);
             }
         }
         /* if request clear the statistics                               */

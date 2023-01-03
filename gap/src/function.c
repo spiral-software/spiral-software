@@ -1108,21 +1108,28 @@ Bag       FunProfile (Bag hdCall)
             total = 1;
         }
 
-        Pr(" count    time percent time/call child function\n",0,0);
+        //Pr(" count    time percent time/call child function\n",0,0);
+        SyFmtPrint(OUTFILE, " count    time percent time/call child function\n");
 
         for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 )
         {
-            Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0 );
-            Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ), 0 );
-            Pr("%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i+3]) / total, 0 );
-            Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ) /
-                        HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0 );
-            Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+4] ), 0 );
+            //Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0 );
+            SyFmtPrint(OUTFILE, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 2]));
+            //Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ), 0 );
+            SyFmtPrint(OUTFILE, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 3]));
+            //Pr("%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i+3]) / total, 0 );
+            SyFmtPrint(OUTFILE, "%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i + 3]) / total);
+            //Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ) / HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0 );
+            SyFmtPrint(OUTFILE, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 3]) / HD_TO_INT(PTR_BAG(HdTimes)[i + 2]));
+            //Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+4] ), 0 );
+            SyFmtPrint(OUTFILE, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 4]));
             Print( PTR_BAG(HdTimes)[i+1] );
-            Pr("\n",0,0);
+            //Pr("\n",0,0);
+            SyFmtPrint(OUTFILE, "\n");
         }
 
-        Pr("        %6d     100                  TOTAL\n",total-1,0);
+        //Pr("        %6d     100                  TOTAL\n",total-1,0);
+        SyFmtPrint(OUTFILE, "        %6d     100                  TOTALXXX\n", total - 1);
     }
 
     return HdVoid;

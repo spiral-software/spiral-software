@@ -98,9 +98,9 @@ volatile UInt   RecursionDepth;
 **  total time spent in this function we have the time spent in this function
 **  without its children.
 */
-Int            IsProfiling;
-Bag       HdTimes;
-UInt   Timesum;
+Int     IsProfiling;
+Bag     HdTimes;
+UInt    Timesum;
 
 
 /****************************************************************************
@@ -153,15 +153,22 @@ UInt   Timesum;
 
 void            ChangeEnv (Bag hdEnv, int flag)
 {
-    register Bag  hdDo, hdComm, hdTmp, hdUndo;
-    register Bag  * ptUndo,  * ptDef,  * ptDo;
-    register short      nr,  i;
+    register Bag     hdDo;
+    register Bag     hdComm;
+    register Bag     hdTmp;
+    register Bag     hdUndo;
+    register Bag    *ptUndo;
+    register Bag    *ptDef;
+    register Bag    *ptDo;
+    register short   nr;
+    register short   i;
 
     /* first walk down the new chain until we find a active exec bag       */
     /* we reverse the links, so we can walk back later                     */
     hdDo   = 0;
     hdComm = hdEnv;
-    while ( hdComm != 0 && PTR_BAG(hdComm)[1] != HdTrue ) {
+    while ( hdComm != 0 && (PTR_BAG(hdComm)[1] != HdTrue)) 
+    {
         hdTmp          = PTR_BAG(hdComm)[0];
         SET_BAG(hdComm, 0,  hdDo );
         hdDo           = hdComm;
@@ -170,27 +177,37 @@ void            ChangeEnv (Bag hdEnv, int flag)
 
     /* then we undo all changes from the topmost down to the common exec   */
     hdUndo = HdExec;
-    while ( hdUndo != hdComm ) {
-        int nrArg, nrLoc;
+    while ( hdUndo != hdComm ) 
+    {
+        int nrArg;
+        int nrLoc;
         
         ptUndo = PTR_BAG(hdUndo);
         ptDef  = PTR_BAG(ptUndo[2]);
         ACT_NUM_ARGS_FUNC(ptUndo[2], nrArg);
         ACT_NUM_LOCALS_FUNC(ptUndo[2], nrLoc);
 
-        if (!GET_FLAG_BAG(hdUndo, BF_ON_CALLSTACK) || (flag==CEF_DBG_DOWN && hdUndo==HdExec)) { // if not on the call stack
-            if (flag == CEF_CLEANUP) {
-                for ( i = 1; i <= nrArg + nrLoc; ++i ) {
+        if (!GET_FLAG_BAG(hdUndo, BF_ON_CALLSTACK) || (flag==CEF_DBG_DOWN && hdUndo==HdExec)) 
+        { // if not on the call stack
+            if (flag == CEF_CLEANUP) 
+            {
+                for ( i = 1; i <= nrArg + nrLoc; ++i ) 
+                {
                     hdTmp = ptUndo[EXEC_ARGS_START + i - 1];
                     ptUndo[EXEC_ARGS_START + i - 1] = (GET_FLAG_BAG(ptDef[i], BF_ENV_VAR)) ? VAR_VALUE(ptDef[i]) : 0 ;
                     SET_VAR_VALUE(ptDef[i], hdTmp);
                 }
-                for ( i = nrArg+nrLoc+1; i <= 2*nrArg+nrLoc; ++i ) {
+                for ( i = (nrArg + nrLoc + 1); i <= (2 * nrArg + nrLoc); ++i )
+                {
                     ptUndo[EXEC_ARGS_START + i - 1] = 0;
                 }
-            } else {
+            } 
+            else
+            {
                 nr = nrArg + nrLoc;
-                for ( i = 1; i <= nr; ++i ) {
+              
+                for ( i = 1; i <= nr; ++i ) 
+                {
                     hdTmp = ptUndo[EXEC_ARGS_START + i - 1];
                     ptUndo[EXEC_ARGS_START + i - 1] = VAR_VALUE(ptDef[i]);
                     SET_VAR_VALUE(ptDef[i], hdTmp);
@@ -204,15 +221,21 @@ void            ChangeEnv (Bag hdEnv, int flag)
 
     /* then we redo all changes from the common up to the new topmost exec */
     /* hdDo : stack frame */
-    while ( hdDo != 0 ) {
+    while ( hdDo != 0 )
+    {
         ptDo   = PTR_BAG(hdDo);
-        if (!GET_FLAG_BAG(hdDo, BF_ON_CALLSTACK) || (flag==CEF_DBG_UP && hdDo==hdEnv) ) {
-	    int nrArg, nrLoc;
-	    ACT_NUM_ARGS_FUNC(ptDo[2], nrArg);
-	    ACT_NUM_LOCALS_FUNC(ptDo[2], nrLoc);
-	    nr = nrArg+nrLoc;
-	    ptDef  = PTR_BAG(ptDo[2]);
-            for ( i = 1; i <= nr; ++i ) {
+     
+        if (!GET_FLAG_BAG(hdDo, BF_ON_CALLSTACK) || (flag==CEF_DBG_UP && hdDo==hdEnv) ) 
+        {
+            int nrArg;
+            int nrLoc;
+	        ACT_NUM_ARGS_FUNC(ptDo[2], nrArg);
+	        ACT_NUM_LOCALS_FUNC(ptDo[2], nrLoc);
+	        nr = nrArg+nrLoc;
+	        ptDef  = PTR_BAG(ptDo[2]);
+            
+            for ( i = 1; i <= nr; ++i ) 
+            {
                 hdTmp = ptDo[EXEC_ARGS_START+i-1]; /* new value */
                 ptDo[EXEC_ARGS_START+i-1] = VAR_VALUE(ptDef[i]);
                 SET_VAR_VALUE(ptDef[i],  hdTmp);
@@ -225,7 +248,6 @@ void            ChangeEnv (Bag hdEnv, int flag)
         //  CHANGED_BAG(hdDo);
         hdDo    = hdTmp;
     }
-
     /* reflect the new environment in HdExec                               */
     HdExec = hdComm;
 }
@@ -252,52 +274,69 @@ void            ChangeEnv (Bag hdEnv, int flag)
 **  statement sequence.  After that 'EvFunccall' calls 'ChangeEnv'  again  to
 **  restore the old values from the execute bag.
 */
-int IsMethodFunc( Bag hdFunc ) {
+int IsMethodFunc( Bag hdFunc )
+{
     return GET_TYPE_BAG(hdFunc)==T_METHOD;
 }
 
-UInt EvFunccallProfiling_begin(Bag hdDef, UInt* time) {
+UInt EvFunccallProfiling_begin(Bag hdDef, UInt* time)
+{
     UInt sime = 0;
     Int i;
     IsProfiling = 1;
     *time = SyTime()-Timesum;
-    for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 ) {
-	if ( PTR_BAG(HdTimes)[i] == hdDef ) {
-	    sime = SyTime() - HD_TO_INT( PTR_BAG(HdTimes)[i+4] );
+    
+    for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 ) 
+    {
+	    if ( PTR_BAG(HdTimes)[i] == hdDef ) 
+        {
+	        sime = SyTime() - HD_TO_INT( PTR_BAG(HdTimes)[i+4] );
             break;
         }
     }
-    if ( i == GET_SIZE_BAG(HdTimes)/SIZE_HD ) {
-	sime = SyTime();
+
+    if ( i == GET_SIZE_BAG(HdTimes)/SIZE_HD ) 
+    {
+	    sime = SyTime();
     }
+
     return sime;
 }
 
 
-void EvFunccallProfiling_end(Bag hdDef, Bag hdCall, UInt time, UInt sime) {
-    Int i, j;
+void EvFunccallProfiling_end(Bag hdDef, Bag hdCall, UInt time, UInt sime) 
+{
+    Int i;
+    Int j;
     Bag hd;
+
     time = SyTime()-Timesum-time; Timesum += time;
-    for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 ) {
-	if ( PTR_BAG(HdTimes)[i] == hdDef ) {
-	    SET_BAG(HdTimes, i+2, INT_TO_HD(HD_TO_INT(PTR_BAG(HdTimes)[i+2])+1) );
+
+    for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 ) 
+    {
+	    if ( PTR_BAG(HdTimes)[i] == hdDef ) 
+        {
+	        SET_BAG(HdTimes, i+2, INT_TO_HD(HD_TO_INT(PTR_BAG(HdTimes)[i+2])+1) );
             SET_BAG(HdTimes, i+3, INT_TO_HD(HD_TO_INT(PTR_BAG(HdTimes)[i+3])+time) );
             SET_BAG(HdTimes, i+4, INT_TO_HD(SyTime()-sime) );
             break;
         }
     }
-    if ( i == GET_SIZE_BAG(HdTimes)/SIZE_HD ) {
+
+    if ( i == GET_SIZE_BAG(HdTimes)/SIZE_HD ) 
+    {
         hd = PTR_BAG(hdCall)[0];
 
-	Resize( HdTimes, GET_SIZE_BAG(HdTimes) + 5*SIZE_HD );
+	    Resize( HdTimes, GET_SIZE_BAG(HdTimes) + 5*SIZE_HD );
         SET_BAG(HdTimes, i,  hdDef );
         SET_BAG(HdTimes, i+1,  hd );
         SET_BAG(HdTimes, i+2,  INT_TO_HD(1) );
         SET_BAG(HdTimes, i+3,  INT_TO_HD(time) );
         SET_BAG(HdTimes, i+4,  INT_TO_HD(SyTime()-sime) );
     }
-    while ( 0 < i
-	&& (Int)PTR_BAG(HdTimes)[i-2] < (Int)PTR_BAG(HdTimes)[i+3] ) {
+
+    while ( 0 < i && ((Int)PTR_BAG(HdTimes)[i-2] < (Int)PTR_BAG(HdTimes)[i+3])) 
+    {
         hd = PTR_BAG(HdTimes)[i-5];
         SET_BAG(HdTimes, i-5,  PTR_BAG(HdTimes)[i] );
         SET_BAG(HdTimes, i,  hd );
@@ -322,28 +361,37 @@ void EvFunccallProfiling_end(Bag hdDef, Bag hdCall, UInt time, UInt sime) {
 ** much smaller than of EvFunccall alone with Try/Catch block inside.
 */
 
-Bag EvFunccallTryCatchEval( Bag hdDef, Bag hdExec) {
+Bag EvFunccallTryCatchEval( Bag hdDef, Bag hdExec)
+{
     /* remember the old value of '~' to recover later                      */
     Bag		hdRes = 0;
     exc_type_t  e = 0;
     Bag		hdTilde = PTR_BAG(HdTilde)[0];
     SET_BAG(HdTilde, 0,  0 );
 
-    Try {
+    Try 
+    {
         RecursionDepth++;
         /* well here's what all is about                                       */
         hdRes =  EVAL( PTR_BAG(hdDef)[0] );
-        if ( hdRes == HdReturn )
+        if (hdRes == HdReturn)
+        {
             hdRes = PTR_BAG(hdRes)[0];
+        }
         else
+        {
             hdRes = HdVoid;
-    } Catch(e) {
+        }
+    }
+    Catch(e) 
+    {
         /* restore old environment                                             */
         CLEAR_FLAG_BAG(hdExec, BF_ON_CALLSTACK);
         /* recover the value of '~'                                            */
         SET_BAG(HdTilde, 0,  hdTilde );
 
-        if ( RecursionLimitIncreased ) {
+        if ( RecursionLimitIncreased ) 
+        {
             RecursionLimit = RecursionLimit >> 1;
             RecursionLimitIncreased--;
         }
@@ -357,28 +405,41 @@ Bag EvFunccallTryCatchEval( Bag hdDef, Bag hdExec) {
     return hdRes;
 }
 
-#define INIT_FAST_CALL()
+#define INIT_FAST_CALL() //GS4 - WHAT DOES THIS DO?>?!?!?!?>!
 
-Bag       EvFunccall (Bag hdCall)
+Bag     EvFunccall (Bag hdCall)
 {
-    Bag           hdDef,  hdExec = 0,  hdRes = 0, hdOld = 0, hdRecElm = 0;
-    Bag           hd = 0, hdMethodSelf = 0;
-    Bag           hdTilde = 0;
-    Bag*	  pt = 0;
-    Bag*	  ptSrc = 0;
-    int			nrArg = 0,  nrLoc = 0,  i = 0,  trace = 0, evalArgs = 0;
-    UInt       time = 0,  sime = 0, ftype = 0;
+    Bag      hdDef;
+    Bag      hdExec = 0;
+    Bag      hdRes = 0;
+    Bag      hdOld = 0;
+    Bag      hdRecElm = 0;
+    Bag      hd = 0;
+    Bag      hdMethodSelf = 0;
+    Bag      hdTilde = 0;
+    Bag     *pt = 0;
+    Bag     *ptSrc = 0;
+    int		 nrArg = 0;
+    int      nrLoc = 0;
+    int      i = 0;
+    int      trace = 0;
+    int      evalArgs = 0;
+    UInt     time = 0;
+    UInt     sime = 0;
+    UInt     ftype = 0;
 
 
-    if (EvalStackTop>=EVAL_STACK_COUNT && !InBreakpoint) {
-	DbgBreak("Evaluation stack overflow. GAP compiled with %d evaluation stack depth. Change EVAL_STACK_COUNT in eval.h if you really need more.", EVAL_STACK_COUNT, 0);
-	return HdVoid;
+    if ((EvalStackTop>=EVAL_STACK_COUNT) && !InBreakpoint)
+    {
+	    DbgBreak("Evaluation stack overflow. GAP compiled with %d evaluation stack depth. Change EVAL_STACK_COUNT in eval.h if you really need more.", EVAL_STACK_COUNT, 0);
+	    return HdVoid;
     }
 
     hdDef = PTR_BAG(hdCall)[0];
     
     /* Method calls <uneval_object>.method()                               */
-    if( GET_TYPE_BAG(hdDef) == T_RECELM  ) {
+    if( GET_TYPE_BAG(hdDef) == T_RECELM  ) 
+    {
         Bag hdM = PTR_BAG(hdDef)[1]; /* save method ref */
         hdMethodSelf = EVAL(PTR_BAG(hdDef)[0]); /* evaluate object */
 
@@ -388,8 +449,8 @@ Bag       EvFunccall (Bag hdCall)
 
         hdDef = NewBag(T_RECELM, GET_SIZE_BAG(hdDef));
 
-	pt = PTR_BAG(hdDef);
-	pt[0] = hdMethodSelf;
+	    pt = PTR_BAG(hdDef);
+	    pt[0] = hdMethodSelf;
         pt[1] = RecnameObj(hdM);
         
         hdRecElm = hdDef;
@@ -398,59 +459,81 @@ Bag       EvFunccall (Bag hdCall)
     hdDef = EVAL(hdDef);
     ftype = GET_TYPE_BAG(hdDef);
 
-    if ( ftype == T_REC ) {
+    if ( ftype == T_REC )
+    {
       /* look for __call__ */
       Obj  tmp = 0;
       Obj *hd = FindRecnameRec(hdDef, HdCallRecname, &tmp);
-      if ( hd == 0 )
-        DbgBreak("__call__ field not found, can't use this record as a function", 0, 0);
-      else {
-        hdMethodSelf = hdDef;
-        hdDef = hd[1]; /* function definition is record's __call__ field */
-        ftype = GET_TYPE_BAG(hdDef);
 
-	if (hdRecElm==0)
-	    hdRecElm = NewBag(T_RECELM, 2*SIZE_HD);
-        pt = PTR_BAG(hdRecElm);
-	pt[0] = hdMethodSelf;
-        pt[1] = HdCallRecname;
+      if (hd == 0)
+      {
+          DbgBreak("__call__ field not found, can't use this record as a function", 0, 0);
+      }
+      else
+      {
+            hdMethodSelf = hdDef;
+            hdDef = hd[1]; /* function definition is record's __call__ field */
+            ftype = GET_TYPE_BAG(hdDef);
+
+            if (hdRecElm == 0)
+            {
+                hdRecElm = NewBag(T_RECELM, 2 * SIZE_HD);
+            }
+
+            pt = PTR_BAG(hdRecElm);
+	        pt[0] = hdMethodSelf;
+            pt[1] = HdCallRecname;
       }
     }
 
-    if ( ! IsMethodFunc(hdDef) )
+    if (!IsMethodFunc(hdDef))
+    {
         hdMethodSelf = 0;
-    else if( hdMethodSelf != 0 ) {
+    }
+    else if( hdMethodSelf != 0 )
+    {
         /* Method calls have 'self' (origin object) as first argument */
         Bag hdCallNew;
 
-	hdCallNew = NewBag(T_FUNCCALL, GET_SIZE_BAG(hdCall) + SIZE_HD);
-	pt = PTR_BAG(hdCallNew);
-	ptSrc = PTR_BAG(hdCall);
-	pt[0] = hdRecElm; 
+	    hdCallNew = NewBag(T_FUNCCALL, GET_SIZE_BAG(hdCall) + SIZE_HD);
+	    pt = PTR_BAG(hdCallNew);
+	    ptSrc = PTR_BAG(hdCall);
+	    pt[0] = hdRecElm; 
         pt[1] = hdMethodSelf;
-        for(i=1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i) {
+
+        for(i=1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i)
+        {
             pt[i+1] = ptSrc[i];
         }
+
         hdCall = hdCallNew;
         SET_FLAG_BAG(hdCall, BF_METHCALL);
     }
 
     /* treat the special case of internal functions                        */
-    if ( ftype == T_FUNCINT ) {
-        if (InDebugMode) 
+    if ( ftype == T_FUNCINT ) 
+    {
+        if (InDebugMode)
+        {
             CheckBreakpoints(hdDef, 0);
-        if ( IsProfiling==0 ) {
+        }
+        if ( IsProfiling==0 ) 
+        {
             return (** (Bag(**)())PTR_BAG(hdDef)) ( hdCall );
-        } else {
+        }
+        else
+        {
             sime = EvFunccallProfiling_begin(hdDef, &time);
             hdRes = (** (Bag(**)())PTR_BAG(hdDef)) ( hdCall );
             EvFunccallProfiling_end(hdDef, hdCall, time, sime);
-            return hdRes ;
+            return hdRes;
         }
     }
     
-    if ( ftype != T_FUNCTION && ftype != T_METHOD)
-        return Error("Call: %g\nFunction: <function> must be a function",(Int)hdCall,0);
+    if (ftype != T_FUNCTION && ftype != T_METHOD)
+    {
+        return Error("Call: %g\nFunction: <function> must be a function", (Int)hdCall, 0);
+    }
     
     /* compute the number of arguments and locals                          */
     trace = 0;
@@ -459,27 +542,46 @@ Bag       EvFunccall (Bag hdCall)
     evalArgs = ! GET_FLAG_BAG(hdDef, BF_UNEVAL_ARGS);
 
     /* handle functions with variable number of arguments -> function(arg) */
-    if ( nrArg == -1 ) {
+    if ( nrArg == -1 ) 
+    {
         hdRes = NewBag( T_LIST, SIZE_PLEN_PLIST( GET_SIZE_BAG(hdCall)/SIZE_HD-1 ) );
         SET_LEN_PLIST( hdRes, GET_SIZE_BAG(hdCall)/SIZE_HD-1 );
-        for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; i++ ) {
+        for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; i++ ) 
+        {
             hd =  PTR_BAG(hdCall)[i];
-            if ( evalArgs ) hd = EVAL(hd);
-            else hd = PROJECTION_D(hd);
-            if ( GET_TYPE_BAG(hd) == T_VOID )
-                hd = Error("illegal void argument",0,0);
+            if (evalArgs)
+            { 
+                hd = EVAL(hd);
+            }
+            else 
+            { 
+                hd = PROJECTION_D(hd);
+            }
+
+            if (GET_TYPE_BAG(hd) == T_VOID)
+            {
+                hd = Error("illegal void argument", 0, 0);
+            }
+
             SET_ELM_PLIST( hdRes, i, hd );
         }
+
         nrArg = 1;
         trace = 2;
     }
-    else if ( nrArg != GET_SIZE_BAG(hdCall) / SIZE_HD - 1 )
-        return Error("Call: %g\nFunction: number of args must be %d",(Int)hdCall, (Int)nrArg);
+    else if (nrArg != GET_SIZE_BAG(hdCall) / SIZE_HD - 1)
+    {
+        return Error("Call: %g\nFunction: number of args must be %d", (Int)hdCall, (Int)nrArg);
+    }
 
     /* check if the function is to be traced                               */
-    if ( nrLoc < 0 ) {
-        trace |= 1;  nrLoc = -nrLoc-1;
-        Pr("\n%2>",0,0);  Print( PTR_BAG(hdCall)[0] );  Pr("%<( ",0,0);
+    if ( nrLoc < 0 )
+    {
+        trace |= 1;  
+        nrLoc = -nrLoc-1;
+        Pr("\n%2>",0,0);  
+        Print( PTR_BAG(hdCall)[0] );  
+        Pr("%<( ",0,0);
     }
 
     /* Now create the new execute bag                                      */
@@ -495,35 +597,58 @@ Bag       EvFunccall (Bag hdCall)
     pt[3] = hdCall;            /* function call, for debug only   */
     pt[4] = HdExec;            /* calling environment, dbg only   */
     /* enter the new evaluated arguments in the execbag                    */
-    for ( i = 1; i <= nrArg; ++i ) {
-        if ( ! (trace & 2) ) {
+
+    for ( i = 1; i <= nrArg; ++i )
+    {
+        if ( ! (trace & 2) )
+        {
             hdRes = PTR_BAG(hdCall)[i];
             if ( evalArgs ) hdRes = EVAL(hdRes);
             else hdRes = PROJECTION_D(hdRes);
         }
-        if ( GET_TYPE_BAG(hdRes) == T_VOID )
-            hdRes = Error("illegal void argument",0,0);
+
+        if (GET_TYPE_BAG(hdRes) == T_VOID)
+        {
+            hdRes = Error("illegal void argument", 0, 0);
+        }
+       
         SET_BAG(hdExec, EXEC_ARGS_START+i-1,  hdRes );
         SET_BAG(hdExec, EXEC_ARGS_START + nrArg + nrLoc + i - 1,  hdRes );
-        if ( trace & 1 ) {
-            Pr("%>",0,0);  Print( hdRes );
-            if ( i < nrArg )  Pr("%<, ",0,0);
-            else              Pr("%< )",0,0);
+       
+        if ( trace & 1 ) 
+        {
+            Pr("%>",0,0);  
+            Print( hdRes );
+            if (i < nrArg)
+            {
+                Pr("%<, ", 0, 0); 
+            }
+            else
+            {
+                Pr("%< )", 0, 0); 
+            }
         }
     }
     
-    if (InDebugMode) 
+    if (InDebugMode)
+    {
         CheckBreakpoints(hdDef, hdExec);
+    }
     /* $$let$$ */
 
-    if ( RecursionDepth == RecursionLimit ) {
+    if ( RecursionDepth == RecursionLimit ) 
+    {
         RecursionLimitIncreased++;
         RecursionLimit = RecursionLimit << 1; /* increase the limit for error handling */
         DbgBreak("Recursion limit of %d reached", RecursionLimit >> 1, 0);
     }
 
     /* If there are timed functions compute the timing                     */
-    if ( IsProfiling ) sime = EvFunccallProfiling_begin(PTR_BAG(hdDef)[0], &time);
+    if (IsProfiling) 
+    {
+        sime = EvFunccallProfiling_begin(PTR_BAG(hdDef)[0], &time);
+    }
+
     /* And now change the environment                                      */
     hdOld = HdExec;
     ChangeEnv( hdExec, CEF_NONE );
@@ -548,15 +673,23 @@ Bag       EvFunccall (Bag hdCall)
     ChangeEnv( hdOld, CEF_CLEANUP );
 
     /* If there are timed functions compute the timing                     */
-    if ( IsProfiling == 1 ) EvFunccallProfiling_end(PTR_BAG(hdDef)[0], hdCall, time, sime);
+    if (IsProfiling == 1) 
+    { 
+        EvFunccallProfiling_end(PTR_BAG(hdDef)[0], hdCall, time, sime);
+    }
     
     /* If the function is traced, print the return value                   */
-    if ( trace & 1 ) {
-        Pr("\n%>",0,0); Print( PTR_BAG(hdCall)[0] );  Pr("%< returns ",0,0);
-        if ( hdRes != HdVoid )  Print( hdRes );
+    if ( trace & 1 ) 
+    {
+        Pr("\n%>",0,0); 
+        Print( PTR_BAG(hdCall)[0] );
+        Pr("%< returns ",0,0);
+        if (hdRes != HdVoid)
+        {
+            Print(hdRes); 
+        }
         Pr("%< ",0,0);
     }
-
     return hdRes;
 }
 
@@ -613,8 +746,10 @@ Bag       EvFunction (Bag hdDef)
 
 Bag       EvMakemake (Bag hdFun, Int type)
 {
-    Bag           Result;
-    short               nrArg,  nrLoc, i;
+    Bag     Result;
+    short   nrArg;
+    short   nrLoc;
+    short   i;
 
     Result = NewBag( type, GET_SIZE_BAG(hdFun) );
 
@@ -628,21 +763,29 @@ Bag       EvMakemake (Bag hdFun, Int type)
     /* now copy the formal arguments and locals                            */
     ACT_NUM_ARGS_FUNC(hdFun, nrArg);
     ACT_NUM_LOCALS_FUNC(hdFun, nrLoc);
-    for ( i = 0; i <= nrArg+nrLoc; ++i )
-        SET_BAG(Result, i,  PTR_BAG(hdFun)[i] );
+    for (i = 0; i <= nrArg + nrLoc; ++i)
+    {
+        SET_BAG(Result, i, PTR_BAG(hdFun)[i]);
+    }
 
     /* add the environment, i.e., close the function                       */
     if (GET_FLAG_BAG(hdFun, BF_ENVIRONMENT))
-	SET_BAG(Result, nrArg+nrLoc+1,  HdExec );
+    {
+        SET_BAG(Result, nrArg + nrLoc + 1, HdExec);
+    }
     else
-        SET_BAG(Result, nrArg+nrLoc+1,  0 );
+    {
+        SET_BAG(Result, nrArg + nrLoc + 1, 0);
+    }
+
     SET_BAG(Result, nrArg+nrLoc+2,  PTR_BAG(hdFun)[nrArg+nrLoc+2] );
 
     /* return the new function                                             */
     return Result;
 }
 
-Bag       EvMakefunc ( Bag hdFun ) {
+Bag       EvMakefunc ( Bag hdFun )
+{
     Bag res = EvMakemake(hdFun, T_FUNCTION);
     /* doc stuff
     if(res!=0) {
@@ -661,8 +804,10 @@ Bag       EvMakefunc ( Bag hdFun ) {
     return res;
 }
 
-Bag       EvMakemeth ( Bag hdFun ) {
-    Bag res = EvMakemake(hdFun, T_METHOD);
+Bag       EvMakemeth ( Bag hdFun )
+{
+    Bag     res = EvMakemake(hdFun, T_METHOD);
+
     return res;
 }
 
@@ -685,14 +830,21 @@ Bag       EvMakemeth ( Bag hdFun ) {
 */
 Bag       EvReturn (Bag hdRet)
 {
-    Bag           hd;
+    Bag     hd;
 
-    if ( PTR_BAG(hdRet)[0] == HdReturn )
+    if (PTR_BAG(hdRet)[0] == HdReturn)
+    {
         hd = HdReturn;
-    else if ( PTR_BAG(hdRet)[0] == HdVoid )
+    }
+    else if (PTR_BAG(hdRet)[0] == HdVoid)
+    {
         hd = HdVoid;
+    }
     else
-        hd = EVAL( PTR_BAG(hdRet)[0] );
+    {
+        hd = EVAL(PTR_BAG(hdRet)[0]);
+    }
+
     SET_BAG(HdReturn, 0,  hd );
     return HdReturn;
 }
@@ -707,19 +859,29 @@ Bag       EvReturn (Bag hdRet)
 */
 Bag       FunIsFunc (Bag hdCall)
 {
-    Bag           hdObj;
+    Bag     hdObj;
 
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: IsFunc( <obj> )",0,0);
-    hdObj = EVAL( PTR_BAG(hdCall)[1] );
-    if ( hdObj == HdVoid )
-        return Error("IsFunc: function must return a value",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: IsFunc( <obj> )", 0, 0);
+    }
 
-    if ( GET_TYPE_BAG(hdObj) == T_FUNCTION || GET_TYPE_BAG(hdObj) == T_FUNCINT )
+    hdObj = EVAL( PTR_BAG(hdCall)[1] );
+
+    if (hdObj == HdVoid)
+    {
+        return Error("IsFunc: function must return a value", 0, 0);
+    }
+
+    if (GET_TYPE_BAG(hdObj) == T_FUNCTION || GET_TYPE_BAG(hdObj) == T_FUNCINT)
+    {
         return HdTrue;
+    }
     else
+    {
         return HdFalse;
+    }
 }
 
 /****************************************************************************
@@ -730,20 +892,30 @@ Bag       FunIsFunc (Bag hdCall)
 */
 Bag       FunIsMeth (Bag hdCall)
 {
-    Bag           hdObj;
+    Bag     hdObj;
 
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: IsFunc( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: IsFunc( <obj> )", 0, 0);
+    }
+
     hdObj = EVAL( PTR_BAG(hdCall)[1] );
-    if ( hdObj == HdVoid )
-        return Error("IsMeth: function must return a value",0,0);
+
+    if (hdObj == HdVoid)
+    {
+        return Error("IsMeth: function must return a value", 0, 0);
+    }
 
     /* return 'true' if <obj> is a rational and 'false' otherwise          */
-    if ( IsMethodFunc(hdObj) )
+    if (IsMethodFunc(hdObj))
+    {
         return HdTrue;
+    }
     else
+    {
         return HdFalse;
+    }
 }
 
 /****************************************************************************
@@ -755,13 +927,19 @@ Bag       FunIsMeth (Bag hdCall)
 */
 Bag       FunUnevalArgs (Bag hdCall)
 {
-    Bag           hdFunc;
+    Bag     hdFunc;
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: UnevalArgs( <func> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: UnevalArgs( <func> )", 0, 0);
+    }
+
     hdFunc = EVAL( PTR_BAG(hdCall)[1] );
-    if ( GET_TYPE_BAG(hdFunc) != T_FUNCTION )
-        return Error("UnevalArgs: <func> must be a function",0,0);
+
+    if (GET_TYPE_BAG(hdFunc) != T_FUNCTION)
+    {
+        return Error("UnevalArgs: <func> must be a function", 0, 0);
+    }
 
     SET_FLAG_BAG(hdFunc, BF_UNEVAL_ARGS);
     return hdFunc;
@@ -792,20 +970,31 @@ Bag       FunUnevalArgs (Bag hdCall)
 */
 Bag       FunTraceFunc (Bag hdCall)
 {
-    Bag           hdDef;
-    short               nrLoc,  i;
-    UInt t;
+    Bag     hdDef;
+    short   nrLoc;
+    short   i;
+    UInt    t;
 
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
+    for ( i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i )
+    {
         hdDef = EVAL( PTR_BAG(hdCall)[i] );
         t = GET_TYPE_BAG(hdDef);
-        if ( t == T_FUNCINT )
-            return Error("sorry I can not trace internal function",0,0);
-        if ( t != T_FUNCTION && t != T_METHOD )
-            return Error("usage: TraceFunc( <function>... )",0,0);
+        if (t == T_FUNCINT)
+        {
+            return Error("sorry I can not trace internal function", 0, 0);
+        }
+        
+        if (t != T_FUNCTION && t != T_METHOD)
+        {
+            return Error("usage: TraceFunc( <function>... )", 0, 0);
+        }
         /* use negative nrLoc -- number of locals -- as flag to enable tracing in EvFunccall */
         nrLoc = ((short*)((char*)PTR_BAG(hdDef)+GET_SIZE_BAG(hdDef)))[-1];
-        if ( 0 <= nrLoc )  nrLoc = -nrLoc-1;
+        if (0 <= nrLoc) 
+        {
+            nrLoc = -nrLoc - 1; 
+        }
+
         ((short*)((char*)PTR_BAG(hdDef)+GET_SIZE_BAG(hdDef)))[-1] = nrLoc;
     }
     return HdVoid;
@@ -824,17 +1013,27 @@ Bag       FunTraceFunc (Bag hdCall)
 */
 Bag       FunUntraceFunc (Bag hdCall)
 {
-    Bag           hdDef;
-    short               nrLoc, i;
-    UInt t;
+    Bag     hdDef;
+    short   nrLoc;
+    short   i;
+    UInt    t;
 
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
+    for ( i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i ) 
+    {
         hdDef = EVAL( PTR_BAG(hdCall)[i] );
         t = GET_TYPE_BAG(hdDef);
-        if ( t != T_FUNCTION && t != T_METHOD )
-            return Error("usage: UntraceFunc( <function>... )",0,0);
+        if (t != T_FUNCTION && t != T_METHOD)
+        {
+            return Error("usage: UntraceFunc( <function>... )", 0, 0);
+        }
+
         nrLoc = ((short*)((char*)PTR_BAG(hdDef)+GET_SIZE_BAG(hdDef)))[-1];
-        if ( nrLoc < 0 )  nrLoc = -nrLoc-1;
+       
+        if (nrLoc < 0) 
+        {
+            nrLoc = -nrLoc - 1; 
+        }
+
         ((short*)((char*)PTR_BAG(hdDef)+GET_SIZE_BAG(hdDef)))[-1] = nrLoc;
     }
     return HdVoid;
@@ -868,38 +1067,51 @@ Bag       FunUntraceFunc (Bag hdCall)
 */
 Bag       FunProfile (Bag hdCall)
 {
-    Bag           hdArg;
-    short               i;
-    Int                total;
+    Bag     hdArg;
+    short   i;
+    Int     total;
 
     /* check argument count                                                */
-    if ( 2 * SIZE_HD < GET_SIZE_BAG(hdCall) ) {
+    if ( (2 * SIZE_HD) < GET_SIZE_BAG(hdCall) ) 
+    {
         return Error("usage: Profile( true|false ) or Profile()",0,0);
     }
-
     /* switch profiling on or off                                          */
-    else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD ) {
+    else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD )
+    {
         hdArg = EVAL( PTR_BAG(hdCall)[1] );
-        if ( hdArg == HdTrue ) {
+
+        if ( hdArg == HdTrue ) 
+        {
             IsProfiling = 2;
             Resize( HdTimes, 0 * SIZE_HD );
         }
-        else if ( hdArg == HdFalse ) {
+        else if ( hdArg == HdFalse )
+        {
             IsProfiling = 0;
         }
-        else {
+        else
+        {
             return Error("usage: Profile( true|false ) or Profile()",0,0);
         }
     }
-
     /* print profiling information, this should be formatted much nicer    */
-    else {
+    else 
+    {
         total = 0;
-        for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 )
-            total = total + HD_TO_INT( PTR_BAG(HdTimes)[i+3] );
-        if ( total == 0 )  total = 1;
+        for (i = 0; i < (GET_SIZE_BAG(HdTimes) / SIZE_HD); i += 5)
+        {
+            total = total + HD_TO_INT(PTR_BAG(HdTimes)[i + 3]);
+        }
+        if (total == 0) 
+        {
+            total = 1;
+        }
+
         Pr(" count    time percent time/call child function\n",0,0);
-        for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 ) {
+
+        for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 )
+        {
             Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0 );
             Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ), 0 );
             Pr("%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i+3]) / total, 0 );
@@ -909,6 +1121,7 @@ Bag       FunProfile (Bag hdCall)
             Print( PTR_BAG(HdTimes)[i+1] );
             Pr("\n",0,0);
         }
+
         Pr("        %6d     100                  TOTAL\n",total-1,0);
     }
 
@@ -922,26 +1135,34 @@ Bag       FunProfile (Bag hdCall)
 */
 Bag FunApplyFunc (Bag hdCall)
 {
-    Bag           hdNew = 0;      /* the new function call bag       */
-    Bag           hdFunc;         /* the function                    */
-    Bag           hdList = 0;     /* and the list                    */
-    Bag		  hdRes = 0;
-    Int                i = 0;          /* loop                            */
+    Bag     hdNew = 0;      /* the new function call bag       */
+    Bag     hdFunc;         /* the function                    */
+    Bag     hdList = 0;     /* and the list                    */
+    Bag     hdRes = 0;
+    Int     i = 0;          /* loop                            */
 
     /* check arguments                                                     */
-    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
-        return Error( "usage: ApplyFunc( <func>, <list> )", 0, 0 );
+    if (GET_SIZE_BAG(hdCall) != 3 * SIZE_HD)
+    {
+        return Error("usage: ApplyFunc( <func>, <list> )", 0, 0);
+    }
+
     /* Don't evaluate function definition for nicer Backtrace() output     */
     hdFunc = PTR_BAG(hdCall)[1];
     hdList = EVAL(PTR_BAG(hdCall)[2]);
-    if ( ! IS_DENSE_LIST(hdList) )
-        return Error( "<list> must be a dense list", 0, 0 );
+
+    if (!IS_DENSE_LIST(hdList))
+    {
+        return Error("<list> must be a dense list", 0, 0);
+    }
 
     /* create a new function call bag                                      */
     hdNew = NewBag( T_FUNCCALL, SIZE_HD*(1+LEN_LIST(hdList)) );
     SET_BAG(hdNew, 0,  hdFunc );
+
     /* copy arguments into it                                              */
-    for ( i = LEN_LIST(hdList);  0 < i;  i-- ) {
+    for ( i = LEN_LIST(hdList);  0 < i;  i-- ) 
+    {
         Obj hd = ELMF_LIST( hdList, i );
         SET_BAG(hdNew, i,  hd );
     }
@@ -963,8 +1184,7 @@ Bag FunApplyFunc (Bag hdCall)
 
 void            PrFuncint (Bag hdFun)
 {
-    Pr("%2>%s%2<",
-       (Int) ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)), 0);
+    Pr("%2>%s%2<", (Int) ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)), 0);
 }
 
 
@@ -987,19 +1207,25 @@ void            PrFuncint (Bag hdFun)
 **
 **  otherwise.
 */
-Int            prFull;
+Int     prFull;
 
 int MaybePrintShortFunc (Bag hdFun, char *shortKeyword)
 {
     /* we can print in short form if the first statment is return ... */
-    if(NUM_LOCALS_FUNC(hdFun)==0 && GET_TYPE_BAG(PTR_BAG(hdFun)[0]) == T_RETURN) {
+    if(NUM_LOCALS_FUNC(hdFun)==0 && (GET_TYPE_BAG(PTR_BAG(hdFun)[0]) == T_RETURN)) 
+    {
         int i;
         int nrArg;
         Pr("(%>",0,0);
         ACT_NUM_ARGS_FUNC(hdFun, nrArg);
-        for ( i = 1; i <= nrArg; ++i ) {
+
+        for ( i = 1; i <= nrArg; ++i ) 
+        {
             Print( PTR_BAG(hdFun)[i] );
-            if ( i != nrArg )  Pr("%<, %>",0,0);
+            if (i != nrArg) 
+            {
+                Pr("%<, %>", 0, 0);
+            }
         }
         Pr("%<) %s %>%g%<", (Int)shortKeyword, (Int)PTR_BAG(PTR_BAG(hdFun)[0])[0]);
         return 1;
@@ -1009,38 +1235,58 @@ int MaybePrintShortFunc (Bag hdFun, char *shortKeyword)
 
 void            PrFunc (Bag hdFun, char *keyword, char *shortKeyword)
 {
-    short               nrArg,  nrLoc,  i;
+    short   nrArg;
+    short   nrLoc;
+    short   i;
 
-    if(MaybePrintShortFunc(hdFun, shortKeyword))
+    if (MaybePrintShortFunc(hdFun, shortKeyword))
+    {
         return;
+    }
 
     Pr("%5>%s%< ( %>",(Int)keyword,0);
     ACT_NUM_ARGS_FUNC(hdFun, nrArg);
+
     for ( i = 1; i <= nrArg; ++i ) {
+
         Print( PTR_BAG(hdFun)[i] );
-        if ( i != nrArg )  Pr("%<, %>",0,0);
+        if (i != nrArg) 
+        {
+            Pr("%<, %>", 0, 0);
+        }
     }
+
     Pr(" %<)",0,0);
 
-    if ( prFull == 0 ) {
+    if ( prFull == 0 ) 
+    {
         Pr(" ...%4< ",0,0);
     }
-    else {
+    else
+    {
         Pr("\n",0,0);
         nrLoc = ((short*)((char*)PTR_BAG(hdFun) + GET_SIZE_BAG(hdFun)))[-1];
-        if ( nrLoc < 0 )  nrLoc = -nrLoc-1;
-        if ( nrLoc >= 1 ) {
+        if (nrLoc < 0)
+        { 
+            nrLoc = -nrLoc - 1;
+        }
+
+        if ( nrLoc >= 1 ) 
+        {
             Pr("%>local  ",0,0);
-            for ( i = 1; i <= nrLoc; ++i ) {
+            for ( i = 1; i <= nrLoc; ++i ) 
+            {
                 Print( PTR_BAG(hdFun)[i+nrArg] );
-                if ( i != nrLoc )  Pr("%<, %>",0,0);
+                if (i != nrLoc)
+                {
+                    Pr("%<, %>", 0, 0); 
+                }
             }
             Pr("%<;\n",0,0);
         }
         Print( PTR_BAG(hdFun)[0] );
         Pr(";%4<\n",0,0);
     }
-
     Pr("end",0,0);
 }
 
@@ -1092,10 +1338,16 @@ void            PrintMethod (Bag hdFun)
 */
 void            PrFunccall (Bag hdCall)
 {
-    Int                i;
-    Int                start = 1;
-    if ( GET_FLAG_BAG(hdCall, BF_METHCALL) ) start = 2;
-    Pr("%2>",0,0);  Print( PTR_BAG(hdCall)[0] ); Pr("%<(%>",0,0);
+    Int     i;
+    Int     start = 1;
+
+    if (GET_FLAG_BAG(hdCall, BF_METHCALL))
+    {
+        start = 2; 
+    }
+    Pr("%2>",0,0);  
+    Print( PTR_BAG(hdCall)[0] ); 
+    Pr("%<(%>",0,0);
     for ( i = start; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
         Print( PTR_BAG(hdCall)[i] );
         if ( i != GET_SIZE_BAG(hdCall)/SIZE_HD-1 )

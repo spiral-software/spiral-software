@@ -153,15 +153,15 @@ UInt    Timesum;
 
 void            ChangeEnv (Bag hdEnv, int flag)
 {
-    register Bag     hdDo;
-    register Bag     hdComm;
-    register Bag     hdTmp;
-    register Bag     hdUndo;
-    register Bag    *ptUndo;
-    register Bag    *ptDef;
-    register Bag    *ptDo;
-    register short   nr;
-    register short   i;
+    Bag     hdDo;
+    Bag     hdComm;
+    Bag     hdTmp;
+    Bag     hdUndo;
+    Bag    *ptUndo;
+    Bag    *ptDef;
+    Bag    *ptDo;
+    short   nr;
+    short   i;
 
     /* first walk down the new chain until we find a active exec bag       */
     /* we reverse the links, so we can walk back later                     */

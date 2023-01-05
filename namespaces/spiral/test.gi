@@ -65,7 +65,7 @@ CheckBasicProfilerTest := function()
         Print("Marker file: ", file);
         if res=1 then PrintLine(" Found, return true"); else PrintLine(" NOT Found"); fi;
     fi;
-    if res=1 then return res; fi;
+    if res=1 then return true; fi;
     
     file := GetBasicProfilerTestFName(false);
     res := FileExists(file);

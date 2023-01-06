@@ -72,7 +72,7 @@
 **
 #define IS_LIST(LIST)           (TabIsList[GET_TYPE_BAG(LIST)] != 0)
 */
-Int            TabIsList [LIST_TAB_SIZE];
+Int     TabIsList[LIST_TAB_SIZE];
 
 
 /****************************************************************************
@@ -101,7 +101,7 @@ Int            TabIsList [LIST_TAB_SIZE];
 */
 Int            (*TabLenList[LIST_TAB_SIZE]) ( Bag );
 
-Int            CantLenList (Bag hdList)
+Int     CantLenList(Bag hdList)
 {
     return HD_TO_INT( Error("Length: <list> must be a list",0,0) );
 }
@@ -171,7 +171,7 @@ Bag       (*TabElmfList[LIST_TAB_SIZE]) ( Bag, Int );
 Bag       (*TabElmlList[LIST_TAB_SIZE]) ( Bag, Int );
 Bag       (*TabElmrList[LIST_TAB_SIZE]) ( Bag, Int );
 
-Bag       CantElmList (Bag hdList, Int pos)
+Bag     CantElmList(Bag hdList, Int pos)
 {
     return Error("List Element: <list> must be a list",0,0);
 }
@@ -210,7 +210,7 @@ Bag       CantElmList (Bag hdList, Int pos)
 */
 Bag       (*TabElmsList[LIST_TAB_SIZE]) ( Bag, Bag );
 
-Bag       CantElmsList (Bag hdList, Bag hdPoss)
+Bag     CantElmsList(Bag hdList, Bag hdPoss)
 {
     return Error("List Elements: <list> must be a list",0,0);
 }
@@ -242,7 +242,7 @@ Bag       CantElmsList (Bag hdList, Bag hdPoss)
 */
 Bag       (*TabAssList[LIST_TAB_SIZE]) ( Bag, Int, Bag );
 
-Bag       CantAssList (Bag hdList, Int pos, Bag hdVal)
+Bag     CantAssList(Bag hdList, Int pos, Bag hdVal)
 {
     return Error("List Assignment: <list> must be a list",0,0);
 }
@@ -276,7 +276,7 @@ Bag       CantAssList (Bag hdList, Int pos, Bag hdVal)
 */
 Bag       (*TabAsssList[LIST_TAB_SIZE]) ( Bag, Bag, Bag );
 
-Bag       CantAsssList (Bag hdList, Bag hdPoss, Bag hdVals)
+Bag     CantAsssList(Bag hdList, Bag hdPoss, Bag hdVals)
 {
     return Error("List Assignment: <list> must be a list",0,0);
 }
@@ -307,7 +307,7 @@ Bag       CantAsssList (Bag hdList, Bag hdPoss, Bag hdVals)
 */
 Int            (*TabPosList[LIST_TAB_SIZE]) ( Bag, Bag, Int );
 
-Int            CantPosList (Bag hdList, Bag hdVal, Int start)
+Int     CantPosList(Bag hdList, Bag hdVal, Int start)
 {
     return HD_TO_INT( Error("Position: <list> must be a list",0,0) );
 }
@@ -340,18 +340,20 @@ Int            CantPosList (Bag hdList, Bag hdVal, Int start)
 */
 void            (*TabPlainList[LIST_TAB_SIZE]) ( Bag );
 
-void            CantPlainList (Bag hdList)
+void        CantPlainList(Bag hdList)
 {
     Error("Panic: cannot convert <list> to a plain list",0,0);
 }
 
 /*N 1992/12/11 martin only here for backward compatibility                 */
-Int            IsList (Bag hdObj)
+Int     IsList(Bag hdObj)
 {
-    if ( ! IS_LIST( hdObj ) ) {
+    if ( !IS_LIST(hdObj) )
+    {
         return 0;
     }
-    else {
+    else
+    {
         PLAIN_LIST( hdObj );
         return 1;
     }
@@ -379,7 +381,7 @@ Int            IsList (Bag hdObj)
 */
 Int            (*TabIsDenseList[LIST_TAB_SIZE]) ( Bag );
 
-Int            NotIsDenseList (Bag hdObj)
+Int     NotIsDenseList(Bag hdObj)
 {
     return 0;
 }
@@ -408,7 +410,7 @@ Int            NotIsDenseList (Bag hdObj)
 */
 Int            (*TabIsPossList[LIST_TAB_SIZE]) ( Bag );
 
-Int            NotIsPossList (Bag hdObj)
+Int     NotIsPossList(Bag hdObj)
 {
     return 0;
 }
@@ -446,19 +448,24 @@ Int            NotIsPossList (Bag hdObj)
 */
 Int            (*TabIsXTypeList[LIST_TAB_SIZE]) ( Bag );
 
-Int            XType (Bag hdObj)
+Int     XType (Bag hdObj)
 {
-    Int                t;              /* loop variable                   */
+    Int         t;              /* loop variable                   */
 
     /* first handle non lists                                              */
-    if ( GET_TYPE_BAG(hdObj) < T_LIST || GET_TYPE_BAG(hdObj) == T_REC )
+    if ((GET_TYPE_BAG(hdObj) < T_LIST) || (GET_TYPE_BAG(hdObj) == T_REC))
+    {
         return GET_TYPE_BAG(hdObj);
+    }
 
     /* otherwise try the extended types in turn                            */
     /* this is done backwards to catch the more specific types first       */
-    for ( t = LIST_TAB_SIZE-1; T_LIST <= t; t-- ) {
-        if ( TabIsXTypeList[t] != 0 && IS_XTYPE_LIST( t, hdObj ) )
+    for ( t = (LIST_TAB_SIZE-1); T_LIST <= t; t-- )
+    {
+        if ((TabIsXTypeList[t] != 0) && IS_XTYPE_LIST(t, hdObj))
+        {
             return t;
+        }
     }
 
     /* nothing works, return 'T_LISTX'                                     */
@@ -473,7 +480,7 @@ Int            XType (Bag hdObj)
 **  'EvList' returns the value of the list <hdList>.  The  value of a list is
 **  just the list itself, since lists are constants and thus selfevaluating.
 */
-Bag       EvList (Bag hdList)
+Bag     EvList(Bag hdList)
 {
     return hdList;
 }
@@ -488,28 +495,41 @@ Bag       EvList (Bag hdList)
 **
 **  Linebreaks are preferred after the commas.
 */
-void            PrList (Bag hdList)
+void        PrList(Bag hdList)
 {
-    Int                lenList;        /* logical length of <list>        */
-    Bag           hdElm;          /* one element from <list>         */
-    Int                i;              /* loop variable                   */
+    Bag     hdElm;          /* one element from <list>         */
+    Int     lenList;        /* logical length of <list>        */
+    Int     i;              /* loop variable                   */
 
     /* get the logical length of the list                                  */
     lenList = LEN_LIST( hdList );
 
     /* loop over the entries                                               */
     Pr("%2>[ %2>",0,0);
-    for ( i = 1;  i <= lenList;  i++ ) {
+
+    for ( i = 1;  i <= lenList;  i++ ) 
+    {
         hdElm = ELMF_LIST( hdList, i );
-        if ( hdElm != 0 ) {
-            if ( 1 < i )  Pr("%<,%< %2>",0,0);
+
+        if ( hdElm != 0 ) 
+        {
+            if (1 < i) 
+            { 
+                Pr("%<,%< %2>", 0, 0); 
+            }
+
             Print( hdElm );
         }
-        else {
-            if ( 1 < i )  Pr("%2<,%2>",0,0);
+        else
+        {
+            if (1 < i)
+            {
+                Pr("%2<,%2>", 0, 0); 
+            }
         }
     }
-    Pr(" %4<]",0,0);
+
+    Pr("%4<]",0,0);
 }
 
 
@@ -523,32 +543,39 @@ void            PrList (Bag hdList)
 **
 **  Is called from the 'EQ' binop so both  operands  are  already  evaluated.
 */
-Bag       EqList (Bag hdL, Bag hdR)
+Bag     EqList(Bag hdL, Bag hdR)
 {
-    Int                lenL;           /* length of the left operand      */
-    Int                lenR;           /* length of the right operand     */
-    Bag           hdElmL;         /* element of the left operand     */
-    Bag           hdElmR;         /* element of the right operand    */
-    Int                i;              /* loop variable                   */
+    Int     i;              /* loop variable                   */
+    Int     lenL;           /* length of the left operand      */
+    Int     lenR;           /* length of the right operand     */
+    Bag     hdElmL;         /* element of the left operand     */
+    Bag     hdElmR;         /* element of the right operand    */
 
     /* get the lengths of the lists and compare them                       */
     lenL = LEN_LIST( hdL );
     lenR = LEN_LIST( hdR );
-    if ( lenL != lenR ) {
+
+    if ( lenL != lenR ) 
+    {
         return HdFalse;
     }
 
     /* loop over the elements and compare them                             */
-    for ( i = 1; i <= lenL; i++ ) {
+    for ( i = 1; i <= lenL; i++ ) 
+    {
         hdElmL = ELML_LIST( hdL, i );
         hdElmR = ELMR_LIST( hdR, i );
-        if ( hdElmL == 0 && hdElmR != 0 ) {
+
+        if ( hdElmL == 0 && hdElmR != 0 ) 
+        {
             return HdFalse;
         }
-        else if ( hdElmR == 0 && hdElmL != 0 ) {
+        else if ( hdElmR == 0 && hdElmL != 0 ) 
+        {
             return HdFalse;
         }
-        else if ( hdElmL != hdElmR && EQ( hdElmL, hdElmR ) == HdFalse ) {
+        else if ( hdElmL != hdElmR && (EQ( hdElmL, hdElmR ) == HdFalse) ) 
+        {
             return HdFalse;
         }
     }
@@ -569,11 +596,11 @@ Bag       EqList (Bag hdL, Bag hdR)
 */
 Bag       LtList (Bag hdL, Bag hdR)
 {
-    Int                lenL;           /* length of the left operand      */
-    Int                lenR;           /* length of the right operand     */
-    Bag           hdElmL;         /* element of the left operand     */
-    Bag           hdElmR;         /* element of the right operand    */
-    Int                i;              /* loop variable                   */
+    Int     i;              /* loop variable                   */
+    Int     lenL;           /* length of the left operand      */
+    Int     lenR;           /* length of the right operand     */
+    Bag     hdElmL;         /* element of the left operand     */
+    Bag     hdElmR;         /* element of the right operand    */
 
     /* get the lengths of the lists and compare them                       */
     lenL = LEN_LIST( hdL );
@@ -621,18 +648,18 @@ Bag       LtList (Bag hdL, Bag hdR)
 **  'SumListList'  is a generic function  for  the third kind of sum, that of
 **  two lists.
 */
-Bag       SumList (Bag hdL, Bag hdR)
+Bag     SumList(Bag hdL, Bag hdR)
 {
     return (*TabSum[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-Bag       SumSclList (Bag hdL, Bag hdR)
+Bag     SumSclList(Bag hdL, Bag hdR)
 {
-    Bag           hdS;            /* handle of the sum               */
-    Bag           hdSS;           /* one element of sum list         */
-    Bag           hdRR;           /* one element of right operand    */
-    Int                len;            /* length                          */
-    Int                i;              /* loop variable                   */
+    Bag     hdS;            /* handle of the sum               */
+    Bag     hdSS;           /* one element of sum list         */
+    Bag     hdRR;           /* one element of right operand    */
+    Int     len;            /* length                          */
+    Int     i;              /* loop variable                   */
 
     /* make the result list                                                */
     len = LEN_LIST( hdR );
@@ -640,7 +667,8 @@ Bag       SumSclList (Bag hdL, Bag hdR)
     SET_LEN_PLIST( hdS, len );
 
     /* loop over the entries and add                                       */
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= len; i++ )
+    {
         hdRR = ELMR_LIST( hdR, i );
         hdSS = SUM( hdL, hdRR );
         SET_ELM_PLIST( hdS, i, hdSS );
@@ -650,13 +678,13 @@ Bag       SumSclList (Bag hdL, Bag hdR)
     return hdS;
 }
 
-Bag       SumListScl (Bag hdL, Bag hdR)
+Bag     SumListScl(Bag hdL, Bag hdR)
 {
-    Bag           hdS;            /* handle of the sum               */
-    Bag           hdSS;           /* one element of sum list         */
-    Bag           hdLL;           /* one element of left operand     */
-    Int                len;            /* length                          */
-    Int                i;              /* loop variable                   */
+    Bag     hdS;            /* handle of the sum               */
+    Bag     hdSS;           /* one element of sum list         */
+    Bag     hdLL;           /* one element of left operand     */
+    Int     len;            /* length                          */
+    Int     i;              /* loop variable                   */
 
     /* make the result list                                                */
     len = LEN_LIST( hdL );
@@ -664,7 +692,8 @@ Bag       SumListScl (Bag hdL, Bag hdR)
     SET_LEN_PLIST( hdS, len );
 
     /* loop over the entries and add                                       */
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= len; i++ ) 
+    {
         hdLL = ELML_LIST( hdL, i );
         hdSS = SUM( hdLL, hdR );
         SET_ELM_PLIST( hdS, i, hdSS );
@@ -674,27 +703,29 @@ Bag       SumListScl (Bag hdL, Bag hdR)
     return hdS;
 }
 
-Bag       SumListList (Bag hdL, Bag hdR)
+Bag     SumListList(Bag hdL, Bag hdR)
 {
-    Bag           hdS;            /* handle of the sum               */
-    Bag           hdSS;           /* one element of the sum          */
-    Bag           hdLL;           /* one element of the left list    */
-    Bag           hdRR;           /* one element of the right list   */
-    Int                len;            /* length                          */
-    Int                i;              /* loop variable                   */
+    Bag     hdS;            /* handle of the sum               */
+    Bag     hdSS;           /* one element of the sum          */
+    Bag     hdLL;           /* one element of the left list    */
+    Bag     hdRR;           /* one element of the right list   */
+    Int     len;            /* length                          */
+    Int     i;              /* loop variable                   */
 
     /* get and check the length                                            */
     len = LEN_LIST( hdL );
-    if ( len != LEN_LIST( hdR ) ) {
-        return Error(
-          "Vector +: lists must have the same length",
-                     0, 0 );
+
+    if ( len != LEN_LIST( hdR ) ) 
+    {
+        return Error( "Vector +: lists must have the same length",0, 0 );
     }
+
     hdS = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdS, len );
 
     /* loop over the entries and add                                       */
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= len; i++ ) 
+    {
         hdLL = ELML_LIST( hdL, i );
         hdRR = ELMR_LIST( hdR, i );
         hdSS = SUM( hdLL, hdRR );
@@ -728,18 +759,18 @@ Bag       SumListList (Bag hdL, Bag hdR)
 **  'DiffListList'  is a  generic function for the  third kind of difference,
 **  that of two lists.
 */
-Bag       DiffList (Bag hdL, Bag hdR)
+Bag     DiffList(Bag hdL, Bag hdR)
 {
     return (*TabDiff[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-Bag       DiffSclList (Bag hdL, Bag hdR)
+Bag     DiffSclList(Bag hdL, Bag hdR)
 {
-    Bag           hdD;            /* handle of the difference        */
-    Bag           hdDD;           /* one element of difference list  */
-    Bag           hdRR;           /* one element of right operand    */
-    Int                len;            /* length                          */
-    Int                i;              /* loop variable                   */
+    Bag     hdD;            /* handle of the difference        */
+    Bag     hdDD;           /* one element of difference list  */
+    Bag     hdRR;           /* one element of right operand    */
+    Int     len;            /* length                          */
+    Int     i;              /* loop variable                   */
 
     /* make the result list                                                */
     len = LEN_LIST( hdR );
@@ -747,7 +778,8 @@ Bag       DiffSclList (Bag hdL, Bag hdR)
     SET_LEN_PLIST( hdD, len );
 
     /* loop over the entries and subtract                                  */
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= len; i++ ) 
+    {
         hdRR = ELMR_LIST( hdR, i );
         hdDD = DIFF( hdL, hdRR );
         SET_ELM_PLIST( hdD, i, hdDD );
@@ -757,13 +789,13 @@ Bag       DiffSclList (Bag hdL, Bag hdR)
     return hdD;
 }
 
-Bag       DiffListScl (Bag hdL, Bag hdR)
+Bag       DiffListScl(Bag hdL, Bag hdR)
 {
-    Bag           hdD;            /* handle of the difference        */
-    Bag           hdDD;           /* one element of difference list  */
-    Bag           hdLL;           /* one element of left operand     */
-    Int                len;            /* length                          */
-    Int                i;              /* loop variable                   */
+    Bag     hdD;            /* handle of the difference        */
+    Bag     hdDD;           /* one element of difference list  */
+    Bag     hdLL;           /* one element of left operand     */
+    Int     len;            /* length                          */
+    Int     i;              /* loop variable                   */
 
     /* make the result list                                                */
     len = LEN_LIST( hdL );
@@ -771,7 +803,8 @@ Bag       DiffListScl (Bag hdL, Bag hdR)
     SET_LEN_PLIST( hdD, len );
 
     /* loop over the entries and subtract                                  */
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= len; i++ ) 
+    {
         hdLL = ELML_LIST( hdL, i );
         hdDD = DIFF( hdLL, hdR );
         SET_ELM_PLIST( hdD, i, hdDD );
@@ -781,27 +814,29 @@ Bag       DiffListScl (Bag hdL, Bag hdR)
     return hdD;
 }
 
-Bag       DiffListList (Bag hdL, Bag hdR)
+Bag       DiffListList(Bag hdL, Bag hdR)
 {
-    Bag           hdD;            /* handle of the difference        */
-    Bag           hdDD;           /* one element of the difference   */
-    Bag           hdLL;           /* one element of the left list    */
-    Bag           hdRR;           /* one element of the right list   */
-    Int                len;            /* length                          */
-    Int                i;              /* loop variable                   */
+    Bag     hdD;            /* handle of the difference        */
+    Bag     hdDD;           /* one element of the difference   */
+    Bag     hdLL;           /* one element of the left list    */
+    Bag     hdRR;           /* one element of the right list   */
+    Int     len;            /* length                          */
+    Int     i;              /* loop variable                   */
 
     /* get and check the length                                            */
     len = LEN_LIST( hdL );
-    if ( len != LEN_LIST( hdR ) ) {
-        return Error(
-          "Vector -: lists must have the same length",
-                     0, 0 );
+
+    if ( len != LEN_LIST( hdR ) ) 
+    {
+        return Error("Vector -: lists must have the same length", 0, 0 );
     }
+
     hdD = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdD, len );
 
     /* loop over the entries and subtract                                  */
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= len; i++ ) 
+    {
         hdLL = ELML_LIST( hdL, i );
         hdRR = ELMR_LIST( hdR, i );
         hdDD = DIFF( hdLL, hdRR );
@@ -838,18 +873,18 @@ Bag       DiffListList (Bag hdL, Bag hdR)
 **  of  two lists.  Note that this  includes the  product  of a  vector and a
 **  matrix.
 */
-Bag       ProdList (Bag hdL, Bag hdR)
+Bag     ProdList(Bag hdL, Bag hdR)
 {
     return (*TabProd[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-Bag       ProdSclList (Bag hdL, Bag hdR)
+Bag       ProdSclList(Bag hdL, Bag hdR)
 {
-    Bag           hdP;            /* handle of the product           */
-    Bag           hdPP;           /* one element of product list     */
-    Bag           hdRR;           /* one element of right operand    */
-    Int                len;            /* length                          */
-    Int                i;              /* loop variable                   */
+    Bag     hdP;            /* handle of the product           */
+    Bag     hdPP;           /* one element of product list     */
+    Bag     hdRR;           /* one element of right operand    */
+    Int     len;            /* length                          */
+    Int     i;              /* loop variable                   */
 
     /* make the result list                                                */
     len = LEN_LIST( hdR );
@@ -857,9 +892,12 @@ Bag       ProdSclList (Bag hdL, Bag hdR)
     SET_LEN_PLIST( hdP, len );
 
     /* loop over the entries and multiply                                  */
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= len; i++ ) 
+    {
         hdRR = ELMR_LIST( hdR, i );
-        if ( hdRR != 0 ) {
+
+        if ( hdRR != 0 ) 
+        {
             hdPP = PROD( hdL, hdRR );
             SET_ELM_PLIST( hdP, i, hdPP );
         }
@@ -869,23 +907,26 @@ Bag       ProdSclList (Bag hdL, Bag hdR)
     return hdP;
 }
 
-Bag       ProdListScl (Bag hdL, Bag hdR)
+Bag     ProdListScl(Bag hdL, Bag hdR)
 {
-    Bag           hdP;            /* handle of the product           */
-    Bag           hdPP;           /* one element of product list     */
-    Bag           hdLL;           /* one element of left operand     */
-    Int                len;            /* length                          */
-    Int                i;              /* loop variable                   */
-
+    Bag     hdP;            /* handle of the product           */
+    Bag     hdPP;           /* one element of product list     */
+    Bag     hdLL;           /* one element of left operand     */
+    Int     len;            /* length                          */
+    Int     i;              /* loop variable                   */
+    
     /* make the result list                                                */
     len = LEN_LIST( hdL );
     hdP = NewBag( T_LIST, SIZE_PLEN_PLIST( len ) );
     SET_LEN_PLIST( hdP, len );
 
     /* loop over the entries and multiply                                  */
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= len; i++ ) 
+    {
         hdLL = ELML_LIST( hdL, i );
-        if ( hdLL != 0 ) {
+
+        if ( hdLL != 0 )
+        {
             hdPP = PROD( hdLL, hdR );
             SET_ELM_PLIST( hdP, i, hdPP );
         }
@@ -895,28 +936,30 @@ Bag       ProdListScl (Bag hdL, Bag hdR)
     return hdP;
 }
 
-Bag       ProdListList (Bag hdL, Bag hdR)
+Bag     ProdListList(Bag hdL, Bag hdR)
 {
     Bag           hdP;            /* handle of the product           */
     Bag           hdPP;           /* one summand of the product      */
     Bag           hdLL;           /* one element of the left list    */
     Bag           hdRR;           /* one element of the right list   */
-    Int                len;            /* length                          */
-    Int                i;              /* loop variable                   */
+    Int           len;            /* length                          */
+    Int           i;              /* loop variable                   */
 
     /* get and check the length                                            */
     len = LEN_LIST( hdL );
-    if ( len != LEN_LIST( hdR ) ) {
-        return Error(
-          "Vector *: lists must have the same length",
-                     0, 0 );
+
+    if ( len != LEN_LIST( hdR ) ) 
+    {
+        return Error("Vector *: lists must have the same length", 0, 0 );
     }
 
     /* loop over the entries and multiply and accumulate                   */
     hdLL = ELML_LIST( hdL, 1 );
     hdRR = ELMR_LIST( hdR, 1 );
     hdP  = PROD( hdLL, hdRR );
-    for ( i = 2; i <= len; i++ ) {
+
+    for ( i = 2; i <= len; i++ ) 
+    {
         hdLL = ELML_LIST( hdL, i );
         hdRR = ELMR_LIST( hdR, i );
         hdPP = PROD( hdLL, hdRR );
@@ -943,12 +986,12 @@ Bag       ProdListList (Bag hdL, Bag hdR)
 **  and the  inverse of <hdR> (computed as <hdR>^-1).  The right operand must
 **  either be a scalar or an invertable square matrix.
 */
-Bag       QuoList (Bag hdL, Bag hdR)
+Bag     QuoList(Bag hdL, Bag hdR)
 {
     return (*TabQuo[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-Bag       QuoLists (Bag hdL, Bag hdR)
+Bag     QuoLists(Bag hdL, Bag hdR)
 {
     return PROD( hdL, POW( hdR, INT_TO_HD(-1) ) );
 }
@@ -969,12 +1012,12 @@ Bag       QuoLists (Bag hdL, Bag hdR)
 **  and the  inverse of <hdL> (computed as <hdL>^-1).  The left  operand must
 **  either be a scalar or an invertable square matrix.
 */
-Bag       ModList (Bag hdL, Bag hdR)
+Bag     ModList(Bag hdL, Bag hdR)
 {
     return (*TabMod[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-Bag       ModLists (Bag hdL, Bag hdR)
+Bag     ModLists(Bag hdL, Bag hdR)
 {
     return PROD( POW( hdL, INT_TO_HD(-1) ), hdR );
 }
@@ -994,12 +1037,12 @@ Bag       ModLists (Bag hdL, Bag hdR)
 **  'PowLists' is a generic function for the third kind of power, that of two
 **  matrices, which is defined as the conjugation.
 */
-Bag       PowList (Bag hdL, Bag hdR)
+Bag     PowList(Bag hdL, Bag hdR)
 {
     return (*TabPow[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-Bag       PowLists (Bag hdL, Bag hdR)
+Bag     PowLists(Bag hdL, Bag hdR)
 {
     return PROD( MOD( hdR, hdL ), hdR );
 }
@@ -1017,19 +1060,19 @@ Bag       PowLists (Bag hdL, Bag hdR)
 **
 **  'CommLists' is a generic function for the commutator of two matrices.
 */
-Bag       CommList (Bag hdL, Bag hdR)
+Bag       CommList(Bag hdL, Bag hdR)
 {
     return (*TabComm[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-Bag       CommLists (Bag hdL, Bag hdR)
+Bag     CommLists(Bag hdL, Bag hdR)
 {
 /* this long macro expansion breaks the Visual Studio.NET 2003 compiler...
         return PROD( POW( PROD( hdR, hdL ), INT_TO_HD(-1) ), PROD( hdL, hdR ) );
 */
     Bag tmp=POW( PROD( hdR, hdL ), INT_TO_HD(-1) );
-        return PROD(tmp, PROD( hdL, hdR ) );
-
+       
+    return PROD(tmp, PROD( hdL, hdR ) );
 }
 
 
@@ -1041,42 +1084,46 @@ Bag       CommLists (Bag hdL, Bag hdR)
 **  in the list '<hdSel>[0]'.   Both '<hdSel>[0]' and '<hdSel>[1]' first have
 **  to be evaluated.
 */
-Bag       EvElmList (Bag hdSel)
+Bag     EvElmList(Bag hdSel)
 {
-    Bag           hdElm;          /* <element>, result               */
-    Bag           hdList;         /* <list>, left operand            */
-    Bag           hdPos;          /* <position>, right operand       */
-    Int                pos;            /* <position>, as a C integer      */
+    Bag     hdElm;          /* <element>, result               */
+    Bag     hdList;         /* <list>, left operand            */
+    Bag     hdPos;          /* <position>, right operand       */
+    Int     pos;            /* <position>, as a C integer      */
 
     /* evaluate <list> (checking is done via the dispatching)              */
     hdList = EVAL( PTR_BAG(hdSel)[0] );
 
     /* evaluate and check <position>                                       */
     hdPos = EVAL( PTR_BAG(hdSel)[1] );
-    if ( GET_TYPE_BAG(hdPos) != T_INT || HD_TO_INT(hdPos) <= 0 ) {
-        return Error(
-          "List Element: <position> must be a positive integer",
-                     0, 0 );
+
+    if ( GET_TYPE_BAG(hdPos) != T_INT || HD_TO_INT(hdPos) <= 0 )
+    {
+        return Error("List Element: <position> must be a positive integer", 0, 0 );
     }
+
     pos = HD_TO_INT( hdPos );
 
     /* make the selection and return it                                    */
-    if ( GET_TYPE_BAG(hdList) == T_LIST ) {
-        if ( LEN_PLIST( hdList ) < pos ) {
-            return Error(
-              "List Element: <list>[%d] must have a value",
-                         pos, 0 );
+    if ( GET_TYPE_BAG(hdList) == T_LIST ) 
+    {
+        if ( LEN_PLIST( hdList ) < pos ) 
+        {
+            return Error("List Element: <list>[%d] must have a value", pos, 0 );
         }
+
         hdElm = ELM_PLIST( hdList, pos );
-        if ( hdElm == 0 ) {
-            return Error(
-              "List Element: <list>[%d] must have a value",
-                         pos, 0 );
+
+        if ( hdElm == 0 ) 
+        {
+            return Error("List Element: <list>[%d] must have a value", pos, 0 );
         }
     }
-    else {
+    else 
+    {
         hdElm = ELM_LIST( hdList, pos );
     }
+
     return hdElm;
 }
 
@@ -1102,20 +1149,20 @@ Bag       EvElmList (Bag hdSel)
 **  creates a new list,  so that we can overwrite this list with the selected
 **  values.
 */
-Bag       ElmListLevel (Bag hdLists, Int pos, Int level)
+Bag     ElmListLevel(Bag hdLists, Int pos, Int level)
 {
-    Int                lenLists;       /* length of <lists>               */
-    Bag           hdList;         /* one list from <lists>           */
-    Bag           hdElm;          /* selected element from <list>    */
-    Int                i;              /* loop variable                   */
+    Int     i;              /* loop variable                   */
+    Int     lenLists;       /* length of <lists>               */
+    Bag     hdList;         /* one list from <lists>           */
+    Bag     hdElm;          /* selected element from <list>    */
 
     /* if <level> is one, loop over all lists and select the element       */
-    if ( level == 1 ) {
-
+    if ( level == 1 ) 
+    {
         /* loop over its entries (which must be lists too)                 */
         lenLists = LEN_LIST( hdLists );
-        for ( i = 1; i <= lenLists; i++ ) {
-
+        for ( i = 1; i <= lenLists; i++ )
+        {
             /* get the list                                                */
             /* here we assume that 'EvElmsList' creates a dense list       */
             hdList = ELMF_LIST( hdLists, i );
@@ -1127,25 +1174,23 @@ Bag       ElmListLevel (Bag hdLists, Int pos, Int level)
             /* assign the element back into <lists>                        */
             /* here we assume that a list of lists has rep. 'T_LIST'       */
             SET_ELM_PLIST( hdLists, i, hdElm );
-
         }
-
     }
-
     /* otherwise recurse                                                   */
-    else {
-
+    else 
+    {
         /* loop over its entries (which must be lists too)                 */
         lenLists = LEN_LIST( hdLists );
-        for ( i = 1; i <= lenLists; i++ ) {
+        for ( i = 1; i <= lenLists; i++ )
+        {
 
             /* get the list                                                */
             /* here we assume that 'EvElmsList' creates dense lists        */
             hdList = ELMF_LIST( hdLists, i );
-            if ( ! IS_LIST( hdList ) ) {
-                return Error(
-                  "List Element: <list> must be a list",
-                             0, 0 );
+
+            if ( ! IS_LIST( hdList ) ) 
+            {
+                return Error("List Element: <list> must be a list", 0, 0 );
             }
 
             /* recurse                                                     */
@@ -1159,26 +1204,26 @@ Bag       ElmListLevel (Bag hdLists, Int pos, Int level)
     return hdLists;
 }
 
-Bag       EvElmListLevel (Bag hdSel)
+Bag     EvElmListLevel(Bag hdSel)
 {
-    Bag           hdLists;        /* <list>, left operand            */
-    Bag           hdPos;          /* <position>, right operand       */
-    Int                level;          /* <level>                         */
+    Bag     hdLists;        /* <list>, left operand            */
+    Bag     hdPos;          /* <position>, right operand       */
+    Int     level;          /* <level>                         */
 
     /* evaluate and check <list>                                           */
     hdLists = EVAL( PTR_BAG(hdSel)[0] );
-    if ( ! IS_LIST( hdLists ) ) {
-        return Error(
-          "List Element: <list> must be a list",
-                     0, 0 );
+
+    if ( ! IS_LIST( hdLists ) ) 
+    {
+        return Error("List Element: <list> must be a list", 0, 0 );
     }
 
     /* evaluate and check <position>                                       */
     hdPos = EVAL( PTR_BAG(hdSel)[1] );
-    if ( GET_TYPE_BAG(hdPos) != T_INT || HD_TO_INT(hdPos) <= 0 ) {
-        return Error(
-          "List Element: <position> must be a positive integer",
-                     0, 0 );
+
+    if ( GET_TYPE_BAG(hdPos) != T_INT || HD_TO_INT(hdPos) <= 0 ) 
+    {
+        return Error("List Element: <position> must be a positive integer", 0, 0 );
     }
 
     /* get <level>                                                         */
@@ -1198,20 +1243,19 @@ Bag       EvElmListLevel (Bag hdSel)
 **  '<hdSel>[1]' first have to be evaluated.  This implements  the  construct
 **  '<list>{<positions>}'.
 */
-Bag       EvElmsList (Bag hdSel)
+Bag     EvElmsList(Bag hdSel)
 {
-    Bag           hdList;         /* <list>, left operand            */
-    Bag           hdPoss;         /* <positions>, right operand      */
+    Bag     hdList;         /* <list>, left operand            */
+    Bag     hdPoss;         /* <positions>, right operand      */
 
     /* evaluate <list> (checking is done via the dispatching)              */
     hdList = EVAL( PTR_BAG(hdSel)[0] );
 
     /* evaluate and check <positions>                                      */
     hdPoss = EVAL( PTR_BAG(hdSel)[1] );
-    if ( ! IS_POSS_LIST( hdPoss ) ) {
-        return Error(
-      "List Elements: <positions> must be a dense list of positive integers",
-                     0, 0 );
+    if ( ! IS_POSS_LIST( hdPoss ) ) 
+    {
+        return Error("List Elements: <positions> must be a dense list of positive integers", 0, 0 );
     }
 
     /* make the selection and return it                                    */
@@ -1240,20 +1284,20 @@ Bag       EvElmsList (Bag hdSel)
 **  creates a  new list, so that we can overwrite this list with the selected
 **  values.
 */
-Bag       ElmsListLevel (Bag hdLists, Bag hdPoss, Int level)
+Bag     ElmsListLevel(Bag hdLists, Bag hdPoss, Int level)
 {
-    Int                lenLists;       /* length of <lists>               */
-    Bag           hdList;         /* one list from <lists>           */
-    Bag           hdElms;         /* selected elements from <list>   */
-    Int                i;              /* loop variable                   */
+    Int     i;              /* loop variable                   */
+    Int     lenLists;       /* length of <lists>               */
+    Bag     hdList;         /* one list from <lists>           */
+    Bag     hdElms;         /* selected elements from <list>   */
 
     /* if <level> is one, loop over all lists and select the element       */
-    if ( level == 1 ) {
-
+    if ( level == 1 ) 
+    {
         /* loop over its entries (which must be lists too)                 */
         lenLists = LEN_LIST( hdLists );
-        for ( i = 1; i <= lenLists; i++ ) {
-
+        for ( i = 1; i <= lenLists; i++ )
+        {
             /* get the list                                                */
             /* here we assume that 'EvElmsList' creates dense lists        */
             hdList = ELMF_LIST( hdLists, i );
@@ -1269,54 +1313,51 @@ Bag       ElmsListLevel (Bag hdLists, Bag hdPoss, Int level)
         }
 
     }
-
     /* otherwise recurse                                                   */
-    else {
-
+    else 
+    {
         /* loop over its entries (which must be lists too)                 */
         lenLists = LEN_LIST( hdLists );
-        for ( i = 1; i <= lenLists; i++ ) {
-
+        for ( i = 1; i <= lenLists; i++ ) 
+        {
             /* get the list                                                */
             /* here we assume that 'EvElmsList' creates dense lists        */
             hdList = ELMF_LIST( hdLists, i );
-            if ( ! IS_LIST( hdList ) ) {
-                return Error(
-                  "List Elements: <list> must be a list",
-                             0, 0 );
+            
+            if ( ! IS_LIST( hdList ) ) 
+            {
+                return Error("List Elements: <list> must be a list", 0, 0 );
             }
 
             /* recurse                                                     */
             ElmsListLevel( hdList, hdPoss, level-1 );
-
         }
-
     }
 
     /* return the selection                                                */
     return hdLists;
 }
 
-Bag       EvElmsListLevel (Bag hdSel)
+Bag     EvElmsListLevel(Bag hdSel)
 {
-    Bag           hdLists;        /* <list>, left operand            */
-    Bag           hdPoss;         /* <positions>, right operand      */
-    Int                level;          /* <level>                         */
-
+    Bag     hdLists;        /* <list>, left operand            */
+    Bag     hdPoss;         /* <positions>, right operand      */
+    Int     level;          /* <level>                         */
+    
     /* evaluate and check <lists>                                          */
     hdLists = EVAL( PTR_BAG(hdSel)[0] );
-    if ( ! IS_LIST( hdLists ) ) {
-        return Error(
-          "List Elements: <list> must be a list",
-                     0, 0 );
+    
+    if ( ! IS_LIST( hdLists ) )
+    {
+        return Error("List Elements: <list> must be a list", 0, 0 );
     }
 
     /* evaluate and check <positions>                                      */
     hdPoss = EVAL( PTR_BAG(hdSel)[1] );
-    if ( ! IS_POSS_LIST( hdPoss ) ) {
-        return Error(
-      "List Elements: <positions> must be a dense list of positive integers",
-                     0, 0 );
+    
+    if ( ! IS_POSS_LIST( hdPoss ) ) 
+    {
+        return Error("List Elements: <positions> must be a dense list of positive integers", 0, 0 );
     }
 
     /* get <level>                                                         */
@@ -1335,82 +1376,102 @@ Bag       EvElmsListLevel (Bag hdSel)
 **  '<hdAss>[0]',  i.e., to  the element  at  position '<hdAss>[0][1]' in the
 **  list '<hdAss>[0][0]'.
 */
-Bag       EvAssList (Bag hdAss)
+Bag     EvAssList(Bag hdAss)
 {
-    Bag           hdList;         /* <list>, left operand            */
-    Int                plen;           /* physical length of <list>       */
-    Bag           hdPos;          /* <position>, left operand        */
-    Int                pos;            /* <position>, as a C integer      */
-    Bag           hdVal;          /* <value>, right operand          */
+    Bag     hdList;         /* <list>, left operand            */
+    Bag     hdPos;          /* <position>, left operand        */
+    Bag     hdVal;          /* <value>, right operand          */
+    Int     plen;           /* physical length of <list>       */
+    Int     pos;            /* <position>, as a C integer      */
 
     /* evaluate <list> (checking is done via dispatching)                  */
     hdList = EVAL( PTR_BAG( PTR_BAG(hdAss)[0] )[0] );
 
     /* evaluate and check <position>                                       */
     hdPos = EVAL( PTR_BAG( PTR_BAG(hdAss)[0] )[1] );
-    if ( GET_TYPE_BAG(hdPos) != T_INT || HD_TO_INT(hdPos) <= 0 ) {
-        return Error(
-          "List Element: <position> must be a positive integer",
-                     0, 0 );
+
+    if ( GET_TYPE_BAG(hdPos) != T_INT || HD_TO_INT(hdPos) <= 0 ) 
+    {
+        return Error("List Element: <position> must be a positive integer", 0, 0 );
     }
+
     pos = HD_TO_INT(hdPos);
 
     /* evaluate and check <value>                                          */
     hdVal = EVAL( PTR_BAG(hdAss)[1] );
-    if ( hdVal == HdVoid ) {
-        return Error(
-          "List Assignment: function must return a value",
-                     0, 0 );
+    
+    if ( hdVal == HdVoid )
+    {
+        return Error("List Assignment: function must return a value", 0, 0 );
     }
 
     /* make the assignment and return the assigned value                   */
-    if ( GET_TYPE_BAG(hdList) == T_LIST ) {
-        if ( LEN_PLIST( hdList ) < pos ) {
+    if ( GET_TYPE_BAG(hdList) == T_LIST )
+    {
+        if ( LEN_PLIST( hdList ) < pos ) 
+        {
             plen = PLEN_SIZE_PLIST( GET_SIZE_BAG( hdList ) );
-            if ( plen + plen/8 + 4 < pos )
-                Resize( hdList, SIZE_PLEN_PLIST( pos ) );
-            else if ( plen < pos )
-                Resize( hdList, SIZE_PLEN_PLIST( plen + plen/8 + 4 ) );
+
+            if (plen + plen / 8 + 4 < pos)
+            {
+                Resize(hdList, SIZE_PLEN_PLIST(pos));
+            }
+            else if (plen < pos)
+            {
+                Resize(hdList, SIZE_PLEN_PLIST(plen + plen / 8 + 4));
+            }
+
             SET_LEN_PLIST( hdList, pos );
         }
         SET_ELM_PLIST( hdList, pos, hdVal );
     }
-    else {
+    else 
+    {
         hdVal = ASS_LIST( hdList, HD_TO_INT(hdPos), hdVal );
     }
+
     return hdVal;
 }
 
-Bag       EvMultiAss (Bag hdAss)
+Bag       EvMultiAss(Bag hdAss)
 {
-    Bag           hdList;         /* <list>, left operand            */
-    Int                plen,i;           /* physical length of <list>       */
-    Bag           hdVal;          /* <value>, right operand          */
-    Bag           hd;
+    Bag     hd;
+    Bag     hdList;     /* <list>, left operand            */
+    Bag     hdVal;      /* <value>, right operand          */
+    Int     i;           
+    Int     plen;       /* physical length of <list>       */
+
     /* evaluate <list> (checking is done via dispatching)                  */
     hdList = PTR_BAG(hdAss)[0];
     plen = LEN_PLIST(hdList);
 
     for(i=1; i<=plen; ++i)
+    {
+        if (GET_TYPE_BAG(PTR_BAG(hdList)[i]) != T_VAR) /*autovar*/
         {
-                if(GET_TYPE_BAG(PTR_BAG(hdList)[i]) != T_VAR) /*autovar*/
-                        Error("Multi assignment: <%d>-th element must be a variable", i, 0);
+            Error("Multi assignment: <%d>-th element must be a variable", i, 0);
+        }
     }
 
     /* evaluate and check <value>                                          */
     hdVal = EVAL( PTR_BAG(hdAss)[1] );
-    if ( hdVal == HdVoid )
-        return Error("Multi assignment: function must return a value", 0, 0 );
+    if (hdVal == HdVoid)
+    {
+        return Error("Multi assignment: function must return a value", 0, 0);
+    }
 
-        if ( ! IS_LIST(hdVal) )
-        return Error("Multi assignment: right-hand side must be a list, <%s> given",
-                     (Int)TYPENAME(hdVal), 0 );
+    if (!IS_LIST(hdVal))
+    {
+        return Error("Multi assignment: right-hand side must be a list, <%s> given", (Int)TYPENAME(hdVal), 0);
+    }
 
-    if ( LEN_LIST(hdVal) != plen )
-                return Error("Multi assignment: <%d> elements expected, but right hand side has <%d> elements",
-                     plen, LEN_LIST(hdVal));
+    if (LEN_LIST(hdVal) != plen)
+    {
+        return Error("Multi assignment: <%d> elements expected, but right hand side has <%d> elements", plen, LEN_LIST(hdVal));
+    }
 
-    for(i=1; i<=plen; ++i) {
+    for(i=1; i<=plen; ++i) 
+    {
         hd = PTR_BAG(hdList)[i];
         SET_VAR_VALUE(hd, ELM_LIST(hdVal, i));
     }
@@ -1436,114 +1497,107 @@ Bag       EvMultiAss (Bag hdAss)
 **  '<list>...{<positions>}')  creates  dense lists, so  that  we can  select
 **  elements  with 'ELMF_LIST'.
 */
-Bag       AssListLevel (Bag hdLists, Int pos, Bag hdVals, Int level)
+Bag     AssListLevel(Bag hdLists, Int pos, Bag hdVals, Int level)
 {
-    Bag           hdList;         /* one list of <lists>             */
-    Bag           hdVal;          /* one value from <values>         */
-    Int                lenLists;       /* length of <lists> and <vals>    */
-    Int                i;              /* loop variable                   */
+    Bag     hdList;         /* one list of <lists>             */
+    Bag     hdVal;          /* one value from <values>         */
+    Int     lenLists;       /* length of <lists> and <vals>    */
+    Int     i;              /* loop variable                   */
 
     /* if <level> is one, loop over all the lists and assign the value     */
-    if ( level == 1 ) {
-
+    if ( level == 1 )
+    {
         /* loop over the list entries (which must be lists too)            */
         lenLists = LEN_LIST( hdLists );
-        for ( i = 1; i <= lenLists; i++ ) {
-
+        
+        for ( i = 1; i <= lenLists; i++ ) 
+        {
             /* get the list                                                */
             /* here we assume that 'EvElmsList' creates dense lists        */
             hdList = ELMF_LIST( hdLists, i );
 
             /* select the element to assign                                */
             hdVal = ELMF_LIST( hdVals, i );
-            if ( hdVal == 0 ) {
-                return Error(
-                  "List Assignment: <vals> must be a dense list",
-                             0, 0 );
+            if ( hdVal == 0 ) 
+            {
+                return Error("List Assignment: <vals> must be a dense list", 0, 0 );
             }
 
             /* assign the element                                          */
             /* this will signal an error if <lists> is not a list of lists */
             ASS_LIST( hdList, pos, hdVal );
-
         }
-
     }
-
     /* otherwise recurse                                                   */
-    else {
-
+    else
+    {
         /* loop over the list entries (which must be lists too)            */
         lenLists = LEN_LIST( hdLists );
-        for ( i = 1; i <= lenLists; i++ ) {
-
+     
+        for ( i = 1; i <= lenLists; i++ )
+        {
             /* get the list                                                */
             /* here we assume that 'EvElmsList' creates dense lists        */
             hdList = ELMF_LIST( hdLists, i );
-            if ( ! IS_LIST( hdList ) ) {
-                return Error(
-                  "List Assignment: <list> must be a list",
-                             0, 0 );
+          
+            if ( ! IS_LIST( hdList ) ) 
+            {
+                return Error("List Assignment: <list> must be a list", 0, 0 );
             }
 
             /* get the values                                              */
             hdVal = ELMF_LIST( hdVals, i );
-            if ( hdVal == 0 ) {
-                return Error(
-                  "List Assignment: <vals> must be a dense list",
-                             0, 0 );
+           
+            if ( hdVal == 0 ) 
+            {
+                return Error("List Assignment: <vals> must be a dense list", 0, 0 );
             }
-            if ( ! IS_LIST( hdVal ) ) {
-                return Error(
-                  "List Assignment: <vals> must be a dense list",
-                             i, 0 );
+
+            if ( ! IS_LIST( hdVal ) ) 
+            {
+                return Error("List Assignment: <vals> must be a dense list", i, 0 );
             }
+
             if ( LEN_LIST( hdList ) != LEN_LIST( hdVal ) ) {
-                return Error(
-              "List Assignment: <list> and <vals> must have the same length",
-                             0, 0 );
+               return Error("List Assignment: <list> and <vals> must have the same length", 0, 0 );
             }
 
             /* recurse                                                     */
             AssListLevel( hdList, pos, hdVal, level-1 );
-
         }
-
     }
-
     /* return the assigned values                                          */
     return hdVals;
 }
 
-Bag       EvAssListLevel (Bag hdAss)
+Bag     EvAssListLevel(Bag hdAss)
 {
-    Bag           hdLists;        /* <list>, left operand            */
-    Bag           hdPos;          /* <position>, left operand        */
-    Bag           hdVals;         /* <values>, right operand         */
-    Int                level;          /* <level>                         */
+    Bag     hdLists;        /* <list>, left operand            */
+    Bag     hdPos;          /* <position>, left operand        */
+    Bag     hdVals;         /* <values>, right operand         */
+    Int     level;          /* <level>                         */
 
     /* evaluate and check <list>                                           */
     hdLists = EVAL( PTR_BAG( PTR_BAG(hdAss)[0] )[0] );
-    if ( ! IS_LIST( hdLists ) ) {
-        return Error(
-          "List Assignment: <list> must be a list",
-                     0, 0 );
+    
+    if ( ! IS_LIST( hdLists ) )
+    {
+        return Error("List Assignment: <list> must be a list", 0, 0 );
     }
 
     /* evaluate and check <position>                                       */
     hdPos = EVAL( PTR_BAG( PTR_BAG(hdAss)[0] )[1] );
-    if ( GET_TYPE_BAG(hdPos) != T_INT || HD_TO_INT(hdPos) <= 0 ) {
-        return Error(
-          "List Assignment: <position> must be a positive integer",
-                     0, 0 );
+    if ( GET_TYPE_BAG(hdPos) != T_INT || HD_TO_INT(hdPos) <= 0 ) 
+    {
+        return Error( "List Assignment: <position> must be a positive integer", 0, 0 );
     }
 
     /* evaluate <values>                                                   */
     hdVals = EVAL( PTR_BAG(hdAss)[1] );
-    if ( hdVals == HdVoid ) {
-        return Error(
-          "List Assignment: function must return a value",
-                     0, 0 );
+    
+    if ( hdVals == HdVoid ) 
+    {
+        return Error("List Assignment: function must return a value", 0, 0 );
     }
 
     /* get <level>                                                         */
@@ -1562,34 +1616,34 @@ Bag       EvAssListLevel (Bag hdAss)
 **  '<hdAss>[0]',  i.e., to  the elements at positions '<hdAss>[0][1]' in the
 **  list '<hdAss>[0][0]'.
 */
-Bag       EvAsssList (Bag hdAss)
+Bag     EvAsssList(Bag hdAss)
 {
-    Bag           hdList;         /* <list>, left operand            */
-    Bag           hdPoss;         /* <positions>, left operand       */
-    Bag           hdVals;         /* <values>, right operand         */
+    Bag     hdList;         /* <list>, left operand            */
+    Bag     hdPoss;         /* <positions>, left operand       */
+    Bag     hdVals;         /* <values>, right operand         */
 
     /* evaluate <list> (checking is done via dispatching)                  */
     hdList = EVAL( PTR_BAG( PTR_BAG(hdAss)[0] )[0] );
 
     /* evaluate and check <positions>                                      */
     hdPoss = EVAL( PTR_BAG( PTR_BAG(hdAss)[0] )[1] );
-    if ( ! IS_POSS_LIST( hdPoss ) ) {
-        return Error(
-   "List Assignments: <positions> must be a dense list of positive integers",
-                     0, 0 );
+
+    if ( ! IS_POSS_LIST( hdPoss ) )
+    {
+        return Error("List Assignments: <positions> must be a dense list of positive integers", 0, 0 );
     }
 
     /* evaluate and check <values>                                         */
     hdVals = EVAL( PTR_BAG(hdAss)[1] );
-    if ( ! IS_DENSE_LIST( hdVals ) ) {
-        return Error(
-          "List Assignments: <vals> must be a dense list",
-                     0, 0 );
+
+    if ( ! IS_DENSE_LIST( hdVals ) ) 
+    {
+        return Error("List Assignments: <vals> must be a dense list", 0, 0 );
     }
-    if ( LEN_LIST( hdVals ) != LEN_LIST( hdPoss ) ) {
-        return Error(
-          "List Assiments: <positions> and <vals> must have the same length",
-                     0, 0 );
+
+    if ( LEN_LIST( hdVals ) != LEN_LIST( hdPoss ) )
+    {
+        return Error("List Assiments: <positions> and <vals> must have the same length", 0, 0 );
     }
 
     /* make the assignment and return the assigned values                  */
@@ -1614,136 +1668,126 @@ Bag       EvAsssList (Bag hdAss)
 **  We    assume     that    'EvElmsList'     (the     function    evaluating
 **  '<list>...{<positions>}') created a new dense list.
 */
-Bag       AsssListLevel (Bag hdLists, Bag hdPoss, Bag hdVals, Int lev)
+Bag     AsssListLevel(Bag hdLists, Bag hdPoss, Bag hdVals, Int lev)
 {
-    Int                lenLists;       /* length of <lists> and <vals>    */
-    Int                lenPoss;        /* length of <positions>           */
-    Bag           hdList;         /* one list of <lists>             */
-    Bag           hdVal;          /* one value from <values>         */
-    Int                i;              /* loop variable                   */
+    Bag     hdList;         /* one list of <lists>             */
+    Bag     hdVal;          /* one value from <values>         */
+    Int     i;              /* loop variable                   */
+    Int     lenLists;       /* length of <lists> and <vals>    */
+    Int     lenPoss;        /* length of <positions>           */
 
     /* if <lev> is one, loop over all the lists and assign the value       */
-    if ( lev == 1 ) {
-
+    if ( lev == 1 )
+    {
         /* get the length of <positions>                                   */
         lenPoss = LEN_LIST( hdPoss );
 
         /* loop over the list entries (which must be lists too)            */
         lenLists = LEN_LIST( hdLists );
-        for ( i = 1; i <= lenLists; i++ ) {
-
+        
+        for ( i = 1; i <= lenLists; i++ ) 
+        {
             /* get the list                                                */
             hdList = ELMF_LIST( hdLists, i );
 
             /* select the element to assign                                */
             hdVal = ELMF_LIST( hdVals, i );
-            if ( hdVal == 0 ) {
-                return Error(
-                  "List Assignments: <vals> must be a dense list",
-                             0, 0 );
-            }
-            if ( ! IS_DENSE_LIST( hdVal ) ) {
-                return Error(
-                  "List Assignments: <vals> must be a dense list",
-                             0, 0 );
-            }
-            if ( LEN_LIST( hdVal ) != lenPoss ) {
-                return Error(
-         "List Assigments: <positions> and <vals> must have the same lenght",
-                             0, 0 );
+            if ( hdVal == 0 )
+            {
+                return Error("List Assignments: <vals> must be a dense list", 0, 0 );
             }
 
+            if ( ! IS_DENSE_LIST( hdVal ) )
+            {
+                return Error("List Assignments: <vals> must be a dense list", 0, 0 );
+            }
+
+            if ( LEN_LIST( hdVal ) != lenPoss ) 
+            {
+                return Error("List Assigments: <positions> and <vals> must have the same lenght", 0, 0 );
+            }
             /* assign the element                                          */
             /* this will signal an error if <lists> is not a list of lists */
             ASSS_LIST( hdList, hdPoss, hdVal );
-
         }
-
     }
-
     /* otherwise recurse                                                   */
-    else {
-
+    else 
+    {
         /* loop over the list entries (which must be lists too)            */
         lenLists = LEN_LIST( hdLists );
-        for ( i = 1; i <= lenLists; i++ ) {
-
+        for ( i = 1; i <= lenLists; i++ ) 
+        {
             /* get the list                                                */
             hdList = ELMF_LIST( hdLists, i );
-            if ( ! IS_LIST( hdList ) ) {
-                return Error(
-                  "List Assignments: <list> must be a list",
-                             0, 0 );
+
+            if ( ! IS_LIST( hdList ) ) 
+            {
+                return Error("List Assignments: <list> must be a list", 0, 0 );
             }
 
             /* get the values                                              */
             hdVal = ELMF_LIST( hdVals, i );
-            if ( hdVal == 0 ) {
-                return Error(
-                  "List Assignments: <vals> must be a dense list",
-                             0, 0 );
+            if ( hdVal == 0 ) 
+            {
+                return Error("List Assignments: <vals> must be a dense list", 0, 0 );
             }
-            if ( ! IS_LIST( hdVal ) ) {
-                return Error(
-                  "List Assignments: <vals> must be a dense list",
-                             0, 0 );
+
+            if ( ! IS_LIST( hdVal ) ) 
+            {
+                return Error("List Assignments: <vals> must be a dense list", 0, 0 );
             }
+
             if ( LEN_LIST( hdVal ) != LEN_LIST( hdList ) ) {
-                return Error(
-             "List Assignments: <list> and <vals> must have the same length",
-                             0, 0 );
+                return Error("List Assignments: <list> and <vals> must have the same length", 0, 0 );
             }
 
             /* recurse                                                     */
             AsssListLevel( hdList, hdPoss, hdVal, lev-1 );
-
         }
-
     }
-
     /* return the assigned values                                          */
     return hdVals;
 }
 
 Bag       EvAsssListLevel (Bag hdAss)
 {
-    Bag           hdLists;        /* <list>, left operand            */
-    Bag           hdPoss;         /* <positions>, left operand       */
-    Bag           hdVals;         /* <values>, right operand         */
-    Int                level;          /* <level>                         */
+    Bag     hdLists;        /* <list>, left operand            */
+    Bag     hdPoss;         /* <positions>, left operand       */
+    Bag     hdVals;         /* <values>, right operand         */
+    Int     level;          /* <level>                         */
 
     /* evaluate and check <lists>                                          */
     hdLists = EVAL( PTR_BAG( PTR_BAG(hdAss)[0] )[0] );
-    if ( ! IS_LIST( hdLists ) ) {
-        return Error(
-          "List Assignments: <list> must be a list",
-                     0, 0 );
+
+    if ( ! IS_LIST( hdLists ) ) 
+    {
+        return Error("List Assignments: <list> must be a list", 0, 0 );
     }
 
     /* evaluate and check <positions>                                      */
     hdPoss = EVAL( PTR_BAG( PTR_BAG(hdAss)[0] )[1] );
-    if ( ! IS_POSS_LIST( hdPoss ) ) {
-        return Error(
-   "List Assignments: <positions> must be a dense list of positive integers",
-                     0, 0 );
+
+    if ( ! IS_POSS_LIST( hdPoss ) )
+    {
+        return Error("List Assignments: <positions> must be a dense list of positive integers", 0, 0 );
     }
 
     /* evaluate and check <vals>                                           */
     hdVals = EVAL( PTR_BAG(hdAss)[1] );
-    if ( hdVals == HdVoid ) {
-        return Error(
-          "List Assignments: function must return a value",
-                     0, 0 );
+    if ( hdVals == HdVoid ) 
+    {
+        return Error("List Assignments: function must return a value", 0, 0 );
     }
-    if ( ! IS_LIST( hdVals ) ) {
-        return Error(
-          "List Assignments: <vals> must be a list",
-                     0, 0 );
+
+    if ( ! IS_LIST( hdVals ) ) 
+    {
+        return Error("List Assignments: <vals> must be a list",0, 0 );
     }
-    if ( LEN_LIST( hdVals ) != LEN_LIST( hdLists ) ) {
-        return Error(
-          "List Assignments: <lists> and <vals> must have the same length",
-                     0, 0 );
+
+    if ( LEN_LIST( hdVals ) != LEN_LIST( hdLists ) ) 
+    {
+        return Error("List Assignments: <lists> and <vals> must have the same length", 0, 0 );
     }
 
     /* get <level>                                                         */
@@ -1762,10 +1806,12 @@ Bag       EvAsssListLevel (Bag hdAss)
 **
 **  Linebreaks are preferred after the '['.
 */
-void            PrElmList (Bag hdSel)
+void        PrElmList(Bag hdSel)
 {
-    Pr("%2>",0,0);  Print( PTR_BAG(hdSel)[0] );
-    Pr("%<[",0,0);  Print( PTR_BAG(hdSel)[1] );
+    Pr("%2>",0,0); 
+    Print( PTR_BAG(hdSel)[0] );
+    Pr("%<[",0,0);  
+    Print( PTR_BAG(hdSel)[1] );
     Pr("%<]",0,0);
 }
 
@@ -1778,10 +1824,12 @@ void            PrElmList (Bag hdSel)
 **
 **  Linebreaks are preferred after the '{'.
 */
-void            PrElmsList (Bag hdSel)
+void        PrElmsList(Bag hdSel)
 {
-    Pr("%2>",0,0);  Print( PTR_BAG(hdSel)[0] );
-    Pr("%<{",0,0);  Print( PTR_BAG(hdSel)[1] );
+    Pr("%2>",0,0);  
+    Print( PTR_BAG(hdSel)[0] );
+    Pr("%<{",0,0);  
+    Print( PTR_BAG(hdSel)[1] );
     Pr("%<}",0,0);
 }
 
@@ -1794,10 +1842,12 @@ void            PrElmsList (Bag hdSel)
 **
 **  Linebreaks are preferred before the ':='.
 */
-void            PrAssList (Bag hdAss)
+void        PrAssList(Bag hdAss)
 {
-    Pr("%2>",0,0);       Print( PTR_BAG(hdAss)[0] );
-    Pr("%< %>:= ",0,0);  Print( PTR_BAG(hdAss)[1] );
+    Pr("%2>",0,0);       
+    Print( PTR_BAG(hdAss)[0] );
+    Pr("%< %>:= ",0,0); 
+    Print( PTR_BAG(hdAss)[1] );
     Pr("%2<",0,0);
 }
 
@@ -1814,18 +1864,18 @@ void            PrAssList (Bag hdAss)
 **  case  'in' can use  a binary search.   If <list> is   a general list 'in'
 **  employs a linear search.
 */
-Bag       EvIn (Bag hdIn)
+Bag     EvIn(Bag hdIn)
 {
-    Bag           hdVal;          /* <val>, left operand             */
-    Bag           hdList;         /* <list>, right operand           */
-    Int                pos;            /* <position>                      */
+    Bag     hdVal;          /* <val>, left operand             */
+    Bag     hdList;         /* <list>, right operand           */
+    Int     pos;            /* <position>                      */
 
     /* evaluate and check <val>                                            */
     hdVal = EVAL( PTR_BAG(hdIn)[0] );
-    if ( hdVal == HdVoid ) {
-        return Error(
-          "In: function must return a value",
-                     0, 0 );
+
+    if ( hdVal == HdVoid ) 
+    {
+        return Error("In: function must return a value", 0, 0 );
     }
 
     /* evaluate <list>                                                     */
@@ -1833,8 +1883,10 @@ Bag       EvIn (Bag hdIn)
 
     /* special case for records                                            */
     /*N 1992/12/10 martin should 'TabPosList[T_REC]' be used for this?     */
-    if ( GET_TYPE_BAG(hdList) == T_REC )
-        return InRec( hdVal, hdList );
+    if (GET_TYPE_BAG(hdList) == T_REC)
+    {
+        return InRec(hdVal, hdList);
+    }
 
     /* search the element                                                  */
     pos = POS_LIST( hdList, hdVal, 0 );
@@ -1853,20 +1905,22 @@ Bag       EvIn (Bag hdIn)
 **  'IsList'  returns  'true' if its argument   <obj> is  a  list and 'false'
 **  otherwise.
 */
-Bag       FunIsList (Bag hdCall)
+Bag     FunIsList(Bag hdCall)
 {
-    Bag           hdObj;
+    Bag     hdObj;
 
     /* check the arguments                                                 */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: IsList( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: IsList( <obj> )", 0, 0);
+    }
 
     /* evaluate and check the object                                       */
     hdObj = EVAL( PTR_BAG(hdCall)[1] );
-    if ( hdObj == HdVoid ) {
-        return Error(
-          "IsList: function must return a value",
-                     0,0);
+
+    if ( hdObj == HdVoid ) 
+    {
+        return Error("IsList: function must return a value", 0,0);
     }
 
     /* return 'true' if <obj> is a list and 'false' otherwise              */
@@ -1887,31 +1941,45 @@ Bag       FunIsList (Bag hdCall)
 **  type, is a vector and 'false' otherwise.  Will cause an error if <obj> is
 **  an unbound variable.
 */
-Int            IsVector (Bag hdObj)
+Int     IsVector(Bag hdObj)
 {
     /* test if <hdObj> is a list and a vector                              */
-    if ( IS_LIST( hdObj ) && (TabIsList[ XType( hdObj ) ] == 2) )
+    if (IS_LIST(hdObj) && (TabIsList[XType(hdObj)] == 2))
+    {
         return 1;
+    }
     else
+    {
         return 0;
+    }
 }
 
-Bag       FunIsVector (Bag hdCall)
+Bag     FunIsVector(Bag hdCall)
 {
-    Bag           hdObj;          /* handle of the object            */
+    Bag     hdObj;          /* handle of the object            */
 
     /* check and get the arguments                                         */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: IsVector( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: IsVector( <obj> )", 0, 0);
+    }
+
     hdObj = EVAL( PTR_BAG(hdCall)[1] );
-    if ( hdObj == HdVoid )
-        return Error("IsVector: function must return value",0,0);
+
+    if (hdObj == HdVoid)
+    {
+        return Error("IsVector: function must return value", 0, 0);
+    }
 
     /* test if <hdObj> is a list and a vector                              */
-    if ( IS_LIST( hdObj ) && (TabIsList[ XType( hdObj ) ] == 2) )
+    if (IS_LIST(hdObj) && (TabIsList[XType(hdObj)] == 2))
+    {
         return HdTrue;
+    }
     else
+    {
         return HdFalse;
+    }
 }
 
 
@@ -1927,22 +1995,32 @@ Bag       FunIsVector (Bag hdCall)
 **  type, is a matrix and 'false' otherwise.  Will cause an error if <obj> is
 **  an unbound variable.
 */
-Bag       FunIsMat (Bag hdCall)
+Bag     FunIsMat(Bag hdCall)
 {
-    Bag           hdObj;          /* handle of the object            */
+    Bag     hdObj;          /* handle of the object            */
 
     /* check and get the arguments                                         */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: IsMat( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: IsMat( <obj> )", 0, 0);
+    }
+
     hdObj = EVAL( PTR_BAG(hdCall)[1] );
-    if ( hdObj == HdVoid )
-        return Error("IsMat: function must return value",0,0);
+
+    if (hdObj == HdVoid)
+    {
+        return Error("IsMat: function must return value", 0, 0);
+    }
 
     /* test if <hdObj> is a list and a matrix                              */
-    if ( IS_LIST( hdObj ) && (TabIsList[ XType( hdObj ) ] == 3) )
+    if (IS_LIST(hdObj) && (TabIsList[XType(hdObj)] == 3))
+    {
         return HdTrue;
+    }
     else
+    {
         return HdFalse;
+    }
 }
 
 
@@ -1956,23 +2034,27 @@ Bag       FunIsMat (Bag hdCall)
 **
 **  'Length' returns the length of a list '<list>'.
 */
-Bag       FunLength (Bag hdCall)
+Bag     FunLength(Bag hdCall)
 {
-    Bag           hdList;         /* handle of the list              */
+    Bag     hdList;         /* handle of the list              */
 
     /* check the number of arguments                                       */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: Length( <list> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: Length( <list> )", 0, 0);
+    }
 
     /* evaluate <list>                                                     */
     hdList = EVAL( PTR_BAG(hdCall)[1] );
 
     /* return the length                                                   */
-    if ( GET_TYPE_BAG(hdList) == T_LIST ) {
+    if ( GET_TYPE_BAG(hdList) == T_LIST ) 
+    {
         /* return INT_TO_HD( LEN_PLIST( hdList ) );                        */
         return PTR_BAG(hdList)[0];
     }
-    else {
+    else 
+    {
         return INT_TO_HD( LEN_LIST( hdList ) );
     }
 }
@@ -1989,48 +2071,53 @@ Bag       FunLength (Bag hdCall)
 **  The  list is  automatically extended to   make room for  the new element.
 **  'Add' returns nothing, it is called only for its sideeffect.
 */
-Bag       FunAdd (Bag hdCall)
+Bag     FunAdd(Bag hdCall)
 {
-    Bag           hdList;         /* <list>, first argument          */
-    Bag           hdVal;          /* <val>, second argument          */
-    Int                pos;            /* position to assign to           */
-    Int                plen;           /* physical length of <list>       */
+    Bag     hdList;         /* <list>, first argument          */
+    Bag     hdVal;          /* <val>, second argument          */
+    Int     plen;           /* physical length of <list>       */
+    Int     pos;            /* position to assign to           */
 
     /* check the argument count                                            */
-    if ( GET_SIZE_BAG(hdCall) != 3 * SIZE_HD ) {
-        return Error(
-          "usage: Add( <list>, <val> )",
-                     0, 0 );
+    if ( GET_SIZE_BAG(hdCall) != (3 * SIZE_HD)) 
+    {
+        return Error("usage: Add( <list>, <val> )", 0, 0 );
     }
 
     /* evaluate <list>                                                     */
     hdList = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IS_LIST( hdList ) ) {
-        return Error(
-          "Add: <list> must be a list",
-                     0, 0 );
+
+    if ( ! IS_LIST( hdList ) )
+    {
+        return Error("Add: <list> must be a list", 0, 0 );
     }
 
     /* evaluate and check <val>                                            */
     hdVal = EVAL( PTR_BAG(hdCall)[2] );
-    if ( hdVal == HdVoid ) {
-        return Error(
-          "Add: function must return a value",
-                     0, 0 );
+
+    if ( hdVal == HdVoid ) 
+    {
+        return Error( "Add: function must return a value", 0, 0 );
     }
 
     /* add <val> to <list>                                                 */
-    if ( GET_TYPE_BAG(hdList) == T_LIST ) {
+    if ( GET_TYPE_BAG(hdList) == T_LIST ) 
+    {
         pos = LEN_PLIST( hdList ) + 1;
         plen = PLEN_SIZE_PLIST( GET_SIZE_BAG( hdList ) );
-        if ( plen + plen/8 + 4 < pos )
-            Resize( hdList, SIZE_PLEN_PLIST( pos ) );
-        else if ( plen < pos )
-            Resize( hdList, SIZE_PLEN_PLIST( plen + plen/8 + 4 ) );
+        if (plen + plen / 8 + 4 < pos)
+        {
+            Resize(hdList, SIZE_PLEN_PLIST(pos));
+        }
+        else if (plen < pos)
+        {
+            Resize(hdList, SIZE_PLEN_PLIST(plen + plen / 8 + 4));
+        }
         SET_LEN_PLIST( hdList, pos );
         SET_ELM_PLIST( hdList, pos, hdVal );
     }
-    else {
+    else 
+    {
         pos = LEN_LIST( hdList ) + 1;
         ASS_LIST( hdList, pos, hdVal );
     }
@@ -2039,25 +2126,36 @@ Bag       FunAdd (Bag hdCall)
     return HdVoid;
 }
 
-void  ListAdd (Obj hdList, Obj hdVal) {
-    Int                pos;            /* position to assign to           */
-    Int                plen;           /* physical length of <list>       */
+void        ListAdd(Obj hdList, Obj hdVal) 
+{
+    Int     pos;            /* position to assign to           */
+    Int     plen;           /* physical length of <list>       */
 
-    if ( ! IS_LIST( hdList ) )
-        Error("ListAdd: <list> must be a list",  0, 0 );
+    if (!IS_LIST(hdList))
+    {
+        Error("ListAdd: <list> must be a list", 0, 0);
+    }
 
     /* add <val> to <list>                                                 */
-    if ( GET_TYPE_BAG(hdList) == T_LIST ) {
+    if ( GET_TYPE_BAG(hdList) == T_LIST )
+    {
         pos = LEN_PLIST( hdList ) + 1;
         plen = PLEN_SIZE_PLIST( GET_SIZE_BAG( hdList ) );
-        if ( plen + plen/8 + 4 < pos )
-            Resize( hdList, SIZE_PLEN_PLIST( pos ) );
-        else if ( plen < pos )
-            Resize( hdList, SIZE_PLEN_PLIST( plen + plen/8 + 4 ) );
+
+        if (plen + plen / 8 + 4 < pos)
+        {
+            Resize(hdList, SIZE_PLEN_PLIST(pos));
+        }
+        else if (plen < pos)
+        {
+            Resize(hdList, SIZE_PLEN_PLIST(plen + plen / 8 + 4));
+        }
+
         SET_LEN_PLIST( hdList, pos );
         SET_ELM_PLIST( hdList, pos, hdVal );
     }
-    else {
+    else 
+    {
         pos = LEN_LIST( hdList ) + 1;
         ASS_LIST( hdList, pos, hdVal );
     }
@@ -2072,42 +2170,59 @@ void  ListAdd (Obj hdList, Obj hdVal) {
 **  'RemoveLast' removes <N> elements from the end of the list.
 **  'RemoveLast' returns nothing, it is called only for its sideeffect.
 */
-Bag       FunRemoveLast (Bag hdCall)
+Bag     FunRemoveLast(Bag hdCall)
 {
-    Bag           hdList;         /* <list>, first argument          */
-    Bag           hdN;            /* <N>, second argument            */
-    Int                N;
-    Int                plen;           /* physical length of <list>       */
-    Int                len;
+    Bag     hdList;         /* <list>, first argument          */
+    Bag     hdN;            /* <N>, second argument            */
+    Int     len;
+    Int     N;
+    Int     plen;           /* physical length of <list>       */
 
     /* check the argument count                                            */
-    if ( GET_SIZE_BAG(hdCall) != 3 * SIZE_HD )
-        return Error("usage: RemoveLast( <list>, <N> )", 0, 0 );
+    if (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD))
+    {
+        return Error("usage: RemoveLast( <list>, <N> )", 0, 0);
+    }
 
     /* evaluate <list>                                                     */
     hdList = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IS_LIST(hdList) )
+
+    if (!IS_LIST(hdList))
+    {
         return Error("RemoveLast: <list> must be a plain list", 0, 0);
+    }
 
     PLAIN_LIST(hdList);
 
     /* evaluate and check <N>                                              */
     hdN = EVAL( PTR_BAG(hdCall)[2] );
-    if ( hdN == HdVoid )
-        return Error("RemoveLast: function must return a value", 0, 0 );
-    else if ( GET_TYPE_BAG(hdN) != T_INT  ||  HD_TO_INT(hdN) < 0)
+
+    if (hdN == HdVoid)
+    {
+        return Error("RemoveLast: function must return a value", 0, 0);
+    }
+    else if (GET_TYPE_BAG(hdN) != T_INT || HD_TO_INT(hdN) < 0)
+    {
         return Error("RemoveLast: <N> must be a positive integer", 0, 0);
+    }
 
     N = HD_TO_INT(hdN);
 
-    if ( GET_TYPE_BAG(hdList) == T_LIST ) {
+    if ( GET_TYPE_BAG(hdList) == T_LIST )
+    {
         len = LEN_PLIST(hdList) - N;
-        if ( len < 0 ) len = 0;
+        if (len < 0) 
+        { 
+            len = 0; 
+        }
         plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(hdList) );
-        if ( len + len/8 + 4 < plen ) {
+
+        if ( len + len/8 + 4 < plen )
+        {
             /*Pr("plen was %d, resizing to %d\n", plen, len+len/8+4);*/
             Resize( hdList, SIZE_PLEN_PLIST(len + len/8 + 4) );
         }
+
         SET_LEN_PLIST( hdList, len );
     }
 
@@ -2129,53 +2244,66 @@ Bag       FunRemoveLast (Bag hdCall)
 *N  1992/12/10 martin 'Append' should use 'ASSS_LIST'
 */
 
-Bag Append(Bag hdList1, Bag hdList2) {
-    Int                lenList1;       /* length of the first list        */
-    Int                lenList2;       /* length of the second list       */
-    Bag           hdElm;          /* one element of the second list  */
-    Int                plen;           /* physical size of the list       */
-    Int                i;              /* loop variable                   */
-    Int                is_string = 0;
+Bag     Append(Bag hdList1, Bag hdList2)
+{
+    Bag     hdElm;          /* one element of the second list  */
+    Int     i;              /* loop variable                   */
+    Int     is_string = 0;
+    Int     lenList1;       /* length of the first list        */
+    Int     lenList2;       /* length of the second list       */
+    Int     plen;           /* physical size of the list       */
+
     is_string = (GET_TYPE_BAG(hdList1)==T_STRING) && (GET_TYPE_BAG(hdList2)==T_STRING);
 
     /* check the arguments                                                 */
     /* check the first list, if neccessary convert to a list  */
-    if ( ! IS_LIST( hdList1 ) ) {
-        return Error(
-          "Append: <list1> must be a list",
-                     0,0);
+    if ( ! IS_LIST( hdList1 ) ) 
+    {
+        return Error("Append: <list1> must be a list", 0,0);
     }
+
     PLAIN_LIST( hdList1 );
     Retype( hdList1, T_LIST );
     lenList1 = LEN_PLIST( hdList1 );
 
     /* if neccessary convert the second list to a list           */
-    if ( ! IS_LIST( hdList2 ) ) {
-        return Error(
-          "Append: <list2> must be a list",
-                     0,0);
+    if ( ! IS_LIST( hdList2 ) )
+    {
+        return Error("Append: <list2> must be a list", 0,0);
     }
+
     lenList2 = LEN_LIST( hdList2 );
 
     /* if the list has no room at the end, enlarge it                      */
-    if ( 0 < lenList2 ) {
+    if ( 0 < lenList2 ) 
+    {
         plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(hdList1) );
-        if ( plen + plen/8 + 4 < lenList1 + lenList2 )
-            Resize( hdList1, SIZE_PLEN_PLIST( lenList1 + lenList2 ) );
-        else if ( plen < lenList1 + lenList2 )
-            Resize( hdList1, SIZE_PLEN_PLIST( plen + plen/8 + 4 ) );
+
+        if (plen + plen / 8 + 4 < lenList1 + lenList2)
+        {
+            Resize(hdList1, SIZE_PLEN_PLIST(lenList1 + lenList2));
+        }
+        else if (plen < lenList1 + lenList2)
+        {
+            Resize(hdList1, SIZE_PLEN_PLIST(plen + plen / 8 + 4));
+        }
+
         SET_LEN_PLIST( hdList1, lenList1+lenList2 );
     }
 
     /* add the elements                                                    */
-    if ( GET_TYPE_BAG(hdList2) == T_LIST ) {
-        for ( i = 1; i <= lenList2; i++ ) {
+    if ( GET_TYPE_BAG(hdList2) == T_LIST ) 
+    {
+        for ( i = 1; i <= lenList2; i++ ) 
+        {
             hdElm = ELM_PLIST( hdList2, i );
             SET_ELM_PLIST( hdList1, i+lenList1, hdElm );
         }
     }
-    else {
-        for ( i = 1; i <= lenList2; i++ ) {
+    else 
+    {
+        for ( i = 1; i <= lenList2; i++ ) 
+        {
             hdElm = ELMF_LIST( hdList2, i );
             SET_ELM_PLIST( hdList1, i+lenList1, hdElm );
         }
@@ -2189,13 +2317,15 @@ Bag Append(Bag hdList1, Bag hdList2) {
     return HdVoid;
 }
 
-Bag       FunAppend (Bag hdCall)
+Bag     FunAppend(Bag hdCall)
 {
     Bag           hdList1;        /* handle of the first list        */
     Bag           hdList2;        /* handle of the second list       */
 
-    if ( GET_SIZE_BAG(hdCall) != 3 * SIZE_HD )
-        return Error("usage: Append( <list1>, <list2> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 3 * SIZE_HD)
+    {
+        return Error("usage: Append( <list1>, <list2> )", 0, 0);
+    }
 
     /* evaluate both lists FIRST to avoid problems when evaluation
        side-effects retype the lists */
@@ -2216,48 +2346,48 @@ Bag       FunAppend (Bag hdCall)
 **  'Position' returns the position of the object <obj> in the  list  <list>.
 **  'HdFalse' is returned if the object does not occur in the list.
 */
-Bag       FunPosition (Bag hdCall)
+Bag     FunPosition(Bag hdCall)
 {
-    Bag           hdList;         /* <list>, first argument          */
-    Bag           hdVal;          /* <val>, second argument          */
-    Int                start;          /* <start> position                */
-    Int                k;              /* position of the value in list   */
+    Bag     hdList;         /* <list>, first argument          */
+    Bag     hdVal;          /* <val>, second argument          */
+    Int     start;          /* <start> position                */
+    Int     k;              /* position of the value in list   */
 
     /* check the arguments                                                 */
-    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD && GET_SIZE_BAG(hdCall) != 4*SIZE_HD ) {
-        return Error(
-          "usage: Position( <list>, <obj> )",
-                     0,0);
+    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD && GET_SIZE_BAG(hdCall) != (4*SIZE_HD)) 
+    {
+        return Error("usage: Position( <list>, <obj> )", 0,0);
     }
 
     /* evaluate and check the <start> value, 0 is the default              */
-    if ( GET_SIZE_BAG(hdCall) == 4*SIZE_HD ) {
+    if ( GET_SIZE_BAG(hdCall) == (4*SIZE_HD)) 
+    {
         hdVal = EVAL( PTR_BAG(hdCall)[3] );
-        if ( GET_TYPE_BAG(hdVal) != T_INT || HD_TO_INT(hdVal) < 0 ) {
-            return Error(
-              "Position: <start> must be a nonnegative int",
-                         0,0);
+        if ( GET_TYPE_BAG(hdVal) != T_INT || HD_TO_INT(hdVal) < 0 )
+        {
+            return Error("Position: <start> must be a nonnegative int", 0,0);
         }
         start = HD_TO_INT(hdVal);
     }
-    else {
+    else 
+    {
         start = 0;
     }
 
     /* evaluate and check <val>                                            */
     hdVal = EVAL( PTR_BAG(hdCall)[2] );
-    if ( hdVal == HdVoid ) {
-        return Error(
-          "Position: function must return a value",
-                     0,0);
+
+    if ( hdVal == HdVoid )
+    {
+        return Error("Position: function must return a value", 0,0);
     }
 
     /* evaluate and check <list>                                           */
     hdList = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IS_LIST( hdList ) ) {
-        return Error(
-          "Position: <list> must be a list",
-                     0,0);
+
+    if ( ! IS_LIST( hdList ) ) 
+    {
+        return Error("Position: <list> must be a list", 0,0);
     }
 
     /*N 1990/12/25 martin must check if <start> is larger than <length>    */
@@ -2281,15 +2411,18 @@ Bag       FunPosition (Bag hdCall)
 **  equivalent  to  specifying no operation.   This function  exists  because
 **  there are places where the operation in not an option.
 */
-Bag       FunOnPoints (Bag hdCall)
+Bag     FunOnPoints(Bag hdCall)
 {
-    Bag           hdRes;          /* handle of the image, result     */
-    Bag           hdPnt;          /* handle of the point, first arg  */
-    Bag           hdElm;          /* handle of the element, 2nd arg  */
+    Bag     hdElm;          /* handle of the element, 2nd arg  */
+    Bag     hdPnt;          /* handle of the point, first arg  */
+    Bag     hdRes;          /* handle of the image, result     */
 
     /* get and check the arguments                                         */
-    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
-        return Error("usage: OnPoints( <point>, <g> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD))
+    {
+        return Error("usage: OnPoints( <point>, <g> )", 0, 0);
+    }
+
     hdPnt = EVAL( PTR_BAG(hdCall)[1] );
     hdElm = EVAL( PTR_BAG(hdCall)[2] );
 
@@ -2310,24 +2443,33 @@ Bag       FunOnPoints (Bag hdCall)
 **  specifies the componentwise operation of  group elements on pairs
 **  of points, which are represented by lists of length 2.
 */
-Bag       FunOnPairs (Bag hdCall)
+Bag     FunOnPairs(Bag hdCall)
 {
-    Bag           hdRes;          /* handle of the image, result     */
-    Bag           hdPair;         /* handle of the pair, first arg   */
-    Bag           hdElm;          /* handle of the element, 2nd arg  */
-    Bag           hdTmp;          /* temporary handle                */
+    Bag     hdElm;          /* handle of the element, 2nd arg  */
+    Bag     hdPair;         /* handle of the pair, first arg   */
+    Bag     hdRes;          /* handle of the image, result     */
+    Bag     hdTmp;          /* temporary handle                */
 
     /* get and check the arguments                                         */
-    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
-        return Error("usage: OnPairs( <pair>, <g> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD))
+    {
+        return Error("usage: OnPairs( <pair>, <g> )", 0, 0);
+    }
+
     hdPair = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IS_LIST( hdPair ) )
-        return Error("OnPairs: <pair> must be a list",0,0);
+
+    if (!IS_LIST(hdPair))
+    {
+        return Error("OnPairs: <pair> must be a list", 0, 0);
+    }
+
     hdElm = EVAL( PTR_BAG(hdCall)[2] );
 
     /* check that the list is a pair                                       */
-    if ( LEN_LIST( hdPair ) != 2 )
-        return Error("<pair> must be a list of length 2",0,0);
+    if (LEN_LIST(hdPair) != 2)
+    {
+        return Error("<pair> must be a list of length 2", 0, 0);
+    }
 
     /* create a new bag for the result                                     */
     hdRes = NewBag( T_LIST, SIZE_PLEN_PLIST( 2 ) );
@@ -2356,24 +2498,32 @@ Bag       FunOnPairs (Bag hdCall)
 **  points, which are represented by lists.  'OnPairs' is the special case of
 **  'OnTuples' for tuples with two elements.
 */
-Bag       FunOnTuples (Bag hdCall)
+Bag     FunOnTuples(Bag hdCall)
 {
-    Bag           hdRes;          /* handle of the image, result     */
-    Bag           hdTup;          /* handle of the tuple, first arg  */
-    Bag           hdElm;          /* handle of the element, 2nd arg  */
-    Bag           hdTmp;          /* temporary handle                */
-    UInt       i;              /* loop variable                   */
+    Bag     hdElm;          /* handle of the element, 2nd arg  */
+    Bag     hdRes;          /* handle of the image, result     */
+    Bag     hdTmp;          /* temporary handle                */
+    Bag     hdTup;          /* handle of the tuple, first arg  */
+    UInt    i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
-        return Error("usage: OnTuples( <tuple>, <g> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD))
+    {
+        return Error("usage: OnTuples( <tuple>, <g> )", 0, 0);
+    }
+
     hdTup = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IS_LIST( hdTup ) )
-        return Error("OnTuples: <tuple> must be a list",0,0);
+
+    if (!IS_LIST(hdTup))
+    {
+        return Error("OnTuples: <tuple> must be a list", 0, 0);
+    }
+
     hdElm = EVAL( PTR_BAG(hdCall)[2] );
 
     /* special case for permutations                                       */
-    if ( GET_TYPE_BAG(hdElm) == T_PERM16 || GET_TYPE_BAG(hdElm) == T_PERM32 ) {
+    if ((GET_TYPE_BAG(hdElm) == T_PERM16) || (GET_TYPE_BAG(hdElm) == T_PERM32)) 
+    {
         PLAIN_LIST( hdTup );
         return OnTuplesPerm( hdTup, hdElm );
     }
@@ -2383,7 +2533,8 @@ Bag       FunOnTuples (Bag hdCall)
     SET_LEN_PLIST( hdRes, LEN_LIST(hdTup) );
 
     /* and enter the images of the points into the result bag              */
-    for ( i = LEN_LIST(hdTup); 1 <= i; i-- ) {
+    for ( i = LEN_LIST(hdTup); 1 <= i; i-- ) 
+    {
         hdTmp = POW( ELMF_LIST( hdTup, i ), hdElm );
         SET_ELM_PLIST( hdRes, i, hdTmp );
     }
@@ -2404,27 +2555,36 @@ Bag       FunOnTuples (Bag hdCall)
 **  specifies the operation  of group elements  on  sets of points, which are
 **  represented by sorted lists of points without duplicates (see "Sets").
 */
-Bag       FunOnSets (Bag hdCall)
+Bag     FunOnSets(Bag hdCall)
 {
-    Bag           hdRes;          /* handle of the image, result     */
-    Bag           hdSet;          /* handle of the tuple, first arg  */
-    Bag           hdElm;          /* handle of the element, 2nd arg  */
-    Bag           hdTmp;          /* temporary handle                */
-    UInt       len;            /* logical length of the list      */
-    UInt       mutable;        /* the elements are mutable        */
-    UInt       h;              /* gap width in the shellsort      */
-    UInt       i, k;           /* loop variables                  */
+    Bag     hdElm;          /* handle of the element, 2nd arg  */
+    Bag     hdSet;          /* handle of the tuple, first arg  */
+    Bag     hdTmp;          /* temporary handle                */
+    Bag     hdRes;          /* handle of the image, result     */
+    UInt    len;            /* logical length of the list      */
+    UInt    mutable;        /* the elements are mutable        */
+    UInt    h;              /* gap width in the shellsort      */
+    UInt    i;              /* loop variable                  */
+    UInt    k;              /* loop variable                  */
 
     /* get and check the arguments                                         */
-    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
-        return Error("usage: OnSets( <tuple>, <g> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 3 * SIZE_HD)
+    {
+        return Error("usage: OnSets( <tuple>, <g> )", 0, 0);
+    }
+
     hdSet = EVAL( PTR_BAG(hdCall)[1] );
-    if ( GET_TYPE_BAG(hdSet) != T_SET && ! IsSet( hdSet ) )
-        return Error("OnSets: <tuple> must be a set",0,0);
+
+    if (GET_TYPE_BAG(hdSet) != T_SET && !IsSet(hdSet))
+    {
+        return Error("OnSets: <tuple> must be a set", 0, 0);
+    }
+
     hdElm = EVAL( PTR_BAG(hdCall)[2] );
 
     /* special case for permutations                                       */
-    if ( GET_TYPE_BAG(hdElm) == T_PERM16 || GET_TYPE_BAG(hdElm) == T_PERM32 ) {
+    if ((GET_TYPE_BAG(hdElm) == T_PERM16) || (GET_TYPE_BAG(hdElm) == T_PERM32)) 
+    {
         return OnSetsPerm( hdSet, hdElm );
     }
 
@@ -2435,33 +2595,49 @@ Bag       FunOnSets (Bag hdCall)
     mutable = 0;
 
     /* and enter the images of the points into the result bag              */
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= len; i++ ) 
+    {
         hdTmp = POW( ELMF_LIST( hdSet, i ), hdElm );
         SET_ELM_PLIST( hdRes, i, hdTmp );
         mutable = mutable || (T_LIST <= GET_TYPE_BAG(hdTmp));
     }
 
     /* sort the set with a shellsort                                       */
-    h = 1;  while ( 9*h + 4 < len )  h = 3*h + 1;
-    while ( 0 < h ) {
-        for ( i = h+1; i <= len; i++ ) {
-            hdTmp = ELM_PLIST( hdRes, i );  k = i;
-            while ( h < k && LT( hdTmp, ELM_PLIST(hdRes,k-h) ) == HdTrue ) {
+    h = 1; 
+    while (9 * h + 4 < len) 
+    { 
+        h = 3 * h + 1;
+    }
+
+    while ( 0 < h )
+    {
+        for ( i = h+1; i <= len; i++ ) 
+        {
+            hdTmp = ELM_PLIST( hdRes, i ); 
+            k = i;
+
+            while ( h < k && LT( hdTmp, ELM_PLIST(hdRes,k-h) ) == HdTrue )
+            {
                 SET_ELM_PLIST( hdRes, k, ELM_PLIST(hdRes,k-h) );
                 k -= h;
             }
+
             SET_ELM_PLIST( hdRes, k, hdTmp );
         }
+
         h = h / 3;
     }
 
     /* remove duplicates, shrink bag if possible                           */
     k = 0;
-    if ( 0 < len ) {
+    if ( 0 < len ) 
+    {
         hdTmp = ELM_PLIST( hdRes, 1 );
         k = 1;
-        for ( i = 2; i <= len; i++ ) {
-            if ( EQ( hdTmp, ELM_PLIST( hdRes, i ) ) != HdTrue ) {
+        for ( i = 2; i <= len; i++ )
+        {
+            if ( EQ( hdTmp, ELM_PLIST( hdRes, i ) ) != HdTrue ) 
+            {
                 k += 1;
                 hdTmp = ELM_PLIST( hdRes, i );
                 SET_ELM_PLIST( hdRes, k, hdTmp );
@@ -2470,10 +2646,16 @@ Bag       FunOnSets (Bag hdCall)
     }
 
     /* retype and resize the bag if necessary                              */
-    if ( ! mutable )
-        Retype( hdRes, T_SET );
-    if ( k < len )
-        Resize( hdRes, SIZE_PLEN_PLIST(k) );
+    if (!mutable)
+    {
+        Retype(hdRes, T_SET);
+    }
+
+    if (k < len)
+    {
+        Resize(hdRes, SIZE_PLEN_PLIST(k));
+    }
+
     SET_LEN_PLIST( hdRes, k );
 
     /* return set                                                          */
@@ -2491,15 +2673,18 @@ Bag       FunOnSets (Bag hdCall)
 **
 **  specifies that group elements operate by multiplication from the right.
 */
-Bag       FunOnRight (Bag hdCall)
+Bag     FunOnRight(Bag hdCall)
 {
-    Bag           hdRes;          /* handle of the image, result     */
-    Bag           hdPnt;          /* handle of the point, first arg  */
-    Bag           hdElm;          /* handle of the element, 2nd arg  */
+    Bag     hdElm;          /* handle of the element, 2nd arg  */
+    Bag     hdPnt;          /* handle of the point, first arg  */
+    Bag     hdRes;          /* handle of the image, result     */
 
     /* get and check the arguments                                         */
-    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
-        return Error("usage: OnRight( <point>, <g> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 3 * SIZE_HD)
+    {
+        return Error("usage: OnRight( <point>, <g> )", 0, 0);
+    }
+
     hdPnt = EVAL( PTR_BAG(hdCall)[1] );
     hdElm = EVAL( PTR_BAG(hdCall)[2] );
 
@@ -2519,15 +2704,18 @@ Bag       FunOnRight (Bag hdCall)
 **
 **  specifies that group elements operate by multiplication from the left.
 */
-Bag       FunOnLeft (Bag hdCall)
+Bag     FunOnLeft(Bag hdCall)
 {
-    Bag           hdRes;          /* handle of the image, result     */
-    Bag           hdPnt;          /* handle of the point, first arg  */
-    Bag           hdElm;          /* handle of the element, 2nd arg  */
+    Bag     hdElm;          /* handle of the element, 2nd arg  */
+    Bag     hdPnt;          /* handle of the point, first arg  */
+    Bag     hdRes;          /* handle of the image, result     */
 
     /* get and check the arguments                                         */
-    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
-        return Error("usage: OnLeft( <point>, <g> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 3 * SIZE_HD)
+    {
+        return Error("usage: OnLeft( <point>, <g> )", 0, 0);
+    }
+
     hdPnt = EVAL( PTR_BAG(hdCall)[1] );
     hdElm = EVAL( PTR_BAG(hdCall)[2] );
 
@@ -2541,32 +2729,46 @@ Bag       FunOnLeft (Bag hdCall)
 **
 *F  DepthListx( <vec> ) . . . . . . . . . . . . . . . . . . depth of a vector
 */
-Bag DepthListx (Bag hdVec)
+Bag     DepthListx(Bag hdVec)
 {
-    Int                pos;            /* current position                */
-    Bag           zero;           /* zero element                    */
-    Int                len;            /* length of <hdVec>               */
-    Bag           tmp;
+    Bag     tmp;
+    Bag     zero;           /* zero element                    */
+    Int     len;            /* length of <hdVec>               */
+    Int     pos;            /* current position                */
 
     /* if <hdVec> is trivial return one                                    */
     len = LEN_LIST(hdVec);
-    if ( len == 0 )
+
+    if (len == 0)
+    {
         return INT_TO_HD(1);
+    }
 
     /* construct zero                                                      */
     tmp = ELML_LIST(hdVec,1);
-    if ( GET_TYPE_BAG(tmp) == T_INT )
+
+    if (GET_TYPE_BAG(tmp) == T_INT)
+    {
         zero = INT_TO_HD(0);
+    }
     else
-        zero = PROD( INT_TO_HD(0), tmp );
+    {
+        zero = PROD(INT_TO_HD(0), tmp);
+    }
 
     /* loop over vector and compare                                        */
-    for ( pos = 1;  pos <= len;  pos++ ) {
+    for ( pos = 1;  pos <= len;  pos++ )
+    {
         tmp = ELML_LIST(hdVec,pos);
-        if ( T_LIST <= GET_TYPE_BAG(tmp) && GET_TYPE_BAG(tmp) < T_REC )
-            return Error( "DepthVector: <list> must be a vector", 0, 0 );
-        if ( zero != tmp && EQ( zero, tmp ) == HdFalse )
+        if (T_LIST <= GET_TYPE_BAG(tmp) && GET_TYPE_BAG(tmp) < T_REC)
+        {
+            return Error("DepthVector: <list> must be a vector", 0, 0);
+        }
+
+        if (zero != tmp && EQ(zero, tmp) == HdFalse)
+        {
             break;
+        }
     }
 
     /* and return the position                                             */
@@ -2580,20 +2782,23 @@ Bag DepthListx (Bag hdVec)
 */
 Bag (*TabDepthVector[LIST_TAB_SIZE]) ( Bag );
 
-Bag FunDepthVector (Bag hdCall)
+Bag     FunDepthVector(Bag hdCall)
 {
-    Bag           hdVec;  /* 1. argument: finite field vector        */
+    Bag     hdVec;  /* 1. argument: finite field vector        */
 
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
         return Error("usage: DepthVector( <vec> )", 0, 0);
+    }
+
     hdVec = EVAL(PTR_BAG(hdCall)[1]);
 
     /* jump through the table 'TabIntVecFFE'                               */
     return TabDepthVector[XType(hdVec)]( hdVec );
 }
 
-Bag CantDepthVector (Bag hdList)
+Bag     CantDepthVector(Bag hdList)
 {
     return Error( "DepthVector: <list> must be a vector", 0, 0 );
 }
@@ -2603,15 +2808,18 @@ Bag CantDepthVector (Bag hdList)
 *F  FunNewList( <hdCall> )  . . . . . . . internal function 'NewList'
 */
 
-Bag FunNewList (Bag hdCall)
+Bag     FunNewList(Bag hdCall)
 {
-    Bag           hdLen;
+    Bag     hdLen;
 
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD ) {
+    if ( GET_SIZE_BAG(hdCall) == (2 * SIZE_HD)) 
+    {
         hdLen = EVAL(PTR_BAG(hdCall)[1]);
-        if (GET_TYPE_BAG(hdLen)==T_INT && HD_TO_INT(hdLen)>=0)
+        if (GET_TYPE_BAG(hdLen) == T_INT && (HD_TO_INT(hdLen) >= 0))
+        {
             return NewList(HD_TO_INT(hdLen));
+        }
     }
     return Error("usage: NewList( <length> )", 0, 0);
 }
@@ -2624,10 +2832,12 @@ Bag FunNewList (Bag hdCall)
 */
 void            InitList (void)
 {
-    Int                type1, type2;   /* loop variable                   */
+    Int     type1;
+    Int     type2;   /* loop variable                   */
 
     /* install the error functions into the tables                         */
-    for ( type1 = T_VOID; type1 < LIST_TAB_SIZE; type1++ ) {
+    for ( type1 = T_VOID; type1 < LIST_TAB_SIZE; type1++ ) 
+    {
         TabIsList     [type1] = 0;
         TabLenList    [type1] = CantLenList;
         TabElmList    [type1] = CantElmList;
@@ -2644,28 +2854,35 @@ void            InitList (void)
     }
 
     /* install tables for gap functions                                    */
-    for ( type1 = T_VOID;  type1 < LIST_TAB_SIZE;  type1++ )
+    for (type1 = T_VOID; type1 < LIST_TAB_SIZE; type1++)
+    {
         TabDepthVector[type1] = CantDepthVector;
+    }
+
     TabDepthVector[T_LISTX ] = DepthListx;
     TabDepthVector[T_VECTOR] = DepthListx;
 
 
     /* install the default functions                                       */
-    for ( type1 = T_LIST; type1 < T_REC; type1++ ) {
+    for ( type1 = T_LIST; type1 < T_REC; type1++ )
+    {
         EvTab[type1] = EvList;
         PrTab[type1] = PrList;
     }
 
     /* install the default comparisons                                     */
-    for ( type1 = T_LIST; type1 < T_REC; type1++ ) {
-        for ( type2 = T_LIST; type2 < T_REC; type2++ ) {
+    for ( type1 = T_LIST; type1 < T_REC; type1++ ) 
+    {
+        for ( type2 = T_LIST; type2 < T_REC; type2++ ) 
+        {
             TabEq[type1][type2] = EqList;
             TabLt[type1][type2] = LtList;
         }
     }
 
     /* install the extended dispatcher                                     */
-    for ( type1 = T_INT; type1 < T_REC; type1++ ) {
+    for ( type1 = T_INT; type1 < T_REC; type1++ ) 
+    {
         TabSum [type1  ][T_LIST ] = SumList;
         TabSum [type1  ][T_SET  ] = SumList;
         TabSum [type1  ][T_RANGE] = SumList;
@@ -2712,7 +2929,8 @@ void            InitList (void)
 
     /* install the default operations                                      */
     /* other operations are installed in the vector packages               */
-    for ( type1 = T_INT; type1 < T_LIST; type1++ ) {
+    for ( type1 = T_INT; type1 < T_LIST; type1++ )
+    {
         TabSum [type1  ][T_LISTX] = SumSclList;
         TabSum [T_LISTX][type1  ] = SumListScl;
         TabDiff[type1  ][T_LISTX] = DiffSclList;

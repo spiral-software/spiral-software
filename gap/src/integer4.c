@@ -273,7 +273,7 @@ void	PrInteger(Obj op)
 	}
 	else 
 	{
-		Pr("<<an integer too large to be printed>>", 0, 0);
+		//Pr("<<an integer too large to be printed>>", 0, 0);
 		SyFmtPrint(OUTFILE, "<<an integer too large to be printed>>");
 	}
 }

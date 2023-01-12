@@ -237,37 +237,44 @@ void	PrInteger(Obj op)
 	/* print a small integer                                               */
 	if (IS_INTOBJ(op)) 
 	{
-		Pr("%>%d%<", INT_INTOBJ(op), 0);
+		//Pr("%>%d%<", INT_INTOBJ(op), 0);
+		SyFmtPrint(OUTFILE, "%d", INT_INTOBJ(op));
 	} 
 	/* print a large integer                                               */
 	else if (SIZE_INT(op) < 1000) 
 	{
 
 		/* start printing, %> means insert '\' before a linebreak          */
-		Pr("%>", 0, 0);
+		//Pr("%>", 0, 0);
+		//SyFmtPrint(OUTFILE, "%>");
 
 		if (TNUM_OBJ(op) == T_INTNEG)
 		{
-			Pr("-", 0, 0);
+			//Pr("-", 0, 0);
+			SyFmtPrint(OUTFILE, "-");
 		}
 
 		/* convert the integer into base PRINT_BASE                        */
 		i = IntToPrintBase(op);
 
 		/* print the base PRINT_BASE digits                                 */
-		Pr("%d", (Int)PrIntD[i], 0);
+		//Pr("%d", (Int)PrIntD[i], 0);
+		SyFmtPrint(OUTFILE, "%d", (Int)PrIntD[i]);
 
 		while (i > 0)
 		{
-			Pr(PRINT_FORMAT, (Int)PrIntD[--i], 0);
+			//Pr(PRINT_FORMAT, (Int)PrIntD[--i], 0);
+			SyFmtPrint(OUTFILE, "%09d", (Int)PrIntD[--i]);
 		}
 
-		Pr("%<", 0, 0);
+		//Pr("%<", 0, 0);
+		//SyFmtPrint(OUTFILE, "%<");
 
 	}
 	else 
 	{
 		Pr("<<an integer too large to be printed>>", 0, 0);
+		SyFmtPrint(OUTFILE, "<<an integer too large to be printed>>");
 	}
 }
 

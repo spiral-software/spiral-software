@@ -321,8 +321,7 @@ extern  Int            IsList (
 
 extern  Int            (*TabIsDenseList[LIST_TAB_SIZE]) ( Bag );
 
-extern  Int            NotIsDenseList (
-            Bag           hdObj );
+extern  Int  NotIsDenseList(Bag hdObj);
 
 
 /****************************************************************************

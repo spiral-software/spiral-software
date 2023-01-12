@@ -505,7 +505,8 @@ void        PrList(Bag hdList)
     lenList = LEN_LIST( hdList );
 
     /* loop over the entries                                               */
-    Pr("%2>[ %2>",0,0);
+    //Pr("%2>[ %2>",0,0);
+    SyFmtPrint(OUTFILE, "[ ");
 
     for ( i = 1;  i <= lenList;  i++ ) 
     {
@@ -515,7 +516,8 @@ void        PrList(Bag hdList)
         {
             if (1 < i) 
             { 
-                Pr("%<,%< %2>", 0, 0); 
+                //Pr("%<,%< %2>", 0, 0);
+                SyFmtPrint(OUTFILE, ", ");
             }
 
             Print( hdElm );
@@ -524,12 +526,14 @@ void        PrList(Bag hdList)
         {
             if (1 < i)
             {
-                Pr("%2<,%2>", 0, 0); 
+                //Pr("%2<,%2>", 0, 0); 
+                SyFmtPrint(OUTFILE, ", ");
             }
         }
     }
 
-    Pr("%4<]",0,0);
+    //Pr("%4<]",0,0);
+    SyFmtPrint(OUTFILE, " ]");
 }
 
 

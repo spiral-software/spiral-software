@@ -1892,18 +1892,26 @@ void        Print(Obj hd)
     /* check for interrupts                                                */
     if (SyIsIntr()) 
     {
-        Pr("%c", (Int)'\03', 0);
+        //Pr("%c", (Int)'\03', 0);
+        //SyFmtPrint(OUTFILE, "%c", '\03');
+        Pr("GS4-1-Print-%c", (Int)'\03', 0);
+
         /*N 19-Jun-90 martin do something about the current indent         */
         DbgBreak("user interrupt while printing", 0, 0);
     }
 
     if (hd == 0)
     {
-        Pr("_null_", 0, 0);
+        //Pr("_null_", 0, 0);
+        //SyFmtPrint(OUTFILE, "_null_");
+        Pr("GS4-2-Print-_null_", 0, 0);
+
     }
     else if (!IS_BAG(hd) && !IS_INTOBJ(hd))
     {
-        Pr("_invalid_%d_", (Int)hd, 0);
+        //Pr("_invalid_%d_", (Int)hd, 0);
+        //SyFmtPrint(OUTFILE, "_invalid_%d_", (Int)hd);
+        Pr("GS4-3-Print-_invalid_%d_", (Int)hd, 0);
     }
     /* print new objects                                                   */
     else if (GET_TYPE_BAG(hd) == T_INT || !GET_FLAG_BAG(hd, BF_PRINT)) 
@@ -2003,15 +2011,21 @@ void        Print(Obj hd)
         {
             if (GET_TYPE_BAG(hdObj[i]) == T_VAR)
             {
-                Pr("~", 0, 0);
+                //Pr("~", 0, 0);
+                SyFmtPrint(OUTFILE, "GS4-6-Print-~");
+                //Pr("GS4-4-Print-~", 0, 0);
             }
             else if (GET_TYPE_BAG(hdObj[i]) == T_LIST || GET_TYPE_BAG(hdObj[i]) == T_SET)
             {
-                Pr("[%d]", index[i], 0);
+                //Pr("[%d]", index[i], 0);
+                SyFmtPrint(OUTFILE, "GS4-6-Print-[%d]");
+                //Pr("GS4-5-Print-[%d]", index[i], 0);
             }
             else
             {
-                Pr(".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]), 0);
+                //Pr(".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]), 0);
+                SyFmtPrint(OUTFILE, "GS4-6-Print-.%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]));
+                //Pr("GS4-6-Print-.%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]), 0);
             }
         }
 

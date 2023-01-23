@@ -35,9 +35,15 @@
 */
 Bag       SwordWord (Bag hdLst, Bag hdWrd)
 {
-    Bag       hdSwrd,  * ptLst,  * ptEnd,  * ptG;
-    TypSword        * ptSwrd;
-    Int            len,  lnSwrd,  i,  exp;
+    Bag          hdSwrd;
+    Bag         *ptLst;
+    Bag         *ptEnd;
+    Bag         *ptG;
+    TypSword    *ptSwrd;
+    Int          len;
+    Int          lnSwrd;
+    Int          i;
+    Int          exp;
     
     len = GET_SIZE_BAG( hdWrd ) / SIZE_HD;
     hdSwrd = NewBag( T_SWORD, SIZE_HD + 2 * SIZE_SWORD * len + SIZE_SWORD );
@@ -50,11 +56,15 @@ Bag       SwordWord (Bag hdLst, Bag hdWrd)
     SET_BAG( hdSwrd , 0,  hdLst );
     ptSwrd = (TypSword*)( PTR_BAG( hdSwrd ) + 1 );
     lnSwrd = 0;
+
     for ( ptG = PTR_BAG( hdWrd ); ptG <= ptEnd; ptG++ )
     {
         for ( i = len - 1; i >= 0; i-- )
-            if ( ptLst[i] == *ptG || ptLst[i] == *PTR_BAG( *ptG ) )
+            if (ptLst[i] == *ptG || ptLst[i] == *PTR_BAG(*ptG))
+            {
                 break;
+            }
+
         if ( i < 0 )
             return HdFalse;
         exp = 1;
@@ -997,7 +1007,8 @@ void        PrSword (Bag hdWrd)
     ptWrd = (TypSword*)( PTR_BAG( hdWrd ) + 1 );
     if ( ptWrd[ 0 ] == -1 )
     {
-        Pr( "IdWord",  0,  0 );
+        //Pr( "IdWord",  0,  0 );
+        SyFmtPrint(OUTFILE, "IdWord");
     }
     else
     {
@@ -1007,19 +1018,30 @@ void        PrSword (Bag hdWrd)
         else
             ptLst = PTR_BAG( *PTR_BAG( hdWrd ) ) + 1;
 
-        if ( ptWrd[ 1 ] == 1 )
-            Pr( "%s", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]])+1)+1),  0 );
+        if (ptWrd[1] == 1)
+        {
+            //Pr( "%s", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]])+1)+1),  0 );
+            SyFmtPrint(OUTFILE, "%s", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1));
+        }
         else
-            Pr( "%s^%d",(Int)((char*)(PTR_BAG(ptLst[ptWrd[0]])+1)+1),ptWrd[1] );
+        {
+            //Pr("%s^%d", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), ptWrd[1]);
+            SyFmtPrint(OUTFILE, "%s^%d", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), (Int)ptWrd[1]);
+        }
+
         ptWrd += 2;
         while ( ptWrd[ 0 ] != -1 )
         {
-            if ( ptWrd[ 1 ] != 1 )
-                Pr( "*%s^%d",
-                    (Int)((char*)(PTR_BAG(ptLst[ ptWrd[0] ])+1)+1),
-                    ptWrd[ 1 ] );
+            if (ptWrd[1] != 1)
+            {
+                //Pr("*%s^%d", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), ptWrd[1]);
+                SyFmtPrint(OUTFILE, "*%s^%d", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), (Int)ptWrd[1]);
+            }
             else
-                Pr( "*%s", (Int)((char*)(PTR_BAG(ptLst[ ptWrd[0] ])+1)+1),  0 );
+            {
+                //Pr("*%s", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), 0);
+                SyFmtPrint(OUTFILE, "*%s", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1));
+            }
             ptWrd += 2;
         }
     }
@@ -1041,36 +1063,50 @@ void            PrWord (Bag hdWrd)
     nr = GET_SIZE_BAG( hdWrd ) / SIZE_HD;
     if ( nr == 0 )
     {
-        Pr( "IdWord",  0,  0 );
+        //Pr( "IdWord",  0,  0 );
+        SyFmtPrint(OUTFILE, "IdWord");
     }
     else
     {
         i = 0;
         while ( i < nr )
         {
-            if ( PTR_BAG( hdWrd )[ i ] == 0 )
-               Pr( "~",  0,  0 );
+            if (PTR_BAG(hdWrd)[i] == 0)
+            {
+                //Pr("~", 0, 0);
+                SyFmtPrint(OUTFILE, "~");
+            }
             else
             {
                exp = 1;
+
                while ( i < nr-1 && PTR_BAG( hdWrd )[i] == PTR_BAG( hdWrd )[i+1] )
                {
                    i++;
                    exp++;
                }
-               if ( *( (char*) ( PTR_BAG( PTR_BAG( hdWrd )[ i ] ) + 1 ) ) == '-' )
+
+               if (*((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1)) == '-')
+               {
                    exp *= -1;
-               if ( exp == 1 )
-                   Pr( "%s",
-                       (Int) ( (char*)( PTR_BAG( PTR_BAG( hdWrd )[i] ) + 1 ) + 1 ),
-                        0 );
+               }
+
+               if (exp == 1)
+               {
+                   //Pr("%s", (Int)((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1),  0);
+                   SyFmtPrint(OUTFILE, "%s", ((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1));
+               }
                else
-                   Pr( "%s^%d",
-                       (Int) ( (char*)( PTR_BAG( PTR_BAG( hdWrd )[i] ) + 1 ) + 1 ),
-                       (Int) exp );
+               {
+                   //Pr("%s^%d", (Int)((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1), (Int)exp);
+                   SyFmtPrint(OUTFILE, "%s^%d", ((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1), (Int)exp);
+               }
             }
-            if ( i != nr - 1 )
-                Pr( "*",  0,  0 );
+            if (i != nr - 1)
+            {
+                //Pr("*", 0, 0);
+                SyFmtPrint(OUTFILE, "*");
+            }
             i++;
         }
     }

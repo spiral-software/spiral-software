@@ -236,7 +236,8 @@ Bag       LtUnknown (Bag hdL, Bag hdR)
 */
 void            PrUnknown (Bag hdUnk)
 {
-    Pr("%>Unknown(%d)%<",((Int*)PTR_BAG(hdUnk))[0], 0);
+    //Pr("%>Unknown(%d)%<",((Int*)PTR_BAG(hdUnk))[0], 0);
+    SyFmtPrint(OUTFILE, "Unknown(%d)", ((Int*)PTR_BAG(hdUnk))[0]);
 }
 
 

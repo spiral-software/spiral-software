@@ -2310,9 +2310,8 @@ Bag       FunCommutatorsPcp (Bag hdCall )
 */
 void        PrPcPres(Bag hdP)
 {
-    Pr( "<Pcp: %d generators, %s collector>",
-        (Int) NUMBER_OF_GENS( *PTR_BAG( hdP ) ),
-        (Int) Collectors[ COLLECTOR( *PTR_BAG( hdP ) ) ].name );
+    //Pr( "<Pcp: %d generators, %s collector>", (Int) NUMBER_OF_GENS( *PTR_BAG( hdP ) ), (Int) Collectors[ COLLECTOR( *PTR_BAG( hdP ) ) ].name );
+    SyFmtPrint(OUTFILE, "<Pcp: %d generators, %s collector>", (Int)NUMBER_OF_GENS(*PTR_BAG(hdP)), Collectors[COLLECTOR(*PTR_BAG(hdP))].name);
 }
 
 

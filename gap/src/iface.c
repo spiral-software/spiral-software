@@ -98,7 +98,8 @@ int execute()
 	    if ( ! GAP_SILENT ) {
 	        IsString( hd );
 	        Print( hd );
-	        Pr("\n",0,0);
+	        //Pr("\n",0,0);
+            SyFmtPrint(OUTFILE, "\n");
 	    }
       }
     }

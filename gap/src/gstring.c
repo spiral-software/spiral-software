@@ -145,35 +145,43 @@ void    PrChar(Bag hdChr)
 
     if (currChr == '\n') 
     { 
-        Pr("'\\n'", 0, 0);
+        //Pr("'\\n'", 0, 0);
+        SyFmtPrint(OUTFILE, "'\\n'");
     }
     else if (currChr == '\t') 
     {
-        Pr("'\\t'", 0, 0); 
+        //Pr("'\\t'", 0, 0); 
+        SyFmtPrint(OUTFILE, "'\\t'");
     }
     else if (currChr == '\r') 
     {
-        Pr("'\\r'", 0, 0);
+        //Pr("'\\r'", 0, 0);
+        SyFmtPrint(OUTFILE, "'\\r'");
     }
     else if (currChr == '\b') 
     {
-        Pr("'\\b'", 0, 0); 
+        //Pr("'\\b'", 0, 0); 
+        SyFmtPrint(OUTFILE, "'\\b'");
     }
     else if (currChr == '\03')
     { 
-        Pr("'\\c'", 0, 0); 
+        //Pr("'\\c'", 0, 0); 
+        SyFmtPrint(OUTFILE, "'\\c'");
     }
     else if (currChr == '\'') 
     {
-        Pr("'\\''", 0, 0); 
+        //Pr("'\\''", 0, 0); 
+        SyFmtPrint(OUTFILE, "'\\''");
     }
     else if (currChr == '\\') 
     { 
-        Pr("'\\\\'", 0, 0); 
+        //Pr("'\\\\'", 0, 0); 
+        SyFmtPrint(OUTFILE, "'\\\\'");
     }
     else
     { 
-        Pr("'%c'", (Int)currChr, 0);
+        //Pr("'%c'", (Int)currChr, 0);
+        SyFmtPrint(OUTFILE, "'%c'", currChr);
     }
 
 }

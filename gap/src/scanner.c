@@ -356,7 +356,8 @@ char            GetLine (void)
         }
         else
         {
-            Pr("%c", (Int)'\03', 0);
+            //Pr("%c", (Int)'\03', 0);
+            SyFmtPrint(OUTFILE, "%c", '\03');
         }
     }
 
@@ -948,11 +949,13 @@ void            SyntaxError (char *msg)
     }
 
     /* print the message and the filename, unless it is '*stdin*'          */
-    Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
+    //Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
+    SyFmtPrint(OUTFILE, "Syntax error: %s (symbol: '%s')", msg, Value);
 
     if ( !isStdIn ) 
     {
-        Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+        //Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+        SyFmtPrint(OUTFILE, " in %s line %d", Input->name, Input->number);
 	
         if(!launchedEdit)
         {
@@ -961,25 +964,30 @@ void            SyntaxError (char *msg)
 	    }
     }
 
-    Pr( "\n", 0, 0 );
+    //Pr( "\n", 0, 0 );
+    SyFmtPrint(OUTFILE, "\n");
 
     /* print the current line                                              */
-    Pr( "%s", (Int)Input->line, 0 );
+    //Pr( "%s", (Int)Input->line, 0 );
+    SyFmtPrint(OUTFILE, "%s", Input->line);
 
     /* print a '^' pointing to the current position                        */
     for ( i = 0; i < In - Input->line - 1; i++ ) 
     {
         if (Input->line[i] == '\t')
         { 
-            Pr("\t", 0, 0);
+            //Pr("\t", 0, 0);
+            SyFmtPrint(OUTFILE, "\t");
         }
         else 
         { 
-            Pr(" ", 0, 0);
+            //Pr(" ", 0, 0);
+            SyFmtPrint(OUTFILE, " ");
         }
     }
 
-    Pr( "^\n", 0, 0 );
+    //Pr( "^\n", 0, 0 );
+    SyFmtPrint(OUTFILE, "^\n");
 
 }
 
@@ -1676,7 +1684,9 @@ Int            CloseOutput (void)
 
 
     /* flush output and close the file                                     */
-    Pr( "%c", (Int)'\03', 0 );
+    //Pr( "%c", (Int)'\03', 0 );
+    SyFmtPrint(OUTFILE, "%c", '\03');
+
     SyFclose( Output->file);
 
     /* revert to previous output file and indicate success                 */

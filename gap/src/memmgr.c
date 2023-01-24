@@ -630,7 +630,8 @@ void    InitGlobalBag ( BagPtr_t *addr, const Char *cookie )
 #endif
 
     if ( WarnInitGlobalBag ) {
-        Pr( "#W  global bag '%s' initialized\n", (Int)cookie, 0 );
+        //Pr( "#W  global bag '%s' initialized\n", (Int)cookie, 0 );
+        SyFmtPrint(OUTFILE, "#W  global bag '%s' initialized\n", cookie);
     } 
     GlobalBags.addr[GlobalBags.nr] = addr;
     GlobalBags.cookie[GlobalBags.nr] = cookie;

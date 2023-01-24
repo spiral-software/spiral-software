@@ -485,7 +485,11 @@ void PrNS ( Obj hd ) {
         Pr("%2>UnnamedNS(",0,0);
         for ( i = 0; i < TableSize(hd); i++ ) {
             if ( PTR_BAG(hd)[i] == 0 || VAR_VALUE(PTR_BAG(hd)[i]) == 0 )  continue;
-            if ( ! first ) Pr(", ", 0, 0);
+            if (!first) 
+            {
+                //Pr(", ", 0, 0); 
+                SyFmtPrint(OUTFILE, ", ");
+            }
             first = 0;
             Pr("%g", (Int)PTR_BAG(hd)[i], 0);
         }

@@ -1129,7 +1129,7 @@ Bag       FunProfile (Bag hdCall)
         }
 
         //Pr("        %6d     100                  TOTAL\n",total-1,0);
-        SyFmtPrint(OUTFILE, "        %6d     100                  TOTALXXX\n", total - 1);
+        SyFmtPrint(OUTFILE, "        %6d     100                  TOTAL\n", total - 1);
     }
 
     return HdVoid;
@@ -1271,7 +1271,8 @@ void            PrFunc (Bag hdFun, char *keyword, char *shortKeyword)
     }
     else
     {
-        Pr("\n",0,0);
+        //Pr("\n",0,0);
+        SyFmtPrint(OUTFILE, "\n");
         nrLoc = ((short*)((char*)PTR_BAG(hdFun) + GET_SIZE_BAG(hdFun)))[-1];
         if (nrLoc < 0)
         { 
@@ -1294,7 +1295,8 @@ void            PrFunc (Bag hdFun, char *keyword, char *shortKeyword)
         Print( PTR_BAG(hdFun)[0] );
         Pr(";%4<\n",0,0);
     }
-    Pr("end",0,0);
+    //Pr("end",0,0);
+    SyFmtPrint(OUTFILE, "end");
 }
 
 void            PrFunction (Bag hdFun) {
@@ -1374,10 +1376,12 @@ void            PrFunccall (Bag hdCall)
 void            PrReturn (Bag hdRet)
 {
     if ( PTR_BAG(hdRet)[0] == HdReturn ) {
-        Pr("quit",0,0);
+        //Pr("quit",0,0);
+        SyFmtPrint(OUTFILE, "quit");
     }
     else if ( PTR_BAG(hdRet)[0] == HdVoid ) {
-        Pr("return",0,0);
+        //Pr("return",0,0);
+        SyFmtPrint(OUTFILE, "return");
     }
     else {
         Pr("%2>return%< %>",0,0);

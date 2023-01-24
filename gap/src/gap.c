@@ -249,11 +249,13 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
     
     if (execDepth == execStackDepth - DbgStackTop)
     {
-        Pr("* ", 0, 0);
+        //Pr("* ", 0, 0);
+        SyFmtPrint(OUTFILE, "* ");
     }
     else
     {
-        Pr("  ", 0, 0);
+        //Pr("  ", 0, 0);
+        SyFmtPrint(OUTFILE, "  ");
     }
 
     /* Print the depth like gdb does                                   */
@@ -261,62 +263,76 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
 
     if (execDepth < 10)
     {
-        Pr("#%d -> ", execDepth, 0);
+        //Pr("#%d -> ", execDepth, 0);
+        SyFmtPrint(OUTFILE, "#%d -> ", execDepth);
     }
     else
     {
-        Pr("#%d-> ", execDepth, 0);
+        //Pr("#%d-> ", execDepth, 0);
+        SyFmtPrint(OUTFILE, "#%d-> ", execDepth);
     }
     
     if ( hdExec == 0 ) 
     {
-        Pr("main loop\n",0,0);
+        //Pr("main loop\n",0,0);
+        SyFmtPrint(OUTFILE, "main loop\n");
     } 
     else 
     {
         if (PTR_BAG(hdExec)[3] == HdCallSum) 
         {
-            Pr("<rec1> + <rec2>", 0, 0); 
+            //Pr("<rec1> + <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> + <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallDiff) 
         {
-            Pr("<rec1> - <rec2>", 0, 0); 
+            //Pr("<rec1> - <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> - <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallProd) 
         { 
-            Pr("<rec1> * <rec2>", 0, 0); 
+            //Pr("<rec1> * <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> * <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallQuo) 
         {
-            Pr("<rec1> / <rec2>", 0, 0); 
+            //Pr("<rec1> / <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> / <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallMod) 
         {
-            Pr("<rec1> mod <rec2>", 0, 0); 
+            //Pr("<rec1> mod <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> mod <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallPow) 
         { 
-            Pr("<rec1> ^ <rec2>", 0, 0);
+            //Pr("<rec1> ^ <rec2>", 0, 0);
+            SyFmtPrint(OUTFILE, "<rec1> ^ <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallComm) 
         { 
-            Pr("Comm(<rec1>,<rec2>)", 0, 0);
+            //Pr("Comm(<rec1>,<rec2>)", 0, 0);
+            SyFmtPrint(OUTFILE, "Comm(<rec1>,<rec2>)");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallEq)
         {
-            Pr("<rec1> = <rec2>", 0, 0);
+            //Pr("<rec1> = <rec2>", 0, 0);
+            SyFmtPrint(OUTFILE, "<rec1> = <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallLt)
         { 
-            Pr("<rec1> < <rec2>", 0, 0);
+            //Pr("<rec1> < <rec2>", 0, 0);
+            SyFmtPrint(OUTFILE, "<rec1> = <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallIn) 
         { 
-            Pr("<elm> in <rec>", 0, 0);
+            //Pr("<elm> in <rec>", 0, 0);
+            SyFmtPrint(OUTFILE, "<elm> in <rec>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallPrint)
         { 
-            Pr("Print( <rec> )", 0, 0); 
+            //Pr("Print( <rec> )", 0, 0); 
+            SyFmtPrint(OUTFILE, "Print( <rec> )");
         }
         else 
         {
@@ -346,7 +362,8 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
                 Print( PTR_BAG(hdExec)[3] );
             }
         }
-        Pr("\n",0,0);
+        //Pr("\n",0,0);
+        SyFmtPrint(OUTFILE, "\n");
     }
 }
 
@@ -373,7 +390,8 @@ void    PrintBacktraceEval(Bag hdExec)
         }
         else
         {
-            Pr("          %s\n", (Int)NameType[GET_TYPE_BAG(item)], 0);
+            //Pr("          %s\n", (Int)NameType[GET_TYPE_BAG(item)], 0);
+            SyFmtPrint(OUTFILE, "          %s\n", NameType[GET_TYPE_BAG(item)]);
         }
 
         StackPnt--;
@@ -447,7 +465,8 @@ Bag     FunBacktrace(Bag hdCall)
     }
     else 
     {
-        Pr("...\n",0,0);
+        //Pr("...\n",0,0);
+        SyFmtPrint(OUTFILE, "...\n");
     }
     
     return HdVoid;
@@ -523,7 +542,8 @@ Bag       FunBacktrace2(Bag hdCall)
     }
     else 
     {
-        Pr("...\n",0,0);
+        //Pr("...\n",0,0);
+        SyFmtPrint(OUTFILE, "...\n");
     }
     
     return HdVoid;
@@ -841,7 +861,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			ignore = OpenOutput( "*errout*" );
             if (!isBreakpoint)
             {
-                Pr("test xxx [[ while reading %s:%d ]]\n", (Int)Input->name, (Int)Input->number);
+                //Pr("[[ while reading %s:%d ]]\n", (Int)Input->name, (Int)Input->number);
+                SyFmtPrint(OUTFILE, "[[ while reading %s:%d ]]\n", Input->name, Input->number);
             }
 		}
 
@@ -850,13 +871,16 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			switch(isBreakpoint) 
             {
 			    case 2:
-                    Pr("Read Access Breakpoint",0,0); 
+                    //Pr("Read Access Breakpoint",0,0); 
+                    SyFmtPrint(OUTFILE, "Read Access Breakpoint");
                     break;  
 			    case 3:  
-                    Pr("Write Access Breakpoint",0,0);
+                    //Pr("Write Access Breakpoint",0,0);
+                    SyFmtPrint(OUTFILE, "Write Access Breakpoint");
                     break; 
 			    default:
-				    Pr("Breakpoint",0,0); 
+				    //Pr("Breakpoint",0,0); 
+                    SyFmtPrint(OUTFILE, "Breakpoint");
                     break;
 			}
 		} 
@@ -865,12 +889,15 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			/* print the error message, special if called from 'FunError'      */
 			if ( strcmp( msg, "FunError" ) != 0 )
             {
-				Pr("X_IF_FunError_X_Error, ",0,0);  
-                Pr( msg, arg1, arg2 );
+				//Pr("Error, ",0,0);  
+                SyFmtPrint(OUTFILE, "Breakpoint");
+                //Pr( msg, arg1, arg2 );
+                SyFmtPrint(OUTFILE, msg, arg1, arg2); //GS4 -- Revisit should we check args and msgs? will this throw an error?
 			} 
             else 
             {
-				Pr("X_X_Else Fun Error_X_Error, ",0,0);  
+				//Pr("Error, ",0,0);  
+                SyFmtPrint(OUTFILE, "Error");
                 FunPrint( (Bag)arg1 );
 			}
 		}
@@ -889,16 +916,20 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			*/
 			if ((DbgEvalStackTop > 0) && (strcmp( msg, "FunError" ) != 0)) 
             {
-				Pr(" at\n", 0, 0 );
+				//Pr(" at\n", 0, 0 );
+                SyFmtPrint(OUTFILE, " at\n");
 				Print( EvalStack[DbgEvalStackTop] );
-				Pr(" ...",0,0);
+				//Pr(" ...",0,0);
+                SyFmtPrint(OUTFILE, " ...");
 			}
 
-			Pr(" in\n",0,0);
+			//Pr(" in\n",0,0);
+            SyFmtPrint(OUTFILE, " in\n");
 		}
 		else
         {
-			Pr("\n",0,0);
+			//Pr("\n",0,0);
+            SyFmtPrint(OUTFILE, "\n");
 		}
 
 		if ( DbgInBreakLoop == 0 )
@@ -939,7 +970,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 					else 
                     {
 						FunBacktrace( (Bag)0 );
-						Pr("web:error\n", 0, 0);
+						//Pr("web:error\n", 0, 0);
+                        SyFmtPrint(OUTFILE, "web:error\n");
 					}
 
 					DbgErrorLoopStarting();
@@ -1014,7 +1046,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 								Try
                                 {
 									Print( hd );
-									Pr("\n",0,0);
+									//Pr("\n",0,0);
+                                    SyFmtPrint(OUTFILE, " \n");
 								} 
                                 Catch(e) 
                                 {
@@ -1525,7 +1558,8 @@ Bag       FunPrntTo(Bag hdCall)
         }
         else
         {
-            Pr("", 0, 0); 
+            //Pr("", 0, 0);
+            SyFmtPrint(OUTFILE, "");
         }
     }
 
@@ -1613,7 +1647,8 @@ Bag       FunAppendTo(Bag hdCall)
         }
         else 
         { 
-            Pr("", 0, 0); 
+            //Pr("", 0, 0); 
+            SyFmtPrint(OUTFILE, "");
         }
     }
 

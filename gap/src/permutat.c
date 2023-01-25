@@ -2179,7 +2179,11 @@ void            PrPermP (Bag hdPerm)
     }
 
     /* special case for the identity                                       */
-    if ( isId )  Pr("()",0,0);
+    if (isId) 
+    { 
+        //Pr("()", 0, 0);
+        SyFmtPrint(OUTFILE, "()");
+    }
 }
 
 void            PrPermQ (Bag hdPerm)
@@ -2219,7 +2223,11 @@ void            PrPermQ (Bag hdPerm)
     }
 
     /* special case for the identity                                       */
-    if ( isId )  Pr("()",0,0);
+    if (isId)
+    {
+        //Pr("()", 0, 0);
+        SyFmtPrint(OUTFILE, "()");
+    }
 }
 
 

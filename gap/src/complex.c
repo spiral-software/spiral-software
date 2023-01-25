@@ -237,7 +237,8 @@ void PrCplx ( Obj hd ) {
     char buf[64];
     /* using snprintf prevents any buffer overflowing */
     snprintf(buf, sizeof(buf)/sizeof(char), "Cplx(%.17g, %.17g)", RE(hd), IM(hd));
-    Pr("%s", (Int)buf, 0);
+    //Pr("%s", (Int)buf, 0);
+    SyFmtPrint(OUTFILE, "%s", buf);
 }
 
 /****************************************************************************

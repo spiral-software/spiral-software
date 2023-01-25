@@ -1221,8 +1221,11 @@ void            PrCyc (Bag hdCyc)
     exs = (unsigned short*)(PTR_BAG(hdCyc)+len);
     Pr("%>",0,0);
     for ( i = 1; i < len; i++ ) {
-        if (      cfs[i]==INT_TO_HD(1)            && exs[i]==0 )
-            Pr("1",0,0);
+        if (cfs[i] == INT_TO_HD(1) && exs[i] == 0)
+        {
+            //Pr("1", 0, 0);
+            SyFmtPrint(OUTFILE, "1");
+        }
         else if ( cfs[i]==INT_TO_HD(1)            && exs[i]==1 && i==1 )
             Pr("%>E(%d%<)",n,0);
         else if ( cfs[i]==INT_TO_HD(1)            && exs[i]==1 )

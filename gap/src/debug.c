@@ -86,14 +86,17 @@ static UInt evalCondition(Obj* recHdCond, Obj hdExec) {
                     for ( i = 1;  i<=numArg;  i++)
                         SET_ELM_PLIST(hdCall, i, PTR_BAG(hdExec)[EXEC_ARGS_START+i-1] );
                     return EVAL(hdCall)==HdTrue;
-                } else {
-                    Pr("Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i);
+                } else 
+                {
+                    //Pr("Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i);
+                    SyFmtPrint(OUTFILE, "Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i);
                 }
             }
         }
         return 0;
     }
-    Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    //Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    SyFmtPrint(OUTFILE, "Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
     return 1;
 }
 
@@ -118,14 +121,17 @@ static UInt evalMemCondition(Obj* recHdCond, Obj hdObj, Obj hdField, Obj hdValue
             } else if (numArg==3) {
                 SET_ELM_PLIST(hdCall, 2, hdField );
                 SET_ELM_PLIST(hdCall, 3, hdValue );
-            } else {
-                Pr("Breakpoint condition function has unexpected number of arguments.\n", 0, 0);
+            } else
+            {
+                //Pr("Breakpoint condition function has unexpected number of arguments.\n", 0, 0);
+                SyFmtPrint(OUTFILE, "Breakpoint condition function has unexpected number of arguments.\n", 0, 0);
                 return 0;
             }
             return EVAL(hdCall)==HdTrue;
         }
     }
-    Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    //Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    SyFmtPrint(OUTFILE, "Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
     return 1;
 }
 
@@ -187,16 +193,19 @@ void    CheckBreakpoints(Obj hdE, Obj hdExec) {
 		if (hdBrk != 0 || (EvalStackBreakLevel>0 
 		    && EvalStackBreakLevel>EvalStackTop
 		    && hdExec == 0 ) ) 
-		{
-		    if (HdExec==0) {
-			// cannot break in the main loop
-		    } else {
-			EvalStackBreakLevel = 0;
-			DbgBreak("GapBreakpoint", 0, 0);
+		    {
+		        if (HdExec==0) {
+			    // cannot break in the main loop
+		        } else {
+			    EvalStackBreakLevel = 0;
+			    DbgBreak("GapBreakpoint", 0, 0);
+		        }
 		    }
-		}
-	    } else {
-		Pr("Breakpoints is not a list", 0, 0);
+	    } 
+        else 
+        {
+		    //Pr("Breakpoints is not a list", 0, 0);
+            SyFmtPrint(OUTFILE, "Breakpoints is not a list");
 	    }
 	    InBreakpoint = 0;
         } Catch(e) {
@@ -326,7 +335,8 @@ StepOver() - F10; StepInto() - F11; StepOut() - F8.\n";
 void    EnterDebugMode() {
     int t;
     if (InDebugMode == 0) {
-        Pr(EnteringDbgMode, 0, 0);
+        //Pr(EnteringDbgMode, 0, 0);
+        SyFmtPrint(OUTFILE, "%s", EnteringDbgMode);
         for(t=0; t<T_ILLEGAL; ++t) {
             OrigEvTab[t] = EvTab[t];
             EvTab[t] = DebugEVAL;
@@ -434,7 +444,8 @@ is matched, even if condition function returns false.\n\
     
     
 Obj FunDebugHelp ( Obj hdCall ) {
-    Pr(HelpText, 0, 0);
+    //Pr(HelpText, 0, 0);
+    SyFmtPrint(OUTFILE, "%s", HelpText, 0, 0);
     return HdVoid;
 }
 
@@ -679,10 +690,16 @@ Obj  FunTop ( Obj hdCall ) {
     // get current function definition
     top = PTR_BAG(top)[2];
     doc = FindDocString(top);
-    if(doc != 0 && GET_TYPE_BAG(doc)==T_STRING)
-        Pr("%s", (Int)CSTR_STRING(doc), 0);
+    if (doc != 0 && GET_TYPE_BAG(doc) == T_STRING)
+    {
+        //Pr("%s", (Int)CSTR_STRING(doc), 0);
+        SyFmtPrint(OUTFILE, "%s", CSTR_STRING(doc));
+    }
     else
-        Pr("--no documentation--\n", 0, 0);
+    {
+        //Pr("--no documentation--\n", 0, 0);
+        SyFmtPrint(OUTFILE, "--no documentation--\n");
+    }
     prFull = 1;
     HookPrTab();
     Try {
@@ -732,9 +749,23 @@ Obj  FunEditTopFunc ( Obj hdCall ) {
     if ( GET_SIZE_BAG(hdCall) != 1 * SIZE_HD || !inBreakLoop())  return Error(usage, 0,0);
     
     switch(FindDocAndExtractLoc(PTR_BAG(DbgStackExec())[2], fileName, &line)) {
-        case  0: { Pr("--no documentation--\n", 0, 0); break; }
-        case -1: { Pr("--definition not found--\n", 0, 0); break; }
-        case  1: { HooksEditFile(fileName, line); break; }
+        case  0: 
+        { 
+            //Pr("--no documentation--\n", 0, 0); 
+            SyFmtPrint(OUTFILE, "--no documentation--\n");
+            break; 
+        }
+        case -1:
+        { 
+            //Pr("--definition not found--\n", 0, 0);
+            SyFmtPrint(OUTFILE, "--definition not found--\n");
+            break;
+        }
+        case  1:
+        {
+            HooksEditFile(fileName, line); 
+            break; 
+        }
     }
     return HdVoid;
 }
@@ -759,8 +790,10 @@ Obj  FunDown ( Obj hdCall ) {
     if ( (GET_SIZE_BAG(hdCall) != 1 * SIZE_HD && GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) 
         || !inBreakLoop()) return Error(usage, 0,0);
     while (levels-->0) {
-        if ( !DbgDown() ) { 
-            Pr(errText, 0, 0);
+        if ( !DbgDown() ) 
+        { 
+            //Pr(errText, 0, 0);
+            SyFmtPrint(OUTFILE, "%s", errText);
             break;
         }
     }
@@ -777,7 +810,8 @@ Obj  FunUp ( Obj hdCall ) {
         || !inBreakLoop()) return Error(usage, 0,0);
     while (levels-->0) {
         if ( !DbgUp() ) { 
-            Pr(errText, 0, 0);
+            //Pr(errText, 0, 0);
+            SyFmtPrint(OUTFILE, "%s", errText);
             break;
         }
     }

@@ -1,3 +1,7 @@
+profiler/bin/spiralprofiler
+bin/
+gap/bin/checkforGpu
+gap/bin/gap
 # Build directories
 build*/
 

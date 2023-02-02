@@ -1238,25 +1238,45 @@ void            PrFF (Bag hdField, unsigned int value)
     else for ( p = 3; o % p != 0; p += 2 ) ;
 
     /* print the zero                                                      */
-    if ( value == 0 ) {
-        Pr("%>0*Z(%>%d%2<)",(Int)p,0);
+    if ( value == 0 )
+    {
+        //**INDENT** Pr("%>0*Z(%>%d%2<)",(Int)p,0);
+        SyFmtPrint(OUTFILE, "0*Z( %d )", (Int)p);
     }
 
     /* print a nonzero element as power of the primitive root              */
     else {
 
         /* find the degree of the minimal field in that the element lies   */
-        d = 1;  m = p;
-        while ( (o-1) % (m-1) != 0 || (value-1) % ((o-1)/(m-1)) != 0 ) {
-            d++;  m *= p;
+        d = 1; 
+        m = p;
+        while ( (o-1) % (m-1) != 0 || (value-1) % ((o-1)/(m-1)) != 0 ) 
+        {
+            d++;  
+            m *= p;
         }
         value = (value-1) / ((o-1)/(m-1)) + 1;
 
         /* print the element                                               */
-        Pr("%>Z(%>%d%<",(Int)p,0);
-        if ( d == 1 )  Pr("%<)",0,0);
-        else  Pr("^%>%d%2<)",(Int)d,0);
-        if ( value != 2 )  Pr("^%>%d%<",(Int)value-1,0);
+        //**INDENT** Pr("%>Z(%>%d%<",(Int)p,0);
+        SyFmtPrint(OUTFILE, "Z(%d");
+
+        if (d == 1) 
+        {
+            //**INDENT** Pr("%<)", 0, 0); 
+            SyFmtPrint(OUTFILE, ")");
+        }
+        else
+        {
+            //**INDENT** Pr("^%>%d%2<)", (Int)d, 0); 
+            SyFmtPrint(OUTFILE, "%d)", (Int)d);
+        }
+
+        if (value != 2)
+        { 
+            //**INDENT** Pr("^%>%d%<", (Int)value - 1, 0);
+            SyFmtPrint(OUTFILE, "^%d", (Int)value - 1);
+        }
 
     }
 

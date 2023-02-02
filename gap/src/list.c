@@ -505,7 +505,7 @@ void        PrList(Bag hdList)
     lenList = LEN_LIST( hdList );
 
     /* loop over the entries                                               */
-    //Pr("%2>[ %2>",0,0);
+    //**INDENT**  Pr("%2>[ %2>",0,0);
     SyFmtPrint(OUTFILE, "[ ");
 
     for ( i = 1;  i <= lenList;  i++ ) 
@@ -516,7 +516,7 @@ void        PrList(Bag hdList)
         {
             if (1 < i) 
             { 
-                //Pr("%<,%< %2>", 0, 0);
+                //**INDENT**  Pr("%<,%< %2>", 0, 0);
                 SyFmtPrint(OUTFILE, ", ");
             }
 
@@ -526,13 +526,13 @@ void        PrList(Bag hdList)
         {
             if (1 < i)
             {
-                //Pr("%2<,%2>", 0, 0); 
+                //**INDENT**  Pr("%2<,%2>", 0, 0); 
                 SyFmtPrint(OUTFILE, ", ");
             }
         }
     }
 
-    //Pr("%4<]",0,0);
+    //**INDENT**  Pr("%4<]",0,0);
     SyFmtPrint(OUTFILE, " ]");
 }
 
@@ -1812,11 +1812,15 @@ Bag       EvAsssListLevel (Bag hdAss)
 */
 void        PrElmList(Bag hdSel)
 {
-    Pr("%2>",0,0); 
+    //**INDENT** Pr("%2>",0,0); 
+    //empty	
+    SyFmtPrint(OUTFILE, "");
     Print( PTR_BAG(hdSel)[0] );
-    Pr("%<[",0,0);  
+    //**INDENT** Pr("%<[",0,0);
+    SyFmtPrint(OUTFILE, "([");
     Print( PTR_BAG(hdSel)[1] );
-    Pr("%<]",0,0);
+    //**INDENT** Pr("%<]",0,0);
+    SyFmtPrint(OUTFILE, "]");
 }
 
 
@@ -1830,11 +1834,15 @@ void        PrElmList(Bag hdSel)
 */
 void        PrElmsList(Bag hdSel)
 {
-    Pr("%2>",0,0);  
+    //**INDENT** Pr("%2>",0,0); 
+    //empty
+    SyFmtPrint(OUTFILE, "");
     Print( PTR_BAG(hdSel)[0] );
-    Pr("%<{",0,0);  
+    //**INDENT** Pr("%<{",0,0);
+    SyFmtPrint(OUTFILE, "{");
     Print( PTR_BAG(hdSel)[1] );
-    Pr("%<}",0,0);
+    //**INDENT** Pr("%<}",0,0);
+    SyFmtPrint(OUTFILE, "}");
 }
 
 
@@ -1848,11 +1856,16 @@ void        PrElmsList(Bag hdSel)
 */
 void        PrAssList(Bag hdAss)
 {
-    Pr("%2>",0,0);       
+    //**INDENT** Pr("%2>",0,0);    
+    //empty
+    SyFmtPrint(OUTFILE, "");
     Print( PTR_BAG(hdAss)[0] );
-    Pr("%< %>:= ",0,0); 
+    //**INDENT** Pr("%< %>:= ",0,0); 
+    SyFmtPrint(OUTFILE, " := ");
     Print( PTR_BAG(hdAss)[1] );
-    Pr("%2<",0,0);
+    //**INDENT** Pr("%2<",0,0);
+    //empty
+    SyFmtPrint(OUTFILE, "");
 }
 
 

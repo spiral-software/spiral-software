@@ -1208,7 +1208,14 @@ Bag       FunSubtractSet (Bag hdCall)
 }
 
 
-void PrSet(Obj s) { Pr("Set(%3>",0,0); PrList(s); Pr("%3<)", 0, 0); }
+void PrSet(Obj s) 
+{
+    //**INDENT** Pr("Set(%3>",0,0);
+    SyFmtPrint(OUTFILE, "Set(");
+    PrList(s); 
+    //**INDENT** Pr("%3<)", 0, 0); 
+    SyFmtPrint(OUTFILE, ")");
+}
 
 /****************************************************************************
 **

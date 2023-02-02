@@ -479,10 +479,14 @@ Obj  EvNS ( Obj hd ) { return hd; }
 
 void PrNS ( Obj hd ) {
     int i, first = 1;
-    if ( TableId(hd) != 0 )
+    if (TableId(hd) != 0)
+    {
         Pr("%g", (Int)TableId(hd), 0);
-    else {
-        Pr("%2>UnnamedNS(",0,0);
+    }
+    else 
+    {
+        //**INDENT** Pr("%2>UnnamedNS(",0,0);
+        SyFmtPrint(OUTFILE, "UnnamedNS");
         for ( i = 0; i < TableSize(hd); i++ ) {
             if ( PTR_BAG(hd)[i] == 0 || VAR_VALUE(PTR_BAG(hd)[i]) == 0 )  continue;
             if (!first) 
@@ -493,7 +497,8 @@ void PrNS ( Obj hd ) {
             first = 0;
             Pr("%g", (Int)PTR_BAG(hd)[i], 0);
         }
-        Pr(")%2<",0,0);
+        //**INDENT** Pr(")%2<",0,0);
+        SyFmtPrint(OUTFILE, ")");
     }
 }
 

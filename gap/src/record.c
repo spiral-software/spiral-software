@@ -1050,9 +1050,15 @@ Obj DefaultPrRec ( Obj hdRec ) {
     /*N 05-Jun-90 martin 'PrRec' should be capable of ignoring elements    */
     /*N 05-Jun-90 martin 'PrRec' should support '~.<path>'                 */
     if (GET_TYPE_BAG(hdRec) == T_MAKETAB)
-        Pr("%2>tab(",0,0);
+    {
+        //**INDENT**  Pr("%2>tab(", 0, 0);
+        SyFmtPrint(OUTFILE, "tab(");
+    }
     else
-        Pr("%2>rec(",0,0);
+    {
+        //**INDENT** Pr("%2>rec(",0,0);
+        SyFmtPrint(OUTFILE, "rec(");
+    }
     for ( i = 0; i < GET_SIZE_BAG(hdRec)/(2*SIZE_HD); ++i ) {
         /* print an ordinary record name                                   */
         if ( GET_TYPE_BAG( PTR_BAG(hdRec)[2*i] ) == T_RECNAM ) {
@@ -1062,27 +1068,53 @@ Obj DefaultPrRec ( Obj hdRec ) {
                some information in records, when using methods with 'meth' */
             if(name != 0 && name[0]=='_') continue;
 
-            if (! pr_populated++) Pr("\n%2>",0,0);
-            if ( ! is_first_printed ) Pr("%2<,\n%2>",0,0);
+            if (!pr_populated++) 
+            {
+                //**INDENT** Pr("\n%2>", 0, 0); 
+                SyFmtPrint(OUTFILE, "\n");
+            }
+
+            if (!is_first_printed)
+            { 
+                //**INDENT** Pr("%2<,\n%2>", 0, 0);
+                SyFmtPrint(OUTFILE, ",\n");
+            }
+
             is_first_printed = 0;
 
             PrVarName(name);
         }
         /* print an evaluating record name                                 */
-        else {
-            if (! pr_populated++) Pr("\n%2>",0,0);
-            Pr(" (",0,0);
+        else
+        {
+            if (!pr_populated++)
+            {
+                //**INDENT** Pr("\n%2>", 0, 0); 
+                SyFmtPrint(OUTFILE, "\n");
+            }
+            //Pr(" (",0,0);
+            SyFmtPrint(OUTFILE, " (");
             Print( PTR_BAG(hdRec)[2*i] );
-            Pr(")",0,0);
+            //Pr(")",0,0);
+            SyFmtPrint(OUTFILE, ")");
         }
         /* print the component                                             */
-        Pr("%< := %>",0,0);
+        //**INDENT** Pr("%< := %>",0,0);
+        SyFmtPrint(OUTFILE, " := ");
         Print( PTR_BAG(hdRec)[2*i+1] );
     }
+
     if (pr_populated)
-    Pr(" %4<)",0,0);
+    {
+        //**INDENT** Pr(" %4<)", 0, 0);
+        SyFmtPrint(OUTFILE, ")");
+    }
     else
-        Pr("%2<)",0,0);
+    {
+        //**INDENT** Pr("%2<)", 0, 0);
+        SyFmtPrint(OUTFILE, ")");
+    }
+
     return HdVoid;
 }
 
@@ -1101,20 +1133,30 @@ void  PrRec ( Obj hdRec ) {
 void            PrRecElm (Bag hdElm)
 {
     /* print the record                                                    */
-    Pr( "%>", 0, 0 );
+    //**INDENT**  Pr( "%>", 0, 0 );
+    //empty
+    SyFmtPrint(OUTFILE, "");
+
     Print( PTR_BAG(hdElm)[0] );
     /* print an ordinary record name                                       */
-    if ( GET_TYPE_BAG( PTR_BAG(hdElm)[1] ) == T_RECNAM ) {
+    if ( GET_TYPE_BAG( PTR_BAG(hdElm)[1] ) == T_RECNAM )
+    {
         char * name = RECNAM_NAME( PTR_BAG(hdElm)[1] );
-        Pr("%<.%>",0,0);
+        //**INDENT**  Pr("%<.%>",0,0);
+        SyFmtPrint(OUTFILE, ".");
         PrVarName(name);
-        Pr("%<",0,0);
+        //**INDENT**  Pr("%<",0,0);
+        //empty
+        SyFmtPrint(OUTFILE, "");
     }
     /* print an evaluating record name                                     */
-    else {
-        Pr( "%<.%>(", 0, 0 );
+    else
+    {
+        //**INDENT**  Pr( "%<.%>(", 0, 0 );
+        SyFmtPrint(OUTFILE, ".(");
         Print( PTR_BAG(hdElm)[1] );
-        Pr( ")%<", 0, 0 );
+        //**INDENT**  Pr( ")%<", 0, 0 );
+        SyFmtPrint(OUTFILE, ")");
     }
 }
 
@@ -1129,11 +1171,16 @@ void            PrRecElm (Bag hdElm)
 */
 void            PrRecAss (Bag hdAss)
 {
-    Pr( "%2>", 0, 0 );
+    //**INDENT**  Pr( "%2>", 0, 0 );
+    //empty
+    SyFmtPrint(OUTFILE, "");
     Print( PTR_BAG(hdAss)[0] );
-    Pr( "%< %>:= ", 0, 0 );
+    //**INDENT**  Pr( "%< %>:= ", 0, 0 );
+    SyFmtPrint(OUTFILE, " := ");
     Print( PTR_BAG(hdAss)[1] );
-    Pr( "%2<", 0, 0 );
+    //**INDENT**  Pr( "%2<", 0, 0 );
+    //empty
+    SyFmtPrint(OUTFILE, "");
 }
 
 
@@ -1144,9 +1191,11 @@ void            PrRecAss (Bag hdAss)
 */
 void            PrRecName (Bag hdNam)
 {
-    Pr("RecName(\"", 0, 0);
+    //Pr("RecName(\"", 0, 0);
+    SyFmtPrint(OUTFILE, "RecName(\"");
     PrVarName(RECNAM_NAME(hdNam));
-    Pr("\")", 0, 0);
+    //Pr("\")", 0, 0);
+    SyFmtPrint(OUTFILE, "\")");
 }
 
 

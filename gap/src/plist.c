@@ -789,18 +789,28 @@ void            PrMakeList (Bag hdMake)
     lenList = LEN_PLIST( hdMake );
 
     /* loop over the entries                                               */
-    Pr("%2>[ %2>",0,0);
+    //**INDENT** Pr("%2>[ %2>",0,0);
+    SyFmtPrint(OUTFILE, "[ ");
     for ( i = 1;  i <= lenList;  i++ ) {
         hdElm = ELM_PLIST( hdMake, i );
         if ( hdElm != 0 ) {
-            if ( 1 < i )  Pr("%<,%< %2>",0,0);
+            if (1 < i) 
+            { 
+                //**INDENT** Pr("%<,%< %2>", 0, 0);
+                SyFmtPrint(OUTFILE, " ,  ");
+            }
             Print( hdElm );
         }
         else {
-            if ( 1 < i )  Pr("%2<,%2>",0,0);
+            if (1 < i) 
+            {
+                //**INDENT** Pr("%2<,%2>", 0, 0); 
+                SyFmtPrint(OUTFILE, ",");
+            }
         }
     }
-    Pr(" %4<]",0,0);
+    //**INDENT** Pr(" %4<]",0,0);
+    SyFmtPrint(OUTFILE, "  ]");
 }
 
 

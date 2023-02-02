@@ -1219,48 +1219,113 @@ void            PrCyc (Bag hdCyc)
     len = GET_SIZE_BAG(hdCyc)/(SIZE_HD+sizeof(unsigned short));
     cfs = PTR_BAG(hdCyc);
     exs = (unsigned short*)(PTR_BAG(hdCyc)+len);
-    Pr("%>",0,0);
+    //**INDENT** Pr("%>",0,0);
+    //empty	
+    SyFmtPrint(OUTFILE, "");
     for ( i = 1; i < len; i++ ) {
         if (cfs[i] == INT_TO_HD(1) && exs[i] == 0)
         {
             //Pr("1", 0, 0);
             SyFmtPrint(OUTFILE, "1");
         }
-        else if ( cfs[i]==INT_TO_HD(1)            && exs[i]==1 && i==1 )
-            Pr("%>E(%d%<)",n,0);
-        else if ( cfs[i]==INT_TO_HD(1)            && exs[i]==1 )
-            Pr("%>+E(%d%<)",n,0);
-        else if ( cfs[i]==INT_TO_HD(1)                         && i==1 )
-            Pr("%>E(%d)%>^%2<%d",n,(Int)exs[i]);
-        else if ( cfs[i]==INT_TO_HD(1) )
-            Pr("%>+E(%d)%>^%2<%d",n,(Int)exs[i]);
-        else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==0 )
+        else if (cfs[i] == INT_TO_HD(1) && exs[i] == 1 && i == 1)
+        {
+            //**INDENT** Pr("%>E(%d%<)", n, 0);
+            SyFmtPrint(OUTFILE, "E(%d)", n, 0);
+        }
+        else if (cfs[i] == INT_TO_HD(1) && exs[i] == 1)
+        {
+            //**INDENT** Pr("%>+E(%d%<)", n, 0);
+            SyFmtPrint(OUTFILE, "+E(%d)", n, 0);
+        }
+        else if (cfs[i] == INT_TO_HD(1) && i == 1)
+        {
+            //**INDENT** Pr("%>E(%d)%>^%2<%d", n, (Int)exs[i]);
+            SyFmtPrint(OUTFILE, "E(%d)^%d", n, (Int)exs[i]);
+        }
+        else if (cfs[i] == INT_TO_HD(1))
+        {
+            //**INDENT** Pr("%>+E(%d)%>^%2<%d", n, (Int)exs[i]);
+            SyFmtPrint(OUTFILE, "+E(%d)^%d", n, (Int)exs[i]);
+        }
+        else if (LT(INT_TO_HD(0), cfs[i]) == HdTrue && exs[i] == 0)
+        {
             Print(cfs[i]);
-        else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==1 && i==1 ) {
-            Pr("%>",0,0); Print(cfs[i]); Pr("%>*%<E(%d%<)",n,0); }
-        else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==1 ) {
-            Pr("%>+",0,0); Print(cfs[i]); Pr("%>*%<E(%d%<)",n,0); }
-        else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue              && i==1 ) {
-            Pr("%>",0,0); Print(cfs[i]);
-            Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); }
-        else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue ) {
-            Pr("%>+",0,0); Print(cfs[i]);
-            Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); }
-        else if ( cfs[i]==INT_TO_HD(-1)           && exs[i]==0 )
-            Pr("%>-%<1",0,0);
-        else if ( cfs[i]==INT_TO_HD(-1)           && exs[i]==1 )
-            Pr("%>-E(%d%<)",n,0);
-        else if ( cfs[i]==INT_TO_HD(-1) )
-            Pr("%>-E(%d)%>^%2<%d",n,(Int)exs[i]);
-        else if (                                    exs[i]==0 )
+        }
+        else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==1 && i==1 ) 
+        {
+            //**INDENT** Pr("%>",0,0); 
+            //empty	
+            SyFmtPrint(OUTFILE, "");
+            Print(cfs[i]); 
+            //**INDENT** Pr("%>*%<E(%d%<)",n,0);
+            SyFmtPrint(OUTFILE, "*E(%d)", n, 0);
+        }
+        else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==1 ) 
+        {
+            //**INDENT** Pr("%>+",0,0); 
+            SyFmtPrint(OUTFILE, "+", 0, 0);
+            Print(cfs[i]); 
+            //**INDENT** Pr("%>*%<E(%d%<)",n,0); 
+            SyFmtPrint(OUTFILE, "*E(%d)", n, 0);
+        }
+        else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && i==1 )
+        {
+            //**INDENT** Pr("%>",0,0); 
+            //empty	
+            SyFmtPrint(OUTFILE, "");
             Print(cfs[i]);
-        else if (                                    exs[i]==1 ) {
-            Pr("%>",0,0); Print(cfs[i]); Pr("%>*%<E(%d%<)",n,0); }
-        else {
-            Pr("%>",0,0); Print(cfs[i]);
-            Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); }
+            //**INDENT** Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); 
+            SyFmtPrint(OUTFILE, "*E(%d)^%d", n, (Int)exs[i]);
+        }
+        else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue ) 
+        {
+            //**INDENT** Pr("%>+",0,0); 
+            SyFmtPrint(OUTFILE, "+", 0, 0);
+            Print(cfs[i]);
+            //**INDENT** Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]);
+            SyFmtPrint(OUTFILE, "*E(%d)^%d", n, (Int)exs[i]);
+        }
+        else if (cfs[i] == INT_TO_HD(-1) && exs[i] == 0)
+        {
+            //**INDENT** Pr("%>-%<1", 0, 0);
+            SyFmtPrint(OUTFILE, "-1", 0, 0);
+        }
+        else if (cfs[i] == INT_TO_HD(-1) && exs[i] == 1)
+        {
+            //**INDENT** Pr("%>-E(%d%<)", n, 0);
+            SyFmtPrint(OUTFILE, "-E(%d)", n, 0);
+        }
+        else if (cfs[i] == INT_TO_HD(-1))
+        {
+            //**INDENT** Pr("%>-E(%d)%>^%2<%d", n, (Int)exs[i]);
+            SyFmtPrint(OUTFILE, "-E(%d)^%d", n, (Int)exs[i]);
+        }
+        else if (exs[i] == 0)
+        {
+            Print(cfs[i]);
+        }
+        else if ( exs[i]==1 ) 
+        {
+            //**INDENT** Pr("%>",0,0);
+            //empty	
+            SyFmtPrint(OUTFILE, "");
+            Print(cfs[i]);
+            //**INDENT** Pr("%>*%<E(%d%<)",n,0);
+            SyFmtPrint(OUTFILE, "*E(%d)", n, 0);
+        }
+        else 
+        {
+            //**INDENT** Pr("%>",0,0); Print(cfs[i]);
+            //empty	
+            SyFmtPrint(OUTFILE, "");
+            //**INDENT**Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]);
+            SyFmtPrint(OUTFILE, "*E(%d)^%d", n, (Int)exs[i]);
+        }
     }
-    Pr("%<",0,0);
+    //**INDENT** Pr("%<",0,0);
+    //empty	
+    SyFmtPrint(OUTFILE, "");
 }
 
 

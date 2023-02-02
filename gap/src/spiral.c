@@ -124,9 +124,11 @@ void Apropos(Obj hdSubStr, Obj tab, int recursive) {
         if(val != 0 && strstr(VAR_NAME(ent), sub_str) != NULL) { /* found something */
             if(! printed_header) {
                 Pr("**** %g ****\n", (Int)tab, (Int)tab);
+                //SyFmtPrint(OUTFILE, "**** %g ****\n", (Int)tab);
             }
             printed_header = 1;
-            Pr("%s\n", (Int)VAR_NAME(ent), 0);
+            //Pr("%s\n", (Int)VAR_NAME(ent), 0);
+            SyFmtPrint(OUTFILE, "%s\n", (Int)VAR_NAME(ent));
         }
     }
     for ( i = 0; i < TableSize(tab); i++ ) {
@@ -592,24 +594,34 @@ Obj  FunCond( Obj hdCall ) {
 *F  BagInfo() . . . . . . . . . . . . . . . . . . . . display bag information
 */
 void BagInfo ( Obj hd ) {
-    if(hd == NULL)
-        Pr("NULL bag\n", 0, 0);
-    else if(! IS_BAG(hd))
-        Pr("INVALID bag\n", 0, 0);
-    else {
-        Pr("Type    : %d ( %s )\n", (Int)GET_TYPE_BAG(hd),  (Int)NameType[GET_TYPE_BAG(hd)]);
-        if(GET_TYPE_BAG(hd)==T_INT) {
+    if (hd == NULL)
+    {
+        //Pr("NULL bag\n", 0, 0);
+        SyFmtPrint(OUTFILE, "NULL bag\n");
+    }
+    else if (!IS_BAG(hd))
+    {
+        //Pr("INVALID bag\n", 0, 0);
+        SyFmtPrint(OUTFILE, "INVALID bag\n");
+    }
+    else 
+    {
+        //Pr("Type    : %d ( %s )\n", (Int)GET_TYPE_BAG(hd),  (Int)NameType[GET_TYPE_BAG(hd)]);
+        SyFmtPrint(OUTFILE, "Type    : %d ( %s )\n", (Int)GET_TYPE_BAG(hd), NameType[GET_TYPE_BAG(hd)]);
+        if(GET_TYPE_BAG(hd)==T_INT) 
+        {
             Pr("Value   : %g\n", (Int)hd, 0);
+            //SyFmtPrint(OUTFILE, "Value   : %g\n", (Int)hd);
             return;
         }
-        Pr("Size    : %d \t Addr : 0x%s \n",
-           (Int) GET_SIZE_BAG(hd),
-           (Int) PTR_BAG(HexStringInt(INT_TO_HD(hd))));
-        Pr("Handles : %d \t PTR_BAG  : 0x%s \n",
-           (Int) NrHandles(GET_TYPE_BAG(hd), GET_SIZE_BAG(hd)),
-           (Int) PTR_BAG(HexStringInt(INT_TO_HD(PTR_BAG(hd)))));
-        Pr("Flags   : %d\n", (Int)GET_FLAGS_BAG(hd), 0);
-        Pr("Value   : %g\n", (Int)hd, 0);
+        //Pr("Size    : %d \t Addr : 0x%s \n", (Int) GET_SIZE_BAG(hd), (Int) PTR_BAG(HexStringInt(INT_TO_HD(hd))));
+        SyFmtPrint(OUTFILE, "Size    : %d \t Addr : 0x%s \n", (Int)GET_SIZE_BAG(hd), (char*)PTR_BAG(HexStringInt(INT_TO_HD(hd))));
+        //Pr("Handles : %d \t PTR_BAG  : 0x%s \n", (Int) NrHandles(GET_TYPE_BAG(hd), GET_SIZE_BAG(hd)), (Int) PTR_BAG(HexStringInt(INT_TO_HD(PTR_BAG(hd)))));
+        SyFmtPrint(OUTFILE, "Handles : %d \t PTR_BAG  : 0x%s \n", (Int)NrHandles(GET_TYPE_BAG(hd), GET_SIZE_BAG(hd)), (char*)PTR_BAG(HexStringInt(INT_TO_HD(PTR_BAG(hd)))));
+        //Pr("Flags   : %d\n", (Int)GET_FLAGS_BAG(hd), 0);
+        SyFmtPrint(OUTFILE, "Flags   : %d\n", (Int)GET_FLAGS_BAG(hd));
+        //Pr("Value   : %g\n", (Int)hd, 0);
+        SyFmtPrint(OUTFILE, "Value   : %g\n", (Int)hd);
     }
 }
 
@@ -823,11 +835,16 @@ int  reachableFrom ( Obj root, Obj hd ) {
             Obj child = PTR_BAG(root)[i];
             if(! IS_BAG(child)) continue;
             if(reachableFrom(child, hd)) {
-                Pr("%d %s ", (Int)child, (Int)NameType[GET_TYPE_BAG(child)]);
-                if ( GET_TYPE_BAG(child) == T_VAR || GET_TYPE_BAG(child) == T_VARAUTO || GET_TYPE_BAG(child) < T_MUTABLE ||
-                     (GET_TYPE_BAG(child) > T_DELAY && GET_TYPE_BAG(child) < T_STATSEQ) || GET_TYPE_BAG(child) >= T_RETURN)
+                //Pr("%d %s ", (Int)child, (Int)NameType[GET_TYPE_BAG(child)]);
+                SyFmtPrint(OUTFILE, "%d %s ", (Int)child, NameType[GET_TYPE_BAG(child)]);
+                if (GET_TYPE_BAG(child) == T_VAR || GET_TYPE_BAG(child) == T_VARAUTO || GET_TYPE_BAG(child) < T_MUTABLE ||
+                    (GET_TYPE_BAG(child) > T_DELAY && GET_TYPE_BAG(child) < T_STATSEQ) || GET_TYPE_BAG(child) >= T_RETURN)
+                {
                     Pr("%g", (Int)child, 0);
-                Pr("\n", 0, 0);
+                    //SyFmtPrint(OUTFILE, "%g", (Int)child);
+                }
+                //Pr("\n", 0, 0);
+                SyFmtPrint(OUTFILE, "\n");
                 return 1;
             }
         }
@@ -839,8 +856,8 @@ int  reachable ( Obj hd ) {
     UInt i, j, found = 0;
     for (i = 0; i < GlobalBags.nr && !found; i++) {
         if(reachableFrom(*GlobalBags.addr[i], hd)) {
-            Pr("global : %d : %s\n", (Int)*GlobalBags.addr[i],
-                                     (Int) GlobalBags.cookie[i] );
+            //Pr("global : %d : %s\n", (Int)*GlobalBags.addr[i], (Int) GlobalBags.cookie[i] );
+            SyFmtPrint(OUTFILE, "global : %d : %s\n", (Int)*GlobalBags.addr[i], GlobalBags.cookie[i]);
             found = 1;
         }
     }
@@ -1083,9 +1100,23 @@ Bag  FunEditDef ( Bag hdCall ) {
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
 
     switch(FindDocAndExtractLoc(PTR_BAG(hdCall)[1], fileName, &line)) {
-        case  0: { Pr("--no documentation--\n", 0, 0); break; }
-        case -1: { Pr("--defnition not found--\n", 0, 0); break; }
-        case  1: { HooksEditFile(fileName, line); break; }
+        case  0: 
+        { 
+            //Pr("--no documentation--\n", 0, 0); 
+            SyFmtPrint(OUTFILE, "--no documentation--\n");
+            break; 
+        }
+        case -1:
+        {
+            //Pr("--defnition not found--\n", 0, 0);
+            SyFmtPrint(OUTFILE, "--defnition not found--\n");
+            break;
+        }
+        case  1: 
+        { 
+            HooksEditFile(fileName, line);
+            break; 
+        }
     }
     return HdVoid;
 }
@@ -1159,14 +1190,16 @@ Bag  findrefs_global( Obj hd ) {
     result.list = malloc(result.list_capacity*SIZE_HD);
     
     if (result.list==0) {
-        Pr(mem_err, 0, 0);
+        //Pr(mem_err, 0, 0);
+        SyFmtPrint(OUTFILE, mem_err);
         return NewList(0);
     }
     
     for (i = 0; i < GlobalBags.nr; i++) {
         if(findrefs_recursion(*GlobalBags.addr[i], hd, &result)) {
             if (result.mem_err) {
-                Pr(mem_err, 0, 0);
+                //Pr(mem_err, 0, 0);
+                SyFmtPrint(OUTFILE, mem_err);
                 free(result.list);
                 return NewList(0);
             }

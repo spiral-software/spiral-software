@@ -2699,18 +2699,27 @@ Bag       FunCollectorProfile (Bag hdCall)
 
         /** <hdAgWord> has a group, print the handle  of  this  group ******/
         /** followed by all entries.                                  ******/
-        Pr( "%>agword( %>%d; %<", (Int) *PTR_BAG( hdAgWord ) / NUM_TO_INT(4), 0 );
+        //**INDENT** Pr( "%>agword( %>%d; %<", (Int) *PTR_BAG( hdAgWord ) / NUM_TO_INT(4), 0 );
+        SyFmtPrint(OUTFILE, "agword( %d; ", (Int)*PTR_BAG(hdAgWord) / NUM_TO_INT(4));
         pt    = PTR_AW( hdAgWord );
         ptEnd = (TypSword*)( (char*) PTR_BAG( hdAgWord ) + GET_SIZE_BAG( hdAgWord ) );
         while ( pt < ptEnd - 1 )
         {
-            Pr( "%>%d, %<", (Int) *pt++, 0 );
-            Pr( "%>%d; %<", (Int) *pt++, 0 );
+            //**INDENT** Pr( "%>%d, %<", (Int) *pt++, 0 );
+            SyFmtPrint(OUTFILE, "%d, ", (Int)*pt++);
+            //**INDENT** Pr( "%>%d; %<", (Int) *pt++, 0 );
+            SyFmtPrint(OUTFILE, "%d; ", (Int)*pt++);
         }
-        if ( pt < ptEnd )
-            Pr( "%d )%<", (Int) *pt, 0 );
+        if (pt < ptEnd)
+        {
+            //**INDENT** Pr("%d )%<", (Int)*pt, 0);
+            SyFmtPrint(OUTFILE, "%d )", (Int)*pt);
+        }
         else
-            Pr( ")%<", 0, 0 );
+        {
+            //**INDENT** Pr(")%<", 0, 0);
+            SyFmtPrint(OUTFILE, ")");
+        }
     }
 #endif
 

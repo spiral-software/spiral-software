@@ -96,7 +96,7 @@ static UInt evalCondition(Obj* recHdCond, Obj hdExec) {
         return 0;
     }
     //Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
-    SyFmtPrint(OUTFILE, "Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    SyFmtPrint(OUTFILE, "Breakpoint condition must have boolean value or must be a function.\n");
     return 1;
 }
 
@@ -124,14 +124,14 @@ static UInt evalMemCondition(Obj* recHdCond, Obj hdObj, Obj hdField, Obj hdValue
             } else
             {
                 //Pr("Breakpoint condition function has unexpected number of arguments.\n", 0, 0);
-                SyFmtPrint(OUTFILE, "Breakpoint condition function has unexpected number of arguments.\n", 0, 0);
+                SyFmtPrint(OUTFILE, "Breakpoint condition function has unexpected number of arguments.\n");
                 return 0;
             }
             return EVAL(hdCall)==HdTrue;
         }
     }
     //Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
-    SyFmtPrint(OUTFILE, "Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    SyFmtPrint(OUTFILE, "Breakpoint condition must have boolean value or must be a function.\n");
     return 1;
 }
 
@@ -445,7 +445,7 @@ is matched, even if condition function returns false.\n\
     
 Obj FunDebugHelp ( Obj hdCall ) {
     //Pr(HelpText, 0, 0);
-    SyFmtPrint(OUTFILE, "%s", HelpText, 0, 0);
+    SyFmtPrint(OUTFILE, "%s", HelpText);
     return HdVoid;
 }
 
@@ -715,7 +715,9 @@ Obj  FunTop ( Obj hdCall ) {
         TopPr_MaxDepth = 0; // maximal tree depth (in marked bags)
         Try {
             TopPr_Printing = 0; // we are going to calculate  max depth first
-            Pr("%g\n", (Int)top, 0);
+            //Pr("%g\n", (Int)top, 0);
+            Print(top);
+            SyFmtPrint(OUTFILE, "\n");
             // closing /dev/null and return to previous output
             CloseOutput();
         } Catch(e) {
@@ -726,7 +728,9 @@ Obj  FunTop ( Obj hdCall ) {
         TopPr_CurDepth = 0; // reset tree depth, all what marked by BF_ON_EVAL_STACK
                             // flag and has TopPr_MaxDepth will be highlighted (with 
                             // children).
-        Pr("%g\n", (Int)top, 0);
+        //Pr("%g\n", (Int)top, 0);
+        Print(top);
+        SyFmtPrint(OUTFILE, "\n");
     } Catch(e) {
         UnhookPrTab();
         Throw(e);

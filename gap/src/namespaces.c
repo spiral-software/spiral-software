@@ -481,7 +481,8 @@ void PrNS ( Obj hd ) {
     int i, first = 1;
     if (TableId(hd) != 0)
     {
-        Pr("%g", (Int)TableId(hd), 0);
+        //Pr("%g", (Int)TableId(hd), 0);
+        Print(TableId(hd));
     }
     else 
     {
@@ -495,7 +496,8 @@ void PrNS ( Obj hd ) {
                 SyFmtPrint(OUTFILE, ", ");
             }
             first = 0;
-            Pr("%g", (Int)PTR_BAG(hd)[i], 0);
+            //Pr("%g", (Int)PTR_BAG(hd)[i], 0);
+            Print(PTR_BAG(hd)[i]);
         }
         //**INDENT** Pr(")%2<",0,0);
         SyFmtPrint(OUTFILE, ")");

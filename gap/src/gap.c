@@ -340,7 +340,8 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
             {
                 Print( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
 
-                Pr("%>( %>",0,0);
+                //**INDENT** Pr("%>( %>",0,0);
+                SyFmtPrint(OUTFILE, "( ");
                 hdDef = EVAL( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
                 ACT_NUM_ARGS_FUNC(hdDef, nrArg);
                 ACT_NUM_LOCALS_FUNC(hdDef, nrLoc);
@@ -350,11 +351,13 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
                     Print( PTR_BAG(hdExec)[EXEC_ARGS_START+i+nrArg+nrLoc-1] );
                     if (i < nrArg)
                     { 
-                        Pr("%<, %>", 0, 0);
+                        //**INDENT**  Pr("%<, %>", 0, 0);
+                        SyFmtPrint(OUTFILE, ", ");
                     }
                 }
 
-                Pr(" %2<)",0,0);
+                //**INDENT** Pr(" %2<)",0,0);
+                SyFmtPrint(OUTFILE, ")");
 
             }
             else
@@ -386,7 +389,10 @@ void    PrintBacktraceEval(Bag hdExec)
         Obj item = EvalStack[StackPnt];
         if (GET_TYPE_BAG(item) == T_FUNCCALL)
         {
-            Pr("          %g\n", (Int)PTR_BAG(item)[0], 0);
+            //Pr("          %g\n", (Int)PTR_BAG(item)[0], 0);
+            SyFmtPrint(OUTFILE, "          ");
+            Print(PTR_BAG(item)[0]);
+            SyFmtPrint(OUTFILE, "\n");
         }
         else
         {
@@ -892,7 +898,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				//Pr("Error, ",0,0);  
                 SyFmtPrint(OUTFILE, "Breakpoint");
                 //Pr( msg, arg1, arg2 );
-                SyFmtPrint(OUTFILE, msg, arg1, arg2); //GS4 -- Revisit should we check args and msgs? will this throw an error?
+                SyFmtPrint(OUTFILE, msg, arg1, arg2); //GS4 - look into variables
 			} 
             else 
             {

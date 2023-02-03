@@ -579,9 +579,11 @@ Bag     EvFunccall (Bag hdCall)
     {
         trace |= 1;  
         nrLoc = -nrLoc-1;
-        Pr("\n%2>",0,0);  
+        //**INDENT** Pr("\n%2>",0,0);  
+        SyFmtPrint(OUTFILE, "\n");
         Print( PTR_BAG(hdCall)[0] );  
-        Pr("%<( ",0,0);
+        //**INDENT** Pr("%<( ",0,0);
+        SyFmtPrint(OUTFILE, "( ");
     }
 
     /* Now create the new execute bag                                      */
@@ -617,15 +619,17 @@ Bag     EvFunccall (Bag hdCall)
        
         if ( trace & 1 ) 
         {
-            Pr("%>",0,0);  
+            //**INDENT** Pr("%>",0,0);
             Print( hdRes );
             if (i < nrArg)
             {
-                Pr("%<, ", 0, 0); 
+                //**INDENT** Pr("%<, ", 0, 0); 
+                SyFmtPrint(OUTFILE, ", ");
             }
             else
             {
-                Pr("%< )", 0, 0); 
+                //**INDENT** Pr("%< )", 0, 0);
+                SyFmtPrint(OUTFILE, " )");
             }
         }
     }
@@ -681,14 +685,17 @@ Bag     EvFunccall (Bag hdCall)
     /* If the function is traced, print the return value                   */
     if ( trace & 1 ) 
     {
-        Pr("\n%>",0,0); 
+        //**INDENT** Pr("\n%>",0,0); 
+        SyFmtPrint(OUTFILE, "\n");
         Print( PTR_BAG(hdCall)[0] );
-        Pr("%< returns ",0,0);
+        //**INDENT** Pr("%< returns ",0,0);
+        SyFmtPrint(OUTFILE, " returns ");
         if (hdRes != HdVoid)
         {
             Print(hdRes); 
         }
-        Pr("%< ",0,0);
+        //**INDENT** Pr("%< ",0,0);
+        SyFmtPrint(OUTFILE, " ");
     }
     return hdRes;
 }
@@ -1191,7 +1198,8 @@ Bag FunApplyFunc (Bag hdCall)
 
 void            PrFuncint (Bag hdFun)
 {
-    Pr("%2>%s%2<", (Int) ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)), 0);
+    //**INDENT** Pr("%2>%s%2<", (Int) ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)), 0);
+    SyFmtPrint(OUTFILE, "%s", ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)));
 }
 
 
@@ -1223,7 +1231,8 @@ int MaybePrintShortFunc (Bag hdFun, char *shortKeyword)
     {
         int i;
         int nrArg;
-        Pr("(%>",0,0);
+        //**INDENT** Pr("(%>",0,0);
+        SyFmtPrint(OUTFILE, "(");
         ACT_NUM_ARGS_FUNC(hdFun, nrArg);
 
         for ( i = 1; i <= nrArg; ++i ) 
@@ -1231,10 +1240,13 @@ int MaybePrintShortFunc (Bag hdFun, char *shortKeyword)
             Print( PTR_BAG(hdFun)[i] );
             if (i != nrArg) 
             {
-                Pr("%<, %>", 0, 0);
+                //**INDENT** Pr("%<, %>", 0, 0);
+                SyFmtPrint(OUTFILE, ", ");
             }
         }
-        Pr("%<) %s %>%g%<", (Int)shortKeyword, (Int)PTR_BAG(PTR_BAG(hdFun)[0])[0]);
+        //**INDENT**Pr("%<) %s %>%g%<", (Int)shortKeyword, (Int)PTR_BAG(PTR_BAG(hdFun)[0])[0]);
+        SyFmtPrint(OUTFILE, ") %s ", shortKeyword);
+        Print(PTR_BAG(PTR_BAG(hdFun)[0])[0]);
         return 1;
     }
     else return 0;
@@ -1251,7 +1263,9 @@ void            PrFunc (Bag hdFun, char *keyword, char *shortKeyword)
         return;
     }
 
-    Pr("%5>%s%< ( %>",(Int)keyword,0);
+    //**INDENT** Pr("%5>%s%< ( %>",(Int)keyword,0);
+    SyFmtPrint(OUTFILE, "%s ( ", keyword);
+
     ACT_NUM_ARGS_FUNC(hdFun, nrArg);
 
     for ( i = 1; i <= nrArg; ++i ) {
@@ -1259,20 +1273,24 @@ void            PrFunc (Bag hdFun, char *keyword, char *shortKeyword)
         Print( PTR_BAG(hdFun)[i] );
         if (i != nrArg) 
         {
-            Pr("%<, %>", 0, 0);
+            //**INDENT** Pr("%<, %>", 0, 0);
+            SyFmtPrint(OUTFILE, ", ");
         }
     }
 
-    Pr(" %<)",0,0);
+    //**INDENT** Pr(" %<)",0,0);
+    SyFmtPrint(OUTFILE, " )");
 
     if ( prFull == 0 ) 
     {
-        Pr(" ...%4< ",0,0);
+        //**INDENT** Pr(" ...%4< ",0,0);
+        SyFmtPrint(OUTFILE, " ... ");
     }
     else
     {
         //Pr("\n",0,0);
         SyFmtPrint(OUTFILE, "\n");
+
         nrLoc = ((short*)((char*)PTR_BAG(hdFun) + GET_SIZE_BAG(hdFun)))[-1];
         if (nrLoc < 0)
         { 
@@ -1281,19 +1299,23 @@ void            PrFunc (Bag hdFun, char *keyword, char *shortKeyword)
 
         if ( nrLoc >= 1 ) 
         {
-            Pr("%>local  ",0,0);
+            //**INDENT** Pr("%>local  ",0,0);
+            SyFmtPrint(OUTFILE, "local  ");
             for ( i = 1; i <= nrLoc; ++i ) 
             {
                 Print( PTR_BAG(hdFun)[i+nrArg] );
                 if (i != nrLoc)
                 {
-                    Pr("%<, %>", 0, 0); 
+                    //**INDENT** Pr("%<, %>", 0, 0); 
+                    SyFmtPrint(OUTFILE, ", ");
                 }
             }
-            Pr("%<;\n",0,0);
+            //**INDENT** Pr("%<;\n",0,0);
+            SyFmtPrint(OUTFILE, ";\n");
         }
         Print( PTR_BAG(hdFun)[0] );
-        Pr(";%4<\n",0,0);
+        //**INDENT** Pr(";%4<\n",0,0);
+        SyFmtPrint(OUTFILE, ";\n");
     }
     //Pr("end",0,0);
     SyFmtPrint(OUTFILE, "end");
@@ -1354,15 +1376,24 @@ void            PrFunccall (Bag hdCall)
     {
         start = 2; 
     }
-    Pr("%2>",0,0);  
+
+    //**INDENT** Pr("%2>",0,0);  
     Print( PTR_BAG(hdCall)[0] ); 
-    Pr("%<(%>",0,0);
-    for ( i = start; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
+    //**INDENT** Pr("%<(%>",0,0);
+    SyFmtPrint(OUTFILE, "(");
+
+    for ( i = start; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) 
+    {
         Print( PTR_BAG(hdCall)[i] );
-        if ( i != GET_SIZE_BAG(hdCall)/SIZE_HD-1 )
-            Pr("%<, %>",0,0);
+        if (i != GET_SIZE_BAG(hdCall) / SIZE_HD - 1)
+        {
+            //**INDENT** Pr("%<, %>", 0, 0);
+            SyFmtPrint(OUTFILE, ", ");
+        }
     }
-    Pr("%2<)",0,0);
+    
+    //**INDENT** Pr("%2<)",0,0);
+    SyFmtPrint(OUTFILE, ")");
 }
 
 
@@ -1384,9 +1415,10 @@ void            PrReturn (Bag hdRet)
         SyFmtPrint(OUTFILE, "return");
     }
     else {
-        Pr("%2>return%< %>",0,0);
+        //**INDENT** Pr("%2>return%< %>",0,0);
+        SyFmtPrint(OUTFILE, " return ");
         Print( PTR_BAG(hdRet)[0] );
-        Pr("%2<",0,0);
+        //**INDENT** Pr("%2<",0,0);
     }
 }
 

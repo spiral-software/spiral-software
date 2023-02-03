@@ -123,8 +123,10 @@ void Apropos(Obj hdSubStr, Obj tab, int recursive) {
 
         if(val != 0 && strstr(VAR_NAME(ent), sub_str) != NULL) { /* found something */
             if(! printed_header) {
-                Pr("**** %g ****\n", (Int)tab, (Int)tab);
-                //SyFmtPrint(OUTFILE, "**** %g ****\n", (Int)tab);
+                //Pr("**** %g ****\n", (Int)tab, (Int)tab);
+                SyFmtPrint(OUTFILE, "****");
+                Print(tab);
+                SyFmtPrint(OUTFILE, "****\n");
             }
             printed_header = 1;
             //Pr("%s\n", (Int)VAR_NAME(ent), 0);
@@ -610,8 +612,11 @@ void BagInfo ( Obj hd ) {
         SyFmtPrint(OUTFILE, "Type    : %d ( %s )\n", (Int)GET_TYPE_BAG(hd), NameType[GET_TYPE_BAG(hd)]);
         if(GET_TYPE_BAG(hd)==T_INT) 
         {
-            Pr("Value   : %g\n", (Int)hd, 0);
-            //SyFmtPrint(OUTFILE, "Value   : %g\n", (Int)hd);
+            //Pr("Value   : %g\n", (Int)hd, 0);
+            SyFmtPrint(OUTFILE, "Value   : ");
+            Print(hd);
+            SyFmtPrint(OUTFILE, "\n");
+
             return;
         }
         //Pr("Size    : %d \t Addr : 0x%s \n", (Int) GET_SIZE_BAG(hd), (Int) PTR_BAG(HexStringInt(INT_TO_HD(hd))));
@@ -840,8 +845,8 @@ int  reachableFrom ( Obj root, Obj hd ) {
                 if (GET_TYPE_BAG(child) == T_VAR || GET_TYPE_BAG(child) == T_VARAUTO || GET_TYPE_BAG(child) < T_MUTABLE ||
                     (GET_TYPE_BAG(child) > T_DELAY && GET_TYPE_BAG(child) < T_STATSEQ) || GET_TYPE_BAG(child) >= T_RETURN)
                 {
-                    Pr("%g", (Int)child, 0);
-                    //SyFmtPrint(OUTFILE, "%g", (Int)child);
+                    //Pr("%g", (Int)child, 0);
+                    Print(child);
                 }
                 //Pr("\n", 0, 0);
                 SyFmtPrint(OUTFILE, "\n");

@@ -237,7 +237,7 @@ void	PrInteger(Obj op)
 	/* print a small integer                                               */
 	if (IS_INTOBJ(op)) 
 	{
-		//Pr("%>%d%<", INT_INTOBJ(op), 0);
+		//**INDENT** Pr("%>%d%<", INT_INTOBJ(op), 0);
 		SyFmtPrint(OUTFILE, "%d", INT_INTOBJ(op));
 	} 
 	/* print a large integer                                               */
@@ -245,8 +245,8 @@ void	PrInteger(Obj op)
 	{
 
 		/* start printing, %> means insert '\' before a linebreak          */
-		//Pr("%>", 0, 0);
-		//SyFmtPrint(OUTFILE, "%>");
+		//**INDENT** Pr("%>", 0, 0);
+
 
 		if (TNUM_OBJ(op) == T_INTNEG)
 		{
@@ -267,8 +267,8 @@ void	PrInteger(Obj op)
 			SyFmtPrint(OUTFILE, "%09d", (Int)PrIntD[--i]);
 		}
 
-		//Pr("%<", 0, 0);
-		//SyFmtPrint(OUTFILE, "%<");
+		//**INDENT** Pr("%<", 0, 0);
+
 
 	}
 	else 

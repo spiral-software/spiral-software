@@ -1882,7 +1882,7 @@ void        (*PrTab[T_ILLEGAL]) (Obj hd);
 */
 Obj     HdTildePr;
 
-void        Print(Obj hd)
+void        Print(Obj hd) //PrintObj
 {
     Obj             cur;            /* current object along that path  */
     Obj             hdObj[256];     /* '~' to <hd>, where hdObj[<i>+1] */
@@ -2111,11 +2111,14 @@ void        PrVarName(char* name)
 */
 void        PrVarAss(Obj hdAss)
 {
-    Pr("%2>", 0, 0);
+    //**INDENT** Pr("%2>", 0, 0);
+
     Print(PTR_BAG(hdAss)[0]);
-    Pr("%< %>:= ", 0, 0);
+    //**INDENT**  Pr("%< %>:= ", 0, 0);
+    SyFmtPrint(OUTFILE, " := ");
     Print(PTR_BAG(hdAss)[1]);
-    Pr("%2<", 0, 0);
+    //**INDENT** Pr("%2<", 0, 0);
+
 }
 
 
@@ -2147,9 +2150,11 @@ void        PrNot(Obj hdNot)
 
     oldPrec = prPrec;
     prPrec = 4;
-    Pr("not%> ", 0, 0);
+    //**INDENT** Pr("not%> ", 0, 0);
+    SyFmtPrint(OUTFILE, "not ");
     Print(PTR_BAG(hdNot)[0]);
-    Pr("%<", 0, 0);
+    //**INDENT** Pr("%<", 0, 0);
+
     prPrec = oldPrec;
 }
 
@@ -2243,11 +2248,12 @@ void        PrBinop(Obj hdOp)
 
     if (oldPrec > prPrec)
     {
-        Pr("%>(%>", 0, 0); 
+        //**INDENT** Pr("%>(%>", 0, 0); 
+        SyFmtPrint(OUTFILE, "(");
     }
     else 
     { 
-        Pr("%2>", 0, 0); 
+        //**INDENT** Pr("%2>", 0, 0); 
     }
     if (GET_TYPE_BAG(hdOp) == T_POW
         && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
@@ -2267,17 +2273,19 @@ void        PrBinop(Obj hdOp)
         SyFmtPrint(OUTFILE, ")");
     }
 
-    Pr("%2< %2>%s%> %<", (Int)op, 0);
+    //**INDENT** Pr("%2< %2>%s%> %<", (Int)op, 0);
+    SyFmtPrint(OUTFILE, " %s ", op);
     ++prPrec;
     Print(PTR_BAG(hdOp)[1]);
     --prPrec;
     if (oldPrec > prPrec)
     { 
-        Pr("%2<)", 0, 0); 
+        //**INDENT** Pr("%2<)", 0, 0); 
+        SyFmtPrint(OUTFILE, ")");
     }
     else 
     {
-        Pr("%2<", 0, 0);
+        //**INDENT** Pr("%2<", 0, 0);
     }
 
     prPrec = oldPrec;
@@ -2292,11 +2300,14 @@ void        PrBinop(Obj hdOp)
 */
 void        PrComm(Obj hd)
 {
-    Pr("%>Comm(%> ", 0, 0);
+    //**INDENT** Pr("%>Comm(%> ", 0, 0);
+    SyFmtPrint(OUTFILE, "Comm(");
     Print(PTR_BAG(hd)[0]);
-    Pr("%<,%>", 0, 0);
+    //**INDENT** Pr("%<,%>", 0, 0);
+    SyFmtPrint(OUTFILE, " , ");
     Print(PTR_BAG(hd)[1]);
-    Pr("%2<)", 0, 0);
+    //**INDENT** Pr("%2<)", 0, 0);
+    SyFmtPrint(OUTFILE, ")");
 }
 
 
@@ -2560,14 +2571,19 @@ void PrMakeLet(Obj hd) {
     UInt    i;
     Obj     res;
 
-    Pr("let(%2>", 0, 0);
+    //**INDENT** Pr("let(%2>", 0, 0);
+    SyFmtPrint(OUTFILE, "let(");
 
     /* evaluate all variables and set their values */    
     for (i = 0; i < size; ++i) 
     {
         Obj var = PTR_BAG(hd)[i];
         Obj uneval = PTR_BAG(var)[1];
-        Pr("%g := %2>%g%2<,\n", (Int)var, (Int)uneval);
+        //**INDENT**  Pr("%g := %2>%g%2<,\n", (Int)var, (Int)uneval);
+        Print(var);
+        SyFmtPrint(OUTFILE, " := ");
+        Print(uneval);
+        SyFmtPrint(OUTFILE, ",\n");
     }
 
     res = PTR_BAG(PTR_BAG(hd)[size])[1];
@@ -2576,16 +2592,21 @@ void PrMakeLet(Obj hd) {
     /* expressions separated by a comma */
     for (i = 1; i <= lenres - 1; ++i) 
     {
-        Pr("%2>%g%2<, ", (Int)PTR_BAG(res)[i], 0);
+        //**INDENT** Pr("%2>%g%2<, ", (Int)PTR_BAG(res)[i], 0);
+        Print(PTR_BAG(res)[i]);
+        SyFmtPrint(OUTFILE, ", ");
     }
 
     /* and the final expression without trailing comma */
     if (lenres >= 1) 
     {
-        Pr("%2>%g%2< ", (Int)PTR_BAG(res)[lenres], 0);
+        //**INDENT** Pr("%2>%g%2< ", (Int)PTR_BAG(res)[lenres], 0);
+        Print(PTR_BAG(res)[lenres]);
+        SyFmtPrint(OUTFILE, " ");
     }
 
-    Pr("%2<)\n", 0, 0);
+    //**INDENT** Pr("%2<)\n", 0, 0);
+    SyFmtPrint(OUTFILE, ")\n");
 }
 
 

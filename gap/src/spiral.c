@@ -895,6 +895,7 @@ Obj  FunXType ( Obj hdCall ) {
 extern int BACKTRACE_DEFAULT_LEVEL;
 extern int ERROR_QUIET;
 extern Obj HdLastErrorMsg;
+extern int ErrorCount;
 Obj  FunTry ( Obj hdCall ) {
     char * usage = "usage: Try(<expr>)";
     Obj hd;
@@ -924,6 +925,7 @@ Obj  FunTry ( Obj hdCall ) {
     Catch(e) {
 		int ok;
         Obj res = NewList(2);
+        ErrorCount++;
         SET_BAG(res, 1,  HdFalse );
         /* exceptions raised using Error() are already printed at this point */
         if(e!=ERR_GAP) {

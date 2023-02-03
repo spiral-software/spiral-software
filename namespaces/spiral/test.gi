@@ -63,15 +63,15 @@ CheckBasicProfilerTest := function()
     
     if SysVerbose() > 0 then
         Print("Marker file: ", file);
-        if res then PrintLine(" Found, return true"); else PrintLine(" NOT Found"); fi;
+        if res=1 then PrintLine(" Found, return true"); else PrintLine(" NOT Found"); fi;
     fi;
-    if res then return res; fi;
+    if res=1 then return true; fi;
     
     file := GetBasicProfilerTestFName(false);
     res := FileExists(file);
     if SysVerbose() > 0 then
         Print("Marker file: ", file);
-        if res then PrintLine(" Found, return false"); else PrintLine(" NOT Found"); fi;
+        if res=1 then PrintLine(" Found, return false"); else PrintLine(" NOT Found"); fi;
     fi;
     return false;
 end;

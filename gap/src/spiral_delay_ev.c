@@ -757,15 +757,13 @@ void PrDelay ( Obj hd ) {
 
 void PrVarMap ( Obj hd ) {
     //**INDENT** Pr("%2>",0,0);
-    //empty	
-    SyFmtPrint(OUTFILE, "");
+
     Print(PTR_BAG(hd)[0]);
     //**INDENT** Pr("%< %>=> ",0,0);
     SyFmtPrint(OUTFILE, " => ");
     Print(PTR_BAG(hd)[1]);
     //**INDENT** Pr("%2<",0,0);
-    //empty	
-    SyFmtPrint(OUTFILE, "");
+
 }
 
 /****************************************************************************

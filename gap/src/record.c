@@ -1134,8 +1134,6 @@ void            PrRecElm (Bag hdElm)
 {
     /* print the record                                                    */
     //**INDENT**  Pr( "%>", 0, 0 );
-    //empty
-    SyFmtPrint(OUTFILE, "");
 
     Print( PTR_BAG(hdElm)[0] );
     /* print an ordinary record name                                       */
@@ -1146,8 +1144,6 @@ void            PrRecElm (Bag hdElm)
         SyFmtPrint(OUTFILE, ".");
         PrVarName(name);
         //**INDENT**  Pr("%<",0,0);
-        //empty
-        SyFmtPrint(OUTFILE, "");
     }
     /* print an evaluating record name                                     */
     else
@@ -1172,15 +1168,13 @@ void            PrRecElm (Bag hdElm)
 void            PrRecAss (Bag hdAss)
 {
     //**INDENT**  Pr( "%2>", 0, 0 );
-    //empty
-    SyFmtPrint(OUTFILE, "");
+
     Print( PTR_BAG(hdAss)[0] );
     //**INDENT**  Pr( "%< %>:= ", 0, 0 );
     SyFmtPrint(OUTFILE, " := ");
     Print( PTR_BAG(hdAss)[1] );
     //**INDENT**  Pr( "%2<", 0, 0 );
-    //empty
-    SyFmtPrint(OUTFILE, "");
+
 }
 
 

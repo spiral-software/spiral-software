@@ -485,15 +485,13 @@ Bag       LtRat (Bag hdL, Bag hdR)
 void            PrRat (Bag hdRat)
 {
     //**INDENT** Pr("%>",0,0);
-    //empty	
-    SyFmtPrint(OUTFILE, "");
+
     Print( PTR_BAG(hdRat)[0] );
     //**INDENT** Pr("%/%>",0,0);
     SyFmtPrint(OUTFILE, "/");
     Print( PTR_BAG(hdRat)[1] );
     //**INDENT** Pr("%<",0,0);
-    //empty	
-    SyFmtPrint(OUTFILE, "");
+
 }
 
 

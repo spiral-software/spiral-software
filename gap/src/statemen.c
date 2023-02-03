@@ -509,8 +509,7 @@ void            PrRepeat (Bag hdRep)
     SyFmtPrint(OUTFILE, "; \nuntil ");
     Print( PTR_BAG(hdRep)[0] );
     //**INDENT** Pr("%2<",0,0);
-    //empty	
-    SyFmtPrint(OUTFILE, "");
+
 }
 
 

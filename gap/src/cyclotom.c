@@ -1220,8 +1220,6 @@ void            PrCyc (Bag hdCyc)
     cfs = PTR_BAG(hdCyc);
     exs = (unsigned short*)(PTR_BAG(hdCyc)+len);
     //**INDENT** Pr("%>",0,0);
-    //empty	
-    SyFmtPrint(OUTFILE, "");
     for ( i = 1; i < len; i++ ) {
         if (cfs[i] == INT_TO_HD(1) && exs[i] == 0)
         {
@@ -1255,9 +1253,10 @@ void            PrCyc (Bag hdCyc)
         else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==1 && i==1 ) 
         {
             //**INDENT** Pr("%>",0,0); 
-            //empty	
-            SyFmtPrint(OUTFILE, "");
+
+
             Print(cfs[i]); 
+
             //**INDENT** Pr("%>*%<E(%d%<)",n,0);
             SyFmtPrint(OUTFILE, "*E(%d)", n, 0);
         }
@@ -1272,8 +1271,7 @@ void            PrCyc (Bag hdCyc)
         else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && i==1 )
         {
             //**INDENT** Pr("%>",0,0); 
-            //empty	
-            SyFmtPrint(OUTFILE, "");
+
             Print(cfs[i]);
             //**INDENT** Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); 
             SyFmtPrint(OUTFILE, "*E(%d)^%d", n, (Int)exs[i]);
@@ -1308,8 +1306,7 @@ void            PrCyc (Bag hdCyc)
         else if ( exs[i]==1 ) 
         {
             //**INDENT** Pr("%>",0,0);
-            //empty	
-            SyFmtPrint(OUTFILE, "");
+
             Print(cfs[i]);
             //**INDENT** Pr("%>*%<E(%d%<)",n,0);
             SyFmtPrint(OUTFILE, "*E(%d)", n, 0);
@@ -1317,15 +1314,12 @@ void            PrCyc (Bag hdCyc)
         else 
         {
             //**INDENT** Pr("%>",0,0); Print(cfs[i]);
-            //empty	
-            SyFmtPrint(OUTFILE, "");
+
             //**INDENT**Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]);
             SyFmtPrint(OUTFILE, "*E(%d)^%d", n, (Int)exs[i]);
         }
     }
     //**INDENT** Pr("%<",0,0);
-    //empty	
-    SyFmtPrint(OUTFILE, "");
 }
 
 

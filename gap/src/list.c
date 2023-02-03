@@ -1813,8 +1813,7 @@ Bag       EvAsssListLevel (Bag hdAss)
 void        PrElmList(Bag hdSel)
 {
     //**INDENT** Pr("%2>",0,0); 
-    //empty	
-    SyFmtPrint(OUTFILE, "");
+
     Print( PTR_BAG(hdSel)[0] );
     //**INDENT** Pr("%<[",0,0);
     SyFmtPrint(OUTFILE, "([");
@@ -1835,8 +1834,7 @@ void        PrElmList(Bag hdSel)
 void        PrElmsList(Bag hdSel)
 {
     //**INDENT** Pr("%2>",0,0); 
-    //empty
-    SyFmtPrint(OUTFILE, "");
+
     Print( PTR_BAG(hdSel)[0] );
     //**INDENT** Pr("%<{",0,0);
     SyFmtPrint(OUTFILE, "{");
@@ -1857,15 +1855,13 @@ void        PrElmsList(Bag hdSel)
 void        PrAssList(Bag hdAss)
 {
     //**INDENT** Pr("%2>",0,0);    
-    //empty
-    SyFmtPrint(OUTFILE, "");
+
     Print( PTR_BAG(hdAss)[0] );
     //**INDENT** Pr("%< %>:= ",0,0); 
     SyFmtPrint(OUTFILE, " := ");
     Print( PTR_BAG(hdAss)[1] );
     //**INDENT** Pr("%2<",0,0);
-    //empty
-    SyFmtPrint(OUTFILE, "");
+
 }
 
 

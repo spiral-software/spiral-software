@@ -846,8 +846,10 @@ Bag FunNoDbg (Obj hdCall)
 Bag       FunDbgBreak (Obj hdCall)
 {
 #ifndef _DEBUG
-    if (InDebugMode == 0) {
-        Pr("Use Debug(true) to enable debugging\n", 0, 0);
+    if (InDebugMode == 0) 
+    {
+        //Pr("Use Debug(true) to enable debugging\n", 0, 0);
+        SyFmtPrint(OUTFILE, "Use Debug(true) to enable debugging\n");
         return HdVoid;
     }
 #endif

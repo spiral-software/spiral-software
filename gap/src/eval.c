@@ -1875,14 +1875,16 @@ void        (*PrTab[T_ILLEGAL]) (Obj hd);
 
 /****************************************************************************
 **
-*F  Print( <hd> ) . . . . . . . . . . . . . . . . . . . . . . print an object
+*F  PrintObj( FILE* stream, Obj objHandle, int indent ) . . . . . . . . . . . . . . . . . . . . . . print an object
 **
-**  'Print'  prints  the  object  with  handle  <hd>.  It dispatches   to the
-**  appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
+**  'PrintObj'  prints  the  object  with passed in  handle  <hd>. 
+**   Pass in stream to write to.
+**   Pass in number of indented characters
+**   It dispatches to the appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
 */
 Obj     HdTildePr;
 
-void        Print(Obj hd) 
+void    PrintObj(FILE* stream, Obj hd, int indent)
 {
     Obj             cur;            /* current object along that path  */
     Obj             hdObj[256];     /* '~' to <hd>, where hdObj[<i>+1] */
@@ -1891,11 +1893,27 @@ void        Print(Obj hd)
     UInt            i;              /* loop variable                   */
     exc_type_t      e;
 
+
+    /*
+    
+        indent    
+    
+     int k;
+     for(k = 0; k < indent; k++)
+     SyFmtPrint(stream, "-X-");
+     */
+   
+
+
+    /*
+        GS4 - Going through
+    */
+
     /* check for interrupts                                                */
     if (SyIsIntr()) 
     {
         //Pr("%c", (Int)'\03', 0);
-        SyFmtPrint(OUTFILE, "%c", '\03');
+        SyFmtPrint(stream, "%c", '\03');
 
         /*N 19-Jun-90 martin do something about the current indent         */
         DbgBreak("user interrupt while printing", 0, 0);
@@ -1904,13 +1922,13 @@ void        Print(Obj hd)
     if (hd == 0)
     {
         //Pr("_null_", 0, 0);
-        SyFmtPrint(OUTFILE, "_null_");
+        SyFmtPrint(stream, "_null_");
 
     }
     else if (!IS_BAG(hd) && !IS_INTOBJ(hd))
     {
         //Pr("_invalid_%d_", (Int)hd, 0);
-        SyFmtPrint(OUTFILE, "_invalid_%d_", (Int)hd);
+        SyFmtPrint(stream, "_invalid_%d_", (Int)hd);
     }
     /* print new objects                                                   */
     else if (GET_TYPE_BAG(hd) == T_INT || !GET_FLAG_BAG(hd, BF_PRINT)) 
@@ -2011,93 +2029,22 @@ void        Print(Obj hd)
             if (GET_TYPE_BAG(hdObj[i]) == T_VAR)
             {
                 //Pr("~", 0, 0);
-                SyFmtPrint(OUTFILE, "~");
+                SyFmtPrint(stream, "~");
             }
             else if (GET_TYPE_BAG(hdObj[i]) == T_LIST || GET_TYPE_BAG(hdObj[i]) == T_SET)
             {
                 //Pr("[%d]", index[i], 0);
-                SyFmtPrint(OUTFILE, "[%d]");
+                SyFmtPrint(stream, "[%d]");
             }
             else
             {
                 //Pr(".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]), 0);
-                SyFmtPrint(OUTFILE, ".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]));
+                SyFmtPrint(stream, ".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]));
             }
         }
 
     }
 
-}
-
-/****************************************************************************
-** GS4 - IN progresss
-**  PrintObj( file stream, ) . . . . . . . . . . . . . . . . . . . . . . print an object
-**
-**  'Print'  will take in an input stream, and an object.
-**
-* 
-*       when should we use obj vs bAG
-* 
-* 
-*       TODO:
-*           
-* 
-* 
-* Bag is a number then convereted nad found. 
-*/
-void PrintObj(FILE *stream, Obj objHandle, int indent)
-{
-
-    //If there is an indent print that number of spaces. no new line no nothing else.
-    //
-
-
-    //SyFmtPrint(stream, "%s", "\nWe are in Print Obj\n-----------------------------------------------------------------\n");
-
-    if (SyIsIntr())
-    {
-       // SyFmtPrint(stream, "%s", "\n SyIsIntr \n");
-    }
-
-    if (GET_TYPE_BAG(objHandle) == T_INT || !GET_FLAG_BAG(objHandle, BF_PRINT))
-    {
-      //  SyFmtPrint(stream, "%s", "\n Bag Print int or flag bag \n");
-    }
-
-    
-
-
-
-
-    /* check for interrupts                                                */
-    /* handle common subobject                                             */
-    /* find the subobject in the object again by a backtrack search    */
-    /* print the path just found                                       */
-
-
-    /*
-    
-      for (i = 0; i <= len; i++) 
-        {
-            if (GET_TYPE_BAG(hdObj[i]) == T_VAR)
-            {
-                //Pr("~", 0, 0);
-                SyFmtPrint(OUTFILE, "~");
-            }
-            else if (GET_TYPE_BAG(hdObj[i]) == T_LIST || GET_TYPE_BAG(hdObj[i]) == T_SET)
-            {
-                //Pr("[%d]", index[i], 0);
-                SyFmtPrint(OUTFILE, "[%d]");
-            }
-            else
-            {
-                //Pr(".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]), 0);
-                SyFmtPrint(OUTFILE, ".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]));
-            }
-        }
-    */
-    //GS4 Call Old Print till pick out useful parts of it. 
-    Print(objHandle);
 }
 
 

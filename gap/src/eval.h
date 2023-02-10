@@ -679,20 +679,12 @@ extern  void            (* PrTab[ T_ILLEGAL ] ) ( Bag hd );
 
 
 /****************************************************************************
-**
-*F  Print( <hd> ) . . . . . . . . . . . . . . . . . . . . . . print an object
-**
-**  'Print'  prints  the  object  with  handle  <hd>.  It dispatches   to the
-**  appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
-*/
-extern  void            Print ( Bag hd );
-
-
-/****************************************************************************
-**
+**  GS4 -- TODO: clean up
 **  PrintObj( file stream, ) . . . . . . . . . . . . . . . . . . . . . . print an object
 **
-**  'Print'  will pull in an input stream, and an object. 
+**  'Print'  will pull in an input stream, an object, and an integer. 
+**  'Print'  prints  the  object  with  handle  <hd>.  It dispatches   to the
+**  appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
 **  
 */
 extern  void PrintObj(FILE *stream, Obj objHandle, int indent);

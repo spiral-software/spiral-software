@@ -520,7 +520,8 @@ void        PrList(Bag hdList)
                 SyFmtPrint(OUTFILE, ", ");
             }
 
-            Print( hdElm );
+            //Print( hdElm );
+            PrintObj(OUTFILE, hdElm, 0);
         }
         else
         {
@@ -1814,10 +1815,12 @@ void        PrElmList(Bag hdSel)
 {
     //**INDENT** Pr("%2>",0,0); 
 
-    Print( PTR_BAG(hdSel)[0] );
+    //Print( PTR_BAG(hdSel)[0] );
+    PrintObj(OUTFILE, PTR_BAG(hdSel)[0], 0);
     //**INDENT** Pr("%<[",0,0);
     SyFmtPrint(OUTFILE, "([");
-    Print( PTR_BAG(hdSel)[1] );
+    //Print( PTR_BAG(hdSel)[1] );
+    PrintObj(OUTFILE, PTR_BAG(hdSel)[1], 0);
     //**INDENT** Pr("%<]",0,0);
     SyFmtPrint(OUTFILE, "]");
 }
@@ -1835,10 +1838,12 @@ void        PrElmsList(Bag hdSel)
 {
     //**INDENT** Pr("%2>",0,0); 
 
-    Print( PTR_BAG(hdSel)[0] );
+    //Print( PTR_BAG(hdSel)[0] );
+    PrintObj(OUTFILE, PTR_BAG(hdSel)[0], 0);
     //**INDENT** Pr("%<{",0,0);
     SyFmtPrint(OUTFILE, "{");
-    Print( PTR_BAG(hdSel)[1] );
+    //Print( PTR_BAG(hdSel)[1] );
+    PrintObj(OUTFILE, PTR_BAG(hdSel)[1], 0);
     //**INDENT** Pr("%<}",0,0);
     SyFmtPrint(OUTFILE, "}");
 }
@@ -1856,10 +1861,12 @@ void        PrAssList(Bag hdAss)
 {
     //**INDENT** Pr("%2>",0,0);    
 
-    Print( PTR_BAG(hdAss)[0] );
+    //Print( PTR_BAG(hdAss)[0] );
+    PrintObj(OUTFILE, PTR_BAG(hdAss)[0], 0);
     //**INDENT** Pr("%< %>:= ",0,0); 
     SyFmtPrint(OUTFILE, " := ");
-    Print( PTR_BAG(hdAss)[1] );
+    //Print( PTR_BAG(hdAss)[1] );
+    PrintObj(OUTFILE, PTR_BAG(hdAss)[1], 0);
     //**INDENT** Pr("%2<",0,0);
 
 }

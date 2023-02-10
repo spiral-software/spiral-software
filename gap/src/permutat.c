@@ -2332,7 +2332,8 @@ void            PrMakeperm (Bag hdPerm)
         {
             //**INDENT** Pr("%>",0,0);
 
-            Print( PTR_BAG(hdCyc)[k] );
+            //Print( PTR_BAG(hdCyc)[k] );
+            PrintObj(OUTFILE, PTR_BAG(hdCyc)[k], 0);
             //**INDENT** Pr("%<",0,0);
 
             if (k < GET_SIZE_BAG(hdCyc) / SIZE_HD - 1)

@@ -799,7 +799,8 @@ void            PrMakeList (Bag hdMake)
                 //**INDENT** Pr("%<,%< %2>", 0, 0);
                 SyFmtPrint(OUTFILE, " ,  ");
             }
-            Print( hdElm );
+            //Print( hdElm );
+            PrintObj(OUTFILE, hdElm, 0);
         }
         else {
             if (1 < i) 

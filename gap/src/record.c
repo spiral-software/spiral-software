@@ -1094,14 +1094,16 @@ Obj DefaultPrRec ( Obj hdRec ) {
             }
             //Pr(" (",0,0);
             SyFmtPrint(OUTFILE, " (");
-            Print( PTR_BAG(hdRec)[2*i] );
+            //Print( PTR_BAG(hdRec)[2*i] );
+            PrintObj(OUTFILE, PTR_BAG(hdRec)[2 * i], 0);
             //Pr(")",0,0);
             SyFmtPrint(OUTFILE, ")");
         }
         /* print the component                                             */
         //**INDENT** Pr("%< := %>",0,0);
         SyFmtPrint(OUTFILE, " := ");
-        Print( PTR_BAG(hdRec)[2*i+1] );
+        //Print( PTR_BAG(hdRec)[2*i+1] );
+        PrintObj(OUTFILE, PTR_BAG(hdRec)[2 * i + 1], 0);
     }
 
     if (pr_populated)
@@ -1135,7 +1137,8 @@ void            PrRecElm (Bag hdElm)
     /* print the record                                                    */
     //**INDENT**  Pr( "%>", 0, 0 );
 
-    Print( PTR_BAG(hdElm)[0] );
+    //Print( PTR_BAG(hdElm)[0] );
+    PrintObj(OUTFILE, PTR_BAG(hdElm)[0], 0);
     /* print an ordinary record name                                       */
     if ( GET_TYPE_BAG( PTR_BAG(hdElm)[1] ) == T_RECNAM )
     {
@@ -1150,7 +1153,8 @@ void            PrRecElm (Bag hdElm)
     {
         //**INDENT**  Pr( "%<.%>(", 0, 0 );
         SyFmtPrint(OUTFILE, ".(");
-        Print( PTR_BAG(hdElm)[1] );
+        //Print( PTR_BAG(hdElm)[1] );
+        PrintObj(OUTFILE, PTR_BAG(hdElm)[1], 0);
         //**INDENT**  Pr( ")%<", 0, 0 );
         SyFmtPrint(OUTFILE, ")");
     }
@@ -1169,10 +1173,12 @@ void            PrRecAss (Bag hdAss)
 {
     //**INDENT**  Pr( "%2>", 0, 0 );
 
-    Print( PTR_BAG(hdAss)[0] );
+    //Print( PTR_BAG(hdAss)[0] );
+    PrintObj(OUTFILE, PTR_BAG(hdAss)[0], 0);
     //**INDENT**  Pr( "%< %>:= ", 0, 0 );
     SyFmtPrint(OUTFILE, " := ");
-    Print( PTR_BAG(hdAss)[1] );
+    //Print( PTR_BAG(hdAss)[1] );
+    PrintObj(OUTFILE, PTR_BAG(hdAss)[1], 0);
     //**INDENT**  Pr( "%2<", 0, 0 );
 
 }

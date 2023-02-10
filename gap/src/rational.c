@@ -486,10 +486,12 @@ void            PrRat (Bag hdRat)
 {
     //**INDENT** Pr("%>",0,0);
 
-    Print( PTR_BAG(hdRat)[0] );
+    //Print( PTR_BAG(hdRat)[0] );
+    PrintObj(OUTFILE, PTR_BAG(hdRat)[0], 0);
     //**INDENT** Pr("%/%>",0,0);
     SyFmtPrint(OUTFILE, "/");
-    Print( PTR_BAG(hdRat)[1] );
+    //Print( PTR_BAG(hdRat)[1] );
+    PrintObj(OUTFILE, PTR_BAG(hdRat)[1], 0);
     //**INDENT** Pr("%<",0,0);
 
 }

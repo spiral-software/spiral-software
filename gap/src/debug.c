@@ -716,7 +716,7 @@ Obj  FunTop ( Obj hdCall ) {
         Try {
             TopPr_Printing = 0; // we are going to calculate  max depth first
             //Pr("%g\n", (Int)top, 0);
-            Print(top);
+            PrintObj(OUTFILE, top, 0);
             SyFmtPrint(OUTFILE, "\n");
             // closing /dev/null and return to previous output
             CloseOutput();
@@ -729,7 +729,7 @@ Obj  FunTop ( Obj hdCall ) {
                             // flag and has TopPr_MaxDepth will be highlighted (with 
                             // children).
         //Pr("%g\n", (Int)top, 0);
-        Print(top);
+        PrintObj(OUTFILE, top, 0);
         SyFmtPrint(OUTFILE, "\n");
     } Catch(e) {
         UnhookPrTab();

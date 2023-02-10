@@ -1882,7 +1882,7 @@ void        (*PrTab[T_ILLEGAL]) (Obj hd);
 */
 Obj     HdTildePr;
 
-void        Print(Obj hd) //PrintObj
+void        Print(Obj hd) 
 {
     Obj             cur;            /* current object along that path  */
     Obj             hdObj[256];     /* '~' to <hd>, where hdObj[<i>+1] */
@@ -1931,7 +1931,7 @@ void        Print(Obj hd) //PrintObj
             }
 
             /* dispatch to the appropriate method                          */
-            (*PrTab[GET_TYPE_BAG(hd)]) (hd);
+            (*PrTab[GET_TYPE_BAG(hd)]) (hd); 
 
             /* unmark object again                                         */
             if ((T_LIST <= GET_TYPE_BAG(hd) && GET_TYPE_BAG(hd) < T_VAR)
@@ -2029,6 +2029,77 @@ void        Print(Obj hd) //PrintObj
 
 }
 
+/****************************************************************************
+** GS4 - IN progresss
+**  PrintObj( file stream, ) . . . . . . . . . . . . . . . . . . . . . . print an object
+**
+**  'Print'  will take in an input stream, and an object.
+**
+* 
+*       when should we use obj vs bAG
+* 
+* 
+*       TODO:
+*           
+* 
+* 
+* Bag is a number then convereted nad found. 
+*/
+void PrintObj(FILE *stream, Obj objHandle, int indent)
+{
+
+    //If there is an indent print that number of spaces. no new line no nothing else.
+    //
+
+
+    //SyFmtPrint(stream, "%s", "\nWe are in Print Obj\n-----------------------------------------------------------------\n");
+
+    if (SyIsIntr())
+    {
+       // SyFmtPrint(stream, "%s", "\n SyIsIntr \n");
+    }
+
+    if (GET_TYPE_BAG(objHandle) == T_INT || !GET_FLAG_BAG(objHandle, BF_PRINT))
+    {
+      //  SyFmtPrint(stream, "%s", "\n Bag Print int or flag bag \n");
+    }
+
+    
+
+
+
+
+    /* check for interrupts                                                */
+    /* handle common subobject                                             */
+    /* find the subobject in the object again by a backtrack search    */
+    /* print the path just found                                       */
+
+
+    /*
+    
+      for (i = 0; i <= len; i++) 
+        {
+            if (GET_TYPE_BAG(hdObj[i]) == T_VAR)
+            {
+                //Pr("~", 0, 0);
+                SyFmtPrint(OUTFILE, "~");
+            }
+            else if (GET_TYPE_BAG(hdObj[i]) == T_LIST || GET_TYPE_BAG(hdObj[i]) == T_SET)
+            {
+                //Pr("[%d]", index[i], 0);
+                SyFmtPrint(OUTFILE, "[%d]");
+            }
+            else
+            {
+                //Pr(".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]), 0);
+                SyFmtPrint(OUTFILE, ".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]));
+            }
+        }
+    */
+    //GS4 Call Old Print till pick out useful parts of it. 
+    Print(objHandle);
+}
+
 
 /****************************************************************************
 **
@@ -2113,10 +2184,12 @@ void        PrVarAss(Obj hdAss)
 {
     //**INDENT** Pr("%2>", 0, 0);
 
-    Print(PTR_BAG(hdAss)[0]);
+    //Print(PTR_BAG(hdAss)[0]);
+    PrintObj(OUTFILE, PTR_BAG(hdAss)[0], 0);
     //**INDENT**  Pr("%< %>:= ", 0, 0);
     SyFmtPrint(OUTFILE, " := ");
-    Print(PTR_BAG(hdAss)[1]);
+    //Print(PTR_BAG(hdAss)[1]);
+    PrintObj(OUTFILE, PTR_BAG(hdAss)[1], 0);
     //**INDENT** Pr("%2<", 0, 0);
 
 }
@@ -2152,7 +2225,8 @@ void        PrNot(Obj hdNot)
     prPrec = 4;
     //**INDENT** Pr("not%> ", 0, 0);
     SyFmtPrint(OUTFILE, "not ");
-    Print(PTR_BAG(hdNot)[0]);
+    //Print(PTR_BAG(hdNot)[0]);
+    PrintObj(OUTFILE, PTR_BAG(hdNot)[0], 0);
     //**INDENT** Pr("%<", 0, 0);
 
     prPrec = oldPrec;
@@ -2263,7 +2337,8 @@ void        PrBinop(Obj hdOp)
         SyFmtPrint(OUTFILE, "(");
     }
 
-    Print(PTR_BAG(hdOp)[0]);
+    //Print(PTR_BAG(hdOp)[0]);
+    PrintObj(OUTFILE, PTR_BAG(hdOp)[0], 0);
 
     if (GET_TYPE_BAG(hdOp) == T_POW
         && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
@@ -2276,7 +2351,8 @@ void        PrBinop(Obj hdOp)
     //**INDENT** Pr("%2< %2>%s%> %<", (Int)op, 0);
     SyFmtPrint(OUTFILE, " %s ", op);
     ++prPrec;
-    Print(PTR_BAG(hdOp)[1]);
+    //Print(PTR_BAG(hdOp)[1]);
+    PrintObj(OUTFILE, PTR_BAG(hdOp)[1], 0);
     --prPrec;
     if (oldPrec > prPrec)
     { 
@@ -2302,10 +2378,12 @@ void        PrComm(Obj hd)
 {
     //**INDENT** Pr("%>Comm(%> ", 0, 0);
     SyFmtPrint(OUTFILE, "Comm(");
-    Print(PTR_BAG(hd)[0]);
+    //Print(PTR_BAG(hd)[0]);
+    PrintObj(OUTFILE, PTR_BAG(hd)[0], 0);
     //**INDENT** Pr("%<,%>", 0, 0);
     SyFmtPrint(OUTFILE, " , ");
-    Print(PTR_BAG(hd)[1]);
+    //Print(PTR_BAG(hd)[1]);
+    PrintObj(OUTFILE, PTR_BAG(hd)[1], 0);
     //**INDENT** Pr("%2<)", 0, 0);
     SyFmtPrint(OUTFILE, ")");
 }
@@ -2580,9 +2658,9 @@ void PrMakeLet(Obj hd) {
         Obj var = PTR_BAG(hd)[i];
         Obj uneval = PTR_BAG(var)[1];
         //**INDENT**  Pr("%g := %2>%g%2<,\n", (Int)var, (Int)uneval);
-        Print(var);
+        PrintObj(OUTFILE, var, 0);
         SyFmtPrint(OUTFILE, " := ");
-        Print(uneval);
+        PrintObj(OUTFILE, uneval, 0);
         SyFmtPrint(OUTFILE, ",\n");
     }
 
@@ -2593,7 +2671,7 @@ void PrMakeLet(Obj hd) {
     for (i = 1; i <= lenres - 1; ++i) 
     {
         //**INDENT** Pr("%2>%g%2<, ", (Int)PTR_BAG(res)[i], 0);
-        Print(PTR_BAG(res)[i]);
+        PrintObj(OUTFILE, PTR_BAG(res)[i], 0);
         SyFmtPrint(OUTFILE, ", ");
     }
 
@@ -2601,7 +2679,7 @@ void PrMakeLet(Obj hd) {
     if (lenres >= 1) 
     {
         //**INDENT** Pr("%2>%g%2< ", (Int)PTR_BAG(res)[lenres], 0);
-        Print(PTR_BAG(res)[lenres]);
+        PrintObj(OUTFILE, PTR_BAG(res)[lenres], 0);
         SyFmtPrint(OUTFILE, " ");
     }
 

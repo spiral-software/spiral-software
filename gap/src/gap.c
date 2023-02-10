@@ -338,8 +338,8 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
         {
             if (printValues) 
             {
-                Print( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
-
+                //Print( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
+                PrintObj(OUTFILE, PTR_BAG(PTR_BAG(hdExec)[3])[0], 0);
                 //**INDENT** Pr("%>( %>",0,0);
                 SyFmtPrint(OUTFILE, "( ");
                 hdDef = EVAL( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
@@ -348,7 +348,8 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
 
                 for ( i = 1; i <= nrArg; ++i ) 
                 {
-                    Print( PTR_BAG(hdExec)[EXEC_ARGS_START+i+nrArg+nrLoc-1] );
+                    //Print( PTR_BAG(hdExec)[EXEC_ARGS_START+i+nrArg+nrLoc-1] );
+                    PrintObj(OUTFILE, PTR_BAG(hdExec)[EXEC_ARGS_START + i + nrArg + nrLoc - 1], 0);
                     if (i < nrArg)
                     { 
                         //**INDENT**  Pr("%<, %>", 0, 0);
@@ -362,7 +363,8 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
             }
             else
             {
-                Print( PTR_BAG(hdExec)[3] );
+                //Print( PTR_BAG(hdExec)[3] );
+                PrintObj(OUTFILE, PTR_BAG(hdExec)[3], 0);
             }
         }
         //Pr("\n",0,0);
@@ -391,7 +393,7 @@ void    PrintBacktraceEval(Bag hdExec)
         {
             //Pr("          %g\n", (Int)PTR_BAG(item)[0], 0);
             SyFmtPrint(OUTFILE, "          ");
-            Print(PTR_BAG(item)[0]);
+            PrintObj(OUTFILE, PTR_BAG(item)[0], 0);
             SyFmtPrint(OUTFILE, "\n");
         }
         else
@@ -924,7 +926,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
             {
 				//Pr(" at\n", 0, 0 );
                 SyFmtPrint(OUTFILE, " at\n");
-				Print( EvalStack[DbgEvalStackTop] );
+				//Print( EvalStack[DbgEvalStackTop] );
+                PrintObj(OUTFILE, EvalStack[DbgEvalStackTop], 0);
 				//Pr(" ...",0,0);
                 SyFmtPrint(OUTFILE, " ...");
 			}
@@ -1051,7 +1054,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
                             {
 								Try
                                 {
-									Print( hd );
+									//Print( hd );
+                                    PrintObj(OUTFILE, hd, 0);
 									//Pr("\n",0,0);
                                     SyFmtPrint(OUTFILE, " \n");
 								} 
@@ -1468,7 +1472,8 @@ Bag       FunPrint(Bag hdCall)
         }
         else if (type != T_VOID) 
         {
-            Print(hd);
+            //Print(hd);
+            PrintObj(OUTFILE, hd, 0);
         }
         else
         {
@@ -1560,7 +1565,8 @@ Bag       FunPrntTo(Bag hdCall)
         }
         else if (type != T_VOID) 
         {
-            Print(hd);
+            //Print(hd);
+            PrintObj(OUTFILE, hd, 0);
         }
         else
         {
@@ -1649,7 +1655,8 @@ Bag       FunAppendTo(Bag hdCall)
         }
         else if (type != T_VOID) 
         { 
-            Print(hd);
+            //Print(hd);
+            PrintObj(OUTFILE, hd, 0);
         }
         else 
         { 

@@ -1248,14 +1248,16 @@ void            PrCyc (Bag hdCyc)
         }
         else if (LT(INT_TO_HD(0), cfs[i]) == HdTrue && exs[i] == 0)
         {
-            Print(cfs[i]);
+            //Print(cfs[i]);
+            PrintObj(OUTFILE, cfs[i], 0);
         }
         else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==1 && i==1 ) 
         {
             //**INDENT** Pr("%>",0,0); 
 
 
-            Print(cfs[i]); 
+            //Print(cfs[i]); 
+            PrintObj(OUTFILE, cfs[i], 0);
 
             //**INDENT** Pr("%>*%<E(%d%<)",n,0);
             SyFmtPrint(OUTFILE, "*E(%d)", n, 0);
@@ -1264,7 +1266,9 @@ void            PrCyc (Bag hdCyc)
         {
             //**INDENT** Pr("%>+",0,0); 
             SyFmtPrint(OUTFILE, "+", 0, 0);
-            Print(cfs[i]); 
+            //Print(cfs[i]); 
+            PrintObj(OUTFILE, cfs[i], 0);
+
             //**INDENT** Pr("%>*%<E(%d%<)",n,0); 
             SyFmtPrint(OUTFILE, "*E(%d)", n, 0);
         }
@@ -1272,7 +1276,9 @@ void            PrCyc (Bag hdCyc)
         {
             //**INDENT** Pr("%>",0,0); 
 
-            Print(cfs[i]);
+            //Print(cfs[i]);
+            PrintObj(OUTFILE, cfs[i], 0);
+
             //**INDENT** Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); 
             SyFmtPrint(OUTFILE, "*E(%d)^%d", n, (Int)exs[i]);
         }
@@ -1280,7 +1286,8 @@ void            PrCyc (Bag hdCyc)
         {
             //**INDENT** Pr("%>+",0,0); 
             SyFmtPrint(OUTFILE, "+", 0, 0);
-            Print(cfs[i]);
+            //Print(cfs[i]);
+            PrintObj(OUTFILE, cfs[i], 0);
             //**INDENT** Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]);
             SyFmtPrint(OUTFILE, "*E(%d)^%d", n, (Int)exs[i]);
         }
@@ -1301,13 +1308,15 @@ void            PrCyc (Bag hdCyc)
         }
         else if (exs[i] == 0)
         {
-            Print(cfs[i]);
+            //Print(cfs[i]);
+            PrintObj(OUTFILE, cfs[i], 0);
         }
         else if ( exs[i]==1 ) 
         {
             //**INDENT** Pr("%>",0,0);
 
-            Print(cfs[i]);
+            //Print(cfs[i]);
+            PrintObj(OUTFILE, cfs[i], 0);
             //**INDENT** Pr("%>*%<E(%d%<)",n,0);
             SyFmtPrint(OUTFILE, "*E(%d)", n, 0);
         }

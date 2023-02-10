@@ -125,7 +125,8 @@ void Apropos(Obj hdSubStr, Obj tab, int recursive) {
             if(! printed_header) {
                 //Pr("**** %g ****\n", (Int)tab, (Int)tab);
                 SyFmtPrint(OUTFILE, "****");
-                Print(tab);
+                //Print(tab);
+                PrintObj(OUTFILE, tab, 0);
                 SyFmtPrint(OUTFILE, "****\n");
             }
             printed_header = 1;
@@ -614,7 +615,8 @@ void BagInfo ( Obj hd ) {
         {
             //Pr("Value   : %g\n", (Int)hd, 0);
             SyFmtPrint(OUTFILE, "Value   : ");
-            Print(hd);
+            //Print(hd);
+            PrintObj(OUTFILE, hd, 0);
             SyFmtPrint(OUTFILE, "\n");
 
             return;
@@ -846,7 +848,8 @@ int  reachableFrom ( Obj root, Obj hd ) {
                     (GET_TYPE_BAG(child) > T_DELAY && GET_TYPE_BAG(child) < T_STATSEQ) || GET_TYPE_BAG(child) >= T_RETURN)
                 {
                     //Pr("%g", (Int)child, 0);
-                    Print(child);
+                    //Print(child);
+                    PrintObj(OUTFILE, child, 0);
                 }
                 //Pr("\n", 0, 0);
                 SyFmtPrint(OUTFILE, "\n");

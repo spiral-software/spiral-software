@@ -385,8 +385,10 @@ void            PrStatseq (Bag hdSSeq)
     UInt       k;
 
     /* print the <statements> one after another, separated by linebreaks   */
-    for ( k = 0; k < GET_SIZE_BAG(hdSSeq)/SIZE_HD; ++k ) {
-        Print( PTR_BAG(hdSSeq)[k] );
+    for ( k = 0; k < GET_SIZE_BAG(hdSSeq)/SIZE_HD; ++k ) 
+    {
+        //Print( PTR_BAG(hdSSeq)[k] );
+        PrintObj(OUTFILE, PTR_BAG(hdSSeq)[k], 0);
         if (k < GET_SIZE_BAG(hdSSeq) / SIZE_HD - 1)
         {
             //Pr(";\n", 0, 0);
@@ -421,10 +423,12 @@ void            PrIf (Bag hdIf)
             //**INDENT** Pr("elif%4> ", 0, 0);
             SyFmtPrint(OUTFILE, "elif ");
         }
-        Print( PTR_BAG(hdIf)[2*i] );
+        //Print( PTR_BAG(hdIf)[2*i] );
+        PrintObj(OUTFILE, PTR_BAG(hdIf)[2 * i], 0);
         //**INDENT** Pr("%2<  then%2>\n",0,0);
         SyFmtPrint(OUTFILE, "  then\n");
-        Print( PTR_BAG(hdIf)[2*i+1] );
+        //Print( PTR_BAG(hdIf)[2*i+1] );
+        PrintObj(OUTFILE, PTR_BAG(hdIf)[2 * i + 1], 0);
         //**INDENT** Pr(";%4<\n",0,0);
         SyFmtPrint(OUTFILE, ";\n");
     }
@@ -434,7 +438,8 @@ void            PrIf (Bag hdIf)
     {
         //**INDENT** Pr("else%4>\n",0,0);
         SyFmtPrint(OUTFILE, "else\n");
-        Print( PTR_BAG(hdIf)[ GET_SIZE_BAG(hdIf)/SIZE_HD -1 ] );
+        //Print( PTR_BAG(hdIf)[ GET_SIZE_BAG(hdIf)/SIZE_HD -1 ] );
+        PrintObj(OUTFILE, PTR_BAG(hdIf)[GET_SIZE_BAG(hdIf) / SIZE_HD - 1], 0);
         //**INDENT** Pr(";%4<\n",0,0);
         SyFmtPrint(OUTFILE, ";\n");
     }
@@ -458,13 +463,16 @@ void            PrFor (Bag hdFor)
 {
     //**INDENT** Pr("for%4> ",0,0);
     SyFmtPrint(OUTFILE, "for ");
-    Print( PTR_BAG(hdFor)[0] );
+    //Print( PTR_BAG(hdFor)[0] );
+    PrintObj(OUTFILE, PTR_BAG(hdFor)[0], 0);
     //**INDENT** Pr("%2<  in%2> ",0,0);
     SyFmtPrint(OUTFILE, "  in ");
-    Print( PTR_BAG(hdFor)[1] );
+    //Print( PTR_BAG(hdFor)[1] );
+    PrintObj(OUTFILE, PTR_BAG(hdFor)[1], 0);
     //**INDENT** Pr("%2<  do%2>\n",0,0);  
     SyFmtPrint(OUTFILE, "  do\n");
-    Print( PTR_BAG(hdFor)[2] );
+    //Print( PTR_BAG(hdFor)[2] );
+    PrintObj(OUTFILE, PTR_BAG(hdFor)[2], 0);
     //**INDENT** Pr(";%4<\nod",0,0);
     SyFmtPrint(OUTFILE, ";\nod");
 }
@@ -483,10 +491,12 @@ void            PrWhile (Bag hdWhile)
 {
     //**INDENT** Pr("while%4> ",0,0); 
     SyFmtPrint(OUTFILE, "while ");
-    Print( PTR_BAG(hdWhile)[0] );
+    //Print( PTR_BAG(hdWhile)[0] );
+    PrintObj(OUTFILE, PTR_BAG(hdWhile)[0], 0);
     //**INDENT** Pr("%2<  do%2>\n",0,0); 
     SyFmtPrint(OUTFILE, "  do\n");
-    Print( PTR_BAG(hdWhile)[1] );
+    //Print( PTR_BAG(hdWhile)[1] );
+    PrintObj(OUTFILE, PTR_BAG(hdWhile)[1], 0);
     //**INDENT** Pr(";%4<\nod",0,0);
     SyFmtPrint(OUTFILE, ";\nod");
 }
@@ -504,10 +514,12 @@ void            PrRepeat (Bag hdRep)
 {
     //**INDENT** Pr("repeat%4>\n",0,0);
     SyFmtPrint(OUTFILE, "repeat\n");
-    Print( PTR_BAG(hdRep)[1] );
+    //Print( PTR_BAG(hdRep)[1] );
+    PrintObj(OUTFILE, PTR_BAG(hdRep)[1], 0);
     //**INDENT** Pr(";%4<\nuntil%2> ",0,0);
     SyFmtPrint(OUTFILE, "; \nuntil ");
-    Print( PTR_BAG(hdRep)[0] );
+    //Print( PTR_BAG(hdRep)[0] );
+    PrintObj(OUTFILE, PTR_BAG(hdRep)[0], 0);
     //**INDENT** Pr("%2<",0,0);
 
 }

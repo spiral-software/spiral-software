@@ -51,7 +51,7 @@ Obj  HdBackquote;
  */
 #define TRACE(hd) if(hd) { /*Pr("->%d| ",GET_TYPE_BAG(hd),0);*/ SyFmtPrint(OUTFILE,"->%d| ", (Int)GET_TYPE_BAG(hd)); \
                            if(GET_TYPE_BAG(hd)==T_RECNAM) /*Pr("recnam",0,0);*/ SyFmtPrint(OUTFILE,"recnam"); \
-			   else Print(hd); \
+			   else /*Print(hd);*/ PrintObj(OUTFILE, hd, 0); \
 	                   /*Pr("\n",0,0);*/ SyFmtPrint(OUTFILE,"\n"); }
 
 
@@ -749,7 +749,8 @@ void PrDelay ( Obj hd ) {
     prFull = 1; 
     //**INDENT** Pr("%2>D(",0,0);
     SyFmtPrint(OUTFILE, "D(");
-    Print(ExprFromDelay(hd));
+    //Print(ExprFromDelay(hd));
+    PrintObj(OUTFILE, ExprFromDelay(hd), 0);
     //**INDENT** Pr(")%2<",0,0);
     SyFmtPrint(OUTFILE, ")");
     prFull = 0;
@@ -758,10 +759,13 @@ void PrDelay ( Obj hd ) {
 void PrVarMap ( Obj hd ) {
     //**INDENT** Pr("%2>",0,0);
 
-    Print(PTR_BAG(hd)[0]);
+    //Print(PTR_BAG(hd)[0]);
+    PrintObj(OUTFILE, PTR_BAG(hd)[0], 0);
+
     //**INDENT** Pr("%< %>=> ",0,0);
     SyFmtPrint(OUTFILE, " => ");
-    Print(PTR_BAG(hd)[1]);
+    //Print(PTR_BAG(hd)[1]);
+    PrintObj(OUTFILE, PTR_BAG(hd)[1], 0);
     //**INDENT** Pr("%2<",0,0);
 
 }

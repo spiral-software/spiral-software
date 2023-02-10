@@ -710,10 +710,12 @@ void            PrMakeRange (Bag hdMake)
     {
         //**INDENT** Pr("%2>[ %2>",0,0);
         SyFmtPrint(OUTFILE, "[ ");
-        Print( PTR_BAG(hdMake)[0] );
+        //Print( PTR_BAG(hdMake)[0] );
+        PrintObj(OUTFILE, PTR_BAG(hdMake)[0], 0);
         //**INDENT** Pr("%2< .. %2>",0,0); 
         SyFmtPrint(OUTFILE, " .. ");
-        Print( PTR_BAG(hdMake)[1] );
+        //Print( PTR_BAG(hdMake)[1] );
+        PrintObj(OUTFILE, PTR_BAG(hdMake)[1], 0);
         //**INDENT** Pr(" %4<]",0,0);
         SyFmtPrint(OUTFILE, " ]");
     }
@@ -721,13 +723,16 @@ void            PrMakeRange (Bag hdMake)
     {
         //**INDENT** Pr("%2>[ %2>",0,0);   
         SyFmtPrint(OUTFILE, "%2>[ %2");
-        Print( PTR_BAG(hdMake)[0] );
+        //Print( PTR_BAG(hdMake)[0] );
+        PrintObj(OUTFILE, PTR_BAG(hdMake)[0], 0);
         //**INDENT** Pr("%<,%< %2>",0,0);  
         SyFmtPrint(OUTFILE, "%<,%< %2>");
-        Print( PTR_BAG(hdMake)[1] );
+        //Print( PTR_BAG(hdMake)[1] );
+        PrintObj(OUTFILE, PTR_BAG(hdMake)[1], 0);
         //**INDENT** Pr("%2< .. %2>",0,0);  
         SyFmtPrint(OUTFILE, "%2< .. %2>");
-        Print( PTR_BAG(hdMake)[2] );
+        //Print( PTR_BAG(hdMake)[2] );
+        PrintObj(OUTFILE, PTR_BAG(hdMake)[2], 0);
         //**INDENT** Pr(" %4<]",0,0);
         SyFmtPrint(OUTFILE, " %4<]");
     }

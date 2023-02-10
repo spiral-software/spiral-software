@@ -675,8 +675,7 @@ extern  Bag       FunIsBound ( Bag hdCall );
 **  is the main dispatching table that contains for every type a  pointer  to
 **  the function that should be executed if a bag  of  that  type  is  found.
 */
-extern  void            (* PrTab[ T_ILLEGAL ] ) ( Bag hd );
-
+extern  void (*PrTab[T_ILLEGAL]) (FILE* stream, Obj hd, int indent);
 
 /****************************************************************************
 **  GS4 -- TODO: clean up

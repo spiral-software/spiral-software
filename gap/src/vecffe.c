@@ -2571,7 +2571,7 @@ Bag       PowMatFFEInt (Bag hdL, Bag hdR)
 **
 **  'PrVecFFE' prints a vector.
 */
-void            PrVecFFE (Bag hdList)//GS4
+void PrVecFFE (FILE* stream, Obj hdList, int indent)
 {
     UInt       len;            /* logical length of the list      */
     UInt       i;              /* loop variable                   */
@@ -2581,18 +2581,18 @@ void            PrVecFFE (Bag hdList)//GS4
 
     /* loop over the entries                                               */
     //**INDENT** Pr("%2>[ %2>", 0, 0);
-    SyFmtPrint(OUTFILE, "[ ");
+    SyFmtPrint(stream, "[ ");
     
     for ( i = 1;  i <= len;  i++ ) {
         if (1 < i)
         {
             //**INDENT** Pr("%2<, %2>", 0, 0); 
-            SyFmtPrint(OUTFILE, ", ");
+            SyFmtPrint(stream, ", ");
         }
         PrFF( PTR_BAG(hdList)[0], VAL_VECFFE(hdList,i) );
     }
     //**INDENT** Pr(" %4<]", 0, 0);
-    SyFmtPrint(OUTFILE, " ]");
+    SyFmtPrint(stream, " ]");
 }
 
 

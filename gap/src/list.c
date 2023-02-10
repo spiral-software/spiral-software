@@ -495,7 +495,7 @@ Bag     EvList(Bag hdList)
 **
 **  Linebreaks are preferred after the commas.
 */
-void        PrList(Bag hdList)
+void PrList(FILE* stream, Obj hdList, int indent)
 {
     Bag     hdElm;          /* one element from <list>         */
     Int     lenList;        /* logical length of <list>        */
@@ -506,7 +506,7 @@ void        PrList(Bag hdList)
 
     /* loop over the entries                                               */
     //**INDENT**  Pr("%2>[ %2>",0,0);
-    SyFmtPrint(OUTFILE, "[ ");
+    SyFmtPrint(stream, "[ ");
 
     for ( i = 1;  i <= lenList;  i++ ) 
     {
@@ -517,24 +517,24 @@ void        PrList(Bag hdList)
             if (1 < i) 
             { 
                 //**INDENT**  Pr("%<,%< %2>", 0, 0);
-                SyFmtPrint(OUTFILE, ", ");
+                SyFmtPrint(stream, ", ");
             }
 
             //Print( hdElm );
-            PrintObj(OUTFILE, hdElm, 0);
+            PrintObj(stream, hdElm, indent);
         }
         else
         {
             if (1 < i)
             {
                 //**INDENT**  Pr("%2<,%2>", 0, 0); 
-                SyFmtPrint(OUTFILE, ", ");
+                SyFmtPrint(stream, ", ");
             }
         }
     }
 
     //**INDENT**  Pr("%4<]",0,0);
-    SyFmtPrint(OUTFILE, " ]");
+    SyFmtPrint(stream, " ]");
 }
 
 
@@ -1811,18 +1811,18 @@ Bag       EvAsssListLevel (Bag hdAss)
 **
 **  Linebreaks are preferred after the '['.
 */
-void        PrElmList(Bag hdSel)
+void PrElmList(FILE* stream, Obj hdSel, int indent)
 {
     //**INDENT** Pr("%2>",0,0); 
 
     //Print( PTR_BAG(hdSel)[0] );
-    PrintObj(OUTFILE, PTR_BAG(hdSel)[0], 0);
+    PrintObj(stream, PTR_BAG(hdSel)[0], indent);
     //**INDENT** Pr("%<[",0,0);
-    SyFmtPrint(OUTFILE, "([");
+    SyFmtPrint(stream, "([");
     //Print( PTR_BAG(hdSel)[1] );
-    PrintObj(OUTFILE, PTR_BAG(hdSel)[1], 0);
+    PrintObj(stream, PTR_BAG(hdSel)[1], indent);
     //**INDENT** Pr("%<]",0,0);
-    SyFmtPrint(OUTFILE, "]");
+    SyFmtPrint(stream, "]");
 }
 
 
@@ -1834,18 +1834,18 @@ void        PrElmList(Bag hdSel)
 **
 **  Linebreaks are preferred after the '{'.
 */
-void        PrElmsList(Bag hdSel)
+void PrElmsList(FILE* stream, Obj hdSel, int indent)
 {
     //**INDENT** Pr("%2>",0,0); 
 
     //Print( PTR_BAG(hdSel)[0] );
-    PrintObj(OUTFILE, PTR_BAG(hdSel)[0], 0);
+    PrintObj(stream, PTR_BAG(hdSel)[0], indent);
     //**INDENT** Pr("%<{",0,0);
-    SyFmtPrint(OUTFILE, "{");
+    SyFmtPrint(stream, "{");
     //Print( PTR_BAG(hdSel)[1] );
-    PrintObj(OUTFILE, PTR_BAG(hdSel)[1], 0);
+    PrintObj(stream, PTR_BAG(hdSel)[1], indent);
     //**INDENT** Pr("%<}",0,0);
-    SyFmtPrint(OUTFILE, "}");
+    SyFmtPrint(stream, "}");
 }
 
 
@@ -1857,16 +1857,16 @@ void        PrElmsList(Bag hdSel)
 **
 **  Linebreaks are preferred before the ':='.
 */
-void        PrAssList(Bag hdAss)
+void PrAssList(FILE* stream, Obj hdAss, int indent)
 {
     //**INDENT** Pr("%2>",0,0);    
 
     //Print( PTR_BAG(hdAss)[0] );
-    PrintObj(OUTFILE, PTR_BAG(hdAss)[0], 0);
+    PrintObj(stream, PTR_BAG(hdAss)[0], indent);
     //**INDENT** Pr("%< %>:= ",0,0); 
-    SyFmtPrint(OUTFILE, " := ");
+    SyFmtPrint(stream, " := ");
     //Print( PTR_BAG(hdAss)[1] );
-    PrintObj(OUTFILE, PTR_BAG(hdAss)[1], 0);
+    PrintObj(stream, PTR_BAG(hdAss)[1], indent);
     //**INDENT** Pr("%2<",0,0);
 
 }

@@ -94,8 +94,7 @@ extern  Bag       LtChar (
 **
 **  'PrChar' prints the character <hdChr>.
 */
-extern  void            PrChar (
-            Bag           hdChr );
+extern  void PrChar(FILE* stream, Obj hdChr, int indent);
 
 
 /****************************************************************************
@@ -323,8 +322,7 @@ extern  Bag       LtString (
 **  No linebreaks are allowed, if one must be inserted  anyhow,  it  must  be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-extern  void            PrString (
-            Bag           hdStr );
+extern void PrString (FILE* stream, Obj hdStr, int indent);
 
 
 /****************************************************************************
@@ -334,8 +332,7 @@ extern  void            PrString (
 **  'PrintString' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-extern  void            PrintString (
-            Bag           hdStr );
+extern void PrintString (Bag hdStr);
 
 
 /****************************************************************************

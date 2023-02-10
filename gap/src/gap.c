@@ -1444,6 +1444,8 @@ Bag       FunPrint(Bag hdCall)
     Int     i;
 	Int     type;
 
+    //GS4 -- Print Area expand indents and steams
+
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i )
     {

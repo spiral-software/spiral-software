@@ -1870,7 +1870,7 @@ Obj       FunUnbind(Obj hdCall)
 **  is the main dispatching table that contains for every type a  pointer  to
 **  the function that should be executed if a bag  of  that  type  is  found.
 */
-void        (*PrTab[T_ILLEGAL]) (Obj hd);
+void    (*PrTab[T_ILLEGAL]) (FILE* stream, Obj hd, int indent);
 
 
 /****************************************************************************
@@ -1897,6 +1897,8 @@ void    PrintObj(FILE* stream, Obj hd, int indent)
     /*
     
         indent    
+        -- this will be passed and handled on the Print from PrTab.
+        -- each object will handle it's own indent we just passing along
     
      int k;
      for(k = 0; k < indent; k++)
@@ -1949,7 +1951,7 @@ void    PrintObj(FILE* stream, Obj hd, int indent)
             }
 
             /* dispatch to the appropriate method                          */
-            (*PrTab[GET_TYPE_BAG(hd)]) (hd); 
+            (*PrTab[GET_TYPE_BAG(hd)]) (stream, hd, indent); 
 
             /* unmark object again                                         */
             if ((T_LIST <= GET_TYPE_BAG(hd) && GET_TYPE_BAG(hd) < T_VAR)
@@ -2056,12 +2058,12 @@ void    PrintObj(FILE* stream, Obj hd, int indent)
 **  If this is actually ever executed in GAP it  indicates  serious  trouble,
 **  for  example  that  the  type  field  of  a  bag  has  been  overwritten.
 */
-void        CantPrint(Obj hd)
+void CantPrint(Obj hd)
 {
     Error("Panic: can't print bag of type %d", (Int)GET_TYPE_BAG(hd), 0);
 }
 
-void        PrintBagType(Obj hd)
+void PrintBagType(FILE* stream, Obj hd, int indent)
 {
     //Pr("_bag_%d_", GET_TYPE_BAG(hd), 0);
     SyFmtPrint(OUTFILE, "_bag_%d_", GET_TYPE_BAG(hd));
@@ -2367,8 +2369,10 @@ void            InstBinOp(Bag(*table[EV_TAB_SIZE][EV_TAB_SIZE]) (), unsigned int
 **
 **  Installs the function <func> as printing function  for  bags  of  <type>.
 */
-void        InstPrFunc(unsigned int type, void (*func) (Bag))
+void        InstPrFunc(unsigned int type, void (*func) (FILE, Bag, int))
 {
+    //GS4 - Going through these. InstPrFunc needs to accept stream, hd, indent
+
     PrTab[type] = func;
 }
 

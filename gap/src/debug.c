@@ -55,6 +55,8 @@ static Obj (* OrigEvTab[ T_ILLEGAL ]) ( Obj hd );
 
 /* PrTab hooked by FunTop function in order to be able to highlight
 current statement while printing top function */
+
+//GS4 -- PRTab connected with this
 static void (* OrigPrTab[ T_ILLEGAL ]) ( Obj hd );
 
 static inline UInt isRetTrueFunc(Obj hdFunc) {
@@ -620,7 +622,7 @@ Int     TopPr_Printing;
 UInt    TopPr_CurDepth;
 UInt    TopPr_MaxDepth;
 
-static void TopPr ( Obj hd ) {
+static void TopPr (FILE* stream, Obj hd, int indent) {
     UInt hasFlag, highlight = 0; 
     if (hd==0 || IS_INTOBJ(hd)) {
         (*OrigPrTab[GET_TYPE_BAG(hd)])(hd);

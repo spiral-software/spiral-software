@@ -230,7 +230,7 @@ Int		IntToPrintBase(Obj op)
 	return i - 1;
 }
 
-void	PrInteger(Obj op)
+void	PrInteger(FILE* stream, Obj op, int indent)
 {
 	Int		i;           /* loop counter                    */
 
@@ -238,7 +238,7 @@ void	PrInteger(Obj op)
 	if (IS_INTOBJ(op)) 
 	{
 		//**INDENT** Pr("%>%d%<", INT_INTOBJ(op), 0);
-		SyFmtPrint(OUTFILE, "%d", INT_INTOBJ(op));
+		SyFmtPrint(stream, "%d", INT_INTOBJ(op));
 	} 
 	/* print a large integer                                               */
 	else if (SIZE_INT(op) < 1000) 
@@ -251,7 +251,7 @@ void	PrInteger(Obj op)
 		if (TNUM_OBJ(op) == T_INTNEG)
 		{
 			//Pr("-", 0, 0);
-			SyFmtPrint(OUTFILE, "-");
+			SyFmtPrint(stream, "-");
 		}
 
 		/* convert the integer into base PRINT_BASE                        */
@@ -259,12 +259,12 @@ void	PrInteger(Obj op)
 
 		/* print the base PRINT_BASE digits                                 */
 		//Pr("%d", (Int)PrIntD[i], 0);
-		SyFmtPrint(OUTFILE, "%d", (Int)PrIntD[i]);
+		SyFmtPrint(stream, "%d", (Int)PrIntD[i]);
 
 		while (i > 0)
 		{
 			//Pr(PRINT_FORMAT, (Int)PrIntD[--i], 0);
-			SyFmtPrint(OUTFILE, "%09d", (Int)PrIntD[--i]);
+			SyFmtPrint(stream, "%09d", (Int)PrIntD[--i]);
 		}
 
 		//**INDENT** Pr("%<", 0, 0);
@@ -274,7 +274,7 @@ void	PrInteger(Obj op)
 	else 
 	{
 		//Pr("<<an integer too large to be printed>>", 0, 0);
-		SyFmtPrint(OUTFILE, "<<an integer too large to be printed>>");
+		SyFmtPrint(stream, "<<an integer too large to be printed>>");
 	}
 }
 

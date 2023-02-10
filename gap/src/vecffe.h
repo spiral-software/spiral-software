@@ -559,8 +559,7 @@ extern  Bag       PowMatFFEInt (
 **
 **  'PrVecFFE' prints a vector.
 */
-extern  void            PrVecFFE (
-            Bag           hdList );
+extern  void PrVecFFE (FILE* stream, Obj hdList, int indent);
 
 
 /****************************************************************************

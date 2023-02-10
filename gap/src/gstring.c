@@ -139,49 +139,49 @@ Bag     LtChar(Bag hdL, Bag hdR)
 **
 **  'PrChar' prints the character <hdChr>.
 */
-void    PrChar(Bag hdChr)
+void    PrChar(FILE *stream, Obj hdChr, int indent)
 {
     unsigned char currChr = *(unsigned char*)PTR_BAG(hdChr);
 
     if (currChr == '\n') 
     { 
         //Pr("'\\n'", 0, 0);
-        SyFmtPrint(OUTFILE, "'\\n'");
+        SyFmtPrint(stream, "'\\n'");
     }
     else if (currChr == '\t') 
     {
         //Pr("'\\t'", 0, 0); 
-        SyFmtPrint(OUTFILE, "'\\t'");
+        SyFmtPrint(stream, "'\\t'");
     }
     else if (currChr == '\r') 
     {
         //Pr("'\\r'", 0, 0);
-        SyFmtPrint(OUTFILE, "'\\r'");
+        SyFmtPrint(stream, "'\\r'");
     }
     else if (currChr == '\b') 
     {
         //Pr("'\\b'", 0, 0); 
-        SyFmtPrint(OUTFILE, "'\\b'");
+        SyFmtPrint(stream, "'\\b'");
     }
     else if (currChr == '\03')
     { 
         //Pr("'\\c'", 0, 0); 
-        SyFmtPrint(OUTFILE, "'\\c'");
+        SyFmtPrint(stream, "'\\c'");
     }
     else if (currChr == '\'') 
     {
         //Pr("'\\''", 0, 0); 
-        SyFmtPrint(OUTFILE, "'\\''");
+        SyFmtPrint(stream, "'\\''");
     }
     else if (currChr == '\\') 
     { 
         //Pr("'\\\\'", 0, 0); 
-        SyFmtPrint(OUTFILE, "'\\\\'");
+        SyFmtPrint(stream, "'\\\\'");
     }
     else
     { 
         //Pr("'%c'", (Int)currChr, 0);
-        SyFmtPrint(OUTFILE, "'%c'", currChr);
+        SyFmtPrint(stream, "'%c'", currChr);
     }
 
 }
@@ -599,57 +599,57 @@ Bag     LtString(Bag hdL, Bag hdR)
 **  No linebreaks are allowed, if one must be inserted  anyhow,  it  must  be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-void        PrString(Bag hdStr)
+void PrString(FILE* stream, Obj hdStr, int indent)
 {
     char    *p;
 
     //Pr("\"",0,0);
-    SyFmtPrint(OUTFILE, "\"");
+    SyFmtPrint(stream, "\"");
     for ( p = (char*)PTR_BAG(hdStr); *p != '\0'; ++p ) 
     {
         if (*p == '\n') 
         {
             //Pr("\\n", 0, 0);
-            SyFmtPrint(OUTFILE, "\\n");
+            SyFmtPrint(stream, "\\n");
         }
         else if (*p == '\t')
         {
             //Pr("\\t", 0, 0); 
-            SyFmtPrint(OUTFILE, "\\t");
+            SyFmtPrint(stream, "\\t");
         }
         else if (*p == '\r') 
         { 
             //Pr("\\r", 0, 0);
-            SyFmtPrint(OUTFILE, "\\r");
+            SyFmtPrint(stream, "\\r");
         }
         else if (*p == '\b')
         { 
             //Pr("\\b", 0, 0);
-            SyFmtPrint(OUTFILE, "\\b");
+            SyFmtPrint(stream, "\\b");
         }
         else if (*p == '\03')
         { 
             //Pr("\\c", 0, 0); 
-            SyFmtPrint(OUTFILE, "\\c");
+            SyFmtPrint(stream, "\\c");
         }
         else if (*p == '"')
         {
             //Pr("\\\"", 0, 0); 
-            SyFmtPrint(OUTFILE, "\\\"");
+            SyFmtPrint(stream, "\\\"");
         }
         else if (*p == '\\')
         {
             //Pr("\\\\", 0, 0);
-            SyFmtPrint(OUTFILE, "\\\\");
+            SyFmtPrint(stream, "\\\\");
         }
         else 
         { 
             //Pr("%c", (Int)*p, 0);
-            SyFmtPrint(OUTFILE, "%c", *p);
+            SyFmtPrint(stream, "%c", *p);
         }
     }
     //Pr("\"",0,0);
-    SyFmtPrint(OUTFILE, "\"");
+    SyFmtPrint(stream, "\"");
 }
 
 

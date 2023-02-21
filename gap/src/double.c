@@ -331,7 +331,8 @@ Obj  EvDbl ( Obj hd ) { return hd; }
 
 
 
-void PrDbl ( Obj hd ) {
+void PrDbl(FILE *stream, Obj hd, int indent) 
+{
     char buf[30];
     double n = DBL_OBJ(hd);
     double intpart;
@@ -349,7 +350,7 @@ void PrDbl ( Obj hd ) {
     else
         snprintf(buf, sizeof(buf)/sizeof(char), "%.17g", DBL_OBJ(hd));
     //Pr("%s", (Int)buf, 0);
-    SyFmtPrint(OUTFILE, "%s", buf);
+    SyFmtPrint(stream, "%s", buf);
 }
 
 /****************************************************************************

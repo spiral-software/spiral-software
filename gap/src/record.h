@@ -449,7 +449,7 @@ extern  Bag       HdCallIn;
 **  'PrRec' is also called to print variable records, i.e., records that have
 **  not yet been evaluated.  They are always printed in the second form.
 */
-extern  void            PrRec ( Bag hdRec );
+extern  void    PrRec(FILE* stream, Obj hdRec, int indent);
 
 extern  Bag       HdCallPrint;
 
@@ -462,7 +462,7 @@ extern  Bag       HdCallPrint;
 **
 **  '<record> . <name>'
 */
-extern  void            PrRecElm ( Bag hdElm );
+extern  void    PrRecElm(FILE* stream, Obj hdElm, int indent);
 
 
 /****************************************************************************
@@ -473,7 +473,7 @@ extern  void            PrRecElm ( Bag hdElm );
 **
 **  '<record>.<name> := <expr>;'
 */
-extern  void            PrRecAss ( Bag hdAss );
+extern  void    PrRecAss(FILE* stream, Obj hdAss, int indent);
 
 
 /****************************************************************************
@@ -481,7 +481,7 @@ extern  void            PrRecAss ( Bag hdAss );
 *F  PrRecName( <hdName> ) . . . . . . . . . . . . . print a record field name
 **
 */
-extern  void            PrRecName ( Bag hdNam );
+extern  void    PrRecName(FILE* stream, Obj hdNam, int indent);
 
 
 /****************************************************************************

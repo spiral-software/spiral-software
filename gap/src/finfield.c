@@ -1209,9 +1209,9 @@ Bag       LtFFE (Bag hdL, Bag hdR)
 **
 **  'PrFFE' prints the finite field element <hdFFE>.
 */
-void            PrFFE (Bag hdFFE)
+void  PrFFE(FILE* stream, Obj hdFFE, int indent)
 {
-    PrFF( FLD_FFE(hdFFE), VAL_FFE(hdFFE) );
+    PrFF(stream, FLD_FFE(hdFFE), VAL_FFE(hdFFE), indent);
 }
 
 
@@ -1225,7 +1225,9 @@ void            PrFFE (Bag hdFFE)
 **  not call 'PrFFE' because it would have to create  finite  field  elements
 **  to do so and calling 'NewBag' from a printing procedure is forbidden.
 */
-void            PrFF (Bag hdField, unsigned int value)
+
+//GS4 -- End point
+void  PrFF(FILE* stream, Bag hdField, unsigned int value, int indent)
 {
     UInt       o;              /* order of the finite field       */
     UInt       p;              /* characteristic of finite field  */
@@ -1241,7 +1243,7 @@ void            PrFF (Bag hdField, unsigned int value)
     if ( value == 0 )
     {
         //**INDENT** Pr("%>0*Z(%>%d%2<)",(Int)p,0);
-        SyFmtPrint(OUTFILE, "0*Z( %d )", (Int)p);
+        SyFmtPrint(stream, "0*Z( %d )", (Int)p);
     }
 
     /* print a nonzero element as power of the primitive root              */
@@ -1259,23 +1261,23 @@ void            PrFF (Bag hdField, unsigned int value)
 
         /* print the element                                               */
         //**INDENT** Pr("%>Z(%>%d%<",(Int)p,0);
-        SyFmtPrint(OUTFILE, "Z(%d");
+        SyFmtPrint(stream, "Z(%d");
 
         if (d == 1) 
         {
             //**INDENT** Pr("%<)", 0, 0); 
-            SyFmtPrint(OUTFILE, ")");
+            SyFmtPrint(stream, ")");
         }
         else
         {
             //**INDENT** Pr("^%>%d%2<)", (Int)d, 0); 
-            SyFmtPrint(OUTFILE, "%d)", (Int)d);
+            SyFmtPrint(stream, "%d)", (Int)d);
         }
 
         if (value != 2)
         { 
             //**INDENT** Pr("^%>%d%<", (Int)value - 1, 0);
-            SyFmtPrint(OUTFILE, "^%d", (Int)value - 1);
+            SyFmtPrint(stream, "^%d", (Int)value - 1);
         }
 
     }

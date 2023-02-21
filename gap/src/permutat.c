@@ -2142,7 +2142,7 @@ Bag       LtQQ (Bag hdL, Bag hdR)
 **  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
 **  This is done, because it is forbidden to create new bags during printing.
 */
-void            PrPermP (Bag hdPerm)
+void  PrPermP(FILE *stream, Obj hdPerm, int indent)
 {
     UInt       degPerm;        /* degree of the permutation       */
     TypPoint16          * ptPerm;       /* pointer to the permutation      */
@@ -2202,14 +2202,14 @@ void            PrPermP (Bag hdPerm)
         if ( p == q && ptPerm[p] != p ) {
             isId = 0;
             //Pr(fmt1,(Int)(p+1),0);
-            SyFmtPrint(OUTFILE, fmt1, (Int)(p + 1));
+            SyFmtPrint(stream, fmt1, (Int)(p + 1));
             for (q = ptPerm[p]; q != p; q = ptPerm[q])
             {
                 //Pr(fmt2, (Int)(q + 1), 0);
-                SyFmtPrint(OUTFILE, fmt2, (Int)(q + 1));
+                SyFmtPrint(stream, fmt2, (Int)(q + 1));
             }
             //**INDENT** Pr("%<)",0,0);
-            SyFmtPrint(OUTFILE, ")");
+            SyFmtPrint(stream, ")");
         }
 
     }
@@ -2218,11 +2218,11 @@ void            PrPermP (Bag hdPerm)
     if (isId) 
     { 
         //Pr("()", 0, 0);
-        SyFmtPrint(OUTFILE, "()");
+        SyFmtPrint(stream, "()");
     }
 }
 
-void            PrPermQ (Bag hdPerm)
+void  PrPermQ(FILE* stream, Obj hdPerm, int indent)
 {
 
     UInt       degPerm;        /* degree of the permutation       */
@@ -2283,14 +2283,14 @@ void            PrPermQ (Bag hdPerm)
         if ( p == q && ptPerm[p] != p ) {
             isId = 0;
             //Pr(fmt1,(Int)(p+1),0);
-            SyFmtPrint(OUTFILE, fmt1, (Int)(p + 1));
+            SyFmtPrint(stream, fmt1, (Int)(p + 1));
             for (q = ptPerm[p]; q != p; q = ptPerm[q])
             {
                 //Pr(fmt2, (Int)(q + 1), 0);
-                SyFmtPrint(OUTFILE, fmt2, (Int)(q + 1));
+                SyFmtPrint(stream, fmt2, (Int)(q + 1));
             }
             //**INDENT**  Pr("%<)", 0, 0);
-            SyFmtPrint(OUTFILE, ")");
+            SyFmtPrint(stream, ")");
             
         }
 
@@ -2300,7 +2300,7 @@ void            PrPermQ (Bag hdPerm)
     if (isId)
     {
         //Pr("()", 0, 0);
-        SyFmtPrint(OUTFILE, "()");
+        SyFmtPrint(stream, "()");
     }
 }
 
@@ -2314,7 +2314,7 @@ void            PrPermQ (Bag hdPerm)
 **
 **  Linebreaks are prefered most after cycles and  next  most  after  commas.
 */
-void            PrMakeperm (Bag hdPerm)
+void  PrMakeperm(FILE* stream, Obj hdPerm, int indent)
 {
     Bag        hdCyc;          /* handle of one cycle             */
     UInt       i;           /* loop variables                  */
@@ -2324,7 +2324,7 @@ void            PrMakeperm (Bag hdPerm)
     for ( i = 0; i < GET_SIZE_BAG(hdPerm)/SIZE_HD; i++ )
     {
         //**INDENT** Pr("%>(",0,0);
-        SyFmtPrint(OUTFILE, "(");
+        SyFmtPrint(stream, "(");
 
         /* print all elements of that cycle                                */
         hdCyc = PTR_BAG(hdPerm)[i];
@@ -2333,18 +2333,18 @@ void            PrMakeperm (Bag hdPerm)
             //**INDENT** Pr("%>",0,0);
 
             //Print( PTR_BAG(hdCyc)[k] );
-            PrintObj(OUTFILE, PTR_BAG(hdCyc)[k], 0);
+            PrintObj(stream, PTR_BAG(hdCyc)[k], 0);
             //**INDENT** Pr("%<",0,0);
 
             if (k < GET_SIZE_BAG(hdCyc) / SIZE_HD - 1)
             { 
                 //Pr(",", 0, 0); 
-                SyFmtPrint(OUTFILE, ",");
+                SyFmtPrint(stream, ",");
             }
         }
 
         //**INDENT** Pr("%<)",0,0);
-        SyFmtPrint(OUTFILE, ")");
+        SyFmtPrint(stream, ")");
     }
 }
 

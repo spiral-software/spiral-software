@@ -157,7 +157,7 @@ extern  Bag       LtCyc ( Bag hdL, Bag hdR );
 **
 **  'PrCyc' prints the cyclotomic <hdCyc> in the standard form.
 */
-extern void            PrCyc ( Bag hdCyc );
+extern void  PrCyc(FILE* stream, Obj hdCyc, int indent);
 
 
 /****************************************************************************

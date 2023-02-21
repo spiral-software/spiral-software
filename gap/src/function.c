@@ -1201,10 +1201,10 @@ Bag FunApplyFunc (Bag hdCall)
 */
 /*ARGSUSED*/
 
-void            PrFuncint (Bag hdFun)
+void   PrFuncint(FILE *stream, Obj hdFun, int indent)
 {
     //**INDENT** Pr("%2>%s%2<", (Int) ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)), 0);
-    SyFmtPrint(OUTFILE, "%s", ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)));
+    SyFmtPrint(stream, "%s", ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)));
 }
 
 
@@ -1259,45 +1259,46 @@ int MaybePrintShortFunc (Bag hdFun, char *shortKeyword)
     else return 0;
 }
 
-void            PrFunc (Bag hdFun, char *keyword, char *shortKeyword)
+void  PrFunc(FILE *stream, Bag hdFun, char *keyword, char *shortKeyword, int indent)
 {
     short   nrArg;
     short   nrLoc;
     short   i;
 
+    //GS4 -- End Point? 
     if (MaybePrintShortFunc(hdFun, shortKeyword))
     {
         return;
     }
 
     //**INDENT** Pr("%5>%s%< ( %>",(Int)keyword,0);
-    SyFmtPrint(OUTFILE, "%s ( ", keyword);
+    SyFmtPrint(stream, "%s ( ", keyword);
 
     ACT_NUM_ARGS_FUNC(hdFun, nrArg);
 
     for ( i = 1; i <= nrArg; ++i ) {
 
         //Print( PTR_BAG(hdFun)[i] );
-        PrintObj(OUTFILE, PTR_BAG(hdFun)[i], 0);
+        PrintObj(stream, PTR_BAG(hdFun)[i], 0);
         if (i != nrArg) 
         {
             //**INDENT** Pr("%<, %>", 0, 0);
-            SyFmtPrint(OUTFILE, ", ");
+            SyFmtPrint(stream, ", ");
         }
     }
 
     //**INDENT** Pr(" %<)",0,0);
-    SyFmtPrint(OUTFILE, " )");
+    SyFmtPrint(stream, " )");
 
     if ( prFull == 0 ) 
     {
         //**INDENT** Pr(" ...%4< ",0,0);
-        SyFmtPrint(OUTFILE, " ... ");
+        SyFmtPrint(stream, " ... ");
     }
     else
     {
         //Pr("\n",0,0);
-        SyFmtPrint(OUTFILE, "\n");
+        SyFmtPrint(stream, "\n");
 
         nrLoc = ((short*)((char*)PTR_BAG(hdFun) + GET_SIZE_BAG(hdFun)))[-1];
         if (nrLoc < 0)
@@ -1308,35 +1309,36 @@ void            PrFunc (Bag hdFun, char *keyword, char *shortKeyword)
         if ( nrLoc >= 1 ) 
         {
             //**INDENT** Pr("%>local  ",0,0);
-            SyFmtPrint(OUTFILE, "local  ");
+            SyFmtPrint(stream, "local  ");
             for ( i = 1; i <= nrLoc; ++i ) 
             {
                 //Print( PTR_BAG(hdFun)[i+nrArg] );
-                PrintObj(OUTFILE, PTR_BAG(hdFun)[i + nrArg], 0);
+                PrintObj(stream, PTR_BAG(hdFun)[i + nrArg], 0);
                 if (i != nrLoc)
                 {
                     //**INDENT** Pr("%<, %>", 0, 0); 
-                    SyFmtPrint(OUTFILE, ", ");
+                    SyFmtPrint(stream, ", ");
                 }
             }
             //**INDENT** Pr("%<;\n",0,0);
-            SyFmtPrint(OUTFILE, ";\n");
+            SyFmtPrint(stream, ";\n");
         }
         //Print( PTR_BAG(hdFun)[0] );
-        PrintObj(OUTFILE, PTR_BAG(hdFun)[0], 0);
+        PrintObj(stream, PTR_BAG(hdFun)[0], 0);
         //**INDENT** Pr(";%4<\n",0,0);
-        SyFmtPrint(OUTFILE, ";\n");
+        SyFmtPrint(stream, ";\n");
     }
     //Pr("end",0,0);
-    SyFmtPrint(OUTFILE, "end");
+    SyFmtPrint(stream, "end");
 }
 
-void            PrFunction (Bag hdFun) {
-    PrFunc(hdFun, "function", "->");
+void  PrFunction(FILE* stream, Obj hdFun, int indent)
+{
+    PrFunc(stream, hdFun, "function", "->", indent);
 }
 
-void            PrMethod (Bag hdFun) {
-    PrFunc(hdFun, "meth", ">>");
+void   PrMethod(FILE* stream, Obj hdFun, int indent) {
+    PrFunc(stream, hdFun, "meth", ">>", indent);
 }
 
 /****************************************************************************
@@ -1350,7 +1352,7 @@ void            PrMethod (Bag hdFun) {
 void            PrintFunction (Bag hdFun)
 {
     prFull = NUM_TO_INT(1);
-    PrFunction( hdFun );
+    PrFunction(OUTFILE, hdFun , 0); 
     prFull = 0;
 }
 
@@ -1363,7 +1365,7 @@ void            PrintFunction (Bag hdFun)
 void            PrintMethod (Bag hdFun)
 {
 	prFull = NUM_TO_INT(1);
-	PrMethod(hdFun);
+	PrMethod(OUTFILE, hdFun, 0);
 	prFull = 0;
 }
 
@@ -1377,7 +1379,7 @@ void            PrintMethod (Bag hdFun)
 **  Linebreaks are preffered after the opening  parenthesis  and  the  commas
 **  between the arguments.
 */
-void            PrFunccall (Bag hdCall)
+void  PrFunccall(FILE *stream, Obj hdCall, int indent)
 {
     Int     i;
     Int     start = 1;
@@ -1389,23 +1391,23 @@ void            PrFunccall (Bag hdCall)
 
     //**INDENT** Pr("%2>",0,0);  
     //Print( PTR_BAG(hdCall)[0] ); 
-    PrintObj(OUTFILE, PTR_BAG(hdCall)[0], 0);
+    PrintObj(stream, PTR_BAG(hdCall)[0], 0);
     //**INDENT** Pr("%<(%>",0,0);
-    SyFmtPrint(OUTFILE, "(");
+    SyFmtPrint(stream, "(");
 
     for ( i = start; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) 
     {
         //Print( PTR_BAG(hdCall)[i] );
-        PrintObj(OUTFILE, PTR_BAG(hdCall)[i], 0);
+        PrintObj(stream, PTR_BAG(hdCall)[i], 0);
         if (i != GET_SIZE_BAG(hdCall) / SIZE_HD - 1)
         {
             //**INDENT** Pr("%<, %>", 0, 0);
-            SyFmtPrint(OUTFILE, ", ");
+            SyFmtPrint(stream, ", ");
         }
     }
     
     //**INDENT** Pr("%2<)",0,0);
-    SyFmtPrint(OUTFILE, ")");
+    SyFmtPrint(stream, ")");
 }
 
 
@@ -1416,21 +1418,21 @@ void            PrFunccall (Bag hdCall)
 **  'PrReturn' prints the return statement with the  handle  <hdRet>  in  the
 **  usual form 'return;' or 'return <expr>;'.
 */
-void            PrReturn (Bag hdRet)
+void   PrReturn(FILE *stream, Obj hdRet, int indent)
 {
     if ( PTR_BAG(hdRet)[0] == HdReturn ) {
         //Pr("quit",0,0);
-        SyFmtPrint(OUTFILE, "quit");
+        SyFmtPrint(stream, "quit");
     }
     else if ( PTR_BAG(hdRet)[0] == HdVoid ) {
         //Pr("return",0,0);
-        SyFmtPrint(OUTFILE, "return");
+        SyFmtPrint(stream, "return");
     }
     else {
         //**INDENT** Pr("%2>return%< %>",0,0);
-        SyFmtPrint(OUTFILE, " return ");
+        SyFmtPrint(stream, " return ");
         //Print( PTR_BAG(hdRet)[0] );
-        PrintObj(OUTFILE, PTR_BAG(hdRet)[0], 0);
+        PrintObj(stream, PTR_BAG(hdRet)[0], 0);
         //**INDENT** Pr("%2<",0,0);
     }
 }

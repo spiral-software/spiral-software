@@ -575,7 +575,7 @@ extern  Bag       LtBool ( Bag hdL, Bag hdR );
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-extern  void            PrBool ( Bag hd );
+extern  void   PrBool(FILE* stream, Obj hd, int indent);
 
 
 /****************************************************************************
@@ -706,7 +706,7 @@ extern  void            CantPrint ( Bag hd );
 *F  PrVarName( <string> )  . . prints identifier, escaping special characters
 **
 */
-extern  void            PrVarName ( char * name );
+extern  void  PrVarName(char * name );
   
 /****************************************************************************
 **
@@ -715,7 +715,7 @@ extern  void            PrVarName ( char * name );
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
 */
-extern  void            PrVar ( Bag hdVar );
+extern  void  PrVar(FILE* stream, Obj hdVar, int indent);
 
 
 /****************************************************************************
@@ -726,7 +726,7 @@ extern  void            PrVar ( Bag hdVar );
 **
 **  Linebreaks are preffered before the ':='.
 */
-extern  void            PrVarAss ( Bag hdAss );
+extern  void   PrVarAss(FILE* stream, Obj hdAss, int indent);
 
 
 /****************************************************************************
@@ -735,7 +735,7 @@ extern  void            PrVarAss ( Bag hdAss );
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
-extern  void            PrNot ( Bag hdNot );
+extern  void   PrNot(FILE* stream, Obj hdNot, int indent);
 
 
 /****************************************************************************
@@ -744,7 +744,7 @@ extern  void            PrNot ( Bag hdNot );
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */
-extern  void            PrBinop ( Bag hdOp );
+extern  void   PrBinop(FILE* stream, Obj hdOp, int indent);
 
 
 /****************************************************************************
@@ -753,7 +753,7 @@ extern  void            PrBinop ( Bag hdOp );
 **
 **  This prints a commutator.
 */
-extern  void            PrComm ( Bag hd );
+extern  void  PrComm(FILE* stream, Obj hd, int indent);
 
 
 /****************************************************************************

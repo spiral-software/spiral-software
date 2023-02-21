@@ -999,16 +999,16 @@ Bag       LtWord (Bag hdL, Bag hdR)
 **  'PrSword' prints a sparse word in generators/exponent form. The empty word
 **  is printed as "IdAgWord".
 */
-void        PrSword (Bag hdWrd)
+void PrSword(FILE* stream, Obj hdWrd, int indent)
 {
-    Bag       * ptLst;
-    TypSword        * ptWrd;
+    Bag         *ptLst;
+    TypSword    *ptWrd;
 
     ptWrd = (TypSword*)( PTR_BAG( hdWrd ) + 1 );
     if ( ptWrd[ 0 ] == -1 )
     {
         //Pr( "IdWord",  0,  0 );
-        SyFmtPrint(OUTFILE, "IdWord");
+        SyFmtPrint(stream, "IdWord");
     }
     else
     {
@@ -1021,12 +1021,12 @@ void        PrSword (Bag hdWrd)
         if (ptWrd[1] == 1)
         {
             //Pr( "%s", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]])+1)+1),  0 );
-            SyFmtPrint(OUTFILE, "%s", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1));
+            SyFmtPrint(stream, "%s", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1));
         }
         else
         {
             //Pr("%s^%d", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), ptWrd[1]);
-            SyFmtPrint(OUTFILE, "%s^%d", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), (Int)ptWrd[1]);
+            SyFmtPrint(stream, "%s^%d", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), (Int)ptWrd[1]);
         }
 
         ptWrd += 2;
@@ -1035,12 +1035,12 @@ void        PrSword (Bag hdWrd)
             if (ptWrd[1] != 1)
             {
                 //Pr("*%s^%d", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), ptWrd[1]);
-                SyFmtPrint(OUTFILE, "*%s^%d", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), (Int)ptWrd[1]);
+                SyFmtPrint(stream, "*%s^%d", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), (Int)ptWrd[1]);
             }
             else
             {
                 //Pr("*%s", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), 0);
-                SyFmtPrint(OUTFILE, "*%s", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1));
+                SyFmtPrint(stream, "*%s", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1));
             }
             ptWrd += 2;
         }
@@ -1056,15 +1056,18 @@ void        PrSword (Bag hdWrd)
 **  words are printed  in  generators/exponent  form,  ie,  "a^-1*a^-1*b"  is
 **  printed as "a^-2 * b".
 */
-void            PrWord (Bag hdWrd)
+void    PrWord (FILE* stream, Obj hdWrd, int indent)
 {
-    Int            nr, i, exp;
+    Int     nr;
+    Int     i;
+    Int     exp;
 
     nr = GET_SIZE_BAG( hdWrd ) / SIZE_HD;
+
     if ( nr == 0 )
     {
         //Pr( "IdWord",  0,  0 );
-        SyFmtPrint(OUTFILE, "IdWord");
+        SyFmtPrint(stream, "IdWord");
     }
     else
     {
@@ -1074,7 +1077,7 @@ void            PrWord (Bag hdWrd)
             if (PTR_BAG(hdWrd)[i] == 0)
             {
                 //Pr("~", 0, 0);
-                SyFmtPrint(OUTFILE, "~");
+                SyFmtPrint(stream, "~");
             }
             else
             {
@@ -1094,18 +1097,18 @@ void            PrWord (Bag hdWrd)
                if (exp == 1)
                {
                    //Pr("%s", (Int)((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1),  0);
-                   SyFmtPrint(OUTFILE, "%s", ((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1));
+                   SyFmtPrint(stream, "%s", ((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1));
                }
                else
                {
                    //Pr("%s^%d", (Int)((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1), (Int)exp);
-                   SyFmtPrint(OUTFILE, "%s^%d", ((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1), (Int)exp);
+                   SyFmtPrint(stream, "%s^%d", ((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1), (Int)exp);
                }
             }
             if (i != nr - 1)
             {
                 //Pr("*", 0, 0);
-                SyFmtPrint(OUTFILE, "*");
+                SyFmtPrint(stream, "*");
             }
             i++;
         }

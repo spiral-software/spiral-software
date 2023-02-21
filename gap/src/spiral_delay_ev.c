@@ -744,28 +744,30 @@ Obj  EvDelay ( Obj hd ) { return hd; }
 Obj  EvVarMap( Obj hd ) { return hd; } 
 
 extern Int prFull;
-void PrDelay ( Obj hd ) {
+void    PrDelay(FILE* stream, Obj hd, int indent) 
+{
     /* print function bags in the full form, so that output is reparseable */
     prFull = 1; 
     //**INDENT** Pr("%2>D(",0,0);
-    SyFmtPrint(OUTFILE, "D(");
+    SyFmtPrint(stream, "D(");
     //Print(ExprFromDelay(hd));
-    PrintObj(OUTFILE, ExprFromDelay(hd), 0);
+    PrintObj(stream, ExprFromDelay(hd), 0);
     //**INDENT** Pr(")%2<",0,0);
-    SyFmtPrint(OUTFILE, ")");
+    SyFmtPrint(stream, ")");
     prFull = 0;
 }
 
-void PrVarMap ( Obj hd ) {
+void    PrVarMap(FILE* stream, Obj hd, int indent)
+{
     //**INDENT** Pr("%2>",0,0);
 
     //Print(PTR_BAG(hd)[0]);
-    PrintObj(OUTFILE, PTR_BAG(hd)[0], 0);
+    PrintObj(stream, PTR_BAG(hd)[0], 0);
 
     //**INDENT** Pr("%< %>=> ",0,0);
-    SyFmtPrint(OUTFILE, " => ");
+    SyFmtPrint(stream, " => ");
     //Print(PTR_BAG(hd)[1]);
-    PrintObj(OUTFILE, PTR_BAG(hd)[1], 0);
+    PrintObj(stream, PTR_BAG(hd)[1], 0);
     //**INDENT** Pr("%2<",0,0);
 
 }

@@ -1120,7 +1120,8 @@ Obj DefaultPrRec ( Obj hdRec ) {
     return HdVoid;
 }
 
-void  PrRec ( Obj hdRec ) {
+void    PrRec(FILE* stream, Obj hdRec, int indent) 
+{
     EvUnaryRecOperator(HdRnPrint, "~.operations.Print", hdRec, DefaultPrRec);
 }
 
@@ -1132,19 +1133,19 @@ void  PrRec ( Obj hdRec ) {
 **
 **  '<record> . <name>'
 */
-void            PrRecElm (Bag hdElm)
+void    PrRecElm(FILE* stream, Obj hdElm, int indent)
 {
     /* print the record                                                    */
     //**INDENT**  Pr( "%>", 0, 0 );
 
     //Print( PTR_BAG(hdElm)[0] );
-    PrintObj(OUTFILE, PTR_BAG(hdElm)[0], 0);
+    PrintObj(stream, PTR_BAG(hdElm)[0], 0);
     /* print an ordinary record name                                       */
     if ( GET_TYPE_BAG( PTR_BAG(hdElm)[1] ) == T_RECNAM )
     {
         char * name = RECNAM_NAME( PTR_BAG(hdElm)[1] );
         //**INDENT**  Pr("%<.%>",0,0);
-        SyFmtPrint(OUTFILE, ".");
+        SyFmtPrint(stream, ".");
         PrVarName(name);
         //**INDENT**  Pr("%<",0,0);
     }
@@ -1152,11 +1153,11 @@ void            PrRecElm (Bag hdElm)
     else
     {
         //**INDENT**  Pr( "%<.%>(", 0, 0 );
-        SyFmtPrint(OUTFILE, ".(");
+        SyFmtPrint(stream, ".(");
         //Print( PTR_BAG(hdElm)[1] );
-        PrintObj(OUTFILE, PTR_BAG(hdElm)[1], 0);
+        PrintObj(stream, PTR_BAG(hdElm)[1], 0);
         //**INDENT**  Pr( ")%<", 0, 0 );
-        SyFmtPrint(OUTFILE, ")");
+        SyFmtPrint(stream, ")");
     }
 }
 
@@ -1169,16 +1170,16 @@ void            PrRecElm (Bag hdElm)
 **
 **  '<record>.<name> := <expr>;'
 */
-void            PrRecAss (Bag hdAss)
+void    PrRecAss(FILE* stream, Obj hdAss, int indent)
 {
     //**INDENT**  Pr( "%2>", 0, 0 );
 
     //Print( PTR_BAG(hdAss)[0] );
-    PrintObj(OUTFILE, PTR_BAG(hdAss)[0], 0);
+    PrintObj(stream, PTR_BAG(hdAss)[0], 0);
     //**INDENT**  Pr( "%< %>:= ", 0, 0 );
-    SyFmtPrint(OUTFILE, " := ");
+    SyFmtPrint(stream, " := ");
     //Print( PTR_BAG(hdAss)[1] );
-    PrintObj(OUTFILE, PTR_BAG(hdAss)[1], 0);
+    PrintObj(stream, PTR_BAG(hdAss)[1], 0);
     //**INDENT**  Pr( "%2<", 0, 0 );
 
 }
@@ -1189,13 +1190,13 @@ void            PrRecAss (Bag hdAss)
 *F  PrRecName( <hdName> ) . . . . . . . . . . . . . print a record field name
 **
 */
-void            PrRecName (Bag hdNam)
+void    PrRecName(FILE* stream, Obj hdNam, int indent)
 {
     //Pr("RecName(\"", 0, 0);
-    SyFmtPrint(OUTFILE, "RecName(\"");
+    SyFmtPrint(stream, "RecName(\"");
     PrVarName(RECNAM_NAME(hdNam));
     //Pr("\")", 0, 0);
-    SyFmtPrint(OUTFILE, "\")");
+    SyFmtPrint(stream, "\")");
 }
 
 

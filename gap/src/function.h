@@ -278,7 +278,7 @@ Bag       FunProfile ( Bag hdCall );
 **  'PrFuncint' prints the internal function with the handle  <hdFun> in  the
 **  short form: 'function (...) internal; end'.
 */
-void            PrFuncint ( Bag hdFun );
+void  PrFuncint(FILE* stream, Obj hdFun, int indent);
 
 
 /****************************************************************************
@@ -300,8 +300,8 @@ void            PrFuncint ( Bag hdFun );
 **
 **  otherwise.
 */
-void            PrFunction ( Bag hdFun );
-void            PrMethod   ( Bag hdFun );
+void   PrFunction(FILE *stream, Obj hdFun, int indent);
+void   PrMethod(FILE *stream, Obj hdFun, int indent);
 
 
 /****************************************************************************
@@ -333,7 +333,7 @@ void            PrintMethod ( Bag hdFun );
 **  Linebreaks are preffered after the opening  parenthesis  and  the  commas
 **  between the arguments.
 */
-void            PrFunccall ( Bag hdCall );
+void  PrFunccall(FILE *stream, Obj hdCall, int indent);
 
 
 /****************************************************************************
@@ -343,7 +343,7 @@ void            PrFunccall ( Bag hdCall );
 **  'PrReturn' prints the return statement with the  handle  <hdRet>  in  the
 **  usual form 'return;' or 'return <expr>;'.
 */
-void            PrReturn ( Bag hdRet );
+void PrReturn(FILE *stream, Obj hdRet, int indent);
 
 
 /****************************************************************************

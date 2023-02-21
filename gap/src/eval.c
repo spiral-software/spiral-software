@@ -1305,17 +1305,17 @@ Obj       LtPtr(Obj hdL, Obj hdR)
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-void        PrBool(Obj hd)
+void        PrBool(FILE* stream, Obj hd, int indent)
 {
     if (hd == HdTrue) 
     {
         //Pr("true", 0, 0);
-        SyFmtPrint(OUTFILE, "true");
+        SyFmtPrint(stream, "true");
     }
     else
     { 
         //Pr("false", 0, 0); 
-        SyFmtPrint(OUTFILE, "false");
+        SyFmtPrint(stream, "false");
     }
 }
 
@@ -2066,7 +2066,7 @@ void CantPrint(Obj hd)
 void PrintBagType(FILE* stream, Obj hd, int indent)
 {
     //Pr("_bag_%d_", GET_TYPE_BAG(hd), 0);
-    SyFmtPrint(OUTFILE, "_bag_%d_", GET_TYPE_BAG(hd));
+    SyFmtPrint(stream, "_bag_%d_", GET_TYPE_BAG(hd));
 }
 
 /****************************************************************************
@@ -2076,7 +2076,7 @@ void PrintBagType(FILE* stream, Obj hd, int indent)
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
 */
-void        PrVar(Obj hdVar)
+void        PrVar(FILE* stream, Obj hdVar, int indent)
 {
     char* name = VAR_NAME(hdVar);
     PrVarName(name);
@@ -2129,16 +2129,16 @@ void        PrVarName(char* name)
 **
 **  Linebreaks are preffered before the ':='.
 */
-void        PrVarAss(Obj hdAss)
+void        PrVarAss(FILE* stream, Obj hdAss, int indent)
 {
     //**INDENT** Pr("%2>", 0, 0);
 
     //Print(PTR_BAG(hdAss)[0]);
-    PrintObj(OUTFILE, PTR_BAG(hdAss)[0], 0);
+    PrintObj(stream, PTR_BAG(hdAss)[0], 0);
     //**INDENT**  Pr("%< %>:= ", 0, 0);
-    SyFmtPrint(OUTFILE, " := ");
+    SyFmtPrint(stream, " := ");
     //Print(PTR_BAG(hdAss)[1]);
-    PrintObj(OUTFILE, PTR_BAG(hdAss)[1], 0);
+    PrintObj(stream, PTR_BAG(hdAss)[1], 0);
     //**INDENT** Pr("%2<", 0, 0);
 
 }
@@ -2166,16 +2166,16 @@ Int     prPrec;
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
-void        PrNot(Obj hdNot)
+void    PrNot(FILE* stream, Obj hdNot, int indent)
 {
     Int     oldPrec;
 
     oldPrec = prPrec;
     prPrec = 4;
     //**INDENT** Pr("not%> ", 0, 0);
-    SyFmtPrint(OUTFILE, "not ");
+    SyFmtPrint(stream, "not ");
     //Print(PTR_BAG(hdNot)[0]);
-    PrintObj(OUTFILE, PTR_BAG(hdNot)[0], 0);
+    PrintObj(stream, PTR_BAG(hdNot)[0], 0);
     //**INDENT** Pr("%<", 0, 0);
 
     prPrec = oldPrec;
@@ -2188,7 +2188,7 @@ void        PrNot(Obj hdNot)
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */
-void        PrBinop(Obj hdOp)
+void        PrBinop(FILE* stream, Obj hdOp, int indent)
 {
     char    *op;
     Int      oldPrec = prPrec;
@@ -2272,7 +2272,7 @@ void        PrBinop(Obj hdOp)
     if (oldPrec > prPrec)
     {
         //**INDENT** Pr("%>(%>", 0, 0); 
-        SyFmtPrint(OUTFILE, "(");
+        SyFmtPrint(stream, "(");
     }
     else 
     { 
@@ -2283,30 +2283,30 @@ void        PrBinop(Obj hdOp)
             || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG))
     {
         //Pr("(", 0, 0);
-        SyFmtPrint(OUTFILE, "(");
+        SyFmtPrint(stream, "(");
     }
 
     //Print(PTR_BAG(hdOp)[0]);
-    PrintObj(OUTFILE, PTR_BAG(hdOp)[0], 0);
+    PrintObj(stream, PTR_BAG(hdOp)[0], 0);
 
     if (GET_TYPE_BAG(hdOp) == T_POW
         && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
             || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG))
     {
         //Pr(")", 0, 0);
-        SyFmtPrint(OUTFILE, ")");
+        SyFmtPrint(stream, ")");
     }
 
     //**INDENT** Pr("%2< %2>%s%> %<", (Int)op, 0);
-    SyFmtPrint(OUTFILE, " %s ", op);
+    SyFmtPrint(stream, " %s ", op);
     ++prPrec;
     //Print(PTR_BAG(hdOp)[1]);
-    PrintObj(OUTFILE, PTR_BAG(hdOp)[1], 0);
+    PrintObj(stream, PTR_BAG(hdOp)[1], 0);
     --prPrec;
     if (oldPrec > prPrec)
     { 
         //**INDENT** Pr("%2<)", 0, 0); 
-        SyFmtPrint(OUTFILE, ")");
+        SyFmtPrint(stream, ")");
     }
     else 
     {
@@ -2323,18 +2323,18 @@ void        PrBinop(Obj hdOp)
 **
 **  This prints a commutator.
 */
-void        PrComm(Obj hd)
+void        PrComm(FILE* stream, Obj hd, int indent)
 {
     //**INDENT** Pr("%>Comm(%> ", 0, 0);
-    SyFmtPrint(OUTFILE, "Comm(");
+    SyFmtPrint(stream, "Comm(");
     //Print(PTR_BAG(hd)[0]);
-    PrintObj(OUTFILE, PTR_BAG(hd)[0], 0);
+    PrintObj(stream, PTR_BAG(hd)[0], 0);
     //**INDENT** Pr("%<,%>", 0, 0);
-    SyFmtPrint(OUTFILE, " , ");
+    SyFmtPrint(stream, " , ");
     //Print(PTR_BAG(hd)[1]);
-    PrintObj(OUTFILE, PTR_BAG(hd)[1], 0);
+    PrintObj(stream, PTR_BAG(hd)[1], 0);
     //**INDENT** Pr("%2<)", 0, 0);
-    SyFmtPrint(OUTFILE, ")");
+    SyFmtPrint(stream, ")");
 }
 
 
@@ -2594,14 +2594,14 @@ Obj EvMakeLet(Obj hd) {
     return res;
 }
 
-void PrMakeLet(Obj hd) {
+void PrMakeLet(FILE* stream, Obj hd, int indent) {
     UInt    size = TableNumEnt(hd) - 1;
     UInt    lenres;
     UInt    i;
     Obj     res;
 
     //**INDENT** Pr("let(%2>", 0, 0);
-    SyFmtPrint(OUTFILE, "let(");
+    SyFmtPrint(stream, "let(");
 
     /* evaluate all variables and set their values */    
     for (i = 0; i < size; ++i) 
@@ -2609,10 +2609,10 @@ void PrMakeLet(Obj hd) {
         Obj var = PTR_BAG(hd)[i];
         Obj uneval = PTR_BAG(var)[1];
         //**INDENT**  Pr("%g := %2>%g%2<,\n", (Int)var, (Int)uneval);
-        PrintObj(OUTFILE, var, 0);
-        SyFmtPrint(OUTFILE, " := ");
-        PrintObj(OUTFILE, uneval, 0);
-        SyFmtPrint(OUTFILE, ",\n");
+        PrintObj(stream, var, 0);
+        SyFmtPrint(stream, " := ");
+        PrintObj(stream, uneval, 0);
+        SyFmtPrint(stream, ",\n");
     }
 
     res = PTR_BAG(PTR_BAG(hd)[size])[1];
@@ -2622,20 +2622,20 @@ void PrMakeLet(Obj hd) {
     for (i = 1; i <= lenres - 1; ++i) 
     {
         //**INDENT** Pr("%2>%g%2<, ", (Int)PTR_BAG(res)[i], 0);
-        PrintObj(OUTFILE, PTR_BAG(res)[i], 0);
-        SyFmtPrint(OUTFILE, ", ");
+        PrintObj(stream, PTR_BAG(res)[i], 0);
+        SyFmtPrint(stream, ", ");
     }
 
     /* and the final expression without trailing comma */
     if (lenres >= 1) 
     {
         //**INDENT** Pr("%2>%g%2< ", (Int)PTR_BAG(res)[lenres], 0);
-        PrintObj(OUTFILE, PTR_BAG(res)[lenres], 0);
-        SyFmtPrint(OUTFILE, " ");
+        PrintObj(stream, PTR_BAG(res)[lenres], 0);
+        SyFmtPrint(stream, " ");
     }
 
     //**INDENT** Pr("%2<)\n", 0, 0);
-    SyFmtPrint(OUTFILE, ")\n");
+    SyFmtPrint(stream, ")\n");
 }
 
 

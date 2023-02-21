@@ -2651,7 +2651,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 #if ! PRINT_AG
 
     /** Print T_AGWORD in generator-exponent-form. *************************/
-    void        PrAgWord (Bag hdAgWord)
+    void  PrAgWord(FILE* stream, Obj hdAgWord, int indent)
 {
         TypSword        * pt, * ptEnd;
         Bag       hdAgGroup;
@@ -2659,7 +2659,7 @@ Bag       FunCollectorProfile (Bag hdCall)
         if (ISID_AW(hdAgWord))
         {
             //Pr("IdAgWord", 0, 0);
-            SyFmtPrint(OUTFILE, "IdAgWord");
+            SyFmtPrint(stream, "IdAgWord");
         }
         else
         {
@@ -2669,56 +2669,58 @@ Bag       FunCollectorProfile (Bag hdCall)
             while ( pt < ptEnd )
             {
                 //**INDENT**Pr( "%>%s", (Int) NAME_AW( hdAgGroup, *pt++ ), 0 );
-                SyFmtPrint(OUTFILE, "%s", NAME_AW(hdAgGroup, *pt++));
+                SyFmtPrint(stream, "%s", NAME_AW(hdAgGroup, *pt++));
                 if (*pt != 1)
                 {
                     //Pr("^%d", (Int)*pt, 0);
-                    SyFmtPrint(OUTFILE, "^%d", (Int)*pt);
+                    SyFmtPrint(stream, "^%d", (Int)*pt);
                 }
                 //**INDENT**Pr( "*%<", 0, 0 );
-                SyFmtPrint(OUTFILE, "*");
+                SyFmtPrint(stream, "*");
                 pt++;
             }
             //**INDENT**Pr( "%>%s", (Int) NAME_AW( hdAgGroup, *pt++ ), 0 );
-            SyFmtPrint(OUTFILE, "%s", NAME_AW(hdAgGroup, *pt++));
+            SyFmtPrint(stream, "%s", NAME_AW(hdAgGroup, *pt++));
             if (*pt != 1)
             {
                 //Pr("^%d", (Int)*pt, 0);
-                SyFmtPrint(OUTFILE, "^%d", (Int)*pt);
+                SyFmtPrint(stream, "^%d", (Int)*pt);
             }
             //**INDENT**Pr ("%<", 0, 0 );
         }
     }
 #else
-
+    //GS4 -- Confusing 
     /** Print T_AGWORD in tuple form. **************************************/
-    void    PrAgWord( hdAgWord )
-        Bag       hdAgWord;
+    void    PrAgWord(stream ,hdAgWord ,indent)
+        FILE* stream;
+        Obj hdAgWord; 
+        int indent;
     {
         TypSword        * pt, * ptEnd;
 
         /** <hdAgWord> has a group, print the handle  of  this  group ******/
         /** followed by all entries.                                  ******/
         //**INDENT** Pr( "%>agword( %>%d; %<", (Int) *PTR_BAG( hdAgWord ) / NUM_TO_INT(4), 0 );
-        SyFmtPrint(OUTFILE, "agword( %d; ", (Int)*PTR_BAG(hdAgWord) / NUM_TO_INT(4));
+        SyFmtPrint(stream, "agword( %d; ", (Int)*PTR_BAG(hdAgWord) / NUM_TO_INT(4));
         pt    = PTR_AW( hdAgWord );
         ptEnd = (TypSword*)( (char*) PTR_BAG( hdAgWord ) + GET_SIZE_BAG( hdAgWord ) );
         while ( pt < ptEnd - 1 )
         {
             //**INDENT** Pr( "%>%d, %<", (Int) *pt++, 0 );
-            SyFmtPrint(OUTFILE, "%d, ", (Int)*pt++);
+            SyFmtPrint(stream, "%d, ", (Int)*pt++);
             //**INDENT** Pr( "%>%d; %<", (Int) *pt++, 0 );
-            SyFmtPrint(OUTFILE, "%d; ", (Int)*pt++);
+            SyFmtPrint(stream, "%d; ", (Int)*pt++);
         }
         if (pt < ptEnd)
         {
             //**INDENT** Pr("%d )%<", (Int)*pt, 0);
-            SyFmtPrint(OUTFILE, "%d )", (Int)*pt);
+            SyFmtPrint(stream, "%d )", (Int)*pt);
         }
         else
         {
             //**INDENT** Pr(")%<", 0, 0);
-            SyFmtPrint(OUTFILE, ")");
+            SyFmtPrint(stream, ")");
         }
     }
 #endif
@@ -2734,7 +2736,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 */
 #if PRINT_AG | GROUP_REC
 
-    void        PrAgExp(Bag hdAgExp)
+void        PrAgExp(FILE* stream, Obj hdAgExp, int indent)
 {
         TypExp          * pt, * ptEnd;
 
@@ -2744,21 +2746,21 @@ Bag       FunCollectorProfile (Bag hdCall)
         {
             /** No generator so just print '( )'.  *************************/
             //**INDENT** Pr("%>agexp( )%<", 0, 0);
-            SyFmtPrint(OUTFILE, "agexp( )");
+            SyFmtPrint(stream, "agexp( )");
         }
         else
         {
 
             /** Print a tuple '(1, 2, ... )'. ******************************/
             //**INDENT** Pr( "%>agexp( %<", 0, 0 );
-            SyFmtPrint(OUTFILE, "agexp( ");
+            SyFmtPrint(stream, "agexp( ");
             while (pt < ptEnd - 1)
             {
                 //**INDENT** Pr("%>%d, %<", (Int)(*pt++), 0);
-                SyFmtPrint(OUTFILE, "%d, ", (Int)(*pt++));
+                SyFmtPrint(stream, "%d, ", (Int)(*pt++));
             }
             //**INDENT** Pr( "%>%d )%<", (Int) *pt, 0 );
-            SyFmtPrint(OUTFILE, "%d )", (Int)*pt);
+            SyFmtPrint(stream, "%d )", (Int)*pt);
         }
     }
 
@@ -2776,7 +2778,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 */
 #if PRINT_AG | GROUP_REC
 
-    void        PrAgList(Bag hdAgList)
+void        PrAgList(FILE* stream, Obj hdAgList, int indent)
 {
         TypSword        * pt, * ptEnd;
         int             toggle;
@@ -2788,7 +2790,7 @@ Bag       FunCollectorProfile (Bag hdCall)
         
             /** No generator so just print '( )'. **************************/
             //**INDENT** Pr("%>aglist( )%<", 0, 0);
-            SyFmtPrint(OUTFILE, "aglist( )");
+            SyFmtPrint(stream, "aglist( )");
 
         }
         else
@@ -2797,23 +2799,23 @@ Bag       FunCollectorProfile (Bag hdCall)
             /** Print a tuple '(1, 2; ... )'. ******************************/
             toggle = 0;
             //**INDENT** Pr( "%>aglist( %<", 0, 0 );
-            SyFmtPrint(OUTFILE, "aglist( ");
+            SyFmtPrint(stream, "aglist( ");
             while ( pt < ptEnd - 1 )
             {
                 if (toggle == 0)
                 {
                     //**INDENT** Pr("%>%d, %<", (Int)(*pt++), 0);
-                    SyFmtPrint(OUTFILE, "%d, ", (Int)(*pt++));
+                    SyFmtPrint(stream, "%d, ", (Int)(*pt++));
                 }
                 else
                 {
                     //**INDENT** Pr("%>%d; %<", (Int)(*pt++), 0);
-                    SyFmtPrint(OUTFILE, "%d; ", (Int)(*pt++));
+                    SyFmtPrint(stream, "%d; ", (Int)(*pt++));
                 }
                 toggle = 1 - toggle;
             }
             //**INDENT** Pr( "%>%d )%<", (Int) *pt, 0 );
-            SyFmtPrint(OUTFILE, "%d )", (Int)*pt);
+            SyFmtPrint(stream, "%d )", (Int)*pt);
 
         }
     }
@@ -2831,10 +2833,10 @@ Bag       FunCollectorProfile (Bag hdCall)
 */
 #if PRINT_AG | GROUP_REC
 
-void    PrAgen(Bag hdAgen)
+void    PrAgen(FILE* stream, Obj hdAgen, int indent)
 {
         //Pr( "%s", (Int)( PTR_BAG( hdAgen ) + 1 ), 0 );
-        SyFmtPrint(OUTFILE, "%s", (PTR_BAG(hdAgen) + 1));
+        SyFmtPrint(stream, "%s", (PTR_BAG(hdAgen) + 1));
 }
 
 #endif /* PRINT_AG | GROUP_REC */

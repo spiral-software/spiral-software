@@ -351,11 +351,13 @@ char            GetLine (void)
     {
         if (!SyQuiet)
         {
-            Pr("%s%c", (Int)Prompt, (Int)'\03');
+           // Pr("%s%c", (Int)Prompt, (Int)'\03');
+            SyFmtPrint(OUTFILE, "%s", Prompt);
         }
         else
         {
-            Pr("%c", (Int)'\03', 0);
+            //Pr("%c", (Int)'\03', 0);
+            SyFmtPrint(OUTFILE, "%c", '\03');
         }
     }
 
@@ -947,11 +949,13 @@ void            SyntaxError (char *msg)
     }
 
     /* print the message and the filename, unless it is '*stdin*'          */
-    Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
+    //Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
+    SyFmtPrint(OUTFILE, "Syntax error: %s (symbol: '%s')", msg, Value);
 
     if ( !isStdIn ) 
     {
-        Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+        //Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+        SyFmtPrint(OUTFILE, " in %s line %d", Input->name, Input->number);
 	
         if(!launchedEdit)
         {
@@ -960,25 +964,30 @@ void            SyntaxError (char *msg)
 	    }
     }
 
-    Pr( "\n", 0, 0 );
+    //Pr( "\n", 0, 0 );
+    SyFmtPrint(OUTFILE, "\n");
 
     /* print the current line                                              */
-    Pr( "%s", (Int)Input->line, 0 );
+    //Pr( "%s", (Int)Input->line, 0 );
+    SyFmtPrint(OUTFILE, "%s", Input->line);
 
     /* print a '^' pointing to the current position                        */
     for ( i = 0; i < In - Input->line - 1; i++ ) 
     {
         if (Input->line[i] == '\t')
         { 
-            Pr("\t", 0, 0);
+            //Pr("\t", 0, 0);
+            SyFmtPrint(OUTFILE, "\t");
         }
         else 
         { 
-            Pr(" ", 0, 0);
+            //Pr(" ", 0, 0);
+            SyFmtPrint(OUTFILE, " ");
         }
     }
 
-    Pr( "^\n", 0, 0 );
+    //Pr( "^\n", 0, 0 );
+    SyFmtPrint(OUTFILE, "^\n");
 
 }
 
@@ -1049,377 +1058,6 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
         }
     }
 
-}
-
-
-/****************************************************************************
-**
-*F  PutLine() . . . . . . . . . . . . . . . . . . . . . . print a line, local
-**
-**  'PutLine'  prints the current output line   'Output->line' to the current
-**  output file 'Output->file'.  It  is  called from 'PutChr'.
-**
-**  'PutLine' also compares the output line with the next  line from the test
-**  input file  'TestInput'  if 'TestInput' is  not -1.   If this  input line
-**  starts with '#>' and the rest of  the  line matches  the output line then
-**  the output line is not printed and the input line is discarded.
-**
-**  'PutLine'  also   echoes  the output  line to   the  logfile 'Logfile' if
-**  'Logfile' is not -1 and the output file is '*stdout*' or '*errout*'.
-**
-**  Finally 'PutLine' checks whether the user has hit '<ctr>-C' to  interrupt
-**  the printing.
-*/
-void            PutLine(void)
-{
-    Int      plen;
-	Int	     slen;
-    Int      i;
-    Int      k;
-	Bag	     hd;
-	char    *str;
-
-    if (Output->file) 
-    {
-		SyFputs(Output->line, Output->file);
-	}
-
-	/* if neccessary echo it to the logfile                                */
-    if (Logfile != -1 && (Output->file == stdout || Output->file == stderr))
-    {
-        SyFputs(Output->line, Logfile);
-    }
-}
-
-
-/****************************************************************************
-**
-*F  PutChr( <ch> )  . . . . . . . . . . . . . . . print character <ch>, local
-**
-**  'PutChr' prints the single character <ch> to the current output file.
-**
-**  'PutChr' buffers the  output characters until  either <ch> is  <newline>,
-**  <ch> is '\03' (<flush>) or the buffer fills up.
-**
-**  In the later case 'PutChr' has to decide where to  split the output line.
-**  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
-*/
-void            PutChr (char ch)
-{
-    Int     i;
-    char    s0;
-    char    s1;
-    int     n;
-
-    /* '\01', increment indentation level                                  */
-    if ( ch == '\01' ) 
-    {
-        /* if this is a better place to split the line remember it         */
-        if ( (Output->file == stdout || Output->file == stderr)
-          && Output->indent < Output->pos
-          && SyNrCols-Output->pos  + 16*Output->indent
-          <= SyNrCols-Output->spos + 16*Output->sindent )
-        {
-            Output->spos     = Output->pos;
-            Output->sindent  = Output->indent;
-        }
-
-        Output->indent++;
-    }
-    /* '\02', decrement indentation level                                  */
-    else if ( ch == '\02' )
-    {
-        /* if this is a better place to split the line remember it         */
-        if ( (Output->file == stdout || Output->file == stderr)
-          && Output->indent < Output->pos
-          && SyNrCols-Output->pos  + 16*Output->indent
-          <= SyNrCols-Output->spos + 16*Output->sindent )
-        {
-            Output->spos     = Output->pos;
-            Output->sindent  = Output->indent;
-        }
-
-        Output->indent--;
-    }
-    /* '\03', print line                                                   */
-    else if ( ch == '\03' ) 
-    {
-        /* print the line                                                  */
-        Output->line[ Output->pos ] = '\0';
-        PutLine();
-
-        /* start the next line                                             */
-        Output->pos      = 0;
-
-        /* first character is a very bad place to split                    */
-        Output->spos     = 0;
-        Output->sindent  = 660;
-    }
-    /* <newline> or <return>, print line, indent next                      */
-    else if ( ch == '\n' || ch == '\r' )
-    {
-        /* put the character on the line and terminate it                  */
-        Output->line[ Output->pos++ ] = ch;
-        Output->line[ Output->pos   ] = '\0';
-
-        /* print the line                                                  */
-        PutLine();
-
-        /* indent for next line                                            */
-        Output->pos = 0;
-        for ( i = 0;  i < Output->indent; i++ )
-            Output->line[ Output->pos++ ] = ' ';
-
-        /* set up new split positions                                      */
-        Output->spos     = 0;
-        Output->sindent  = 660;
-    }
-    /* normal character, room on the current line                          */
-    else if ( Output->pos < SyNrCols-2 ) 
-    {
-        /* put the character on this line                                  */
-        Output->line[ Output->pos++ ] = ch;
-
-    }
-
-    /* if we are going to split at the end of the line, discard blanks     */
-    else if ( Output->spos == Output->pos && ch == ' ' ) {
-        ;
-    }
-
-    /* full line, acceptable split position                                */
-    else if ( Output->spos != 0 ) {
-        /* add character to the line, terminate it                         */
-        Output->line[ Output->pos++ ] = ch;
-        Output->line[ Output->pos++ ] = '\0';
-
-        n = Output->pos - Output->spos;
-
-        /* terminate the line while saving those chars */
-        s0 = Output->line[Output->spos];
-        s1 = Output->line[Output->spos+1];
-        Output->line[ Output->spos ] = '\n';
-        Output->line[ Output->spos+1 ] = '\0';
-        PutLine();
-
-        /* put the chars back */
-        Output->line[Output->spos] = s0;
-        Output->line[Output->spos+1] = s1;
-
-        /* print line up to the best split position                        */
-        /* indent for the rest                                             */
-        assert(Output->sindent + n <= OutputLineLen);
-
-        memmove(Output->line + Output->sindent, Output->line + Output->spos, n);
-
-        Output->pos = 0;
-        for ( i = 0; i < Output->sindent; i++ )
-            Output->line[ Output->pos++ ] = ' ';
-
-        Output->pos += n-1;
-
-        /* set new split position                                          */
-        Output->spos     = 0;
-        Output->sindent  = 660;
-
-    }
-    /* full line, no splitt position                                       */
-    else 
-    {
-        /* append a '\', and print the line                                */
-        if ( Output->file == 1 || Output->file == 3 ) 
-        {
-            Output->line[ Output->pos++ ] = '\\';
-            Output->line[ Output->pos++ ] = '\n';
-        }
-
-        Output->line[ Output->pos   ] = '\0';
-        PutLine();
-
-        /* add the character to the next line                              */
-        Output->pos = 0;
-        Output->line[ Output->pos++ ] = ch;
-
-        /* the first character is a very bad place to split                */
-        Output->spos     = 0;
-        Output->sindent  = 660;
-
-    }
-
-}
-
-
-/****************************************************************************
-**
-*F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
-**
-**  'Pr' is the output function. The first argument is a 'printf' like format
-**  string containing   up   to 2  '%'  format   fields,   specifing  how the
-**  corresponding arguments are to be  printed.  The two arguments are passed
-**  as  'long'  integers.   This  is possible  since every  C object  ('int',
-**  'char', pointers) except 'float' or 'double', which are not used  in GAP,
-**  can be converted to a 'long' without loss of information.
-**
-**  The function 'Pr' currently support the following '%' format  fields:
-**  '%g'    prints GAP object (expected Bag)
-**  '%c'    the corresponding argument represents a character,  usually it is
-**          its ASCII or EBCDIC code, and this character is printed.
-**  '%s'    the corresponding argument is the address of  a  null  terminated
-**          character string which is printed.
-**  '%d'    the corresponding argument is a signed integer, which is printed.
-**          Between the '%' and the 'd' an integer might be used  to  specify
-**          the width of a field in which the integer is right justified.  If
-**          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%>'    increment the indentation level.
-**  '%<'    decrement the indentation level.
-**  '%%'    can be used to print a single '%' character. No argument is used.
-**
-**  You must always  cast the arguments to  '(long)' to avoid  problems  with
-**  those compilers with a default integer size of 16 instead of 32 bit.  You
-**  must pass 0L if you don't make use of an argument to please lint.
-*/
-void            Pr (char *format, Int arg1, Int arg2)
-{
-    char    *p;
-    char    *q;
-    char     fill;
-    Int      prec;
-    Int      n;
-
-    /* loop over the characters of the <format> string                     */
-    for ( p = format; *p != '\0'; p++ ) 
-    {
-        /* if the character is '%' do something special                    */
-        if ( *p == '%' ) 
-        {
-            /* first look for a precision field                            */
-            p++;
-            if (*p == '0') 
-            { 
-                fill = '0';
-            }
-            else 
-            {
-                fill = ' '; 
-            }
-
-            for (prec = 0; IsDigit(*p); p++)
-            {
-                prec = 10 * prec + *p - '0';
-            }
-
-            /* '%d' print an integer                                       */
-            if ( *p == 'd' ) 
-            {
-                if ( arg1 < 0 ) 
-                {
-                    prec--;
-
-                    for (n = 1; n <= -(arg1 / 10); n *= 10)
-                    {
-                        prec--;
-                    }
-
-                    while (--prec > 0) 
-                    { 
-                        PutChr(fill); 
-                    }
-
-                    PutChr('-');
-
-                    for (; n > 0; n /= 10)
-                    {
-                        PutChr((char)(-((arg1 / n) % 10) + '0'));
-                    }
-
-                    arg1 = arg2;
-                }
-                else {
-                    for (n=1; n <= (arg1/10); n *= 10)
-                    {
-                        prec--;
-                    }
-
-                    while (--prec > 0) 
-                    { 
-                        PutChr(fill);
-                    }
-
-                    for ( ; n > 0; n /= 10 ) //GS4 WHAT???????
-                        PutChr( (char)(((arg1/n)%10) + '0') );
-                    arg1 = arg2;
-                }
-            }
-
-            /* '%s' print a string                                         */
-            else if ( *p == 's' ) 
-            {
-                for (q = (char*)arg1; *q != '\0'; q++)
-                {
-                    prec--;
-                }
-
-                while (prec-- > 0)
-                { 
-                    PutChr(' '); 
-                }
-
-                for (q = (char*)arg1; *q != '\0'; q++)
-                {
-                    PutChr(*q);
-                }
-
-                arg1 = arg2;
-            }
-            /* '%g' print a GAP object                                     */
-            else if ( *p == 'g' ) 
-            {
-                Print( (Bag)arg1 );
-                arg1 = arg2;
-            }
-            /* '%c' print a character                                      */
-            else if ( *p == 'c' ) {
-                PutChr( (char)arg1 );
-                arg1 = arg2;
-            }
-            /* '%>' increment the indentation level                        */
-            else if ( *p == '>' ) {
-                PutChr( '\01' );
-                while (--prec > 0)
-                {
-                    PutChr('\01');
-                }
-            }
-            /* '%<' decrement the indentation level                        */
-            else if ( *p == '<' ) 
-            {
-                PutChr( '\02' );
-                while (--prec > 0)
-                {
-                    PutChr('\02');
-                }
-            }
-            /* '%%' print a '%' character                                  */
-            else if ( *p == '%' ) 
-            {
-                PutChr( '%' );
-            }
-            /* else raise an error                                         */
-            else 
-            {
-                for (p = "%format error"; *p != '\0'; p++)
-                {
-                    PutChr(*p);
-                }
-            }
-        }
-        /* not a '%' character, simply print it                            */
-        else 
-        {
-            PutChr( *p );
-        }
-
-    }
 }
 
 
@@ -1675,7 +1313,9 @@ Int            CloseOutput (void)
 
 
     /* flush output and close the file                                     */
-    Pr( "%c", (Int)'\03', 0 );
+    //Pr( "%c", (Int)'\03', 0 );
+    SyFmtPrint(OUTFILE, "%c", '\03');
+
     SyFclose( Output->file);
 
     /* revert to previous output file and indicate success                 */

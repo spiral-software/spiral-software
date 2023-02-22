@@ -2017,7 +2017,8 @@ void        InitCombinatorial (Bag hdCall, Int nr)
     /** Try to find a central series. **************************************/
     if ( ! SetCWeightsAgGroup( hdGrp, HdVoid ) )
     {
-        Pr( "SetCollectorAgWord: leaves collector unchanged.\n", 0, 0 );
+        //Pr( "SetCollectorAgWord: leaves collector unchanged.\n", 0, 0 );
+        SyFmtPrint(OUTFILE, "SetCollectorAgWord: leaves collector unchanged.\n");
         RestoreCollector( hdGrp, hdOld );
         return;
     }
@@ -3093,14 +3094,16 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
     {
         if ( LEN_LIST( hdLst ) != nrGens )
         {
-            Pr( str, (Int) "too few/many weights", 0 );
+            //Pr( str, (Int) "too few/many weights", 0 );
+            SyFmtPrint(OUTFILE, str, "too few/many weights");
             return FALSE;
         }
         for ( i = nrGens - 1; i >= 0; i-- )
         {
             if ( GET_TYPE_BAG( PTR_BAG( hdLst )[ i + 1 ] ) != T_INT )
             {
-                Pr( str, (Int) "weights must integers", 0 );
+                //Pr( str, (Int) "weights must integers", 0 );
+                SyFmtPrint(OUTFILE, str, "weights must integers");
                 return FALSE;
             }
             ptWeights[ i ] = HD_TO_INT( PTR_BAG( hdLst )[ i + 1 ] );
@@ -3160,7 +3163,8 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if (  ptWeights[ i ] != ptWeights[ i-1 ]
               && ptWeights[ i ] != ( ptWeights[ i-1 ] + 1 ) )
         {
-            Pr( str, (Int) "incorrect central weights", 0 );
+            //Pr( str, (Int) "incorrect central weights", 0 );
+            SyFmtPrint(OUTFILE, str, "incorrect central weights");
             return FALSE;
         }
     }
@@ -3177,7 +3181,8 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
     for ( i = nrGens - 1; i > 0; i-- )
         if ( prime != ptIndices[ i ] )
         {
-            Pr( str, (Int) "different indices", 0 );
+            //Pr( str, (Int) "different indices", 0 );
+            SyFmtPrint(OUTFILE, str, "different indices");
             return FALSE;
         }
 
@@ -3186,7 +3191,8 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
     for ( i = 2; i < prime; i++ )
         if ( prime % i == 0 )
         {
-            Pr( str, (Int) "no p-group", 0 );
+            //Pr( str, (Int) "no p-group", 0 );
+            SyFmtPrint(OUTFILE, str, "no p-group");
             return FALSE;
         }
 
@@ -3201,7 +3207,8 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         }
         else if ( ptWeights[ i ] < ptSeries[ 0 ] )
         {
-            Pr( str, (Int) "incorrect central weights", 0 );
+            //Pr( str, (Int) "incorrect central weights", 0 );
+            SyFmtPrint(OUTFILE, str, "incorrect central weights");
             return FALSE;
         }
     }
@@ -3219,10 +3226,10 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
             if ( hd != hdId )
                 if ( ptWeights[ *PTR_AW(hd) ] < ptWeights[i]+ptWeights[j] )
                 {
-                    Pr( str, (Int) "commutator weights do not add.", 0 );
-                    Pr( "#W  commutator [ %s, %s ] failed.\n",
-                        (Int) NAME_AW( hdGrp, i ),
-                        (Int) NAME_AW( hdGrp, j ) );
+                    //Pr( str, (Int) "commutator weights do not add.", 0 );
+                    SyFmtPrint(OUTFILE, str, "commutator weights do not add.");
+                    //Pr( "#W  commutator [ %s, %s ] failed.\n", (Int) NAME_AW( hdGrp, i ), (Int) NAME_AW( hdGrp, j ) );
+                    SyFmtPrint(OUTFILE, "#W  commutator [ %s, %s ] failed.\n", NAME_AW(hdGrp, i), NAME_AW(hdGrp, j));
                     return FALSE;
                 }
         }
@@ -3232,9 +3239,10 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if ( hd != hdId )
         if ( ptWeights[ *PTR_AW( hd )] < ptWeights[ i ] + 1  )
         {
-            Pr( str, (Int) "power weight does not change", 0 );
-            Pr( "#W  power %s ^ %d failed.\n",
-                (Int) NAME_AW( hdGrp, i ), prime );
+            //Pr( str, (Int) "power weight does not change", 0 );
+            SyFmtPrint(OUTFILE, str, (Int)"power weight does not change");
+            //Pr( "#W  power %s ^ %d failed.\n", (Int) NAME_AW( hdGrp, i ), prime );
+            SyFmtPrint(OUTFILE, "#W  power %s ^ %d failed.\n", (Int)NAME_AW(hdGrp, i), prime);
             return FALSE;
         }
     }

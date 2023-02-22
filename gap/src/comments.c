@@ -246,12 +246,21 @@ Obj  FunDoc( Obj hdCall ) {
 
     doc = FindDocString(PTR_BAG(hdCall)[1]);
 
-    if(doc != NULL && GET_TYPE_BAG(doc)==T_STRING)
-        Pr("%s", (Int)CSTR_STRING(doc), 0);
-    else if(doc == NULL)
-        Pr("--no documentation--\n", 0, 0);
+    if (doc != NULL && GET_TYPE_BAG(doc) == T_STRING)
+    {
+        //Pr("%s", (Int)CSTR_STRING(doc), 0);
+        SyFmtPrint(OUTFILE, "%s", CSTR_STRING(doc));
+    }
+    else if (doc == NULL)
+    {
+        //Pr("--no documentation--\n", 0, 0);
+        SyFmtPrint(OUTFILE, "--no documentation--\n");
+    }
     else
-        Pr("--documentation corrupt (not a string, but %s)--\n", (Int)TNAM_BAG(doc), 0);
+    {
+        //Pr("--documentation corrupt (not a string, but %s)--\n", (Int)TNAM_BAG(doc), 0);
+        SyFmtPrint(OUTFILE, "--documentation corrupt (not a string, but %s)--\n", TNAM_BAG(doc));
+    }
 
     return HdVoid;
 }

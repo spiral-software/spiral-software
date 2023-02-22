@@ -400,8 +400,7 @@ extern  Bag       LtFFE (
 **
 **  'PrFFE' prints the finite field element <hdFFE>.
 */
-extern  void            PrFFE (
-            Bag           hdFFE );
+extern  void  PrFFE(FILE* stream, Obj hdFFE, int indent);
 
 
 /****************************************************************************
@@ -414,9 +413,7 @@ extern  void            PrFFE (
 **  not call 'PrFFE' because it would have to create  finite  field  elements
 **  to do so and calling 'NewBag' from a printing procedure is forbidden.
 */
-extern  void            PrFF (
-            Bag           hdField,
-            unsigned int        value );
+extern  void  PrFF(FILE* stream, Bag hdField, unsigned int value, int indent);
 
 
 /****************************************************************************

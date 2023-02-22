@@ -19,6 +19,7 @@
 
 #include	<stdio.h>
 #include	<stdlib.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* dynamic storage manager         */
 #include        "scanner.h"             /* reading of single tokens        */
@@ -113,35 +114,45 @@ Int         DbgInBreakLoop = 0;
 
 extern void  InitGap(int argc, char** argv, int* stackBase);
 
-int             main (int argc, char **argv)
+int     main(int argc, char **argv)
 {
-    exc_type_t          e;
-    int exec_status, i;
+    exc_type_t      e;
+    int             exec_status;
+    int             i;
 
-    Try {
+    Try 
+    {
 		/* initialize everything                                             */
 		InitGap( argc, argv, &argc );
     }
-	Catch(e) {
+	Catch(e) 
+    {
 		exc_show();
 		return 1;
     }
 
     GapRunTime.gap_start = SyTime();
 
-    Try { 
+    Try 
+    { 
 		HookSessionStart(); 
     }
-    Catch(e) {
+    Catch(e) 
+    {
         ErrorCount++;
 		/* exceptions raised using Error() are already printed at this point */
 		if(e!=ERR_GAP) 
 		{ 
 			exc_show(); 
-			while ( HdExec != 0 )  
-				ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP ); 
-		        while ( EvalStackTop>0 )
-		                EVAL_STACK_POP;
+            while (HdExec != 0)
+            {
+                ChangeEnv(PTR_BAG(HdExec)[4], CEF_CLEANUP);
+
+                while (EvalStackTop > 0)
+                {
+                    EVAL_STACK_POP; 
+                }
+            }
 		}
     }
 
@@ -150,34 +161,44 @@ int             main (int argc, char **argv)
  
     /* main evaluation loop */
     exec_status = EXEC_SUCCESS;
-    while (exec_status != EXEC_QUIT) {
+
+    while (exec_status != EXEC_QUIT)
+    {
         exec_status = execute();
     }
  
     /* Write static history buffer */
     SySaveHistory();
    
-    Try { 
+    Try 
+    { 
 		HookSessionEnd();
     }
-    Catch(e) {
+    Catch(e) 
+    {
         ErrorCount++;
 		/* exceptions raised using Error() are already printed at this point */
 		if(e!=ERR_GAP) 
 		{ 
 			exc_show(); 
-			while ( HdExec != 0 )  
-				ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP ); 
-			while ( EvalStackTop>0 )
-		                EVAL_STACK_POP;
+            while (HdExec != 0)
+            {
+                ChangeEnv(PTR_BAG(HdExec)[4], CEF_CLEANUP);
+            }
+            while (EvalStackTop > 0)
+            {
+                EVAL_STACK_POP;
+            }
 		}
     }
 
-    if (ErrorCount == 0) {
+    if (ErrorCount == 0)
+    {
         SyExit(SYEXIT_OK);
         return SYEXIT_OK;
     }
-    else {
+    else 
+    {
         SyExit(1);
         return(1);
     }
@@ -212,7 +233,8 @@ UInt DbgExecStackDepth()
     Obj     hdExec;
     UInt    result = 0;
 
-    for ( hdExec=HdDbgStackRoot; hdExec!=0; hdExec=PTR_BAG(hdExec)[4] ) {
+    for ( hdExec=HdDbgStackRoot; hdExec!=0; hdExec=PTR_BAG(hdExec)[4] ) 
+    {
         result++;
     }
     return result;
@@ -225,72 +247,166 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
     int     i;
     Bag     hdDef;
     
-    if (execDepth==execStackDepth-DbgStackTop)
-        Pr("* ", 0, 0);
+    if (execDepth == execStackDepth - DbgStackTop)
+    {
+        //Pr("* ", 0, 0);
+        SyFmtPrint(OUTFILE, "* ");
+    }
     else
-        Pr("  ", 0, 0);
+    {
+        //Pr("  ", 0, 0);
+        SyFmtPrint(OUTFILE, "  ");
+    }
+
     /* Print the depth like gdb does                                   */
     execDepth++;
-    if(execDepth < 10)
-        Pr("#%d -> ", execDepth, 0);
+
+    if (execDepth < 10)
+    {
+        //Pr("#%d -> ", execDepth, 0);
+        SyFmtPrint(OUTFILE, "#%d -> ", execDepth);
+    }
     else
-        Pr("#%d-> ", execDepth, 0);
+    {
+        //Pr("#%d-> ", execDepth, 0);
+        SyFmtPrint(OUTFILE, "#%d-> ", execDepth);
+    }
     
-    if ( hdExec == 0 ) {
-        Pr("main loop\n",0,0);
-    } else {
-        if ( PTR_BAG(hdExec)[3] == HdCallSum )       Pr("<rec1> + <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallDiff ) Pr("<rec1> - <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallProd ) Pr("<rec1> * <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallQuo )  Pr("<rec1> / <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallMod )  Pr("<rec1> mod <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallPow )  Pr("<rec1> ^ <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallComm ) Pr("Comm(<rec1>,<rec2>)",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallEq )   Pr("<rec1> = <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallLt )   Pr("<rec1> < <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallIn )   Pr("<elm> in <rec>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallPrint ) Pr("Print( <rec> )",0,0);
-        else {
-            if (printValues) {
-                Print( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
-                Pr("%>( %>",0,0);
+    if ( hdExec == 0 ) 
+    {
+        //Pr("main loop\n",0,0);
+        SyFmtPrint(OUTFILE, "main loop\n");
+    } 
+    else 
+    {
+        if (PTR_BAG(hdExec)[3] == HdCallSum) 
+        {
+            //Pr("<rec1> + <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> + <rec2>");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallDiff) 
+        {
+            //Pr("<rec1> - <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> - <rec2>");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallProd) 
+        { 
+            //Pr("<rec1> * <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> * <rec2>");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallQuo) 
+        {
+            //Pr("<rec1> / <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> / <rec2>");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallMod) 
+        {
+            //Pr("<rec1> mod <rec2>", 0, 0); 
+            SyFmtPrint(OUTFILE, "<rec1> mod <rec2>");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallPow) 
+        { 
+            //Pr("<rec1> ^ <rec2>", 0, 0);
+            SyFmtPrint(OUTFILE, "<rec1> ^ <rec2>");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallComm) 
+        { 
+            //Pr("Comm(<rec1>,<rec2>)", 0, 0);
+            SyFmtPrint(OUTFILE, "Comm(<rec1>,<rec2>)");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallEq)
+        {
+            //Pr("<rec1> = <rec2>", 0, 0);
+            SyFmtPrint(OUTFILE, "<rec1> = <rec2>");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallLt)
+        { 
+            //Pr("<rec1> < <rec2>", 0, 0);
+            SyFmtPrint(OUTFILE, "<rec1> = <rec2>");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallIn) 
+        { 
+            //Pr("<elm> in <rec>", 0, 0);
+            SyFmtPrint(OUTFILE, "<elm> in <rec>");
+        }
+        else if (PTR_BAG(hdExec)[3] == HdCallPrint)
+        { 
+            //Pr("Print( <rec> )", 0, 0); 
+            SyFmtPrint(OUTFILE, "Print( <rec> )");
+        }
+        else 
+        {
+            if (printValues) 
+            {
+                //Print( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
+                PrintObj(OUTFILE, PTR_BAG(PTR_BAG(hdExec)[3])[0], 0);
+                //**INDENT** Pr("%>( %>",0,0);
+                SyFmtPrint(OUTFILE, "( ");
                 hdDef = EVAL( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
                 ACT_NUM_ARGS_FUNC(hdDef, nrArg);
                 ACT_NUM_LOCALS_FUNC(hdDef, nrLoc);
-                for ( i = 1; i <= nrArg; ++i ) {
-                    Print( PTR_BAG(hdExec)[EXEC_ARGS_START+i+nrArg+nrLoc-1] );
-                    if ( i < nrArg )  Pr("%<, %>",0,0);
+
+                for ( i = 1; i <= nrArg; ++i ) 
+                {
+                    //Print( PTR_BAG(hdExec)[EXEC_ARGS_START+i+nrArg+nrLoc-1] );
+                    PrintObj(OUTFILE, PTR_BAG(hdExec)[EXEC_ARGS_START + i + nrArg + nrLoc - 1], 0);
+                    if (i < nrArg)
+                    { 
+                        //**INDENT**  Pr("%<, %>", 0, 0);
+                        SyFmtPrint(OUTFILE, ", ");
+                    }
                 }
-                Pr(" %2<)",0,0);
-            } else {
-                Print( PTR_BAG(hdExec)[3] );
+
+                //**INDENT** Pr(" %2<)",0,0);
+                SyFmtPrint(OUTFILE, ")");
+
+            }
+            else
+            {
+                //Print( PTR_BAG(hdExec)[3] );
+                PrintObj(OUTFILE, PTR_BAG(hdExec)[3], 0);
             }
         }
-        Pr("\n",0,0);
+        //Pr("\n",0,0);
+        SyFmtPrint(OUTFILE, "\n");
     }
 }
 
-void PrintBacktraceEval(Bag hdExec)
+void    PrintBacktraceEval(Bag hdExec)
 {
     int StackPnt = HD_TO_INT(PTR_BAG(hdExec)[EXEC_EVAL_STACK]) + 1;
     int StackStart = StackPnt;
     
-    while (StackPnt<DbgEvalStackTop && GET_TYPE_BAG(EvalStack[StackPnt+1])!=T_EXEC)
+    while (StackPnt < DbgEvalStackTop && GET_TYPE_BAG(EvalStack[StackPnt + 1]) != T_EXEC)
+    {
         StackPnt++;
+    }
     // do not print statement just before T_EXEC, that should be the same statement.
-    if (StackPnt<DbgEvalStackTop && GET_TYPE_BAG(EvalStack[StackPnt+1])==T_EXEC)
+    if (StackPnt < DbgEvalStackTop && GET_TYPE_BAG(EvalStack[StackPnt + 1]) == T_EXEC)
+    {
         StackPnt--;
-    while (StackPnt>=StackStart) {
+    }
+    while (StackPnt>=StackStart) 
+    {
         Obj item = EvalStack[StackPnt];
-        if (GET_TYPE_BAG(item)==T_FUNCCALL)
-            Pr("          %g\n", (Int)PTR_BAG(item)[0], 0);
+        if (GET_TYPE_BAG(item) == T_FUNCCALL)
+        {
+            //Pr("          %g\n", (Int)PTR_BAG(item)[0], 0);
+            SyFmtPrint(OUTFILE, "          ");
+            PrintObj(OUTFILE, PTR_BAG(item)[0], 0);
+            SyFmtPrint(OUTFILE, "\n");
+        }
         else
-            Pr("          %s\n", (Int)NameType[GET_TYPE_BAG(item)], 0);
+        {
+            //Pr("          %s\n", (Int)NameType[GET_TYPE_BAG(item)], 0);
+            SyFmtPrint(OUTFILE, "          %s\n", NameType[GET_TYPE_BAG(item)]);
+        }
+
         StackPnt--;
     }
 }
 
-Bag       FunBacktrace (Bag hdCall)
+Bag     FunBacktrace(Bag hdCall)
 {
     Int	    level;
     UInt    depth = 0;
@@ -299,37 +415,51 @@ Bag       FunBacktrace (Bag hdCall)
     Bag     hdDef;
     
     /* so that it is possible to call it FunBacktrace(INT_TO_HD(<level>))  */
-    if ( hdCall != (Bag) 0 && GET_TYPE_BAG(hdCall) == T_INT ) {
-	level = HD_TO_INT(hdCall);
+    if ( hdCall != (Bag) 0 && GET_TYPE_BAG(hdCall) == T_INT )
+    {
+        level = HD_TO_INT(hdCall);
     }
     /* get the value of <level>                                            */
-    else if ( hdCall == (Bag) 0 || GET_SIZE_BAG(hdCall) == SIZE_HD ) {
+    else if ( hdCall == (Bag) 0 || GET_SIZE_BAG(hdCall) == SIZE_HD )
+    {
         level = BACKTRACE_DEFAULT_LEVEL;
     }
-    else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD ) {
+    else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD )
+    {
         hdDef = EVAL( PTR_BAG(hdCall)[1] );
-        if ( GET_TYPE_BAG(hdDef) != T_INT )
-            return Error("usage: Backtrace( <level> )",0,0);
+        if (GET_TYPE_BAG(hdDef) != T_INT)
+        {
+            return Error("usage: Backtrace( <level> )", 0, 0);
+        }
         else
-            level = HD_TO_INT( hdDef );
+        {
+            level = HD_TO_INT(hdDef);
+        }
     }
-    else {
+    else 
+    {
         return Error("usage: Backtrace( <level> )",0,0);
     }
 
-    if ( level == 0 ) return HdVoid;
+    if (level == 0) 
+    { 
+        return HdVoid; 
+    }
 
     execStackDepth = DbgExecStackDepth();
     depth = execStackDepth;
     /* for <level> frames                                                  */
-    for ( hdExec=HdDbgStackRoot; hdExec!=0 && level!=0; hdExec=PTR_BAG(hdExec)[4] ) {
+    for ( hdExec=HdDbgStackRoot; hdExec!=0 && level!=0; hdExec=PTR_BAG(hdExec)[4] ) 
+    {
         /* if <level> is positive print only the names of the formal args  */
-        if ( 0 < level ) {
+        if ( 0 < level ) 
+        {
             PrintBacktraceExec(hdExec,  depth, execStackDepth, 0);
             --level;
         }
         /* if <level> is negative print the values of the arguments        */
-        else {
+        else 
+        {
             PrintBacktraceExec(hdExec,  depth, execStackDepth, 1);
             ++level;
         }
@@ -337,18 +467,21 @@ Bag       FunBacktrace (Bag hdCall)
     }
 
     /* print the bottom of the function stack                              */
-    if ( hdExec == 0 ) {
+    if ( hdExec == 0 ) 
+    {
         PrintBacktraceExec(0, depth, execStackDepth, 0);
     }
-    else {
-        Pr("...\n",0,0);
+    else 
+    {
+        //Pr("...\n",0,0);
+        SyFmtPrint(OUTFILE, "...\n");
     }
     
     return HdVoid;
 }
 
 
-Bag       FunBacktrace2 (Bag hdCall)
+Bag       FunBacktrace2(Bag hdCall)
 {
     Int	    level;
     UInt    depth = 0;
@@ -357,38 +490,53 @@ Bag       FunBacktrace2 (Bag hdCall)
     Bag     hdDef;
     
     /* so that it is possible to call it FunBacktrace2(INT_TO_HD(<level>))  */
-    if ( hdCall != (Bag) 0 && GET_TYPE_BAG(hdCall) == T_INT ) {
-	level = HD_TO_INT(hdCall);
+    if ( hdCall != (Bag) 0 && GET_TYPE_BAG(hdCall) == T_INT )
+    {
+	    level = HD_TO_INT(hdCall);
     }
     /* get the value of <level>                                            */
-    else if ( hdCall == (Bag) 0 || GET_SIZE_BAG(hdCall) == SIZE_HD ) {
+    else if ( hdCall == (Bag) 0 || GET_SIZE_BAG(hdCall) == SIZE_HD )
+    {
         level = BACKTRACE_DEFAULT_LEVEL;
     }
-    else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD ) {
+    else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD )
+    {
         hdDef = EVAL( PTR_BAG(hdCall)[1] );
-        if ( GET_TYPE_BAG(hdDef) != T_INT )
-            return Error("usage: Backtrace2( <level> )",0,0);
+        if (GET_TYPE_BAG(hdDef) != T_INT)
+        {
+            return Error("usage: Backtrace2( <level> )", 0, 0);
+        }
         else
-            level = HD_TO_INT( hdDef );
+        {
+            level = HD_TO_INT(hdDef);
+        }
     }
-    else {
+    else 
+    {
         return Error("usage: Backtrace2( <level> )",0,0);
     }
 
-    if ( level == 0 ) return HdVoid;
+    if (level == 0) 
+    {
+        return HdVoid;
+    }
     /* calculate stack depth */
     depth = DbgExecStackDepth();
     execStackDepth = depth;
+
     /* for <level> frames                                                  */
-    for ( hdExec=HdDbgStackRoot; hdExec!=0 && level!=0; hdExec=PTR_BAG(hdExec)[4] ) {
+    for ( hdExec=HdDbgStackRoot; hdExec!=0 && level!=0; hdExec=PTR_BAG(hdExec)[4] ) 
+    {
         /* if <level> is positive print only the names of the formal args  */
         PrintBacktraceEval(hdExec);
-        if ( 0 < level ) {
+        if ( 0 < level ) 
+        {
             PrintBacktraceExec(hdExec,  depth, execStackDepth, 0);
             --level;
         }
         /* if <level> is negative print the values of the arguments        */
-        else {
+        else 
+        {
             PrintBacktraceExec(hdExec,  depth, execStackDepth, 1);
             ++level;
         }
@@ -396,11 +544,14 @@ Bag       FunBacktrace2 (Bag hdCall)
     }
 
     /* print the bottom of the function stack                              */
-    if ( hdExec == 0 ) {
+    if ( hdExec == 0 )
+    {
         PrintBacktraceExec(0, depth, execStackDepth, 0);
     }
-    else {
-        Pr("...\n",0,0);
+    else 
+    {
+        //Pr("...\n",0,0);
+        SyFmtPrint(OUTFILE, "...\n");
     }
     
     return HdVoid;
@@ -424,22 +575,36 @@ Bag       FunBacktraceTo (Bag hdCall)
 
     char * usage = "usage: BacktraceTo( <file>, <level> )";
     /* check the number and type of the arguments, nothing special         */
-    if ( GET_SIZE_BAG(hdCall) != SIZE_HD*3 ) return Error(usage,0,0);
+    if (GET_SIZE_BAG(hdCall) != SIZE_HD * 3)
+    {
+        return Error(usage, 0, 0);
+    }
+
     hdName = EVAL( PTR_BAG(hdCall)[1] );
     hdLevel = EVAL( PTR_BAG(hdCall)[2] );
-    if ( ! IsString(hdName) ) return Error(usage,0,0);
-    if ( GET_TYPE_BAG(hdLevel)!=T_INT) return Error(usage,0,0);
+    if (!IsString(hdName)) 
+    {
+        return Error(usage, 0, 0); 
+    }
+
+    if (GET_TYPE_BAG(hdLevel) != T_INT) 
+    { 
+        return Error(usage, 0, 0); 
+    }
 
     /* try to open the given output file, raise an error if you can not    */
-    if ( OpenOutput( (char*)PTR_BAG(hdName) ) == 0 )
-        return Error("BacktraceTo: can not open '%s' for writing",
-		     (Int)PTR_BAG(hdName), 0);
+    if (OpenOutput((char*)PTR_BAG(hdName)) == 0)
+    {
+        return Error("BacktraceTo: can not open '%s' for writing", (Int)PTR_BAG(hdName), 0);
+    }
 
     FunBacktrace(hdLevel);
 
     /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() )
-        Error("BacktraceTo: can not close output, this should not happen",0,0);
+    if (!CloseOutput())
+    {
+        Error("BacktraceTo: can not close output, this should not happen", 0, 0);
+    }
     return HdVoid;
 }
 
@@ -456,21 +621,25 @@ Int     inBreakLoop()
     return DbgInBreakLoop != 0;
 }
 
-Obj  DbgStackExec() 
+Obj     DbgStackExec() 
 {
     Obj root = HdDbgStackRoot; 
     int top = DbgStackTop;
 
-    while (root != 0 && top>0) {
+    while ((root != 0) && (top > 0)) 
+    {
         root = PTR_BAG(root)[4];
         top--;
     }
     return root;
 }
 
-void EmptyStack() {
-    while ( TopStack >= 1 )
-	SET_BAG(HdStack, TopStack--,  0 );
+void EmptyStack()
+{
+    while (TopStack >= 1)
+    {
+        SET_BAG(HdStack, TopStack--, 0);
+    }
 }
 
 /* Enter all funcdef bags from the exec list onto the        
@@ -486,16 +655,22 @@ void PopulateStack() {
     
     hdRoot = DbgStackExec();
     
-    hd = hdRoot;  TopStack = 0;
-    while ( hd != 0 && TopStack+1 < GET_SIZE_BAG(HdStack)/SIZE_HD ) {
-	++TopStack;
-	hd = PTR_BAG(hd)[0];
+    hd = hdRoot;  
+    TopStack = 0;
+    while ((hd != 0) && ((TopStack+1) < GET_SIZE_BAG(HdStack)/SIZE_HD)) 
+    {
+	    ++TopStack;
+	    hd = PTR_BAG(hd)[0];
     }
-    hd = hdRoot;  i = 0;
-    while ( hd != 0 && TopStack-i+1 > 0 ) {
-	++i;
-	SET_BAG(HdStack, TopStack-i+1,  PTR_BAG(hd)[2] );
-	hd = PTR_BAG(hd)[0];
+
+    hd = hdRoot;  
+    i = 0;
+
+    while ( (hd != 0) && ((TopStack-i+1) > 0)) 
+    {
+	    ++i;
+	    SET_BAG(HdStack, TopStack-i+1,  PTR_BAG(hd)[2] );
+	    hd = PTR_BAG(hd)[0];
     }
 }
 
@@ -505,16 +680,32 @@ void    DbgWalkEvalStackBackward(int exchangeVars) {
     // walk on eval stack and pop T_MAKELET packages,
     // restore previous local variables values for each package 
     int i = HD_TO_INT(PTR_BAG(hdExec)[EXEC_EVAL_STACK]);
-    while (i<DbgEvalStackTop && GET_TYPE_BAG(EvalStack[i+1])!=T_EXEC) i++;
+
+    while ((i < DbgEvalStackTop) && (GET_TYPE_BAG(EvalStack[i + 1]) != T_EXEC)) 
+    { 
+        i++; 
+    }
+
     item = EvalStack[i];
-    while (item != hdExec) {
-        if (GET_TYPE_BAG(item)==T_LIST) { // this is some variable values on the stack
+
+    while (item != hdExec)
+    {
+        if (GET_TYPE_BAG(item)==T_LIST) 
+        { 
+            // this is some variable values on the stack
             Obj hd = PTR_BAG(item)[1];
-            if (GET_TYPE_BAG(hd)==T_MAKELET) {  //let statement
+            
+            if (GET_TYPE_BAG(hd)==T_MAKELET) 
+            {  //let statement
                 PopPackage();
-                if (exchangeVars) {
-                    int j, size = TableNumEnt(hd) - 1;
-                    for ( j=0; j<size; j++ ) {
+            
+                if (exchangeVars) 
+                {
+                    int j;
+                    int size = TableNumEnt(hd) - 1;
+
+                    for ( j=0; j<size; j++ ) 
+                    {
                         Obj var = PTR_BAG(hd)[j];
                         Obj oldbinding = PTR_BAG(item)[j+2];
                         SET_BAG(item, j+2,  VAR_VALUE(var) );
@@ -527,17 +718,31 @@ void    DbgWalkEvalStackBackward(int exchangeVars) {
     }
 }
 
-void    DbgWalkEvalStackForward(int exchangeVars) {
+void    DbgWalkEvalStackForward(int exchangeVars) 
+{
     int i = HD_TO_INT(PTR_BAG(DbgStackExec())[EXEC_EVAL_STACK])+1;
-    while (i<=DbgEvalStackTop && GET_TYPE_BAG(EvalStack[i])!=T_EXEC) {
+
+    while (i<=DbgEvalStackTop && GET_TYPE_BAG(EvalStack[i])!=T_EXEC) 
+    {
         Obj item = EvalStack[i++];
-        if (GET_TYPE_BAG(item)==T_LIST) { // this is some variable values on the stack
+
+        if (GET_TYPE_BAG(item)==T_LIST)
+        { 
+            // this is some variable values on the stack
             Obj hd = PTR_BAG(item)[1];
-            if (GET_TYPE_BAG(hd)==T_MAKELET) { //let statement
+            
+            if (GET_TYPE_BAG(hd)==T_MAKELET) 
+            {
+                //let statement
                 PushPackage(hd);
-                if (exchangeVars) {
-                    int j, size = TableNumEnt(hd) - 1;
-                    for ( j=0; j<size; j++ ) {
+                
+                if (exchangeVars) 
+                {
+                    int j;
+                    int size = TableNumEnt(hd) - 1;
+
+                    for ( j=0; j<size; j++ ) 
+                    {
                         Obj var = PTR_BAG(hd)[j];
                         Obj oldbinding = PTR_BAG(item)[j+2];
                         SET_BAG(item, j+2,  VAR_VALUE(var) );
@@ -549,22 +754,28 @@ void    DbgWalkEvalStackForward(int exchangeVars) {
     } // while end
 }
 
-Int     DbgUp() {
-    if ( DbgStackTop>0 ) {
+Int     DbgUp() 
+{
+    if ( DbgStackTop>0 ) 
+    {
         DbgWalkEvalStackBackward(0);    
         DbgStackTop--;
-	ChangeEnv(DbgStackExec(), CEF_DBG_UP);
-	DbgWalkEvalStackForward(1);    
+	    ChangeEnv(DbgStackExec(), CEF_DBG_UP);
+	    DbgWalkEvalStackForward(1);    
         PopulateStack();
         return 1;
     }
     return 0;
 }
 
-Int     DbgDown() {
+Int     DbgDown() 
+{
     Obj hdExec = DbgStackExec();
-    if (hdExec) {
-        if (PTR_BAG(hdExec)[4]) {
+
+    if (hdExec) 
+    {
+        if (PTR_BAG(hdExec)[4]) 
+        {
             DbgWalkEvalStackBackward(1);
             ChangeEnv(PTR_BAG(hdExec)[4], CEF_DBG_DOWN);
             DbgStackTop++;
@@ -576,10 +787,14 @@ Int     DbgDown() {
     return 0;
 }
 
-void EnterDbgStack() {
-    if (DbgInBreakLoop) {
+void    EnterDbgStack() 
+{
+    if (DbgInBreakLoop) 
+    {
         // ??? crash 
+        //GS4 -- This is dead code.
     }
+
     DbgEvalStackTop = EvalStackTop;
     DbgStackTop = 0;
     HdDbgStackRoot = HdExec;
@@ -588,8 +803,11 @@ void EnterDbgStack() {
     PopulateStack();
 }
 
-void LeaveDbgStack() {
-    if (DbgInBreakLoop==0) {
+void    LeaveDbgStack() 
+{
+
+    if (DbgInBreakLoop==0)
+    {
         // ??? crash
     }
     
@@ -630,32 +848,71 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 		/* open the standard error output file                                */
 		/*if ( ! InError )*/
 		isBreakpoint = 0;
-		if (strcmp(msg, "GapBreakpoint")==0) isBreakpoint = 1; 
-		if (strcmp(msg, "GapBreakpointRd")==0) isBreakpoint = 2;
-		if (strcmp(msg, "GapBreakpointWr")==0) isBreakpoint = 3;
-		if ( DbgInBreakLoop==0 ) {
+
+        if (strcmp(msg, "GapBreakpoint") == 0) 
+        {
+            isBreakpoint = 1;
+        }
+
+        if (strcmp(msg, "GapBreakpointRd") == 0) 
+        {
+            isBreakpoint = 2;
+        }
+
+        if (strcmp(msg, "GapBreakpointWr") == 0) 
+        {
+            isBreakpoint = 3; 
+        }
+
+		if ( DbgInBreakLoop==0 ) 
+        {
 			ignore = OpenOutput( "*errout*" );
-			if (!isBreakpoint)
-				Pr("[[ while reading %s:%d ]]\n", (Int)Input->name, (Int)Input->number);
+            if (!isBreakpoint)
+            {
+                //Pr("[[ while reading %s:%d ]]\n", (Int)Input->name, (Int)Input->number);
+                SyFmtPrint(OUTFILE, "[[ while reading %s:%d ]]\n", Input->name, Input->number);
+            }
 		}
-		if (isBreakpoint) {
-			switch(isBreakpoint) {
-			case 2: { Pr("Read Access Breakpoint",0,0); break; } 
-			case 3: { Pr("Write Access Breakpoint",0,0); break; }
-			default:
-				Pr("Breakpoint",0,0); 
+
+		if (isBreakpoint) 
+        {
+			switch(isBreakpoint) 
+            {
+			    case 2:
+                    //Pr("Read Access Breakpoint",0,0); 
+                    SyFmtPrint(OUTFILE, "Read Access Breakpoint");
+                    break;  
+			    case 3:  
+                    //Pr("Write Access Breakpoint",0,0);
+                    SyFmtPrint(OUTFILE, "Write Access Breakpoint");
+                    break; 
+			    default:
+				    //Pr("Breakpoint",0,0); 
+                    SyFmtPrint(OUTFILE, "Breakpoint");
+                    break;
 			}
-		} else {
+		} 
+        else
+        {
 			/* print the error message, special if called from 'FunError'      */
-			if ( strcmp( msg, "FunError" ) != 0 ) {
-				Pr("Error, ",0,0);  Pr( msg, arg1, arg2 );
-			} else {
-				Pr("Error, ",0,0);  FunPrint( (Bag)arg1 );
+			if ( strcmp( msg, "FunError" ) != 0 )
+            {
+				//Pr("Error, ",0,0);  
+                SyFmtPrint(OUTFILE, "Breakpoint");
+                //Pr( msg, arg1, arg2 );
+                SyFmtPrint(OUTFILE, msg, arg1, arg2); //GS4 - look into variables
+			} 
+            else 
+            {
+				//Pr("Error, ",0,0);  
+                SyFmtPrint(OUTFILE, "Error");
+                FunPrint( (Bag)arg1 );
 			}
 		}
 
 		/* print the error message                                             */
-		if ( HdExec != 0 && DbgInBreakLoop==0 ) {
+		if ( HdExec != 0 && DbgInBreakLoop==0 ) 
+        {
 			/* we have to do something about this as we have more detailed
 			call stack now
 			if ( HdStat != 0 && strcmp( msg, "FunError" ) != 0 ) {
@@ -665,19 +922,27 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			}
 			Pr(" in\n",0,0);
 			*/
-			if (DbgEvalStackTop>0 && strcmp( msg, "FunError" ) != 0) {
-				Pr(" at\n", 0, 0 );
-				Print( EvalStack[DbgEvalStackTop] );
-				Pr(" ...",0,0);
+			if ((DbgEvalStackTop > 0) && (strcmp( msg, "FunError" ) != 0)) 
+            {
+				//Pr(" at\n", 0, 0 );
+                SyFmtPrint(OUTFILE, " at\n");
+				//Print( EvalStack[DbgEvalStackTop] );
+                PrintObj(OUTFILE, EvalStack[DbgEvalStackTop], 0);
+				//Pr(" ...",0,0);
+                SyFmtPrint(OUTFILE, " ...");
 			}
 
-			Pr(" in\n",0,0);
+			//Pr(" in\n",0,0);
+            SyFmtPrint(OUTFILE, " in\n");
 		}
-		else {
-			Pr("\n",0,0);
+		else
+        {
+			//Pr("\n",0,0);
+            SyFmtPrint(OUTFILE, "\n");
 		}
 
-		if ( DbgInBreakLoop == 0 ){
+		if ( DbgInBreakLoop == 0 )
+        {
 			/* we must disable tilde during break loop processing, since it points to
 			a broken object. We may need to restore it if the user 'return's from the
 			break loop, so we keep a local copy */
@@ -692,41 +957,81 @@ Bag       Error (char *msg, Int arg1, Int arg2)
             debugActive = (InDebugMode != 0);
 #endif
 			/* if requested enter a break loop                                     */
-			if ( HdExec != 0 && debugActive && OpenInput( "*errin*" ) ) {
+			if ( (HdExec != 0) && debugActive && OpenInput( "*errin*" ) ) 
+            {
+                if (parent->packages)
+                {
+                    PushPackages(parent->packages); 
+                }
+                if (parent->imports) 
+                { 
+                    PushNamespaces(parent->imports);
+                }
 
-				if(parent->packages) PushPackages(parent->packages);
-				if(parent->imports) PushNamespaces(parent->imports);
+				EnterDbgStack(); //on'y call of this
 
-				EnterDbgStack();
-				Try {
-					if (isBreakpoint)
-						FunBacktrace2( (Bag)0 );
-					else {
+				Try 
+                {
+                    if (isBreakpoint)// GS4 - If we can assume always set then FunBackTrace can be removed
+                    {
+                        FunBacktrace2((Bag)0);
+                    }
+					else 
+                    {
 						FunBacktrace( (Bag)0 );
-						Pr("web:error\n", 0, 0);
+						//Pr("web:error\n", 0, 0);
+                        SyFmtPrint(OUTFILE, "web:error\n");
 					}
+
 					DbgErrorLoopStarting();
-				} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }
+
+				} 
+                Catch(e) 
+                { 
+                    if (e != ERR_GAP) 
+                    { 
+                        LeaveDbgStack();
+                        Throw(e);
+                    } 
+                }
+
 				/* now enter a read-eval-print loop, just as in main               */
-				while ( Symbol != S_EOF ) {
+				while ( Symbol != S_EOF ) 
+                {
 					/* read an expression                                          */
-					if (InBreakpoint) {
+					if (InBreakpoint) 
+                    {
 						Prompt = DbgPrompt; 
-					} else {
+					} 
+                    else 
+                    {
 						Prompt = BrkPrompt;
 					}
+
 					NrError = 0;
 					hd = ReadIt();
+
 					/* if there we no syntax error evaluate the expression         */
-					if ( hd != 0 ) {
+					if ( hd != 0 )
+                    {
 						SyIsIntr();
-						Try {
+
+						Try 
+                        {
 							hd = EVAL( hd );
-						} Catch(e) {
-							if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); }
+						}
+                        Catch(e)
+                        {
+							if (e != ERR_GAP)
+                            { 
+                                LeaveDbgStack(); 
+                                Throw(e); 
+                            }
 							hd = HdVoid;
 						}
-						if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn ) {
+
+						if ( (hd == HdReturn) && (PTR_BAG(hd)[0] != HdReturn) ) 
+                        {
 							LeaveDbgStack(); 
 							SET_BAG(HdTilde, 0,  hdTilde ); /* restore ~ */
 							ignore = CloseInput();
@@ -734,19 +1039,34 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 							/*InError = 0;*/
 							return PTR_BAG(hd)[0];
 						}
-						else if ( hd == HdReturn ) {
+						else if ( hd == HdReturn ) 
+                        {
 							hd = HdVoid;
 							Symbol = S_EOF;
 						}
 
 						/* assign the value to 'last' and then print it            */
-						if ( GET_TYPE_BAG(hd) != T_VOID ) {
+						if ( GET_TYPE_BAG(hd) != T_VOID ) 
+                        {
 							SET_BAG(HdLast, 0,  hd );
-							if ( *In != ';' ) {
-								Try {
-									Print( hd );
-									Pr("\n",0,0);
-								} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }
+
+							if ( *In != ';' ) 
+                            {
+								Try
+                                {
+									//Print( hd );
+                                    PrintObj(OUTFILE, hd, 0);
+									//Pr("\n",0,0);
+                                    SyFmtPrint(OUTFILE, " \n");
+								} 
+                                Catch(e) 
+                                {
+                                    if (e != ERR_GAP) 
+                                    { 
+                                        LeaveDbgStack(); 
+                                        Throw(e); 
+                                    } 
+                                }
 							}
 						}
 					}
@@ -756,17 +1076,36 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 				ignore = CloseInput();
 			}
 
-			while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
-			while ( EvalStackTop > 0 ) EVAL_STACK_POP;
+            while (HdExec != 0) 
+            {
+                ChangeEnv(PTR_BAG(HdExec)[4], CEF_CLEANUP); 
+            }
+
+            while (EvalStackTop > 0) 
+            { 
+                EVAL_STACK_POP; 
+            }
 
 			/* close "*errout*" and return to the main read-eval-print loop        */
 			while ( CloseOutput() ) ;
 			while ( CloseInput() ) ;
-		} else { // if we are already in error loop just cleanup stack
-			while ( HdExec != DbgStackExec() )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
-			while ( EvalStackTop > DbgEvalStackTop ) EVAL_STACK_POP;
+		} 
+        else
+         { 
+            // if we are already in error loop just cleanup stack
+            while (HdExec != DbgStackExec()) 
+            {
+                ChangeEnv(PTR_BAG(HdExec)[4], CEF_CLEANUP); 
+            }
+
+            while (EvalStackTop > DbgEvalStackTop) 
+            {
+                EVAL_STACK_POP;
+            }
 		}
-	} else {
+	} 
+    else 
+    {
 		HdLastErrorMsg = StringToHd(msg);
 	}
 
@@ -789,7 +1128,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 **  has value 'Print' and prints its arguments or has value 'Ignore' and does
 **  nothing at all.
 */
-Bag       FunIgnore(Bag hdCall)
+Bag     FunIgnore(Bag hdCall)
 {
     return HdVoid;
 }
@@ -810,7 +1149,7 @@ Bag       FunIgnore(Bag hdCall)
 **  that it has been called from 'FunError' because the  format  argument  is
 **  'FunError'.  'FunError' passes <hdCall> as the first extra argument.
 */
-Bag       FunError (Bag hdCall)
+Bag       FunError(Bag hdCall)
 {
     return Error("FunError", (Int)hdCall, 0 );
 }
@@ -843,7 +1182,7 @@ Bag       FunError (Bag hdCall)
 **  similar, but causes an error if a file is not found.  'READ'  could  also
 **  be used for a 'ReadLib' which searches for a file in various directories.
 */
-Bag       FunREAD (Bag hdCall)
+Bag       FunREAD(Bag hdCall)
 {
     Bag           hd;
     Bag           hdName;
@@ -854,54 +1193,96 @@ Bag       FunREAD (Bag hdCall)
 
 
     /* check the number and type of arguments                              */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD && GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
-        return Error("usage: READ( <filename>, [<pkg>] )",0,0);
+    if ((GET_SIZE_BAG(hdCall) != (2 * SIZE_HD)) && (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD)))
+    {
+        return Error("usage: READ( <filename>, [<pkg>] )", 0, 0);
+    }
+
     hdName = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hdName) ) return Error("usage: READ( <filename> )",0,0);
-    if ( GET_SIZE_BAG(hdCall) == 3*SIZE_HD ) {
+
+    if (!IsString(hdName))
+    {
+        return Error("usage: READ( <filename> )", 0, 0);
+    }
+
+    if (GET_SIZE_BAG(hdCall) == (3 * SIZE_HD))
+    {
         hdPkg = EVAL(PTR_BAG(hdCall)[2]);
-	hdPkg = StartPackageSpec(hdPkg); /* try it out */
-	EndPackage(); 
+	    hdPkg = StartPackageSpec(hdPkg); /* try it out */
+	    EndPackage(); 
     } 
-    else hdPkg = 0;
+    else
+    {
+        hdPkg = 0;
+    }
 
     parent = Input;
     /* try to open the given file, if the file is not found return 'false' */
-    if ( ! OpenInput( (char*)PTR_BAG(hdName) ) )
+    if (!OpenInput((char*)PTR_BAG(hdName)))
+    {
         return HdFalse;
+    }
 
-    if ( hdPkg ) { 
-      if(parent->packages) PushPackages(parent->packages);
-      if(parent->imports) PushNamespaces(parent->imports);
+    if ( hdPkg ) 
+    { 
+      if (parent->packages) 
+      { 
+          PushPackages(parent->packages);
+      }
+
+      if (parent->imports) 
+      {
+          PushNamespaces(parent->imports); 
+      }
+
       StartPackageSpec(hdPkg); 
     }
 
     /* now comes a read-eval-noprint loop, similar to the one in 'main'    */
-	Try {
-        while ( Symbol != S_EOF ) {
+	Try 
+    {
+        while ( Symbol != S_EOF ) 
+        {
             hd = ReadIt();
 			if ( hd != 0 ) { 
 				hd = EVAL( hd );
-			}				
-			if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
-				return Error("READ: 'return' must not be used here",0,0);
-			else if ( hd == HdReturn )
-				return Error("READ: 'quit' must not be used here",0,0);
+			}
+
+            if ((hd == HdReturn) && (PTR_BAG(hd)[0] != HdReturn))
+            {
+                return Error("READ: 'return' must not be used here", 0, 0);
+            }
+            else if (hd == HdReturn)
+            {
+                return Error("READ: 'quit' must not be used here", 0, 0);
+            }
         }
-    } Catch(e) {
-        if ( hdPkg ) EndPackage();
+    } 
+    Catch(e) 
+    {
+        if (hdPkg) 
+        { 
+            EndPackage(); 
+        }
+
         Throw(e);
     }
-    if ( hdPkg ) EndPackage();
+    if (hdPkg) 
+    { 
+        EndPackage();
+    }
+
     /* close the input file again, and return 'true'                       */
-    if ( ! CloseInput() )
-        Error("READ: can not close input, this should not happen",0,0);
+    if (!CloseInput())
+    {
+        Error("READ: can not close input, this should not happen", 0, 0);
+    }
 	
 	return HdTrue;
 }
 
 
-Bag     FunChangeDir (Bag hdCall)
+Bag     FunChangeDir(Bag hdCall)
 {
     Bag        hd;
     Bag        hdName;
@@ -909,42 +1290,63 @@ Bag     FunChangeDir (Bag hdCall)
     exc_type_t e;
 
     /* check the number and type of arguments                              */
-    if ( GET_SIZE_BAG(hdCall) != SIZE_HD && GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: CHANGEDIR( <filename> )",0,0);
-    hdName = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hdName) ) return Error("usage: CHANGEDIR( <filename> )",0,0);
+    if ((GET_SIZE_BAG(hdCall) != SIZE_HD) && (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD)))
+    {
+        return Error("usage: CHANGEDIR( <filename> )", 0, 0);
+    }
 
-    if ( ! (int)ChDir( (const char*)PTR_BAG(hdName) ) )
+    hdName = EVAL( PTR_BAG(hdCall)[1] );
+
+    if (!IsString(hdName))
+    {
+        return Error("usage: CHANGEDIR( <filename> )", 0, 0);
+    }
+
+    if (!(int)ChDir((const char*)PTR_BAG(hdName)))
+    {
         return HdFalse;
+    }
 
     return HdTrue;
 }
 
 
-Bag       FunReadString (Bag hdCall)
+Bag       FunReadString(Bag hdCall)
 {
     Bag           hdList;
     Bag           hdName;
     TypInputFile *parent;
 
     /* check the number and type of arguments                              */
-    if ( GET_SIZE_BAG(hdCall) != SIZE_HD && GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: READSTR( <filename> )",0,0);
+    if ((GET_SIZE_BAG(hdCall) != SIZE_HD) && (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD)))
+    {
+        return Error("usage: READSTR( <filename> )", 0, 0);
+    }
+
     hdName = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hdName) ) return Error("usage: READSTR( <filename> )",0,0);
+
+    if (!IsString(hdName))
+    {
+        return Error("usage: READSTR( <filename> )", 0, 0);
+    }
 
     parent = Input;
     /* try to open the given file, if the file is not found return 'false' */
-    if ( ! OpenInput( (char*)PTR_BAG(hdName) ) )
-        return HdFalse;
 
-        hdList = GReadFile();
+    if (!OpenInput((char*)PTR_BAG(hdName)))
+    {
+        return HdFalse;
+    }
+
+    hdList = GReadFile();
 
     /* close the input file again, and return 'true'                       */
-    if ( ! CloseInput() )
-        Error("READSTR: can not close input, this should not happen",0,0);
+    if (!CloseInput())
+    {
+        Error("READSTR: can not close input, this should not happen", 0, 0);
+    }
         
-        return hdList;
+    return hdList;
 }
 
 
@@ -973,33 +1375,36 @@ Bag       FunReadString (Bag hdCall)
 **
 **  'AUTO' is a procedure, i.e., does not return a value.
 */
-Bag       FunAUTO (Bag hdCall)
+Bag       FunAUTO(Bag hdCall)
 {
     Bag     hdExpr;
     Bag     hdVar;
     Int     i;
 
     /* check the number of arguments                                       */
-    if ( GET_SIZE_BAG(hdCall) < 3 * SIZE_HD )
-        return Error("usage: AUTO( <expr>, <var>, <var>... )",0,0);
+    if (GET_SIZE_BAG(hdCall) < (3 * SIZE_HD))
+    {
+        return Error("usage: AUTO( <expr>, <var>, <var>... )", 0, 0);
+    }
 
     /* get the expression                                                  */
     hdExpr = PTR_BAG(hdCall)[1];
 
     /* for all remaining arguments                                         */
-    for ( i = 2; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
+    for ( i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i )
+    {
         hdVar = PTR_BAG(hdCall)[i];
 
         /* check that they are variables                                   */
-        if ( GET_TYPE_BAG(hdVar) != T_VAR && GET_TYPE_BAG(hdVar) != T_VARAUTO )
-            return Error("usage: AUTO( <expr>, <var>, <var>... )",0,0);
+        if ((GET_TYPE_BAG(hdVar) != T_VAR) && (GET_TYPE_BAG(hdVar) != T_VARAUTO))
+        {
+            return Error("usage: AUTO( <expr>, <var>, <var>... )", 0, 0);
+        }
 
         /* turn them into automatic variables and bind them to <expr>      */
         Retype( hdVar, T_VARAUTO );
         SET_BAG(hdVar, 0,  hdExpr );
-
     }
-
     return HdVoid;
 }
 
@@ -1033,25 +1438,50 @@ Bag       FunAUTO (Bag hdCall)
 **  literals and other empty lists.  For that it relies on  'IsString'  *not*
 **  to convert empty lists to type 'T_STRING'.  This is ugly.
 */
-Bag       FunPrint (Bag hdCall)
+Bag       FunPrint(Bag hdCall)
 {
     Bag     hd;
     Int     i;
+	Int     type;
+
+    //GS4 -- Print Area expand indents and steams
 
     /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-	Int type;
+    for ( i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i )
+    {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-	type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  PrintString( hd );
-        else if ( type == T_MAKEFUNC )           PrintFunction( hd );
-        else if ( type == T_FUNCTION )           PrintFunction( hd );
-        else if ( type == T_MAKEMETH )           PrintMethod( hd );
-        else if ( type == T_METHOD )             PrintMethod( hd );
-        else if ( type != T_VOID )               Print( hd );
-        else  /*hd = Error("function must return a value",0,0);*/;
+	    type = GET_TYPE_BAG( hd );
+        
+        if (IsString(hd) && (GET_TYPE_BAG(hd) == T_STRING)) 
+        { 
+            PrintString(OUTFILE, hd, 0);
+        }
+        else if (type == T_MAKEFUNC) 
+        { 
+            PrintFunction(OUTFILE, hd, 0);
+        }
+        else if (type == T_FUNCTION) 
+        {
+            PrintFunction(OUTFILE, hd, 0);
+        }
+        else if (type == T_MAKEMETH)
+        { 
+            PrintMethod(OUTFILE, hd, 0);
+        }
+        else if (type == T_METHOD)
+        {
+            PrintMethod(OUTFILE, hd, 0);
+        }
+        else if (type != T_VOID) 
+        {
+            //Print(hd);
+            PrintObj(OUTFILE, hd, 0);
+        }
+        else
+        {
+            /*hd = Error("function must return a value",0,0);*/; 
+        }
     }
-
     return HdVoid;
 }
 
@@ -1083,39 +1513,76 @@ Bag       FunPrint (Bag hdCall)
 **
 **  See the note about empty string literals and empty lists in 'Print'.
 */
-Bag       FunPrntTo (Bag hdCall)
+Bag       FunPrntTo(Bag hdCall)
 {
     Bag     hd;
     Int     i;
+    Int     type;
 
     /* check the number and type of the arguments, nothing special         */
-    if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
-        return Error("usage: PrintTo( <file>, <obj>, <obj>... )",0,0);
+    if (GET_SIZE_BAG(hdCall) == SIZE_HD)
+    {
+        return Error("usage: PrintTo( <file>, <obj>, <obj>... )", 0, 0);
+    }
+
     hd = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hd) )
-        return Error("usage: PrintTo( <file>, <obj>, <obj>... )",0,0);
+
+    if (!IsString(hd))
+    {
+        return Error("usage: PrintTo( <file>, <obj>, <obj>... )", 0, 0);
+    }
 
     /* try to open the given output file, raise an error if you can not    */
-    if ( OpenOutput( (char*)PTR_BAG(hd) ) == 0 )
-        return Error("PrintTo: can not open the file for writing",0,0);
+    if (OpenOutput((char*)PTR_BAG(hd)) == 0)
+    {
+        return Error("PrintTo: can not open the file for writing", 0, 0);
+    }
 
     /* print all the arguments, take care of strings and functions         */
-    for ( i = 2; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-	Int type;
+    for ( i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i ) 
+    {
+	
         hd = EVAL( PTR_BAG(hdCall)[i] );
-	type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  PrintString( hd );
-        else if ( type == T_MAKEFUNC )           PrintFunction( hd );
-        else if ( type == T_FUNCTION )           PrintFunction( hd );
-        else if ( type == T_MAKEMETH )           PrintMethod( hd );
-        else if ( type == T_METHOD )             PrintMethod( hd );
-	else if ( type != T_VOID )               Print( hd );
-        else                                           Pr("",0,0);
+	    type = GET_TYPE_BAG( hd );
+
+        if (IsString(hd) && (GET_TYPE_BAG(hd) == T_STRING))
+        { 
+            PrintString(OUTFILE, hd, 0);
+        }
+        else if (type == T_MAKEFUNC)
+        {
+            PrintFunction(OUTFILE, hd, 0);
+        }
+        else if (type == T_FUNCTION) 
+        {
+            PrintFunction(OUTFILE, hd, 0);
+        }
+        else if (type == T_MAKEMETH) 
+        {
+            PrintMethod(OUTFILE, hd, 0);
+        }
+        else if (type == T_METHOD)
+        { 
+            PrintMethod(OUTFILE, hd, 0);
+        }
+        else if (type != T_VOID) 
+        {
+            //Print(hd);
+            PrintObj(OUTFILE, hd, 0);
+        }
+        else
+        {
+            //Pr("", 0, 0);
+            SyFmtPrint(OUTFILE, "");
+        }
     }
 
     /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() )
-        Error("PrintTo: can not close output, this should not happen",0,0);
+    if (!CloseOutput())
+    {
+        Error("PrintTo: can not close output, this should not happen", 0, 0);
+    }
+
     return HdVoid;
 }
 
@@ -1136,39 +1603,76 @@ Bag       FunPrntTo (Bag hdCall)
 **
 **  See the note about empty string literals and empty lists in 'Print'.
 */
-Bag       FunAppendTo (Bag hdCall)
+Bag       FunAppendTo(Bag hdCall)
 {
     Bag     hd;
     Int     i;
+    Int     type;
 
     /* check the number and type of the arguments, nothing special         */
-    if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
-        return Error("usage: AppendTo( <file>, <obj>, <obj>... )",0,0);
+    if (GET_SIZE_BAG(hdCall) == SIZE_HD)
+    {
+        return Error("usage: AppendTo( <file>, <obj>, <obj>... )", 0, 0);
+    }
+
     hd = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hd) )
-        return Error("usage: AppendTo( <file>, <obj>, <obj>... )",0,0);
+
+    if (!IsString(hd))
+    {
+        return Error("usage: AppendTo( <file>, <obj>, <obj>... )", 0, 0);
+    }
 
     /* try to open the given output file, raise an error if you can not    */
-    if ( OpenAppend( (char*)PTR_BAG(hd) ) == 0 )
-        return Error("AppendTo: can not open the file for appending",0,0);
+    if (OpenAppend((char*)PTR_BAG(hd)) == 0)
+    {
+        return Error("AppendTo: can not open the file for appending", 0, 0);
+    }
 
     /* print all the arguments, take care of strings and functions         */
-    for ( i = 2; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-	Int type;
+    for ( i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i ) 
+    {
+	
         hd = EVAL( PTR_BAG(hdCall)[i] );
-	type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  PrintString( hd );
-        else if ( type == T_MAKEFUNC )           PrintFunction( hd );
-        else if ( type == T_FUNCTION )           PrintFunction( hd );
-	else if ( type == T_MAKEMETH )           PrintMethod( hd );
-        else if ( type == T_METHOD )             PrintMethod( hd );
-        else if ( type != T_VOID )               Print( hd );
-        else                                           Pr("",0,0);
+	    type = GET_TYPE_BAG( hd );
+       
+        if (IsString(hd) && GET_TYPE_BAG(hd) == T_STRING)
+        { 
+            PrintString(OUTFILE, hd, 0);
+        }
+        else if (type == T_MAKEFUNC)
+        { 
+            PrintFunction(OUTFILE, hd, 0);
+        }
+        else if (type == T_FUNCTION) 
+        { 
+            PrintFunction(OUTFILE, hd, 0);
+        }
+        else if (type == T_MAKEMETH)
+        { 
+            PrintMethod(OUTFILE, hd, 0);
+        }
+        else if (type == T_METHOD) 
+        { 
+            PrintMethod(OUTFILE, hd, 0);
+        }
+        else if (type != T_VOID) 
+        { 
+            //Print(hd);
+            PrintObj(OUTFILE, hd, 0);
+        }
+        else 
+        { 
+            //Pr("", 0, 0); 
+            SyFmtPrint(OUTFILE, "");
+        }
     }
 
     /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() )
-       Error("AppendTo: can not close output, this should not happen",0,0);
+    if (!CloseOutput())
+    {
+        Error("AppendTo: can not close output, this should not happen", 0, 0);
+    }
+
     return HdVoid;
 }
 
@@ -1191,23 +1695,31 @@ Bag       FunAppendTo (Bag hdCall)
 **  input   from  '*stdin*'  and  '*errin*'  and  output  to  '*stdout*'  and
 **  '*errout*' will no longer be echoed to a file.
 */
-Bag       FunLogTo (Bag hdCall)
+Bag       FunLogTo(Bag hdCall)
 {
     Bag     hdName;
 
     /* 'LogTo()'                                                           */
-    if ( GET_SIZE_BAG(hdCall) == SIZE_HD ) {
-        if ( ! CloseLog() )
-            return Error("LogTo: can not close the logfile",0,0);
+    if ( GET_SIZE_BAG(hdCall) == SIZE_HD ) 
+    {
+        if (!CloseLog())
+        {
+            return Error("LogTo: can not close the logfile", 0, 0);
+        }
     }
-
     /* 'LogTo( <filename> )'                                               */
-    else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD ) {
+    else if (GET_SIZE_BAG(hdCall) ==( 2 * SIZE_HD)) 
+    {
         hdName = EVAL( PTR_BAG(hdCall)[1] );
-        if ( ! IsString(hdName) )
-            return Error("usage: LogTo() or LogTo( <string> )",0,0);
-        if ( ! OpenLog( (char*)PTR_BAG(hdName) ) )
-            return Error("LogTo: can not log to %s",(Int)PTR_BAG(hdName),0);
+
+        if (!IsString(hdName))
+        {
+            return Error("usage: LogTo() or LogTo( <string> )", 0, 0);
+        }
+        if (!OpenLog((char*)PTR_BAG(hdName)))
+        {
+            return Error("LogTo: can not log to %s", (Int)PTR_BAG(hdName), 0);
+        }
     }
 
     return HdVoid;
@@ -1231,23 +1743,31 @@ Bag       FunLogTo (Bag hdCall)
 **  that input  from '*stdin*' and '*errin*' will  no longer  be echoed  to a
 **  file.
 */
-Bag       FunLogInputTo (Bag hdCall)
+Bag       FunLogInputTo(Bag hdCall)
 {
     Bag     hdName;
 
     /* 'LogInputTo()'                                                      */
-    if ( GET_SIZE_BAG(hdCall) == SIZE_HD ) {
-        if ( ! CloseInputLog() )
-            return Error("LogInputTo: can not close the logfile",0,0);
+    if ( GET_SIZE_BAG(hdCall) == SIZE_HD ) 
+    {
+        if (!CloseInputLog())
+        {
+            return Error("LogInputTo: can not close the logfile", 0, 0);
+        }
     }
-
     /* 'LogInputTo( <filename> )'                                          */
-    else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD ) {
+    else if (GET_SIZE_BAG(hdCall) == (2 * SIZE_HD)) 
+    {
         hdName = EVAL( PTR_BAG(hdCall)[1] );
-        if ( ! IsString(hdName) )
-           return Error("usage: LogInputTo() or LogTo( <string> )",0,0);
-        if ( ! OpenInputLog( (char*)PTR_BAG(hdName) ) )
-           return Error("LogInputTo: cannot log to %s",(Int)PTR_BAG(hdName),0);
+
+        if (!IsString(hdName))
+        {
+            return Error("usage: LogInputTo() or LogTo( <string> )", 0, 0);
+        }
+        if (!OpenInputLog((char*)PTR_BAG(hdName)))
+        {
+            return Error("LogInputTo: cannot log to %s", (Int)PTR_BAG(hdName), 0);
+        }
     }
 
     return HdVoid;
@@ -1266,11 +1786,16 @@ Bag       FunLogInputTo (Bag hdCall)
 **
 **  'Help' prints a section from the on-line documentation about <topic>.
 */
-Bag       FunHelp (Bag hdCall)
+Bag       FunHelp(Bag hdCall)
 {
-    Pr("Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n"
-       "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n"
-       "Use ?<func> or Doc(<func>) to learn about a function or a package\n", 0, 0);
+    //Pr("Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n"
+    //   "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n"
+    //   "Use ?<func> or Doc(<func>) to learn about a function or a package\n", 0, 0);
+    char *helpString = "Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n" 
+        "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n" 
+        "Use ?<func> or Doc(<func>) to learn about a function or a package\n";
+
+    SyFmtPrint(OUTFILE, "%s", helpString);
     return HdVoid;
 }
 
@@ -1289,16 +1814,24 @@ Bag       FunHelp (Bag hdCall)
 **
 **  'Exec' is a procedure, i.e., does not return a value.
 */
-Bag       FunExec (Bag hdCall)
+Bag       FunExec(Bag hdCall)
 {
     Bag     hdCmd;
 
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: Exec( <command> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: Exec( <command> )", 0, 0);
+    }
+
     hdCmd = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hdCmd) )
-        return Error("usage: Exec( <command> )",0,0);
+
+    if (!IsString(hdCmd))
+    {
+        return Error("usage: Exec( <command> )", 0, 0);
+    }
+
     SyExec( (char*)PTR_BAG(hdCmd) );
+
     return HdVoid;
 }
 
@@ -1317,17 +1850,25 @@ Bag       FunExec (Bag hdCall)
 **
 **  'IntExec' is a function, it returns completion status of the command.
 */
-Bag       FunIntExec (Bag hdCall)
+Bag       FunIntExec(Bag hdCall)
 {
     Bag     hdCmd;
     int     status;
 
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: Exec( <command> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: Exec( <command> )", 0, 0);
+    }
+
     hdCmd = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hdCmd) )
-        return Error("usage: Exec( <command> )",0,0);
+
+    if (!IsString(hdCmd))
+    {
+        return Error("usage: Exec( <command> )", 0, 0);
+    }
+
     status = SyExec( (char*)PTR_BAG(hdCmd) );
+
     return INT_TO_HD( (Int)status );
 }
 
@@ -1344,10 +1885,13 @@ Bag       FunIntExec (Bag hdCall)
 **  How much time execution of statements take is of course system dependent.
 **  The accuracy of this number is also system dependent.
 */
-Bag       FunRuntime (Bag hdCall)
+Bag       FunRuntime(Bag hdCall)
 {
-    if ( GET_SIZE_BAG(hdCall) != SIZE_HD )
-        return Error("usage: Runtime()",0,0);
+    if (GET_SIZE_BAG(hdCall) != SIZE_HD)
+    {
+        return Error("usage: Runtime()", 0, 0);
+    }
+
     return INT_TO_HD( SyTime() );
 }
 
@@ -1372,50 +1916,76 @@ Bag       FunRuntime (Bag hdCall)
 **  to leave this value unaffected.  Note that those parameters can  also  be
 **  set with the command line options '-x <x>' and '-y <y>'.
 */
-Bag       FunSizeScreen (Bag hdCall)
+Bag       FunSizeScreen(Bag hdCall)
 {
     Bag     hdSize;         /* argument and result list        */
     Int     len;            /* length of lines on the screen   */
     Int     nr;             /* number of lines on the screen   */
 
     /* check the arguments                                                 */
-    if ( GET_SIZE_BAG(hdCall) != SIZE_HD && GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: SizeScreen() or SizeScreen([<x>,<y>])",0,0);
+    if (GET_SIZE_BAG(hdCall) != SIZE_HD && GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: SizeScreen() or SizeScreen([<x>,<y>])", 0, 0);
+    }
 
     /* no argument is equivalent to the empty list                         */
-    if ( GET_SIZE_BAG(hdCall) == SIZE_HD ) {
+    if ( GET_SIZE_BAG(hdCall) == SIZE_HD ) 
+    {
         hdSize = NewBag( T_LIST, SIZE_PLEN_PLIST(0) );
         SET_LEN_PLIST( hdSize, 0 );
     }
-
     /* otherwise check the argument                                        */
-    else {
+    else 
+    {
         hdSize = EVAL( PTR_BAG(hdCall)[1] );
-        if ( ! IS_LIST(hdSize) || 2 < LEN_LIST(hdSize) )
-          return Error("usage: SizeScreen() or SizeScreen([<x>,<y>])",0,0);
+        if (!IS_LIST(hdSize) || (2 < LEN_LIST(hdSize)))
+        {
+            return Error("usage: SizeScreen() or SizeScreen([<x>,<y>])", 0, 0);
+        }
     }
 
     /* extract the length                                                  */
-    if ( LEN_LIST(hdSize) < 1 || ELMF_LIST(hdSize,1) == 0 ) {
+    if ( (LEN_LIST(hdSize) < 1) || (ELMF_LIST(hdSize,1) == 0) )
+    {
         len = SyNrCols;
     }
-    else {
-        if ( GET_TYPE_BAG( ELMF_LIST(hdSize,1) ) != T_INT )
-            return Error("SizeScreen: <x> must be an integer",0,0);
+    else
+    {
+        if (GET_TYPE_BAG(ELMF_LIST(hdSize, 1)) != T_INT)
+        {
+            return Error("SizeScreen: <x> must be an integer", 0, 0);
+        }
+
         len = HD_TO_INT( ELMF_LIST(hdSize,1) );
-        if ( len < 20  )  len = 20;
-        if ( 256 < len )  len = 256;
+
+        if (len < 20)
+        { 
+            len = 20;
+        }
+        if (256 < len) 
+        { 
+            len= 256;
+        }
     }
 
     /* extract the number                                                  */
-    if ( LEN_LIST( hdSize ) < 2 || ELMF_LIST(hdSize,2) == 0 ) {
+    if ( (LEN_LIST( hdSize ) < 2) || (ELMF_LIST(hdSize,2) == 0) )
+    {
         nr = SyNrRows;
     }
-    else {
-        if ( GET_TYPE_BAG( ELMF_LIST(hdSize,2) ) != T_INT )
-            return Error("SizeScreen: <y> must be an integer",0,0);
+    else 
+    {
+        if (GET_TYPE_BAG(ELMF_LIST(hdSize, 2)) != T_INT)
+        {
+            return Error("SizeScreen: <y> must be an integer", 0, 0);
+        }
+        
         nr = HD_TO_INT( ELMF_LIST(hdSize,2) );
-        if ( nr < 10 )  nr = 10;
+        
+        if (nr < 10)
+        {
+            nr = 10;
+        }
     }
 
     /* set length and number                                               */
@@ -1437,21 +2007,31 @@ Bag       FunSizeScreen (Bag hdCall)
 **
 **  'FunIsIdentical' implements 'IsIdentical'
 */
-Bag       FunIsIdentical (Bag hdCall)
+Bag       FunIsIdentical(Bag hdCall)
 {
     Bag     hdL;
     Bag     hdR;
 
-    if ( GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
-        return Error( "usage: IsIdentical( <l>, <r> )", 0, 0 );
+    if (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD))
+    {
+        return Error("usage: IsIdentical( <l>, <r> )", 0, 0);
+    }
+
     hdL = EVAL( PTR_BAG(hdCall)[1] );
     hdR = EVAL( PTR_BAG(hdCall)[2] );
-    if ( GET_TYPE_BAG(hdL) < T_LIST && GET_TYPE_BAG(hdR) < T_LIST )
-	return EQ( hdL, hdR );
-    else if ( GET_TYPE_BAG(hdL) < T_LIST || GET_TYPE_BAG(hdR) < T_LIST )
-	return HdFalse;
+    
+    if ((GET_TYPE_BAG(hdL) < T_LIST) && (GET_TYPE_BAG(hdR) < T_LIST))
+    {
+        return EQ(hdL, hdR);
+    }
+    else if ((GET_TYPE_BAG(hdL) < T_LIST) || (GET_TYPE_BAG(hdR) < T_LIST))
+    {
+        return HdFalse;
+    }
     else
-	return ( hdL == hdR ) ? HdTrue : HdFalse;
+    {
+        return (hdL == hdR) ? HdTrue : HdFalse;
+    }
 }
 
 
@@ -1466,18 +2046,23 @@ Bag       FunIsIdentical (Bag hdCall)
 **  'HANDLE' returns the handle  of  the  object  <obj>  as  an  integer.  It
 **  exists only for debugging purposes and should only be  used  by  experts.
 */
-Bag       FunHANDLE (Bag hdCall)
+Bag       FunHANDLE(Bag hdCall)
 {
     Bag     hdHD;
     Bag     hdObj;
 
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: HANDLE( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: HANDLE( <obj> )", 0, 0);
+    }
+    
     hdObj = EVAL( PTR_BAG(hdCall)[1] );
     hdHD  = INT_TO_HD( (Int)hdObj );
-    if ( HD_TO_INT(hdHD) != (Int)hdObj )
-        return Error("HANDLE: %d does not fit into 28 bits",(Int)hdObj,0);
-
+    
+    if (HD_TO_INT(hdHD) != (Int)hdObj)
+    {
+        return Error("HANDLE: %d does not fit into 28 bits", (Int)hdObj, 0);
+    }
     return hdHD;
 }
 
@@ -1495,16 +2080,23 @@ Bag       FunHANDLE (Bag hdCall)
 **  which is not a valid handle is likely to crash GAP.  Thus  this  function
 **  is only there for debugging purposes and should only be used by experts.
 */
-Bag       FunOBJ (Bag hdCall)
+Bag       FunOBJ(Bag hdCall)
 {
     Bag     hdObj;
     Bag     hdHD;
 
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: OBJ( <hd> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: OBJ( <hd> )", 0, 0);
+    }
+
     hdHD = EVAL( PTR_BAG(hdCall)[1] );
-    if ( GET_TYPE_BAG( hdHD ) != T_INT )
-        return Error("OBJ: <hd> must be a small integer",0,0);
+    
+    if (GET_TYPE_BAG(hdHD) != T_INT)
+    {
+        return Error("OBJ: <hd> must be a small integer", 0, 0);
+    }
+
     hdObj = (Bag)HD_TO_INT( hdHD );
 
     return hdObj;
@@ -1521,23 +2113,28 @@ Bag       FunOBJ (Bag hdCall)
 **
 **  'TYPE' returns the type of the object <obj> as a string.
 */
-Bag       FunTYPE (Bag hdCall)
+Bag       FunTYPE(Bag hdCall)
 {
     Bag     hdType;
     Bag     hdObj;
 
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: GET_TYPE_BAG( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: GET_TYPE_BAG( <obj> )", 0, 0);
+    }
+
     hdObj  = EVAL( PTR_BAG(hdCall)[1] );
-    if ( hdObj == 0 ) {
+    
+    if ( hdObj == 0 )
+    {
         hdType = NewBag( T_STRING, 5 );
         strncat( (char*)PTR_BAG(hdType), "null", 4 );
     }
-    else {
+    else
+    {
 		char *objtyp = InfoBags[GET_TYPE_BAG(hdObj)].name;
         hdType = NewBag( T_STRING, strlen( objtyp ) + 1 );
-        strncat( (char*)PTR_BAG(hdType), objtyp,
-                   strlen( objtyp ) + 1 );
+        strncat( (char*)PTR_BAG(hdType), objtyp, strlen( objtyp ) + 1 );
     }
 
    return hdType;
@@ -1561,38 +2158,48 @@ Bag       FunTYPE (Bag hdCall)
 **  helps  to   avoid  infinite recursion if    an  object contains itself as
 **  subobject.
 */
-void            MarkObj (Bag hdObj)
+void        MarkObj(Bag hdObj)
 {
     UInt    i;
 
     /* void and small integers do not have a handle structure              */
-    if ( hdObj == 0 || GET_TYPE_BAG(hdObj) == T_INT || GET_TYPE_BAG(hdObj)==T_NAMESPACE)
+    if (hdObj == 0 || GET_TYPE_BAG(hdObj) == T_INT || GET_TYPE_BAG(hdObj) == T_NAMESPACE)
+    {
         return;
+    }
 
     /* do not mark a bag twice                                             */
-    if ( GET_FLAG_BAG(hdObj, BF_VISITED) )
+    if (GET_FLAG_BAG(hdObj, BF_VISITED))
+    {
         return;
+    }
 
     /* mark this bag                                                       */
     SET_FLAG_BAG(hdObj, BF_VISITED);
 
     /* mark the subobjects                                                 */
-    for ( i = NrHandles( GET_TYPE_BAG(hdObj), GET_SIZE_BAG(hdObj) ); 0 < i; i-- )
-        MarkObj( PTR_BAG(hdObj)[i-1] );
+    for (i = NrHandles(GET_TYPE_BAG(hdObj), GET_SIZE_BAG(hdObj)); 0 < i; i--)
+    {
+        MarkObj(PTR_BAG(hdObj)[i - 1]);
+    }
 }
 
-UInt   SizeObj (Bag hdObj)
+UInt   SizeObj(Bag hdObj)
 {
     UInt       size;
     UInt       i;
 
     /* void and small integers do not use any memory at all                */
-    if ( hdObj == 0 || GET_TYPE_BAG(hdObj) == T_INT )
+    if (hdObj == 0 || GET_TYPE_BAG(hdObj) == T_INT)
+    {
         return NUM_TO_UINT(0);
+    }
 
     /* do not count unmarked bags                                          */
-    if ( ! GET_FLAG_BAG(hdObj, BF_VISITED) )
+    if (!GET_FLAG_BAG(hdObj, BF_VISITED))
+    {
         return NUM_TO_UINT(0);
+    }
 
     /* unmark this bag                                                     */
     CLEAR_FLAG_BAG(hdObj, BF_VISITED);
@@ -1601,8 +2208,10 @@ UInt   SizeObj (Bag hdObj)
     size = GET_SIZE_BAG( hdObj );
 
     /* add the sizes of the subobjects                                     */
-    for ( i = NrHandles( GET_TYPE_BAG(hdObj), GET_SIZE_BAG(hdObj) ); 0 < i; i-- )
-        size += SizeObj( PTR_BAG(hdObj)[i-1] );
+    for (i = NrHandles(GET_TYPE_BAG(hdObj), GET_SIZE_BAG(hdObj)); 0 < i; i--)
+    {
+        size += SizeObj(PTR_BAG(hdObj)[i - 1]);
+    }
 
     /* return the size                                                     */
     return size;
@@ -1613,8 +2222,11 @@ Bag       FunSIZE (Bag hdCall)
     Bag     hdObj;
     UInt    size;
 
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: GET_SIZE_BAG( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: GET_SIZE_BAG( <obj> )", 0, 0);
+    }
+
     hdObj  = EVAL( PTR_BAG(hdCall)[1] );
     MarkObj( hdObj );
     size = SizeObj( hdObj );
@@ -1632,7 +2244,7 @@ Bag       FunSIZE (Bag hdCall)
 **  'GASMAN( "display" | "clear" | "collect" | "message" | "messageSTAT"
 **           "traceON" | "traceOFF" | "traceSTAT" )'
 */
-Bag       FunGASMAN (Bag hdCall)
+Bag       FunGASMAN(Bag hdCall)
 {
     Bag      hdCmd;				    // handle of an argument
     UInt     i;                      // loop variables
@@ -1641,139 +2253,195 @@ Bag       FunGASMAN (Bag hdCall)
 	char    *usageMessage = "usage: GASMAN( \"display\"|\"clear\"|\"collect\"|\"message\"|\"messageSTAT\"|\"traceON\"|\"traceOFF\"|\"traceSTAT\" )";
 
     /* check the argument                                                  */
-    if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
+    if (GET_SIZE_BAG(hdCall) == SIZE_HD)
+    {
         return Error(usageMessage, 0, 0);
+    }
 
     /* loop over the arguments                                             */
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; i++ ) {
-
+    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; i++ ) 
+    {
         /* evaluate and check the command                                  */
         hdCmd = EVAL( PTR_BAG(hdCall)[i] );
-        if ( ! IsString(hdCmd) )
-           return Error(usageMessage, 0, 0);
 
-        /* if request display the statistics                               */
-        if ( strcmp( (char*)PTR_BAG(hdCmd), "display" ) == 0 ) {
-            Int sumNrLive = 0;
-            Int sumSizeLive = 0;
-            Int sumNrAll = 0;
-            Int sumSizeAll = 0;
-            Pr("\t\t    type     alive     size     total     size\n",0,0);
-            for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) {
-                Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
-                sumNrLive += InfoBags[k].nrLive;
-                sumSizeLive += InfoBags[k].sizeLive;
-                Pr("%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10,
-                               (Int)InfoBags[k].sizeLive >> 10);
-                sumNrAll += InfoBags[k].nrAll;
-                sumSizeAll += InfoBags[k].sizeAll;
-                Pr("%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10,
-                               (Int)InfoBags[k].sizeAll >> 10);
-            }
-            Pr("%24s  ",   (Int)"SUMMARY", 0 );
-            if (sumSizeLive<1000000000) {
-                Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
-            } else {
-                Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
-            }
-            if (sumSizeAll<1000000000) {
-                Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
-            } else {
-                Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
-            }
-        } 
-
-        else if ( strcmp( (char*)PTR_BAG(hdCmd), "display1" ) == 0 ) { // vvv
-            Int sumNrLive = 0;
-            Int sumSizeLive = 0;
-            Int sumNrAll = 0;
-            Int sumSizeAll = 0;
-            Pr("\t\t    type     alive     size     total     size\n",0,0);
-            for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) {
-                    if ( (InfoBags[k].sizeLive>0) && (InfoBags[k].sizeAll>0) ) {
-                        Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
-                        sumNrLive += InfoBags[k].nrLive;
-                        sumSizeLive += InfoBags[k].sizeLive;
-                        if (InfoBags[k].sizeLive<1000000000)
-                            Pr("%9d %9d  ",(Int)InfoBags[k].nrLive,
-                               (Int)InfoBags[k].sizeLive);
-                        else 
-                            Pr("%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10,
-                               (Int)InfoBags[k].sizeLive >> 10);
-                        sumNrAll += InfoBags[k].nrAll;
-                        sumSizeAll += InfoBags[k].sizeAll;
-                        if (InfoBags[k].sizeAll<1000000000)
-                            Pr("%9d %9d\n",(Int)InfoBags[k].nrAll,
-                               (Int)InfoBags[k].sizeAll);
-                        else
-                            Pr("%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10,
-                               (Int)InfoBags[k].sizeAll >> 10);
-                }
-            }
-            Pr("%24s  ",   (Int)"SUMMARY", 0 );
-            if (sumSizeLive<1000000000) {
-                Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
-            } else {
-                Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
-            }
-            if (sumSizeAll<1000000000) {
-                Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
-            } else {
-                Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
-            }
+        if (!IsString(hdCmd))
+        {
+            return Error(usageMessage, 0, 0);
         }
 
+        /* if request display the statistics                               */
+        if ( strcmp( (char*)PTR_BAG(hdCmd), "display" ) == 0 )
+        {
+            Int sumNrLive = 0;
+            Int sumSizeLive = 0;
+            Int sumNrAll = 0;
+            Int sumSizeAll = 0;
+            //Pr("\t\t    type     alive     size     total     size\n",0,0);
+            SyFmtPrint(OUTFILE, "%s", "\t\t    type     alive     size     total     size\n");
+
+            for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) 
+            {
+                //Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
+                SyFmtPrint(OUTFILE, "%24s", InfoBags[k].name);
+                sumNrLive += InfoBags[k].nrLive;
+                sumSizeLive += InfoBags[k].sizeLive;
+
+                //Pr("%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10, (Int)InfoBags[k].sizeLive >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk ", InfoBags[k].nrLive >> 10, InfoBags[k].sizeLive >> 10);
+                sumNrAll += InfoBags[k].nrAll;
+                sumSizeAll += InfoBags[k].sizeAll;
+
+                //Pr("%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10, (Int)InfoBags[k].sizeAll >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk\n", InfoBags[k].nrAll >> 10, InfoBags[k].sizeAll >> 10);
+            }
+            //Pr("%24s  ",   (Int)"SUMMARY", 0 );
+            SyFmtPrint(OUTFILE, "%24s  ", "SUMMARY");
+            if (sumSizeLive<1000000000) 
+            {
+                //Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
+                SyFmtPrint(OUTFILE, "%9d %9d  ", sumNrLive, sumSizeLive);
+            } 
+            else 
+            {
+                //Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10);
+            }
+            if (sumSizeAll<1000000000) 
+            {
+                //Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
+                SyFmtPrint(OUTFILE, "%9d %9d\n", sumNrAll, sumSizeAll);
+            } 
+            else
+            {
+                //Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10);
+            }
+        } 
+        else if ( strcmp( (char*)PTR_BAG(hdCmd), "display1" ) == 0 ) 
+        { // vvv
+            Int sumNrLive = 0;
+            Int sumSizeLive = 0;
+            Int sumNrAll = 0;
+            Int sumSizeAll = 0;
+           
+           // Pr("\t\t    type     alive     size     total     size\n",0,0);
+            SyFmtPrint(OUTFILE, "%s", "\t\t    type     alive     size     total     size\n");
+            for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) 
+            {
+                    if ( (InfoBags[k].sizeLive > 0) && (InfoBags[k].sizeAll > 0) ) 
+                    {
+                        //Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
+                        SyFmtPrint(OUTFILE, "%24s  ", InfoBags[k].name);
+                        sumNrLive += InfoBags[k].nrLive;
+                        sumSizeLive += InfoBags[k].sizeLive;
+
+                        if (InfoBags[k].sizeLive < 1000000000)
+                        {
+                            //Pr("%9d %9d  ", (Int)InfoBags[k].nrLive, (Int)InfoBags[k].sizeLive);
+                            SyFmtPrint(OUTFILE, "%9d %9d  ", InfoBags[k].nrLive, InfoBags[k].sizeLive);
+                        }
+                        else
+                        {
+                            //Pr("%8dk %8dk  ", (Int)InfoBags[k].nrLive >> 10, (Int)InfoBags[k].sizeLive >> 10);
+                            SyFmtPrint(OUTFILE, "%8dk %8dk  ", InfoBags[k].nrLive >> 10, InfoBags[k].sizeLive >> 10);
+                        }
+
+                        sumNrAll += InfoBags[k].nrAll;
+                        sumSizeAll += InfoBags[k].sizeAll;
+
+                        if (InfoBags[k].sizeAll < 1000000000)
+                        {
+                            //Pr("%9d %9d\n", (Int)InfoBags[k].nrAll, (Int)InfoBags[k].sizeAll);
+                            SyFmtPrint(OUTFILE, "%9d %9d\n", InfoBags[k].nrAll, InfoBags[k].sizeAll);
+                        }
+                        else
+                        {
+                            //Pr("%8dk %8dk\n", (Int)InfoBags[k].nrAll >> 10, (Int)InfoBags[k].sizeAll >> 10);
+                            SyFmtPrint(OUTFILE, "%8dk %8dk\n", InfoBags[k].nrAll >> 10, InfoBags[k].sizeAll >> 10);
+                        }
+                }
+            }
+            //Pr("%24s  ",   (Int)"SUMMARY", 0 );
+            SyFmtPrint(OUTFILE, "%24s  ", "SUMMARY");
+
+            if (sumSizeLive<1000000000) 
+            {
+                //Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
+                SyFmtPrint(OUTFILE, "%9d %9d  ", sumNrLive, sumSizeLive);
+            } 
+            else 
+            {
+                //Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10);
+            }
+
+            if (sumSizeAll<1000000000)
+            {
+                //Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
+                SyFmtPrint(OUTFILE, "%9d %9d\n", sumNrAll, sumSizeAll);
+            } else {
+                //Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
+                SyFmtPrint(OUTFILE, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10);
+            }
+        }
         /* if request clear the statistics                               */
-        else if ( strcmp( (char*)PTR_BAG(hdCmd), "clear" ) == 0 ) {
-            for ( k = T_VOID; k < T_ILLEGAL; k++ ) {
+        else if ( strcmp( (char*)PTR_BAG(hdCmd), "clear" ) == 0 ) 
+        {
+            for ( k = T_VOID; k < T_ILLEGAL; k++ ) 
+            {
                 InfoBags[k].nrAll   = InfoBags[k].nrLive;
                 InfoBags[k].sizeAll = InfoBags[k].sizeLive;
             }
         }
-
         /* or collect the garbage                                          */
-        else if ( strcmp( (char*)PTR_BAG(hdCmd), "collect" ) == 0 ) {
+        else if ( strcmp( (char*)PTR_BAG(hdCmd), "collect" ) == 0 )
+        {
             float usedpc;
             CollectGarb();
 			usedpc = (float)(100 * SizeLiveBags) / SizeAllArenas;
-			if (SyMsgsFlagBags) {
-				fprintf(stderr, "%dk live bags, %.1f%% of total Memory Arenas (%dk)\n",
-						SizeLiveBags / 1024, usedpc, SizeAllArenas / 1024);
+
+			if (SyMsgsFlagBags) // GS4 -- Go Over
+            {
+				fprintf(stderr, "%dk live bags, %.1f%% of total Memory Arenas (%dk)\n", SizeLiveBags / 1024, usedpc, SizeAllArenas / 1024);
 				fflush(stderr);
 			}
 			hdRet = INT_TO_HD( SizeLiveBags / 1024 ); // return value is size of bags in Kbytes
         }
-
         /* or toggle Gasman messages                               */
-        else if ( strcmp( (char*)PTR_BAG(hdCmd), "message" ) == 0 ) {
-			if(SyMsgsFlagBags==0)
+        else if ( strcmp( (char*)PTR_BAG(hdCmd), "message" ) == 0 )
+ {
+            if (SyMsgsFlagBags == 0)
+            {
                 SyMsgsFlagBags = 2;
-			else
-				SyMsgsFlagBags = 0;
+            }
+            else
+            {
+                SyMsgsFlagBags = 0;
+            }
         }
-
 		// get the current state (value) of GC summary message printing
-		else if ( strcmp( (char*)PTR_BAG(hdCmd), "messageSTAT" ) == 0 ) {
+		else if ( strcmp( (char*)PTR_BAG(hdCmd), "messageSTAT" ) == 0 ) 
+        {
 			hdRet = INT_TO_HD (SyMsgsFlagBags);
 		}
-
 		// turn memory manager tracing messages and statistics ON
-		else if ( strcmp( (char*)PTR_BAG(hdCmd), "traceON" ) == 0 ) {
+		else if ( strcmp( (char*)PTR_BAG(hdCmd), "traceON" ) == 0 ) 
+        {
 			SyMemMgrTrace = 1;
 		}
-
 		// turn memory manager tracing messages and statistics OFF
-		else if ( strcmp( (char*)PTR_BAG(hdCmd), "traceOFF" ) == 0 ) {
+		else if ( strcmp( (char*)PTR_BAG(hdCmd), "traceOFF" ) == 0 ) 
+        {
 			SyMemMgrTrace = 0;
 		}
-
 		// get the current state (value) of Memory Manager tracing
-		else if ( strcmp( (char *)PTR_BAG(hdCmd), "traceSTAT" ) == 0 ) {
+		else if ( strcmp( (char *)PTR_BAG(hdCmd), "traceSTAT" ) == 0 ) 
+        {
 			hdRet = INT_TO_HD (SyMemMgrTrace);
 		}
-
         /* otherwise complain                                              */
-        else {
+        else 
+        {
            return Error(usageMessage, 0, 0);
         }
     }
@@ -1794,7 +2462,7 @@ Bag       FunGASMAN (Bag hdCall)
 *N  15-Jan-91 martin this function should not be here
 *N  15-Jan-91 martin this function should not be called 'Coefficients'
 */
-Bag       FunCoefficients (Bag hdCall)
+Bag       FunCoefficients(Bag hdCall)
 {
     Int     pos;
     Int     num;
@@ -1804,37 +2472,51 @@ Bag       FunCoefficients (Bag hdCall)
     Bag     hdInt;
 
 
-    if ( GET_SIZE_BAG( hdCall ) != 3 * SIZE_HD )
-        return Error("usage: Coefficients( <list>, <int> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD))
+    {
+        return Error("usage: Coefficients( <list>, <int> )", 0, 0);
+    }
 
     hdList = EVAL( PTR_BAG(hdCall)[1] );
     hdInt  = EVAL( PTR_BAG(hdCall)[2] );
-    if ( ! IS_LIST(hdList) || GET_TYPE_BAG(hdInt) != T_INT)
-        return Error("usage: Coefficients( <list>, <int> )",0,0);
+
+    if (!IS_LIST(hdList) || GET_TYPE_BAG(hdInt) != T_INT)
+    {
+        return Error("usage: Coefficients( <list>, <int> )", 0, 0);
+    }
 
     pos   = LEN_LIST( hdList );
     hdRes = NewBag( T_LIST, SIZE_PLEN_PLIST( pos ) );
     SET_LEN_PLIST( hdRes, pos );
 
     num = HD_TO_INT( hdInt );
-    if ( num < 0 )
-        return Error("Coefficients: <int> must be non negative",0,0);
 
-    while ( 0 < num && 0 < pos ) {
+    if (num < 0)
+    {
+        return Error("Coefficients: <int> must be non negative", 0, 0);
+    }
+
+    while ( 0 < num && 0 < pos ) 
+    {
         hdInt = ELMF_LIST( hdList, pos );
-        if ( hdInt == 0 || GET_TYPE_BAG( hdInt ) != T_INT )
-          return Error("Coefficients: <list>[%d] must be a positive integer",
-                       (Int)pos,0);
+        if (hdInt == 0 || GET_TYPE_BAG(hdInt) != T_INT)
+        {
+            return Error("Coefficients: <list>[%d] must be a positive integer", (Int)pos, 0);
+        }
+
         val = HD_TO_INT(hdInt);
-        if ( val <= 0 )
-          return Error("Coefficients: <list>[%d] must be a positive integer",
-                        (Int)pos,0);
+
+        if (val <= 0)
+        {
+            return Error("Coefficients: <list>[%d] must be a positive integer", (Int)pos, 0);
+        }
         SET_ELM_PLIST( hdRes, pos, INT_TO_HD( num % val ) );
         pos--;
         num /= val;
     }
 
-    while ( 0 < pos ) {
+    while ( 0 < pos ) 
+    {
         SET_ELM_PLIST( hdRes, pos, INT_TO_HD( 0 ) );
         pos--;
     }
@@ -1851,23 +2533,28 @@ Bag       FunCoefficients (Bag hdCall)
 **
 **  'NUMBER_HANDLES( <type> )'
 */
-Bag       FunNUMBERHANDLES (Bag hdCall)
+Bag       FunNUMBERHANDLES(Bag hdCall)
 {
     Int     typ;
     Bag     hdTyp;
 
 
-    if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD )
-        return Error("usage: NUMBER_HANDLES( <type> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: NUMBER_HANDLES( <type> )", 0, 0);
+    }
 
     hdTyp = EVAL( PTR_BAG(hdCall)[1] );
     if (GET_TYPE_BAG(hdTyp) != T_INT)
-        return Error("usage: NUMBER_HANDLES( <type> )",0,0);
+    {
+        return Error("usage: NUMBER_HANDLES( <type> )", 0, 0);
+    }
 
     typ = HD_TO_INT( hdTyp );
     if (typ < 0 || typ >= T_ILLEGAL)
-        return Error("NUMBER_HANDLES: <type> must lie in [%d,%d]",
-                     0,(Int)(T_ILLEGAL-1));
+    {
+        return Error("NUMBER_HANDLES: <type> must lie in [%d,%d]",  0, (Int)(T_ILLEGAL - 1));
+    }
 
     return INT_TO_HD( InfoBags[typ].nrAll );
 }
@@ -1881,22 +2568,27 @@ Bag       FunNUMBERHANDLES (Bag hdCall)
 **
 **  'SIZE_HANDLES( <type> )'
 */
-Bag       FunSIZEHANDLES (Bag hdCall)
+Bag       FunSIZEHANDLES(Bag hdCall)
 {
     Int     typ;
     Bag     hdTyp;
 
-    if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD )
-        return Error("usage: SIZE_HANDLES( <type> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: SIZE_HANDLES( <type> )", 0, 0);
+    }
 
     hdTyp = EVAL( PTR_BAG(hdCall)[1] );
     if (GET_TYPE_BAG(hdTyp) != T_INT)
-        return Error("usage: SIZE_HANDLES( <type> )",0,0);
+    {
+        return Error("usage: SIZE_HANDLES( <type> )", 0, 0);
+    }
 
     typ = HD_TO_INT( hdTyp );
     if (typ < 0 || typ >= T_ILLEGAL)
-        return Error("SIZE_HANDLES: <type> must lie in [%d,%d]",
-                     0,(Int)(T_ILLEGAL-1));
+    {
+        return Error("SIZE_HANDLES: <type> must lie in [%d,%d]", 0, (Int)(T_ILLEGAL - 1));
+    }
 
     return INT_TO_HD( InfoBags[typ].sizeAll );
 }
@@ -1905,8 +2597,10 @@ Bag       FunWeakRef(Bag hdCall)
 {
     Bag     hd;
 
-    if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD )
-        return Error("usage: WeakRef( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: WeakRef( <obj> )", 0, 0);
+    }
 
     hd = EVAL( PTR_BAG(hdCall)[1] );
     return hd;
@@ -1916,11 +2610,18 @@ Bag     FunTabToList(Bag hdCall)
 {
     Bag     hd;
 
-    if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD )
-        return Error("usage: TabToList( <table> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: TabToList( <table> )", 0, 0);
+    }
+
     hd = EVAL( PTR_BAG(hdCall)[1] );
+
     if (GET_TYPE_BAG(hd) != T_NAMESPACE)
-        return Error("usage: TabToList( <table> )",0,0);
+    {
+        return Error("usage: TabToList( <table> )", 0, 0);
+    }
+
     return TableToList(hd);
 }
 
@@ -1971,12 +2672,24 @@ void            InitGap (int argc, char** argv, int* stackBase)
     strncat( (char*)PTR_BAG(PTR_BAG(hd)[0]), SyLibname, strlen(SyLibname) );
 
     hd = FindIdent( "QUIET" );
-    if ( SyQuiet )  SET_BAG(hd, 0,  HdTrue );
-    else            SET_BAG(hd, 0,  HdFalse );
+    if (SyQuiet) 
+    { 
+        SET_BAG(hd, 0, HdTrue);
+    }
+    else 
+    { 
+        SET_BAG(hd, 0, HdFalse); 
+    }
 
     hd = FindIdent( "BANNER" );
-    if ( SyBanner )  SET_BAG(hd, 0,  HdTrue );
-    else             SET_BAG(hd, 0,  HdFalse );
+    if (SyBanner)
+    { 
+        SET_BAG(hd, 0, HdTrue); 
+    }
+    else
+    { 
+        SET_BAG(hd, 0, HdFalse);
+    }
 
     /**/ GlobalPackage2("gap", "gap"); /**/
     /* install all internal function from this package                     */
@@ -2020,61 +2733,97 @@ void            InitGap (int argc, char** argv, int* stackBase)
     /**/ EndPackage(); /**/
 
     /* read all init files, stop doing so after quiting from Error         */
-    Try {
-        for ( i=0; i<sizeof(SyInitfiles)/sizeof(SyInitfiles[0]); ++i ) {
-	    char * file = SyInitfiles[i];
-	    Obj pkg;
-            if ( file[0] != '\0' ) {
-		/*Pr("Reading %s...\n", file, 0);*/
-                if ( OpenInput( file ) ) {
-                    while ( Symbol != S_EOF ) {
+    Try
+    {
+        for ( i=0; i < (sizeof(SyInitfiles)/sizeof(SyInitfiles[0])); ++i ) 
+        {
+	        char *file = SyInitfiles[i];
+	        Obj pkg;
+        
+            if ( file[0] != '\0' ) 
+            {
+		        /*Pr("Reading %s...\n", file, 0);*/
+                if ( OpenInput( file ) ) 
+                {
+                    while ( Symbol != S_EOF )
+                    {
                         hd = ReadIt();
-                        if ( hd != 0 )  hd = EVAL( hd );
-                        if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
-                            Error("Read: 'return' must not be used",0,0);
-                        else if ( hd == HdReturn )
-                             Error("Read: 'quit' must not be used",0,0);
-		    }		    
-		    pkg = Input->package;
+
+                        if (hd != 0) { hd = EVAL(hd); }
+                        if (hd == HdReturn && PTR_BAG(hd)[0] != HdReturn)
+                        {
+                            Error("Read: 'return' must not be used", 0, 0);
+                        }
+                        else if (hd == HdReturn)
+                        {
+                            Error("Read: 'quit' must not be used", 0, 0);
+                        }
+		            }		    
+		            pkg = Input->package;
                     ignore = CloseInput();
-		    if(pkg != 0) /* pkg is 0 if no variables were defined */
-		      PushNamespace(pkg);
+
+                    if (pkg != 0) /* pkg is 0 if no variables were defined */
+                    {
+                        PushNamespace(pkg);
+                    }
                 }
-                else {
+                else 
+                {
                     Error("can't read from \"%s\"",(Int)file,0);
                 }
             }
         }
         /* read prompts from GAPInfo.prompts */
-	hd = GetPromptString(PROMPT_FIELD_DBG);
-	if (hd) {
-	    prompt = HD_TO_STRING(hd);
-	    if (strlen(prompt)<sizeof(DbgPrompt))
-		strncpy(DbgPrompt, prompt, strlen(prompt)+1);
-	}
-	hd = GetPromptString(PROMPT_FIELD_BRK);
-	if (hd) {
-	    prompt = HD_TO_STRING(hd);
-	    if (strlen(prompt)<sizeof(BrkPrompt))
-		strncpy(BrkPrompt, prompt, strlen(prompt)+1);
-	}
-        /* read prompts from environment */
-	prompt = getenv("SPIRAL_DBG_PROMPT");
-	if (prompt != NULL && strlen(prompt)<sizeof(DbgPrompt)) {
-	    strncpy(DbgPrompt, prompt, strlen(prompt)+1);
-	}
-	prompt = getenv("SPIRAL_BRK_PROMPT");
-	if (prompt != NULL && strlen(prompt)<sizeof(BrkPrompt)) {
-	    strncpy(BrkPrompt, prompt, strlen(prompt)+1);
-	}
+	    hd = GetPromptString(PROMPT_FIELD_DBG);
+	    if (hd) 
+        {
+	        prompt = HD_TO_STRING(hd);
+            if (strlen(prompt) < sizeof(DbgPrompt))
+            {
+                strncpy(DbgPrompt, prompt, strlen(prompt) + 1);
+            }
+	    }
 
+	    hd = GetPromptString(PROMPT_FIELD_BRK);
+
+	    if (hd) 
+        {
+	        prompt = HD_TO_STRING(hd);
+
+            if (strlen(prompt) < sizeof(BrkPrompt))
+            {
+                strncpy(BrkPrompt, prompt, strlen(prompt) + 1);
+            }
+	    }
+            /* read prompts from environment */
+	    prompt = getenv("SPIRAL_DBG_PROMPT");
+
+	    if (prompt != NULL && strlen(prompt)<sizeof(DbgPrompt)) 
+        {
+            strncpy(DbgPrompt, prompt, strlen(prompt) + 1);
+	    }
+
+	    prompt = getenv("SPIRAL_BRK_PROMPT");
+
+	    if (prompt != NULL && strlen(prompt)<sizeof(BrkPrompt)) 
+        {
+	        strncpy(BrkPrompt, prompt, strlen(prompt)+1);
+	    }
     }
-    Catch(e) {
+    Catch(e) 
+    {
       /* exceptions raised using Error() are already printed at this point */
-      if(e!=ERR_GAP) {
-	while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
-	while ( EvalStackTop>0 ) EVAL_STACK_POP;
-	exc_show();
+      if(e!=ERR_GAP)
+      {
+          while (HdExec != 0) 
+          { 
+              ChangeEnv(PTR_BAG(HdExec)[4], CEF_CLEANUP); 
+          }
+          while (EvalStackTop > 0) 
+          { 
+              EVAL_STACK_POP; 
+          }
+	    exc_show();
       }
     }
 

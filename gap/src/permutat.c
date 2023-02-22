@@ -2142,7 +2142,7 @@ Bag       LtQQ (Bag hdL, Bag hdR)
 **  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
 **  This is done, because it is forbidden to create new bags during printing.
 */
-void            PrPermP (Bag hdPerm)
+void  PrPermP(FILE *stream, Obj hdPerm, int indent)
 {
     UInt       degPerm;        /* degree of the permutation       */
     TypPoint16          * ptPerm;       /* pointer to the permutation      */
@@ -2152,11 +2152,42 @@ void            PrPermP (Bag hdPerm)
 
     /* set up the formats used, so all points are printed with equal width */
     degPerm = GET_SIZE_BAG(hdPerm) / sizeof(TypPoint16);
-    if      ( degPerm <    10 ) { fmt1 = "%>(%>%1d%<"; fmt2 = ",%>%1d%<"; }
-    else if ( degPerm <   100 ) { fmt1 = "%>(%>%2d%<"; fmt2 = ",%>%2d%<"; }
-    else if ( degPerm <  1000 ) { fmt1 = "%>(%>%3d%<"; fmt2 = ",%>%3d%<"; }
-    else if ( degPerm < 10000 ) { fmt1 = "%>(%>%4d%<"; fmt2 = ",%>%4d%<"; }
-    else                        { fmt1 = "%>(%>%5d%<"; fmt2 = ",%>%5d%<"; }
+
+    if (degPerm < 10)
+    {
+        //**INDENT** fmt1 = "%>(%>%1d%<"; 
+        fmt1 = "(%1d";
+        //**INDENT** fmt2 = ",%>%1d%<";
+        fmt2 = ",%1d";
+    }
+    else if (degPerm < 100)
+    {
+        //**INDENT** fmt1 = "%>(%>%2d%<";
+        fmt1 = "(%2d";
+        //**INDENT** fmt2 = ",%>%2d%<";
+        fmt2 = ",%2d";
+    }
+    else if (degPerm < 1000)
+    {
+        //**INDENT** fmt1 = "%>(%>%3d%<"; 
+        fmt1 = "(%3d";
+        //**INDENT** fmt2 = ",%>%3d%<"; 
+        fmt2 = ",%3d";
+    }
+    else if (degPerm < 10000)
+    {
+        //**INDENT** fmt1 = "%>(%>%4d%<";
+        fmt1 = "(%4d";
+        //**INDENT** fmt2 = ",%>%4d%<";
+        fmt2 = ",%4d";
+    }
+    else
+    {
+        //**INDENT** fmt1 = "%>(%>%5d%<"; 
+        fmt1 = "(%5d";
+        //**INDENT** fmt2 = ",%>%5d%<";
+        fmt2 = ",%5d";
+    }
 
     /* run through all points                                              */
     isId = 1;
@@ -2170,20 +2201,30 @@ void            PrPermP (Bag hdPerm)
         /* if the smallest is the one we started with lets print the cycle */
         if ( p == q && ptPerm[p] != p ) {
             isId = 0;
-            Pr(fmt1,(Int)(p+1),0);
-            for ( q = ptPerm[p]; q != p; q = ptPerm[q] )
-                Pr(fmt2,(Int)(q+1),0);
-            Pr("%<)",0,0);
+            //Pr(fmt1,(Int)(p+1),0);
+            SyFmtPrint(stream, fmt1, (Int)(p + 1));
+            for (q = ptPerm[p]; q != p; q = ptPerm[q])
+            {
+                //Pr(fmt2, (Int)(q + 1), 0);
+                SyFmtPrint(stream, fmt2, (Int)(q + 1));
+            }
+            //**INDENT** Pr("%<)",0,0);
+            SyFmtPrint(stream, ")");
         }
 
     }
 
     /* special case for the identity                                       */
-    if ( isId )  Pr("()",0,0);
+    if (isId) 
+    { 
+        //Pr("()", 0, 0);
+        SyFmtPrint(stream, "()");
+    }
 }
 
-void            PrPermQ (Bag hdPerm)
+void  PrPermQ(FILE* stream, Obj hdPerm, int indent)
 {
+
     UInt       degPerm;        /* degree of the permutation       */
     TypPoint32          * ptPerm;       /* pointer to the permutation      */
     UInt       p,  q;          /* loop variables                  */
@@ -2192,11 +2233,42 @@ void            PrPermQ (Bag hdPerm)
 
     /* set up the formats used, so all points are printed with equal width */
     degPerm = GET_SIZE_BAG(hdPerm) / sizeof(TypPoint32);
-    if      ( degPerm <    10 ) { fmt1 = "%>(%>%1d%<"; fmt2 = ",%>%1d%<"; }
-    else if ( degPerm <   100 ) { fmt1 = "%>(%>%2d%<"; fmt2 = ",%>%2d%<"; }
-    else if ( degPerm <  1000 ) { fmt1 = "%>(%>%3d%<"; fmt2 = ",%>%3d%<"; }
-    else if ( degPerm < 10000 ) { fmt1 = "%>(%>%4d%<"; fmt2 = ",%>%4d%<"; }
-    else                        { fmt1 = "%>(%>%5d%<"; fmt2 = ",%>%5d%<"; }
+    
+    if (degPerm <    10) 
+    { 
+        //**INDENT** fmt1 = "%>(%>%1d%<"; 
+         fmt1 = "(%1d";
+        //**INDENT** fmt2 = ",%>%1d%<";
+         fmt2 = ",%1d";
+    }
+    else if ( degPerm <   100 ) 
+    {
+        //**INDENT** fmt1 = "%>(%>%2d%<";
+         fmt1 = "(%2d";
+        //**INDENT** fmt2 = ",%>%2d%<";
+         fmt2 = ",%2d";
+    }
+    else if ( degPerm <  1000 ) 
+    {
+        //**INDENT** fmt1 = "%>(%>%3d%<"; 
+        fmt1 = "(%3d";
+        //**INDENT** fmt2 = ",%>%3d%<"; 
+        fmt2 = ",%3d";
+    }
+    else if ( degPerm < 10000 )
+    {
+        //**INDENT** fmt1 = "%>(%>%4d%<";
+        fmt1 = "(%4d";
+        //**INDENT** fmt2 = ",%>%4d%<";
+        fmt2 = ",%4d";
+    }
+    else                       
+    { 
+        //**INDENT** fmt1 = "%>(%>%5d%<"; 
+        fmt1 = "(%5d";
+        //**INDENT** fmt2 = ",%>%5d%<";
+        fmt2 = ",%5d";
+    }
 
     /* run through all points                                              */
     isId = 1;
@@ -2210,16 +2282,26 @@ void            PrPermQ (Bag hdPerm)
         /* if the smallest is the one we started with lets print the cycle */
         if ( p == q && ptPerm[p] != p ) {
             isId = 0;
-            Pr(fmt1,(Int)(p+1),0);
-            for ( q = ptPerm[p]; q != p; q = ptPerm[q] )
-                Pr(fmt2,(Int)(q+1),0);
-            Pr("%<)",0,0);
+            //Pr(fmt1,(Int)(p+1),0);
+            SyFmtPrint(stream, fmt1, (Int)(p + 1));
+            for (q = ptPerm[p]; q != p; q = ptPerm[q])
+            {
+                //Pr(fmt2, (Int)(q + 1), 0);
+                SyFmtPrint(stream, fmt2, (Int)(q + 1));
+            }
+            //**INDENT**  Pr("%<)", 0, 0);
+            SyFmtPrint(stream, ")");
+            
         }
 
     }
 
     /* special case for the identity                                       */
-    if ( isId )  Pr("()",0,0);
+    if (isId)
+    {
+        //Pr("()", 0, 0);
+        SyFmtPrint(stream, "()");
+    }
 }
 
 
@@ -2232,25 +2314,37 @@ void            PrPermQ (Bag hdPerm)
 **
 **  Linebreaks are prefered most after cycles and  next  most  after  commas.
 */
-void            PrMakeperm (Bag hdPerm)
+void  PrMakeperm(FILE* stream, Obj hdPerm, int indent)
 {
-    Bag           hdCyc;          /* handle of one cycle             */
-    UInt       i,  k;          /* loop variables                  */
+    Bag        hdCyc;          /* handle of one cycle             */
+    UInt       i;           /* loop variables                  */
+    UInt       k;          /* loop variables                  */
 
     /* print all cycles                                                    */
-    for ( i = 0; i < GET_SIZE_BAG(hdPerm)/SIZE_HD; i++ ) {
-        Pr("%>(",0,0);
+    for ( i = 0; i < GET_SIZE_BAG(hdPerm)/SIZE_HD; i++ )
+    {
+        //**INDENT** Pr("%>(",0,0);
+        SyFmtPrint(stream, "(");
 
         /* print all elements of that cycle                                */
         hdCyc = PTR_BAG(hdPerm)[i];
-        for ( k = 0; k < GET_SIZE_BAG(hdCyc)/SIZE_HD; k++ ) {
-            Pr("%>",0,0);
-            Print( PTR_BAG(hdCyc)[k] );
-            Pr("%<",0,0);
-            if ( k < GET_SIZE_BAG(hdCyc)/SIZE_HD-1 )  Pr(",",0,0);
+        for ( k = 0; k < GET_SIZE_BAG(hdCyc)/SIZE_HD; k++ ) 
+        {
+            //**INDENT** Pr("%>",0,0);
+
+            //Print( PTR_BAG(hdCyc)[k] );
+            PrintObj(stream, PTR_BAG(hdCyc)[k], 0);
+            //**INDENT** Pr("%<",0,0);
+
+            if (k < GET_SIZE_BAG(hdCyc) / SIZE_HD - 1)
+            { 
+                //Pr(",", 0, 0); 
+                SyFmtPrint(stream, ",");
+            }
         }
 
-        Pr("%<)",0,0);
+        //**INDENT** Pr("%<)",0,0);
+        SyFmtPrint(stream, ")");
     }
 }
 

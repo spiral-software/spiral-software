@@ -233,11 +233,12 @@ Obj  LtCplxAny (Obj l, Obj r) { return LtCplx(CplxAny(l), CplxAny(r)); }
 
 Obj  EvCplx ( Obj hd ) { return hd; }
 
-void PrCplx ( Obj hd ) {
+void PrCplx (FILE *stream, Obj hd, int indent) {
     char buf[64];
     /* using snprintf prevents any buffer overflowing */
     snprintf(buf, sizeof(buf)/sizeof(char), "Cplx(%.17g, %.17g)", RE(hd), IM(hd));
-    Pr("%s", (Int)buf, 0);
+    //Pr("%s", (Int)buf, 0);
+    SyFmtPrint(stream, "%s", buf);
 }
 
 /****************************************************************************

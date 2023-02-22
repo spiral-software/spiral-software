@@ -321,8 +321,7 @@ extern  Int            IsList (
 
 extern  Int            (*TabIsDenseList[LIST_TAB_SIZE]) ( Bag );
 
-extern  Int            NotIsDenseList (
-            Bag           hdObj );
+extern  Int  NotIsDenseList(Bag hdObj);
 
 
 /****************************************************************************
@@ -402,8 +401,7 @@ extern  Bag       EvList (
 **
 **  Linebreaks are preferred after the commas.
 */
-extern  void            PrList (
-            Bag           hdList );
+extern  void PrList (FILE* stream, Obj hdList, int indent);
 
 
 /****************************************************************************
@@ -797,8 +795,7 @@ extern  Bag       EvAsssListLevel (
 **
 **  Linebreaks are preferred after the '['.
 */
-extern  void            PrElmList (
-            Bag           hdSel );
+extern  void PrElmList(FILE* stream, Obj hdSel, int indent);
 
 
 /****************************************************************************
@@ -809,8 +806,7 @@ extern  void            PrElmList (
 **
 **  Linebreaks are preferred after the '{'.
 */
-extern  void            PrElmsList (
-            Bag           hdSel );
+extern  void PrElmsList(FILE* stream, Obj hdSel, int indent);
 
 
 /****************************************************************************
@@ -821,8 +817,7 @@ extern  void            PrElmsList (
 **
 **  Linebreaks are preferred before the ':='.
 */
-extern  void            PrAssList (
-            Bag           hdAss );
+extern  void PrAssList(FILE* stream, Obj hdAss, int indent);
 
 
 /****************************************************************************

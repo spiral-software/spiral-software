@@ -1409,6 +1409,42 @@ Bag       FunAUTO(Bag hdCall)
 }
 
 
+void printOneBag(FILE *stream, Bag hd)
+{
+    Int     type;
+
+    type = GET_TYPE_BAG(hd);
+
+    switch (type) {
+    case T_MAKEFUNC:
+        PrintFunction(stream, hd, 0);
+        break;
+    case T_FUNCTION:
+        PrintFunction(stream, hd, 0);
+        break;
+    case  T_MAKEMETH:
+        PrintMethod(stream, hd, 0);
+        break;
+    case  T_METHOD:
+        PrintMethod(stream, hd, 0);
+        break;
+    case T_VOID:
+        break;
+    case T_STRING:
+        if (IsString(hd)) {
+            PrintString(stream, hd, 0);
+            break;
+        }
+    default:
+        PrintObj(stream, hd, 0);
+        break;
+    }
+}
+
+
+
+
+
 /****************************************************************************
 **
 **  FunPrint( <hdCall> )  . . . . . . . . . . . . . internal function 'Print'
@@ -1442,45 +1478,11 @@ Bag       FunPrint(Bag hdCall)
 {
     Bag     hd;
     Int     i;
-	Int     type;
 
-    //GS4 -- Print Area expand indents and steams
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i )
+    for (i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i)
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-	    type = GET_TYPE_BAG( hd );
-        
-        if (IsString(hd) && (GET_TYPE_BAG(hd) == T_STRING)) 
-        { 
-            PrintString(OUTFILE, hd, 0);
-        }
-        else if (type == T_MAKEFUNC) 
-        { 
-            PrintFunction(OUTFILE, hd, 0);
-        }
-        else if (type == T_FUNCTION) 
-        {
-            PrintFunction(OUTFILE, hd, 0);
-        }
-        else if (type == T_MAKEMETH)
-        { 
-            PrintMethod(OUTFILE, hd, 0);
-        }
-        else if (type == T_METHOD)
-        {
-            PrintMethod(OUTFILE, hd, 0);
-        }
-        else if (type != T_VOID) 
-        {
-            //Print(hd);
-            PrintObj(OUTFILE, hd, 0);
-        }
-        else
-        {
-            /*hd = Error("function must return a value",0,0);*/; 
-        }
+        printOneBag(OUTFILE, hd);
     }
     return HdVoid;
 }
@@ -1539,42 +1541,10 @@ Bag       FunPrntTo(Bag hdCall)
     }
 
     /* print all the arguments, take care of strings and functions         */
-    for ( i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i ) 
+    for (i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i) 
     {
-	
         hd = EVAL( PTR_BAG(hdCall)[i] );
-	    type = GET_TYPE_BAG( hd );
-
-        if (IsString(hd) && (GET_TYPE_BAG(hd) == T_STRING))
-        { 
-            PrintString(OUTFILE, hd, 0);
-        }
-        else if (type == T_MAKEFUNC)
-        {
-            PrintFunction(OUTFILE, hd, 0);
-        }
-        else if (type == T_FUNCTION) 
-        {
-            PrintFunction(OUTFILE, hd, 0);
-        }
-        else if (type == T_MAKEMETH) 
-        {
-            PrintMethod(OUTFILE, hd, 0);
-        }
-        else if (type == T_METHOD)
-        { 
-            PrintMethod(OUTFILE, hd, 0);
-        }
-        else if (type != T_VOID) 
-        {
-            //Print(hd);
-            PrintObj(OUTFILE, hd, 0);
-        }
-        else
-        {
-            //Pr("", 0, 0);
-            SyFmtPrint(OUTFILE, "");
-        }
+        printOneBag(OUTFILE, hd);
     }
 
     /* close the output file again, and return nothing                     */
@@ -1629,42 +1599,10 @@ Bag       FunAppendTo(Bag hdCall)
     }
 
     /* print all the arguments, take care of strings and functions         */
-    for ( i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i ) 
+    for (i = 2; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
     {
-	
-        hd = EVAL( PTR_BAG(hdCall)[i] );
-	    type = GET_TYPE_BAG( hd );
-       
-        if (IsString(hd) && GET_TYPE_BAG(hd) == T_STRING)
-        { 
-            PrintString(OUTFILE, hd, 0);
-        }
-        else if (type == T_MAKEFUNC)
-        { 
-            PrintFunction(OUTFILE, hd, 0);
-        }
-        else if (type == T_FUNCTION) 
-        { 
-            PrintFunction(OUTFILE, hd, 0);
-        }
-        else if (type == T_MAKEMETH)
-        { 
-            PrintMethod(OUTFILE, hd, 0);
-        }
-        else if (type == T_METHOD) 
-        { 
-            PrintMethod(OUTFILE, hd, 0);
-        }
-        else if (type != T_VOID) 
-        { 
-            //Print(hd);
-            PrintObj(OUTFILE, hd, 0);
-        }
-        else 
-        { 
-            //Pr("", 0, 0); 
-            SyFmtPrint(OUTFILE, "");
-        }
+        hd = EVAL(PTR_BAG(hdCall)[i]);
+        printOneBag(OUTFILE, hd);
     }
 
     /* close the output file again, and return nothing                     */

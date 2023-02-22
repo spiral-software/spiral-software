@@ -646,9 +646,18 @@ typedef void            (*TNumAbortFuncBags) (
 
 extern  TNumAbortFuncBags       AbortFuncBags;
 
+#define STREAM_TYPE_FILE	1
+#define STREAM_TYPE_STRING	2
 
+typedef struct stream_struct {
+    int   type;
+    void* ptr;
+} STREAM;
+
+extern STREAM stdout_stream;
+
+//extern int SyFmtPrint(STREAM stream, const char* format, ...);
 extern int SyFmtPrint(FILE* stream, const char* format, ...);
-
 
 
 #endif // _SYSTEM_H

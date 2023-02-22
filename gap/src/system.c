@@ -2014,6 +2014,8 @@ extern  char *          getenv ( const char * );
 extern  int             atoi ( const char * );
 #endif
 
+STREAM stdout_stream;
+
 void            InitSystem (int argc, char **argv)
 {
     Int                fid;            /* file identifier                 */
@@ -2022,6 +2024,9 @@ void            InitSystem (int argc, char **argv)
     char *              ptr;            /* pointer to the pre'malloc'ated  */
     Int                i, k;           /* loop variables                  */
     char *              progname;       /* argv[0]                         */
+
+    stdout_stream.type = STREAM_TYPE_FILE;
+    stdout_stream.ptr = (void*)stdout;
 
     /* open the standard files                                             */
 #if SYS_BSD || SYS_USG
@@ -2679,13 +2684,18 @@ fullusage:
 }
 
 
+//int SyFmtPrint(STREAM stream, const char* format, ...)
 int SyFmtPrint(FILE* stream, const char* format, ...)
 {
-    int result;
+    int result = 0;
     va_list arglist;
     va_start(arglist, format);
 
     result = vfprintf(stream, format, arglist);
+
+    //if (stream.type == STREAM_TYPE_FILE) {
+    //    result = vfprintf((FILE*)stream.ptr, format, arglist);
+    //}
 
     va_end(arglist);
     return result;

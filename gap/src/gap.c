@@ -1408,7 +1408,7 @@ Bag       FunAUTO(Bag hdCall)
     return HdVoid;
 }
 
-
+//void printOneBag(STREAM stream, Bag hd)
 void printOneBag(FILE *stream, Bag hd)
 {
     Int     type;
@@ -1482,7 +1482,8 @@ Bag       FunPrint(Bag hdCall)
     for (i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i)
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-        printOneBag(OUTFILE, hd);
+        printOneBag((FILE *)stdout_stream.ptr, hd);
+        //printOneBag(stdout_stream, hd);
     }
     return HdVoid;
 }
@@ -1520,6 +1521,7 @@ Bag       FunPrntTo(Bag hdCall)
     Bag     hd;
     Int     i;
     Int     type;
+    STREAM  stream;
 
     /* check the number and type of the arguments, nothing special         */
     if (GET_SIZE_BAG(hdCall) == SIZE_HD)
@@ -1533,6 +1535,9 @@ Bag       FunPrntTo(Bag hdCall)
     {
         return Error("usage: PrintTo( <file>, <obj>, <obj>... )", 0, 0);
     }
+
+    stream.type = STREAM_TYPE_FILE;
+    //stream.ptr = (void *)file; 
 
     /* try to open the given output file, raise an error if you can not    */
     if (OpenOutput((char*)PTR_BAG(hd)) == 0)

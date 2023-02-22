@@ -1211,10 +1211,10 @@ Bag       FunSubtractSet (Bag hdCall)
 void PrSet(FILE* stream, Obj s, int indent)
 {
     //**INDENT** Pr("Set(%3>",0,0);
-    SyFmtPrint(OUTFILE, "Set(");
+    SyFmtPrint(stream, "Set(");
     PrList(stream, s, indent);
     //**INDENT** Pr("%3<)", 0, 0); 
-    SyFmtPrint(OUTFILE, ")");
+    SyFmtPrint(stream, ")");
 }
 
 /****************************************************************************

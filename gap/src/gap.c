@@ -1454,23 +1454,23 @@ Bag       FunPrint(Bag hdCall)
         
         if (IsString(hd) && (GET_TYPE_BAG(hd) == T_STRING)) 
         { 
-            PrintString(hd); 
+            PrintString(OUTFILE, hd, 0);
         }
         else if (type == T_MAKEFUNC) 
         { 
-            PrintFunction(hd);
+            PrintFunction(OUTFILE, hd, 0);
         }
         else if (type == T_FUNCTION) 
         {
-            PrintFunction(hd);
+            PrintFunction(OUTFILE, hd, 0);
         }
         else if (type == T_MAKEMETH)
         { 
-            PrintMethod(hd); 
+            PrintMethod(OUTFILE, hd, 0);
         }
         else if (type == T_METHOD)
         {
-            PrintMethod(hd); 
+            PrintMethod(OUTFILE, hd, 0);
         }
         else if (type != T_VOID) 
         {
@@ -1547,23 +1547,23 @@ Bag       FunPrntTo(Bag hdCall)
 
         if (IsString(hd) && (GET_TYPE_BAG(hd) == T_STRING))
         { 
-            PrintString(hd); 
+            PrintString(OUTFILE, hd, 0);
         }
         else if (type == T_MAKEFUNC)
         {
-            PrintFunction(hd); 
+            PrintFunction(OUTFILE, hd, 0);
         }
         else if (type == T_FUNCTION) 
         {
-            PrintFunction(hd);
+            PrintFunction(OUTFILE, hd, 0);
         }
         else if (type == T_MAKEMETH) 
         {
-            PrintMethod(hd);
+            PrintMethod(OUTFILE, hd, 0);
         }
         else if (type == T_METHOD)
         { 
-            PrintMethod(hd);
+            PrintMethod(OUTFILE, hd, 0);
         }
         else if (type != T_VOID) 
         {
@@ -1637,23 +1637,23 @@ Bag       FunAppendTo(Bag hdCall)
        
         if (IsString(hd) && GET_TYPE_BAG(hd) == T_STRING)
         { 
-            PrintString(hd); 
+            PrintString(OUTFILE, hd, 0);
         }
         else if (type == T_MAKEFUNC)
         { 
-            PrintFunction(hd); 
+            PrintFunction(OUTFILE, hd, 0);
         }
         else if (type == T_FUNCTION) 
         { 
-            PrintFunction(hd); 
+            PrintFunction(OUTFILE, hd, 0);
         }
         else if (type == T_MAKEMETH)
         { 
-            PrintMethod(hd); 
+            PrintMethod(OUTFILE, hd, 0);
         }
         else if (type == T_METHOD) 
         { 
-            PrintMethod(hd); 
+            PrintMethod(OUTFILE, hd, 0);
         }
         else if (type != T_VOID) 
         { 

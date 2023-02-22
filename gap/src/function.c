@@ -1349,10 +1349,10 @@ void   PrMethod(FILE* stream, Obj hdFun, int indent) {
 **  form, i.e., with the statement sequence.  It is called from main read-eval
 **  loop.
 */
-void            PrintFunction (Bag hdFun)
+void  PrintFunction(FILE* stream, Obj hdFun, int indent)
 {
     prFull = NUM_TO_INT(1);
-    PrFunction(OUTFILE, hdFun , 0); 
+    PrFunction(stream, hdFun , 0);
     prFull = 0;
 }
 
@@ -1362,10 +1362,10 @@ void            PrintFunction (Bag hdFun)
 **
 **  Same as 'PrintFunction' but for a method.
 */
-void            PrintMethod (Bag hdFun)
+void  PrintMethod(FILE* stream, Obj hdFun, int indent)
 {
 	prFull = NUM_TO_INT(1);
-	PrMethod(OUTFILE, hdFun, 0);
+	PrMethod(stream, hdFun, 0);
 	prFull = 0;
 }
 

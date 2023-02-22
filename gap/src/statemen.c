@@ -437,16 +437,16 @@ void PrIf(FILE* stream, Obj hdIf, int indent)
     if ( GET_SIZE_BAG(hdIf)/SIZE_HD % 2 != 0 ) 
     {
         //**INDENT** Pr("else%4>\n",0,0);
-        SyFmtPrint(OUTFILE, "else\n");
+        SyFmtPrint(stream, "else\n");
         //Print( PTR_BAG(hdIf)[ GET_SIZE_BAG(hdIf)/SIZE_HD -1 ] );
-        PrintObj(OUTFILE, PTR_BAG(hdIf)[GET_SIZE_BAG(hdIf) / SIZE_HD - 1], 0);
+        PrintObj(stream, PTR_BAG(hdIf)[GET_SIZE_BAG(hdIf) / SIZE_HD - 1], 0);
         //**INDENT** Pr(";%4<\n",0,0);
-        SyFmtPrint(OUTFILE, ";\n");
+        SyFmtPrint(stream, ";\n");
     }
 
     /* print the 'fi'                                                      */
     //Pr("fi",0,0);
-    SyFmtPrint(OUTFILE, "fi");
+    SyFmtPrint(stream, "fi");
 }
 
 

@@ -660,10 +660,10 @@ void PrString(FILE* stream, Obj hdStr, int indent)
 **  'PrintString' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-void    PrintString(Bag hdStr)
+void    PrintString(FILE* stream, Obj hdStr, int indent)
 {
     //Pr( "%s", (Int)(char*)PTR_BAG(hdStr), 0 );
-    SyFmtPrint(OUTFILE, "%s", (char*)PTR_BAG(hdStr));
+    SyFmtPrint(stream, "%s", (char*)PTR_BAG(hdStr));
 }
 
 

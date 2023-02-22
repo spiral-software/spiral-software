@@ -322,7 +322,7 @@ extern  Bag       LtString (
 **  No linebreaks are allowed, if one must be inserted  anyhow,  it  must  be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-extern void PrString (FILE* stream, Obj hdStr, int indent);
+extern void PrString(FILE* stream, Obj hdStr, int indent);
 
 
 /****************************************************************************

@@ -311,7 +311,7 @@ void   PrMethod(FILE *stream, Obj hdFun, int indent);
 **  'PrintFunction' prints the function with the handle <hdFun> in  the  full
 **  form, i.e., with the statement sequence.  It is called from 'Print'.
 */
-void            PrintFunction ( Bag hdFun );
+void   PrintFunction(FILE* stream, Obj hdFun, int indent);
 
 
 /****************************************************************************
@@ -320,7 +320,7 @@ void            PrintFunction ( Bag hdFun );
 **
 **  Same as 'PrintFunction' but for a method.
 */
-void            PrintMethod ( Bag hdFun );
+void  PrintMethod(FILE* stream, Obj hdFun, int indent);
 
 
 /****************************************************************************

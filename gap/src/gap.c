@@ -1479,11 +1479,16 @@ Bag       FunPrint(Bag hdCall)
     Bag     hd;
     Int     i;
 
+    STREAM stream;
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = stdout;
+
     for (i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i)
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-        printOneBag((FILE *)stdout_stream.ptr, hd);
-        //printOneBag(stdout_stream, hd);
+        printOneBag(streamFile(stream), hd);
+        //printOneBag(stream, hd);
     }
     return HdVoid;
 }
@@ -1522,6 +1527,8 @@ Bag       FunPrntTo(Bag hdCall)
     Int     i;
     Int     type;
     STREAM  stream;
+    char   *filename;
+    FILE   *file;
 
     /* check the number and type of the arguments, nothing special         */
     if (GET_SIZE_BAG(hdCall) == SIZE_HD)
@@ -1536,27 +1543,24 @@ Bag       FunPrntTo(Bag hdCall)
         return Error("usage: PrintTo( <file>, <obj>, <obj>... )", 0, 0);
     }
 
-    stream.type = STREAM_TYPE_FILE;
-    //stream.ptr = (void *)file; 
-
-    /* try to open the given output file, raise an error if you can not    */
-    if (OpenOutput((char*)PTR_BAG(hd)) == 0)
+    filename = (char*)PTR_BAG(hd);
+    file = fopen(filename, "w");
+    if (file == 0)
     {
         return Error("PrintTo: can not open the file for writing", 0, 0);
     }
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = file;
 
     /* print all the arguments, take care of strings and functions         */
     for (i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i) 
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-        printOneBag(OUTFILE, hd);
+        //printOneBag(stream, hd);
+        printOneBag(streamFile(stream), hd);
     }
 
-    /* close the output file again, and return nothing                     */
-    if (!CloseOutput())
-    {
-        Error("PrintTo: can not close output, this should not happen", 0, 0);
-    }
+    fclose(streamFile(stream));
 
     return HdVoid;
 }
@@ -1583,6 +1587,9 @@ Bag       FunAppendTo(Bag hdCall)
     Bag     hd;
     Int     i;
     Int     type;
+    STREAM  stream;
+    char* filename;
+    FILE* file;
 
     /* check the number and type of the arguments, nothing special         */
     if (GET_SIZE_BAG(hdCall) == SIZE_HD)
@@ -1597,24 +1604,24 @@ Bag       FunAppendTo(Bag hdCall)
         return Error("usage: AppendTo( <file>, <obj>, <obj>... )", 0, 0);
     }
 
-    /* try to open the given output file, raise an error if you can not    */
-    if (OpenAppend((char*)PTR_BAG(hd)) == 0)
+    filename = (char*)PTR_BAG(hd);
+    file = fopen(filename, "a");
+    if (file == 0)
     {
-        return Error("AppendTo: can not open the file for appending", 0, 0);
+        return Error("PrintTo: can not open the file for writing", 0, 0);
     }
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = file;
 
     /* print all the arguments, take care of strings and functions         */
     for (i = 2; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
     {
         hd = EVAL(PTR_BAG(hdCall)[i]);
-        printOneBag(OUTFILE, hd);
+        //printOneBag(stream, hd);
+        printOneBag(streamFile(stream), hd);
     }
 
-    /* close the output file again, and return nothing                     */
-    if (!CloseOutput())
-    {
-        Error("AppendTo: can not close output, this should not happen", 0, 0);
-    }
+    fclose(streamFile(stream));
 
     return HdVoid;
 }

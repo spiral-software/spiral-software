@@ -651,10 +651,12 @@ extern  TNumAbortFuncBags       AbortFuncBags;
 
 typedef struct stream_struct {
     int   type;
-    void* ptr;
+    union {
+        FILE* file;
+    } U;
 } STREAM;
 
-extern STREAM stdout_stream;
+extern FILE* streamFile(STREAM stream);
 
 //extern int SyFmtPrint(STREAM stream, const char* format, ...);
 extern int SyFmtPrint(FILE* stream, const char* format, ...);

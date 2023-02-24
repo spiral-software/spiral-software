@@ -347,22 +347,20 @@ Int            InputLogfile = -1;
 char            GetLine (void)
 {
 
-    STREAM  stream;
+    //GS4 - unsure on this one - should be printing to log file
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     /* if file is '*stdin*' print the prompt and flush it     */
     if (Input->file == stdin) 
     {
-        if (!SyQuiet)
+        if (!SyQuiet) 
         {
            // Pr("%s%c", (Int)Prompt, (Int)'\03');
-            SyFmtPrint(stream, "%s", Prompt);
+            SyFmtPrint(stdout_stream, "%s", Prompt);
         }
         else
         {
             //Pr("%c", (Int)'\03', 0);
-            SyFmtPrint(stream, "%c", '\03');
+            SyFmtPrint(stdout_stream, "%c", '\03');
         }
     }
 
@@ -942,10 +940,7 @@ void            SyntaxError (char *msg)
     Int             i;
     Int             isStdIn = (strcmp( "*stdin*", Input->name ) == 0 );
     static Int      launchedEdit = 0;
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     /* one more error                                                      */
     NrError++;
     NrErrLine++;
@@ -958,12 +953,12 @@ void            SyntaxError (char *msg)
 
     /* print the message and the filename, unless it is '*stdin*'          */
     //Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
-    SyFmtPrint(stream, "Syntax error: %s (symbol: '%s')", msg, Value);
+    Error("Syntax error: %s (symbol: '%s')", msg, Value);
 
     if ( !isStdIn ) 
     {
         //Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
-        SyFmtPrint(stream, " in %s line %d", Input->name, Input->number);
+        SyFmtPrint(stderr_stream, " in %s line %d", Input->name, Input->number);
 	
         if(!launchedEdit)
         {
@@ -973,11 +968,11 @@ void            SyntaxError (char *msg)
     }
 
     //Pr( "\n", 0, 0 );
-    SyFmtPrint(stream, "\n");
+    Error("\n");
 
     /* print the current line                                              */
     //Pr( "%s", (Int)Input->line, 0 );
-    SyFmtPrint(stream, "%s", Input->line);
+    Error("%s", Input->line);
 
     /* print a '^' pointing to the current position                        */
     for ( i = 0; i < In - Input->line - 1; i++ ) 
@@ -985,17 +980,17 @@ void            SyntaxError (char *msg)
         if (Input->line[i] == '\t')
         { 
             //Pr("\t", 0, 0);
-            SyFmtPrint(stream, "\t");
+            Error("\t");
         }
         else 
         { 
             //Pr(" ", 0, 0);
-            SyFmtPrint(stream, " ");
+            Error(" ");
         }
     }
 
     //Pr( "^\n", 0, 0 );
-    SyFmtPrint(stream, "^\n");
+    Error("^\n");
 
 }
 

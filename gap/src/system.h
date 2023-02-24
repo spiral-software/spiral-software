@@ -661,6 +661,8 @@ typedef struct stream_struct {
 
 extern STREAM stdout_stream;
 
+extern STREAM stderr_stream;
+
 extern FILE* streamFile(STREAM stream);
 
 extern int SyFmtPrint(STREAM stream, const char* format, ...);

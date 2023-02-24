@@ -427,10 +427,6 @@ Bag     EvFunccall (Bag hdCall)
     UInt     time = 0;
     UInt     sime = 0;
     UInt     ftype = 0;
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
 
     if ((EvalStackTop>=EVAL_STACK_COUNT) && !InBreakpoint)
@@ -584,11 +580,11 @@ Bag     EvFunccall (Bag hdCall)
         trace |= 1;  
         nrLoc = -nrLoc-1;
         //**INDENT** Pr("\n%2>",0,0);  
-        SyFmtPrint(stream, "\n");
+        SyFmtPrint(stdout_stream, "\n");
         //Print( PTR_BAG(hdCall)[0] ); 
-        PrintObj(stream, PTR_BAG(hdCall)[0], 0);
+        PrintObj(stdout_stream, PTR_BAG(hdCall)[0], 0);
         //**INDENT** Pr("%<( ",0,0);
-        SyFmtPrint(stream, "( ");
+        SyFmtPrint(stdout_stream, "( ");
     }
 
     /* Now create the new execute bag                                      */
@@ -626,16 +622,16 @@ Bag     EvFunccall (Bag hdCall)
         {
             //**INDENT** Pr("%>",0,0);
             //Print( hdRes );
-            PrintObj(stream, hdRes, 0);
+            PrintObj(stdout_stream, hdRes, 0);
             if (i < nrArg)
             {
                 //**INDENT** Pr("%<, ", 0, 0); 
-                SyFmtPrint(stream, ", ");
+                SyFmtPrint(stdout_stream, ", ");
             }
             else
             {
                 //**INDENT** Pr("%< )", 0, 0);
-                SyFmtPrint(stream, " )");
+                SyFmtPrint(stdout_stream, " )");
             }
         }
     }
@@ -692,18 +688,18 @@ Bag     EvFunccall (Bag hdCall)
     if ( trace & 1 ) 
     {
         //**INDENT** Pr("\n%>",0,0); 
-        SyFmtPrint(stream, "\n");
+        SyFmtPrint(stdout_stream, "\n");
         //Print( PTR_BAG(hdCall)[0] );
-        PrintObj(stream, PTR_BAG(hdCall)[0], 0);
+        PrintObj(stdout_stream, PTR_BAG(hdCall)[0], 0);
         //**INDENT** Pr("%< returns ",0,0);
-        SyFmtPrint(stream, " returns ");
+        SyFmtPrint(stdout_stream, " returns ");
         if (hdRes != HdVoid)
         {
             //Print(hdRes); 
-            PrintObj(stream, hdRes, 0);
+            PrintObj(stdout_stream, hdRes, 0);
         }
         //**INDENT** Pr("%< ",0,0);
-        SyFmtPrint(stream, " ");
+        SyFmtPrint(stdout_stream, " ");
     }
     return hdRes;
 }
@@ -1085,10 +1081,7 @@ Bag       FunProfile (Bag hdCall)
     Bag     hdArg;
     short   i;
     Int     total;
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     /* check argument count                                                */
     if ( (2 * SIZE_HD) < GET_SIZE_BAG(hdCall) ) 
@@ -1128,28 +1121,28 @@ Bag       FunProfile (Bag hdCall)
         }
 
         //Pr(" count    time percent time/call child function\n",0,0);
-        SyFmtPrint(stream, " count    time percent time/call child function\n");
+        SyFmtPrint(stdout_stream, " count    time percent time/call child function\n");
 
         for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 )
         {
             //Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0 );
-            SyFmtPrint(stream, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 2]));
+            SyFmtPrint(stdout_stream, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 2]));
             //Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ), 0 );
-            SyFmtPrint(stream, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 3]));
+            SyFmtPrint(stdout_stream, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 3]));
             //Pr("%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i+3]) / total, 0 );
-            SyFmtPrint(stream, "%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i + 3]) / total);
+            SyFmtPrint(stdout_stream, "%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i + 3]) / total);
             //Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ) / HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0 );
-            SyFmtPrint(stream, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 3]) / HD_TO_INT(PTR_BAG(HdTimes)[i + 2]));
+            SyFmtPrint(stdout_stream, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 3]) / HD_TO_INT(PTR_BAG(HdTimes)[i + 2]));
             //Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+4] ), 0 );
-            SyFmtPrint(stream, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 4]));
+            SyFmtPrint(stdout_stream, "%6d  ", HD_TO_INT(PTR_BAG(HdTimes)[i + 4]));
             //Print( PTR_BAG(HdTimes)[i+1] );
-            PrintObj(stream, PTR_BAG(HdTimes)[i + 1], 0);
+            PrintObj(stdout_stream, PTR_BAG(HdTimes)[i + 1], 0);
             //Pr("\n",0,0);
-            SyFmtPrint(stream, "\n");
+            SyFmtPrint(stdout_stream, "\n");
         }
 
         //Pr("        %6d     100                  TOTAL\n",total-1,0);
-        SyFmtPrint(stream, "        %6d     100                  TOTAL\n", total - 1);
+        SyFmtPrint(stdout_stream, "        %6d     100                  TOTAL\n", total - 1);
     }
 
     return HdVoid;

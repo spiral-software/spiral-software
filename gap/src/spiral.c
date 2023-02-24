@@ -103,12 +103,7 @@ Bag       FunApropos (Bag hdCall)
     if ( GET_TYPE_BAG(hdSubStr)!=T_STRING)
         return Error("usage: Apropos( <sub_string> )", 0,0);
 
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
-
-    Apropos(stream, hdSubStr, HdIdenttab, 1);
+    Apropos(stdout_stream, hdSubStr, HdIdenttab, 1);
 
     RecursiveClearFlag(HdIdenttab, BF_VISITED);
     return HdVoid;
@@ -645,12 +640,7 @@ Obj  FunBagInfo ( Obj hdCall ) {
         return Error(usage, 0, 0);
     }
 
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
-
-    BagInfo(stream, EVAL(PTR_BAG(hdCall)[1]));
+    BagInfo(stdout_stream, EVAL(PTR_BAG(hdCall)[1]));
     return HdVoid;
 }
 
@@ -895,10 +885,7 @@ Obj  FunReachability ( Obj hdCall ) {
     char*   usage = "usage: Reachability( <obj> [, <root>] )";
     Obj     hd;
     Obj     hdRoot = 0;
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     if (GET_SIZE_BAG(hdCall) < 2 * SIZE_HD || GET_SIZE_BAG(hdCall) > 3 * SIZE_HD)
     {
@@ -915,10 +902,10 @@ Obj  FunReachability ( Obj hdCall ) {
 
     if (hdRoot == 0)
     {
-        return reachable(stream, hd) ? HdTrue : HdFalse;
+        return reachable(stdout_stream, hd) ? HdTrue : HdFalse;
     }
     else {
-        Obj res = reachableFrom(stream, hdRoot, hd) ? HdTrue : HdFalse;
+        Obj res = reachableFrom(stdout_stream, hdRoot, hd) ? HdTrue : HdFalse;
         RecursiveClearFlag(hdRoot, BF_VISITED);
         return res;
     }
@@ -1133,10 +1120,6 @@ Bag  FunEditDef ( Bag hdCall ) {
     char *      usage = "usage: EditDef(<obj>)";
     char        fileName[512];
     Int         line;
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
 
@@ -1144,13 +1127,13 @@ Bag  FunEditDef ( Bag hdCall ) {
         case  0: 
         { 
             //Pr("--no documentation--\n", 0, 0); 
-            SyFmtPrint(stream, "--no documentation--\n");
+            SyFmtPrint(stdout_stream, "--no documentation--\n");
             break; 
         }
         case -1:
         {
             //Pr("--defnition not found--\n", 0, 0);
-            SyFmtPrint(stream, "--defnition not found--\n");
+            SyFmtPrint(stdout_stream, "--defnition not found--\n");
             break;
         }
         case  1: 
@@ -1265,17 +1248,13 @@ Bag  FunFindRefs( Bag hdCall ) {
     char *      usage = "usage: FindRefs( <obj> [, <by value> = false])";
     int         by_value = 0;
     Obj         hd;
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     
     switch(GET_SIZE_BAG(hdCall)) {
         case 3 * SIZE_HD: 
             by_value = EVAL(PTR_BAG(hdCall)[2]) == HdTrue;
         case 2 * SIZE_HD: {
             hd = (by_value) ? EVAL(PTR_BAG(hdCall)[1]) : PTR_BAG(hdCall)[1];
-            return findrefs_global(stream, hd);
+            return findrefs_global(stdout_stream, hd);
             break;
         }
     }   

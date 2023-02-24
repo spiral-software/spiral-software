@@ -653,8 +653,11 @@ typedef struct stream_struct {
     int   type;
     union {
         FILE* file;
+        char** string_ptr;
     } U;
 } STREAM;
+
+extern STREAM stdout_stream;
 
 extern FILE* streamFile(STREAM stream);
 

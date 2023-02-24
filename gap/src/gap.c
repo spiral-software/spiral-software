@@ -1493,14 +1493,10 @@ Bag       FunPrint(Bag hdCall)
 
     STREAM stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = stdout;
-
     for (i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i)
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-        printOneBag(stream, hd);
-        //printOneBag(stream, hd);
+        printOneBag(stdout_stream, hd);
     }
     return HdVoid;
 }
@@ -1508,9 +1504,9 @@ Bag       FunPrint(Bag hdCall)
 
 /****************************************************************************
 **
-*F  FunPrntTo( <hdCall> ) . . . . . . . . . . . . internal function 'PrintTo'
+*F  FunPrintTo( <hdCall> ) . . . . . . . . . . . . internal function 'PrintTo'
 **
-**  'FunPrntTo' implements the internal function 'PrintTo'.  The stupid  name
+**  'FunPrintTo' implements the internal function 'PrintTo'.  The stupid  name
 **  is neccessary to avoid a name conflict with 'FunPrint'.
 **
 **  'PrintTo( <filename>, <obj1>, <obj2>... )'
@@ -1533,7 +1529,7 @@ Bag       FunPrint(Bag hdCall)
 **
 **  See the note about empty string literals and empty lists in 'Print'.
 */
-Bag       FunPrntTo(Bag hdCall)
+Bag       FunPrintTo(Bag hdCall)
 {
     Bag     hd;
     Int     i;
@@ -1561,14 +1557,12 @@ Bag       FunPrntTo(Bag hdCall)
     {
         return Error("PrintTo: can not open the file for writing", 0, 0);
     }
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = file;
+    SET_STREAM_FILE(stream, file);
 
     /* print all the arguments, take care of strings and functions         */
     for (i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i) 
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-        //printOneBag(stream, hd);
         printOneBag(stream, hd);
     }
 
@@ -1622,18 +1616,52 @@ Bag       FunAppendTo(Bag hdCall)
     {
         return Error("PrintTo: can not open the file for writing", 0, 0);
     }
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = file;
+    SET_STREAM_FILE(stream, file);
 
     /* print all the arguments, take care of strings and functions         */
     for (i = 2; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
     {
         hd = EVAL(PTR_BAG(hdCall)[i]);
-        //printOneBag(stream, hd);
         printOneBag(stream, hd);
     }
 
     fclose(streamFile(stream));
+
+    return HdVoid;
+}
+
+
+Bag FunPrintToString(Bag hdCall)
+{
+    Bag     hd;
+    Int     i;
+    STREAM stream;
+    char* newstr = 0;
+    newstr = 0;
+
+    stream.type = STREAM_TYPE_STRING;
+    stream.U.string_ptr = &newstr;
+
+    for (i = 1; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
+    {
+        hd = EVAL(PTR_BAG(hdCall)[i]);
+        printOneBag(stream, hd);
+    }
+
+    if (newstr != 0) {
+        Bag strBag;
+        int slen;
+
+        slen = strlen(newstr);
+        strBag = NewBag(T_STRING, slen + 1);
+        *((char*)PTR_BAG(strBag)) = '\0';
+        strncpy((char*)PTR_BAG(strBag), newstr, slen);
+        free(newstr);
+        return strBag;
+    }
+    else {
+        printf("New String Null\n");
+    }
 
     return HdVoid;
 }
@@ -2595,6 +2623,7 @@ Bag     FunTabToList(Bag hdCall)
     return TableToList(hd);
 }
 
+STREAM stdout_stream;
 
 /****************************************************************************
 **
@@ -2610,7 +2639,10 @@ void            InitGap (int argc, char** argv, int* stackBase)
     char        *version;
     char        *prompt;
     exc_type_t   e;
-    /* Initialize all subpackages of GAP.                                  */
+    /* Initialize all subpackages of GAP.   */
+
+    // init STREAM for stdout
+    SET_STREAM_FILE(stdout_stream, stdout);
 
 #ifdef DEBUG
 #ifndef WIN32
@@ -2674,8 +2706,9 @@ void            InitGap (int argc, char** argv, int* stackBase)
     InstIntFunc( "CHANGEDIR",  FunChangeDir  );
     InstIntFunc( "AUTO",       FunAUTO       );
     InstIntFunc( "Print",      FunPrint      );
-    InstIntFunc( "PrintTo",    FunPrntTo     );
+    InstIntFunc( "PrintTo",    FunPrintTo    );
     InstIntFunc( "AppendTo",   FunAppendTo   );
+    InstIntFunc( "PrintToString", FunPrintToString );
     InstIntFunc( "LogTo",      FunLogTo      );
     InstIntFunc( "LogInputTo", FunLogInputTo );
 

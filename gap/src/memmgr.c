@@ -611,10 +611,6 @@ extern TNumAbortFuncBags   AbortFuncBags;
 
 void    InitGlobalBag ( BagPtr_t *addr, const Char *cookie )
 {
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
         (*AbortFuncBags)( "Panic: Gasman cannot handle so many global variables" );
@@ -627,16 +623,18 @@ void    InitGlobalBag ( BagPtr_t *addr, const Char *cookie )
 			for (i = 0; i < GlobalBags.nr; i++)
 				if ( 0 == strcmp(GlobalBags.cookie[i], cookie) ) {
 					if (GlobalBags.addr[i] == addr)
-						Pr("Duplicate global bag entry %s\n", (Int)cookie, 0);
+					    //Pr("Duplicate global bag entry %s\n", (Int)cookie, 0);
+                        SyFmtPrint(stdout_stream, "Duplicate global bag entry %s\n", cookie, 0);
 					else
-						Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0);
+						//Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0);
+                        SyFmtPrint(stdout_stream, ("Duplicate global bag cookie %s\n", cookie, 0);
 				}
     }
 #endif
 
     if ( WarnInitGlobalBag ) {
         //Pr( "#W  global bag '%s' initialized\n", (Int)cookie, 0 );
-        SyFmtPrint(stream, "#W  global bag '%s' initialized\n", cookie);
+        SyFmtPrint(stdout_stream, "#W  global bag '%s' initialized\n", cookie);
     } 
     GlobalBags.addr[GlobalBags.nr] = addr;
     GlobalBags.cookie[GlobalBags.nr] = cookie;

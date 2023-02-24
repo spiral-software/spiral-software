@@ -364,21 +364,6 @@ extern TypInputFile    * Input;
 extern char            * In;
 
 
-typedef struct {
-    FILE *file;
-    Int   fid;
-    char *line;
-    Int   pos;
-    Int   indent;
-    Int   spos;
-    Int   sindent;
-    Bag	hdList;
-} TypOutputFile;
-
-extern TypOutputFile * Output;
-
-#define OUTFILE (Output->file)
-
 /****************************************************************************
 **
 *F  GetLine() . . . . . . . . . . . . . . . . . . . . . . . get a line, local
@@ -495,39 +480,6 @@ Int            CloseInput ( void );
 */
 Int            OpenOutput ( char * filename );
 
-
-/****************************************************************************
-**
-*F  CloseOutput() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseOutput' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseOutput' returns 1 to indicate success.
-**
-**  'CloseOutput' will  not  close the  initial output file   '*stdout*', and
-**  returns 0 if such attempt is made.  This  is  used in 'Error' which calls
-**  'CloseOutput' until it returns 0, thereby closing all open output files.
-**
-**  Calling 'CloseOutput' if the corresponding 'OpenOutput' call failed  will
-**  close the current output file, which will lead to very strange behaviour.
-**  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
-**  'PrintTo' call or an error will not yield much better results.
-*/
-Int            CloseOutput ( void );
-
-
-/****************************************************************************
-**
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-Int            OpenAppend ( char * filename );
 
 
 /****************************************************************************

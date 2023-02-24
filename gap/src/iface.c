@@ -46,10 +46,6 @@ int execute()
   exc_type_t        e;
   char*		    prompt;
   static char	    spiralPrompt[80] = "spiral> ";
-  STREAM  stream;
-
-  stream.type = STREAM_TYPE_FILE;
-  stream.U.file = OUTFILE;
 
   if ( Symbol==S_EOF ){
     //interface_read_output_nolist(output);
@@ -102,9 +98,9 @@ int execute()
 	    if ( ! GAP_SILENT ) {
 	        IsString( hd );
 	        //Print( hd );
-            PrintObj(stream, hd, 0);
+            PrintObj(stdout_stream, hd, 0);
 	        //Pr("\n",0,0);
-            SyFmtPrint(stream, "\n");
+            SyFmtPrint(stdout_stream, "\n");
 	    }
       }
     }

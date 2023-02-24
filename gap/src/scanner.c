@@ -262,47 +262,6 @@ TypInputFile    * Input;
 char            * In;
 
 
-/****************************************************************************
-**
-*T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
-*V  OutputFiles . . . . . . . . . . . . . . stack of open output files, local
-*V  Output  . . . . . . . . . . . . . . pointer to current output file, local
-**
-**  'TypOutputFile' describes the information stored for open  output  files:
-**  'file' holds the file identifier which is  received  from  'SyFopen'  and
-**  which is passed to  'SyFputs'  and  'SyFclose'  to  identify  this  file.
-**  'line' is a buffer that holds the current output line.
-**  'pos' is the position of the current character on that line.
-**
-**  'OutputFiles' is the stack of open output files.  It  is  represented  as
-**  an array of structures of type 'TypOutputFile'.
-**
-**  'Output' is a pointer to the current output file.  It points to  the  top
-**  of the stack 'OutputFiles'.
-*/
-
-Int OutputLineLen;
-
-#define SCANNER_OUTPUTS 16
-//typedef struct {
-//   FILE       * fileHandler;
-//    Int        file;
-//    char        *line;
-//    Int        pos;
-//    Int        indent;
-//    Int        spos;
-//    Int        sindent;
-//    char*       mem; /* holds memory buffer if output goes into memory         */
-//                     /* first UInt is the buffer size without 2*sizeof(UInt);  */
-//                     /* second UInt is the number of characters written        */
-//                     /* null terminated characters array;                      */
-//
-//    Bag		hdList;
-//}       TypOutputFile;
-
-TypOutputFile   OutputFiles [SCANNER_OUTPUTS];
-TypOutputFile   * Output;
-
 /* INITIAL_MEM_SIZE - initial memory buffer size for OpenMemory() */
 #define INITIAL_MEM_SIZE    2048
 
@@ -347,22 +306,20 @@ Int            InputLogfile = -1;
 char            GetLine (void)
 {
 
-    STREAM  stream;
+    //GS4 - unsure on this one - should be printing to log file
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     /* if file is '*stdin*' print the prompt and flush it     */
     if (Input->file == stdin) 
     {
-        if (!SyQuiet)
+        if (!SyQuiet) 
         {
            // Pr("%s%c", (Int)Prompt, (Int)'\03');
-            SyFmtPrint(stream, "%s", Prompt);
+            SyFmtPrint(stdout_stream, "%s", Prompt);
         }
         else
         {
             //Pr("%c", (Int)'\03', 0);
-            SyFmtPrint(stream, "%c", '\03');
+            SyFmtPrint(stdout_stream, "%c", '\03');
         }
     }
 
@@ -942,10 +899,7 @@ void            SyntaxError (char *msg)
     Int             i;
     Int             isStdIn = (strcmp( "*stdin*", Input->name ) == 0 );
     static Int      launchedEdit = 0;
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     /* one more error                                                      */
     NrError++;
     NrErrLine++;
@@ -958,12 +912,12 @@ void            SyntaxError (char *msg)
 
     /* print the message and the filename, unless it is '*stdin*'          */
     //Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
-    SyFmtPrint(stream, "Syntax error: %s (symbol: '%s')", msg, Value);
+    Error("Syntax error: %s (symbol: '%s')", msg, Value);
 
     if ( !isStdIn ) 
     {
         //Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
-        SyFmtPrint(stream, " in %s line %d", Input->name, Input->number);
+        SyFmtPrint(stderr_stream, " in %s line %d", Input->name, Input->number);
 	
         if(!launchedEdit)
         {
@@ -973,11 +927,11 @@ void            SyntaxError (char *msg)
     }
 
     //Pr( "\n", 0, 0 );
-    SyFmtPrint(stream, "\n");
+    Error("\n");
 
     /* print the current line                                              */
     //Pr( "%s", (Int)Input->line, 0 );
-    SyFmtPrint(stream, "%s", Input->line);
+    Error("%s", Input->line);
 
     /* print a '^' pointing to the current position                        */
     for ( i = 0; i < In - Input->line - 1; i++ ) 
@@ -985,17 +939,17 @@ void            SyntaxError (char *msg)
         if (Input->line[i] == '\t')
         { 
             //Pr("\t", 0, 0);
-            SyFmtPrint(stream, "\t");
+            Error("\t");
         }
         else 
         { 
             //Pr(" ", 0, 0);
-            SyFmtPrint(stream, " ");
+            Error(" ");
         }
     }
 
     //Pr( "^\n", 0, 0 );
-    SyFmtPrint(stream, "^\n");
+    Error("^\n");
 
 }
 
@@ -1235,151 +1189,6 @@ Bag		GReadFile()
 }
 
 
-/****************************************************************************
-**
-*F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
-**
-**  'OpenOutput' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  The file is truncated to size 0 if it existed, otherwise it  is  created.
-**  'OpenOutput' does not  close  the  current file, i.e., if  <filename>  is
-**  closed again, output will go again to the current output file.
-**
-**  'OpenOutput'  returns  1 if it  could  successfully  open  <filename> for
-**  writing and 0 to indicate failure.  'OpenOutput' will fail if  you do not
-**  have  permissions to create the  file or write   to it.  'OpenOutput' may
-**  also   fail if you   have  too many files   open  at once.   It is system
-**  dependent how many are too many, but 16 files should work everywhere.
-**
-**  You can open '*stdout*'  to write  to the standard output  file, which is
-**  usually the terminal, or '*errout*' to write  to the standard error file,
-**  which is the terminal  even   if '*stdout*'  is  redirected to   a  file.
-**  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
-**  they are just a convention between the main and the system package.
-**
-**  It is not neccessary to open the initial output file, 'InitScanner' opens
-**  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
-**  closed by 'CloseOutput'.
-*/
-Int            OpenOutput (char *filename)
-{
-    Int     file;
-
-    /* fail if we can not handle another open output file                  */
-    if (Output + 1 == OutputFiles + (sizeof(OutputFiles) / sizeof(OutputFiles[0])))
-    {
-        return 0;
-    }
-
-    /* try to open the file                                                */
-    file = SyFopen( filename, "w" );
-    if (file == -1)
-    {
-        return 0;
-    }
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file = file;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 660;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseOutput() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseOutput' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseOutput' returns 1 to indicate success.
-**
-**  'CloseOutput' will  not  close the  initial output file   '*stdout*', and
-**  returns 0 if such attempt is made.  This  is  used in 'Error' which calls
-**  'CloseOutput' until it returns 0, thereby closing all open output files.
-**
-**  Calling 'CloseOutput' if the corresponding 'OpenOutput' call failed  will
-**  close the current output file, which will lead to very strange behaviour.
-**  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
-**  'PrintTo' call or an error will not yield much better results.
-*/
-Int            CloseOutput (void)
-{
-    /* refuse to close the initial output file '*stdout*'                  */
-    if (Output == OutputFiles)
-    {
-        return 0;
-    }
-
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
-    /* flush output and close the file                                     */
-    //Pr( "%c", (Int)'\03', 0 );
-    SyFmtPrint(stream, "%c", '\03');
-
-    SyFclose( Output->file);
-
-    /* revert to previous output file and indicate success                 */
-    Output->file = (FILE*)0;
-        
-    Output--;
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseAppend' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-Int            OpenAppend (char *filename)
-{
-    Int     file;
-
-    /* fail if we can not handle another open output file                  */
-    if (Output + 1 == OutputFiles + (sizeof(OutputFiles) / sizeof(OutputFiles[0])))
-    {
-        return 0;
-    }
-
-    /* try to open the file                                                */
-    file = SyFopen( filename, "a" );
-    if (file == (FILE*)0)
-    {
-        return 0;
-    }
-
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file = file;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-    
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 660;
-
-    /* indicate success                                                    */
-    return 1;
-}
 
 
 /****************************************************************************
@@ -1524,23 +1333,9 @@ void            InitScanner (void)
     Int     ignore;
     Int     i;
 
-    OutputLineLen = SyNrCols < 1000 ? 1000 : SyNrCols + 1;
-    for(i = 0; i < SCANNER_OUTPUTS; ++i)
-    {
-        /* OutputFiles[i].line = (char*) xmalloc(sizeof(char)*OutputLineLen); */
-        OutputFiles[i].line = (char*) malloc(sizeof(char)*OutputLineLen);
-        OutputFiles[i].file = (FILE*)0;
-        OutputFiles[i].file = 0;
-        OutputFiles[i].indent = 0;
-        OutputFiles[i].pos = 0;
-        OutputFiles[i].sindent = 0;
-        OutputFiles[i].spos = 0;
-    }
 
     Input  = InputFiles-1;   
     ignore = OpenInput(  "*stdin*"  );
-    Output = OutputFiles-1;  
-    ignore = OpenOutput( "*stdout*" );
 
     Logfile = -1;  
     InputLogfile = -1;

@@ -49,11 +49,10 @@ Obj  HdBackquote;
  * functions.  It prints <hd> on a separate line. Print can't print T_RECNAM 
  * bags, thus we have a check for this type.
  */
-#define TRACE(hd) if(hd) { STREAM  stream;stream.type = STREAM_TYPE_FILE;stream.U.file = OUTFILE; \
-                /*Pr("->%d| ",GET_TYPE_BAG(hd),0);*/ SyFmtPrint(stream,"->%d| ", (Int)GET_TYPE_BAG(hd)); \
-                if(GET_TYPE_BAG(hd)==T_RECNAM) /*Pr("recnam",0,0);*/ SyFmtPrint(stream,"recnam"); \
-			    else /*Print(hd);*/ PrintObj(stream, hd, 0); \
-	            /*Pr("\n",0,0);*/ SyFmtPrint(stream,"\n"); }
+#define TRACE(hd) if(hd) { /*Pr("->%d| ",GET_TYPE_BAG(hd),0);*/ SyFmtPrint(stdout_stream,"->%d| ", (Int)GET_TYPE_BAG(hd)); \
+                if(GET_TYPE_BAG(hd)==T_RECNAM) /*Pr("recnam",0,0);*/ SyFmtPrint(stdout_stream,"recnam"); \
+			    else /*Print(hd);*/ PrintObj(stdout_stream, hd, 0); \
+	            /*Pr("\n",0,0);*/ SyFmtPrint(stdout_stream,"\n"); }
 
 
 /* returns list{[head..Length(list)]} for a 0-indexed function argument list */

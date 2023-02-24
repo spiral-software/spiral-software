@@ -242,10 +242,6 @@ Int FindDocAndExtractLoc(Bag obj, char* fileName, Int* line) {
 Obj  FunDoc( Obj hdCall ) {
     char * usage = "usage: Doc( <var> )";
     Obj doc;
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )    return Error(usage, 0,0);
 
@@ -254,17 +250,17 @@ Obj  FunDoc( Obj hdCall ) {
     if (doc != NULL && GET_TYPE_BAG(doc) == T_STRING)
     {
         //Pr("%s", (Int)CSTR_STRING(doc), 0);
-        SyFmtPrint(stream, "%s", CSTR_STRING(doc));
+        SyFmtPrint(stdout_stream, "%s", CSTR_STRING(doc));
     }
     else if (doc == NULL)
     {
         //Pr("--no documentation--\n", 0, 0);
-        SyFmtPrint(stream, "--no documentation--\n");
+        SyFmtPrint(stdout_stream, "--no documentation--\n");
     }
     else
     {
         //Pr("--documentation corrupt (not a string, but %s)--\n", (Int)TNAM_BAG(doc), 0);
-        SyFmtPrint(stream, "--documentation corrupt (not a string, but %s)--\n", TNAM_BAG(doc));
+        SyFmtPrint(stdout_stream, "--documentation corrupt (not a string, but %s)--\n", TNAM_BAG(doc));
     }
 
     return HdVoid;

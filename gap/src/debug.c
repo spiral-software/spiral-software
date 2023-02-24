@@ -65,10 +65,7 @@ static inline UInt isRetTrueFunc(Obj hdFunc) {
 }
 
 static UInt evalCondition(Obj* recHdCond, Obj hdExec) {
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     if (recHdCond==0 || recHdCond[1]==0 || recHdCond[1] == HdTrue)
         return 1;
@@ -96,22 +93,19 @@ static UInt evalCondition(Obj* recHdCond, Obj hdExec) {
                 } else 
                 {
                     //Pr("Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i);
-                    SyFmtPrint(stream, "Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i);
+                    SyFmtPrint(stdout_stream, "Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i);
                 }
             }
         }
         return 0;
     }
     //Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
-    SyFmtPrint(stream, "Breakpoint condition must have boolean value or must be a function.\n");
+    SyFmtPrint(stdout_stream, "Breakpoint condition must have boolean value or must be a function.\n");
     return 1;
 }
 
 static UInt evalMemCondition(Obj* recHdCond, Obj hdObj, Obj hdField, Obj hdValue) {
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     if (recHdCond==0 || recHdCond[1]==0 || recHdCond[1] == HdTrue)
         return 1;
     if (recHdCond[1] == HdFalse)
@@ -135,14 +129,14 @@ static UInt evalMemCondition(Obj* recHdCond, Obj hdObj, Obj hdField, Obj hdValue
             } else
             {
                 //Pr("Breakpoint condition function has unexpected number of arguments.\n", 0, 0);
-                SyFmtPrint(stream, "Breakpoint condition function has unexpected number of arguments.\n");
+                SyFmtPrint(stdout_stream, "Breakpoint condition function has unexpected number of arguments.\n");
                 return 0;
             }
             return EVAL(hdCall)==HdTrue;
         }
     }
     //Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
-    SyFmtPrint(stream, "Breakpoint condition must have boolean value or must be a function.\n");
+    SyFmtPrint(stdout_stream, "Breakpoint condition must have boolean value or must be a function.\n");
     return 1;
 }
 
@@ -187,10 +181,6 @@ static UInt evalMemBreakpoint(Obj hdBrk, Obj hdMode, Obj hdObj, Obj hdField, Obj
 
 void    CheckBreakpoints(Obj hdE, Obj hdExec) {
     exc_type_t  e = 0;
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     if (!inBreakLoop() && !InBreakpoint) {
         InBreakpoint = 1;
@@ -221,7 +211,7 @@ void    CheckBreakpoints(Obj hdE, Obj hdExec) {
         else 
         {
 		    //Pr("Breakpoints is not a list", 0, 0);
-            SyFmtPrint(stream, "Breakpoints is not a list");
+            SyFmtPrint(stdout_stream, "Breakpoints is not a list");
 	    }
 	    InBreakpoint = 0;
         } Catch(e) {
@@ -350,13 +340,10 @@ StepOver() - F10; StepInto() - F11; StepOut() - F8.\n";
 
 void    EnterDebugMode() {
     int t;
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     if (InDebugMode == 0) {
         //Pr(EnteringDbgMode, 0, 0);
-        SyFmtPrint(stream, "%s", EnteringDbgMode);
+        SyFmtPrint(stdout_stream, "%s", EnteringDbgMode);
         for(t=0; t<T_ILLEGAL; ++t) {
             OrigEvTab[t] = EvTab[t];
             EvTab[t] = DebugEVAL;
@@ -464,12 +451,9 @@ is matched, even if condition function returns false.\n\
     
     
 Obj FunDebugHelp ( Obj hdCall ) {
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     //Pr(HelpText, 0, 0);
-    SyFmtPrint(stream, "%s", HelpText);
+    SyFmtPrint(stdout_stream, "%s", HelpText);
     return HdVoid;
 }
 
@@ -703,10 +687,7 @@ Obj  FunTop ( Obj hdCall ) {
     Obj         top, doc;
     exc_type_t  e;
     UInt        i;
-    STREAM      stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     
     if ( GET_SIZE_BAG(hdCall) != 1 * SIZE_HD || !inBreakLoop())  return Error(usage, 0,0);
     // mark statements on the eval stack that belong to current function
@@ -721,12 +702,12 @@ Obj  FunTop ( Obj hdCall ) {
     if (doc != 0 && GET_TYPE_BAG(doc) == T_STRING)
     {
         //Pr("%s", (Int)CSTR_STRING(doc), 0);
-        SyFmtPrint(stream, "%s", CSTR_STRING(doc));
+        SyFmtPrint(stdout_stream, "%s", CSTR_STRING(doc));
     }
     else
     {
         //Pr("--no documentation--\n", 0, 0);
-        SyFmtPrint(stream, "--no documentation--\n");
+        SyFmtPrint(stdout_stream, "--no documentation--\n");
     }
     prFull = 1;
     HookPrTab();
@@ -734,22 +715,24 @@ Obj  FunTop ( Obj hdCall ) {
         // first time figure out what to highlight, this is not precise
         // but better than nothing. Redirect output to /dev/null and traverse
         // bags that will be printed.
+/*/
 #ifdef WIN32
         OpenOutput("NUL");
 #else
         OpenOutput("/dev/null");
 #endif
+    */
         TopPr_CurDepth = 0; // current tree depth (in marked bags)
         TopPr_MaxDepth = 0; // maximal tree depth (in marked bags)
         Try {
             TopPr_Printing = 0; // we are going to calculate  max depth first
             //Pr("%g\n", (Int)top, 0);
-            PrintObj(stream, top, 0);
-            SyFmtPrint(stream, "\n");
+            PrintObj(stdout_stream, top, 0);
+            SyFmtPrint(stdout_stream, "\n");
             // closing /dev/null and return to previous output
-            CloseOutput();
+           // CloseOutput();
         } Catch(e) {
-            CloseOutput();
+           // CloseOutput();
             Throw(e);
         }
         TopPr_Printing = 1; // now we are going to print function
@@ -757,8 +740,8 @@ Obj  FunTop ( Obj hdCall ) {
                             // flag and has TopPr_MaxDepth will be highlighted (with 
                             // children).
         //Pr("%g\n", (Int)top, 0);
-        PrintObj(stream, top, 0);
-        SyFmtPrint(stream, "\n");
+        PrintObj(stdout_stream, top, 0);
+        SyFmtPrint(stdout_stream, "\n");
     } Catch(e) {
         UnhookPrTab();
         Throw(e);
@@ -777,10 +760,7 @@ Obj  FunEditTopFunc ( Obj hdCall ) {
     char *      usage = "usage (in brk or dbg modes only): EditTopFunc()";
     char	fileName[512];
     Int         line;
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 	
     if ( GET_SIZE_BAG(hdCall) != 1 * SIZE_HD || !inBreakLoop())  return Error(usage, 0,0);
     
@@ -788,13 +768,13 @@ Obj  FunEditTopFunc ( Obj hdCall ) {
         case  0: 
         { 
             //Pr("--no documentation--\n", 0, 0); 
-            SyFmtPrint(stream, "--no documentation--\n");
+            SyFmtPrint(stdout_stream, "--no documentation--\n");
             break; 
         }
         case -1:
         { 
             //Pr("--definition not found--\n", 0, 0);
-            SyFmtPrint(stream, "--definition not found--\n");
+            SyFmtPrint(stdout_stream, "--definition not found--\n");
             break;
         }
         case  1:
@@ -823,10 +803,6 @@ Obj  FunDown ( Obj hdCall ) {
     char * usage = "usage  (in brk or dbg modes only): Down( [<levels>] )";
     char * errText = "--initial frame selected (can't go down)--\n";
     UInt levels = GetLevels(hdCall);
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     if ( (GET_SIZE_BAG(hdCall) != 1 * SIZE_HD && GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) 
         || !inBreakLoop()) return Error(usage, 0,0);
@@ -834,12 +810,12 @@ Obj  FunDown ( Obj hdCall ) {
         if ( !DbgDown() ) 
         { 
             //Pr(errText, 0, 0);
-            SyFmtPrint(stream, "%s", errText);
+            SyFmtPrint(stdout_stream, "%s", errText);
             break;
         }
     }
     levels = DbgExecStackDepth();
-    PrintBacktraceExec(stream, HdExec, levels-DbgStackTop, levels, 0);
+    PrintBacktraceExec(stdout_stream, HdExec, levels-DbgStackTop, levels, 0);
     return HdVoid;
 }
 
@@ -847,22 +823,19 @@ Obj  FunUp ( Obj hdCall ) {
     char * usage = "usage (in brk or dbg modes only): Up( [<levels>] )";
     char * errText = "--topmost frame selected (can't go up)--\n";
     UInt levels = GetLevels(hdCall);
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     if ( (GET_SIZE_BAG(hdCall) != 1 * SIZE_HD && GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) 
         || !inBreakLoop()) return Error(usage, 0,0);
     while (levels-->0) {
         if ( !DbgUp() ) { 
             //Pr(errText, 0, 0);
-            SyFmtPrint(stream, "%s", errText);
+            SyFmtPrint(stdout_stream, "%s", errText);
             break;
         }
     }
     levels = DbgExecStackDepth();
-    PrintBacktraceExec(stream, HdExec, levels-DbgStackTop, levels, 0);
+    PrintBacktraceExec(stdout_stream, HdExec, levels-DbgStackTop, levels, 0);
     return HdVoid;
 }
 
@@ -889,15 +862,11 @@ Bag       FunDbgBreak (Obj hdCall)
 {
 
 #ifndef _DEBUG
-    STREAM  stream;
-
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
 
     if (InDebugMode == 0) 
     {
         //Pr("Use Debug(true) to enable debugging\n", 0, 0);
-        SyFmtPrint(stream, "Use Debug(true) to enable debugging\n");
+        SyFmtPrint(stdout_stream, "Use Debug(true) to enable debugging\n");
         return HdVoid;
     }
 #endif

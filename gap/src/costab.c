@@ -78,10 +78,7 @@ void            CompressDeductionList (void)
 {
     Bag           * ptTable;        /* pointer to the coset table    */
     Int                i, j;
-    STREAM  stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = OUTFILE;
     /* check if the situation is as assumed                                */
     if ( dedlst != dedSize ) {
         Error( "invalid call of CompressDeductionList", 0, 0 );
@@ -107,7 +104,7 @@ void            CompressDeductionList (void)
         if ( dedprint == 0 )
         {
             //Pr( "#I  WARNING: deductions being discarded\n", 0, 0 );
-            SyFmtPrint(stream, "#I  WARNING: deductions being discarded\n");
+            SyFmtPrint(stdout_stream, "#I  WARNING: deductions being discarded\n");
             dedprint = 1;
         }
         dedlst--;

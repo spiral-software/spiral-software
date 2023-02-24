@@ -592,19 +592,15 @@ Bag       FunBacktraceTo (Bag hdCall)
         return Error(usage, 0, 0); 
     }
 
-    /* try to open the given output file, raise an error if you can not    */
-    if (OpenOutput((char*)PTR_BAG(hdName)) == 0)
-    {
-        return Error("BacktraceTo: can not open '%s' for writing", (Int)PTR_BAG(hdName), 0);
-    }
-
     FunBacktrace(hdLevel);
 
     /* close the output file again, and return nothing                     */
-    if (!CloseOutput())
+
+   /* if (!CloseOutput())
     {
         Error("BacktraceTo: can not close output, this should not happen", 0, 0);
-    }
+    }*/
+
     return HdVoid;
 }
 
@@ -866,7 +862,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 
 		if ( DbgInBreakLoop==0 ) 
         {
-			ignore = OpenOutput( "*errout*" );
+			//ignore = OpenOutput( "*errout*" );
             if (!isBreakpoint)
             {
                 //Pr("[[ while reading %s:%d ]]\n", (Int)Input->name, (Int)Input->number);
@@ -1035,7 +1031,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 							LeaveDbgStack(); 
 							SET_BAG(HdTilde, 0,  hdTilde ); /* restore ~ */
 							ignore = CloseInput();
-							ignore = CloseOutput();
+							//ignore = CloseOutput();
 							/*InError = 0;*/
 							return PTR_BAG(hd)[0];
 						}
@@ -1087,7 +1083,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
             }
 
 			/* close "*errout*" and return to the main read-eval-print loop        */
-			while ( CloseOutput() ) ;
+			//while ( CloseOutput() ) ;
 			while ( CloseInput() ) ;
 		} 
         else

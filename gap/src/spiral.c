@@ -936,6 +936,7 @@ extern int BACKTRACE_DEFAULT_LEVEL;
 extern int ERROR_QUIET;
 extern Obj HdLastErrorMsg;
 extern int ErrorCount;
+
 Obj  FunTry ( Obj hdCall ) {
     char * usage = "usage: Try(<expr>)";
     Obj hd;
@@ -943,7 +944,7 @@ Obj  FunTry ( Obj hdCall ) {
     volatile UInt stack, evalStack;
     volatile Obj exec;
 	volatile TypInputFile  * inputStackTop;
-	volatile TypOutputFile * outputStackTop;
+	//volatile TypOutputFile * outputStackTop;
     exc_type_t e;
 
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
@@ -957,7 +958,7 @@ Obj  FunTry ( Obj hdCall ) {
     stack = TopStack;
     evalStack = EvalStackTop;
 	inputStackTop  = Input;
-	outputStackTop = Output;
+	//outputStackTop = Output;
 
     Try {
         hd = EVAL(hd);
@@ -982,9 +983,9 @@ Obj  FunTry ( Obj hdCall ) {
 
 		// close files opened during context of Try()
 
-		ok = 1;
-		while ( ( Output > outputStackTop) && ok )
-			ok = CloseOutput();
+		//ok = 1;
+		//while ( ( Output > outputStackTop) && ok )
+			//ok = CloseOutput();
 		ok = 1;
 		while ( ( Input > inputStackTop) && ok )
 			ok = CloseInput();

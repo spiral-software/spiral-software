@@ -715,11 +715,13 @@ Obj  FunTop ( Obj hdCall ) {
         // first time figure out what to highlight, this is not precise
         // but better than nothing. Redirect output to /dev/null and traverse
         // bags that will be printed.
+/*/
 #ifdef WIN32
         OpenOutput("NUL");
 #else
         OpenOutput("/dev/null");
 #endif
+    */
         TopPr_CurDepth = 0; // current tree depth (in marked bags)
         TopPr_MaxDepth = 0; // maximal tree depth (in marked bags)
         Try {
@@ -728,9 +730,9 @@ Obj  FunTop ( Obj hdCall ) {
             PrintObj(stdout_stream, top, 0);
             SyFmtPrint(stdout_stream, "\n");
             // closing /dev/null and return to previous output
-            CloseOutput();
+           // CloseOutput();
         } Catch(e) {
-            CloseOutput();
+           // CloseOutput();
             Throw(e);
         }
         TopPr_Printing = 1; // now we are going to print function

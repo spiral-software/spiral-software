@@ -518,20 +518,6 @@ Int            CloseOutput ( void );
 
 /****************************************************************************
 **
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-Int            OpenAppend ( char * filename );
-
-
-/****************************************************************************
-**
 *F  OpenLog( <filename> ) . . . . . . . . . . . . . log interaction to a file
 **
 **  'OpenLog'  instructs  the scanner to   echo  all  input   from  the files

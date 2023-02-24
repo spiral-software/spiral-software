@@ -1339,51 +1339,6 @@ Int            CloseOutput (void)
 
 /****************************************************************************
 **
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseAppend' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-Int            OpenAppend (char *filename)
-{
-    Int     file;
-
-    /* fail if we can not handle another open output file                  */
-    if (Output + 1 == OutputFiles + (sizeof(OutputFiles) / sizeof(OutputFiles[0])))
-    {
-        return 0;
-    }
-
-    /* try to open the file                                                */
-    file = SyFopen( filename, "a" );
-    if (file == (FILE*)0)
-    {
-        return 0;
-    }
-
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file = file;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-    
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 660;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
 *F  OpenLog( <filename> ) . . . . . . . . . . . . . log interaction to a file
 **
 **  'OpenLog'  instructs  the scanner to   echo  all  input   from  the files

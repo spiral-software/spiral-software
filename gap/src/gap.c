@@ -1493,13 +1493,10 @@ Bag       FunPrint(Bag hdCall)
 
     STREAM stream;
 
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = stdout;
-
     for (i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i)
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-        printOneBag(stream, hd);
+        printOneBag(stdout_stream, hd);
     }
     return HdVoid;
 }
@@ -1560,8 +1557,7 @@ Bag       FunPrintTo(Bag hdCall)
     {
         return Error("PrintTo: can not open the file for writing", 0, 0);
     }
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = file;
+    SET_STREAM_FILE(stream, file);
 
     /* print all the arguments, take care of strings and functions         */
     for (i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i) 
@@ -1620,8 +1616,7 @@ Bag       FunAppendTo(Bag hdCall)
     {
         return Error("PrintTo: can not open the file for writing", 0, 0);
     }
-    stream.type = STREAM_TYPE_FILE;
-    stream.U.file = file;
+    SET_STREAM_FILE(stream, file);
 
     /* print all the arguments, take care of strings and functions         */
     for (i = 2; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
@@ -2647,8 +2642,7 @@ void            InitGap (int argc, char** argv, int* stackBase)
     /* Initialize all subpackages of GAP.   */
 
     // init STREAM for stdout
-    stdout_stream.type = STREAM_TYPE_FILE;
-    stdout_stream.U.file = stdout;
+    SET_STREAM_FILE(stdout_stream, stdout);
 
 #ifdef DEBUG
 #ifndef WIN32

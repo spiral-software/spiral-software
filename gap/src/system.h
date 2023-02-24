@@ -657,6 +657,8 @@ typedef struct stream_struct {
     } U;
 } STREAM;
 
+#define SET_STREAM_FILE(s,f) {(s).type = STREAM_TYPE_FILE; (s).U.file = (f);}
+
 extern STREAM stdout_stream;
 
 extern FILE* streamFile(STREAM stream);

@@ -39,7 +39,7 @@ typedef UInt2           TypDigit;
 **  'PrInteger' prints the integer <hdInt> in  the  usual  decimal  notation.
 **  'PrInteger' handles objects of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
 */
-extern  void  PrInteger(FILE *stream, Obj op, int indent);
+extern  void  PrInteger(STREAM stream, Obj op, int indent);
 
 
 /****************************************************************************

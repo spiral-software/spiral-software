@@ -101,7 +101,7 @@ Bag       EvRepeat ( Bag hdRep );
 **
 **  A linebreak is forced after each <statement> except the last one.
 */
-void	PrStatseq(FILE* stream, Obj hdSSeq, int indent);
+void	PrStatseq(STREAM stream, Obj hdSSeq, int indent);
 
 
 /****************************************************************************
@@ -113,7 +113,7 @@ void	PrStatseq(FILE* stream, Obj hdSSeq, int indent);
 **  A Linebreak is forced after the 'then'  and  <statements>.  If  necessary
 **  it is preferred immediately before the 'then'.
 */
-void PrIf(FILE* stream, Obj hdIf, int indent);
+void PrIf(STREAM stream, Obj hdIf, int indent);
 
 
 /****************************************************************************
@@ -125,7 +125,7 @@ void PrIf(FILE* stream, Obj hdIf, int indent);
 **  A linebreak is forced after the 'do' and the <statements>.  If  necesarry
 **  it is preferred immediately before the 'in'.
 */
-void	PrFor(FILE *stream, Obj hdFor, int indent);
+void	PrFor(STREAM stream, Obj hdFor, int indent);
 
 
 /****************************************************************************
@@ -137,7 +137,7 @@ void	PrFor(FILE *stream, Obj hdFor, int indent);
 **  A linebreak is forced after the 'do' and the <statements>.  If  necessary
 **  it is preferred immediately before the 'do'.
 */
-void	PrWhile(FILE *stream, Obj hdWhile, int indent);
+void	PrWhile(STREAM stream, Obj hdWhile, int indent);
 
 
 /****************************************************************************
@@ -148,7 +148,7 @@ void	PrWhile(FILE *stream, Obj hdWhile, int indent);
 **
 **  A linebreak is forced after the 'repeat' and the <statements>.
 */
-void	PrRepeat(FILE *stream, Obj hdRep, int indent);
+void	PrRepeat(STREAM stream, Obj hdRep, int indent);
 
 
 /****************************************************************************

@@ -999,7 +999,7 @@ Bag       LtWord (Bag hdL, Bag hdR)
 **  'PrSword' prints a sparse word in generators/exponent form. The empty word
 **  is printed as "IdAgWord".
 */
-void PrSword(FILE* stream, Obj hdWrd, int indent)
+void PrSword(STREAM stream, Obj hdWrd, int indent)
 {
     Bag         *ptLst;
     TypSword    *ptWrd;
@@ -1056,7 +1056,7 @@ void PrSword(FILE* stream, Obj hdWrd, int indent)
 **  words are printed  in  generators/exponent  form,  ie,  "a^-1*a^-1*b"  is
 **  printed as "a^-2 * b".
 */
-void    PrWord (FILE* stream, Obj hdWrd, int indent)
+void    PrWord (STREAM stream, Obj hdWrd, int indent)
 {
     Int     nr;
     Int     i;

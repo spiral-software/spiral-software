@@ -2690,18 +2690,20 @@ FILE* streamFile(STREAM stream)
     }
 }
 
-//int SyFmtPrint(STREAM stream, const char* format, ...)
-int SyFmtPrint(FILE* stream, const char* format, ...)
+int SyFmtPrint(STREAM stream, const char* format, ...)
 {
     int result = 0;
     va_list arglist;
     va_start(arglist, format);
 
-    result = vfprintf(stream, format, arglist);
 
-    //if (stream.type == STREAM_TYPE_FILE) {
-    //    result = vfprintf(streamFile(stream), format, arglist);
-    //}
+
+    //result = vfprintf(stream, format, arglist);
+
+    if (stream.type == STREAM_TYPE_FILE) 
+    {
+        result = vfprintf(streamFile(stream), format, arglist);
+    }
 
     va_end(arglist);
     return result;

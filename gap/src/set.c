@@ -1208,7 +1208,7 @@ Bag       FunSubtractSet (Bag hdCall)
 }
 
 
-void PrSet(FILE* stream, Obj s, int indent)
+void PrSet(STREAM stream, Obj s, int indent)
 {
     //**INDENT** Pr("Set(%3>",0,0);
     SyFmtPrint(stream, "Set(");

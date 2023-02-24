@@ -658,8 +658,7 @@ typedef struct stream_struct {
 
 extern FILE* streamFile(STREAM stream);
 
-//extern int SyFmtPrint(STREAM stream, const char* format, ...);
-extern int SyFmtPrint(FILE* stream, const char* format, ...);
+extern int SyFmtPrint(STREAM stream, const char* format, ...);
 
 
 #endif // _SYSTEM_H

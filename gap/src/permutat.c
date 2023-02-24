@@ -2142,7 +2142,7 @@ Bag       LtQQ (Bag hdL, Bag hdR)
 **  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
 **  This is done, because it is forbidden to create new bags during printing.
 */
-void  PrPermP(FILE *stream, Obj hdPerm, int indent)
+void  PrPermP(STREAM stream, Obj hdPerm, int indent)
 {
     UInt       degPerm;        /* degree of the permutation       */
     TypPoint16          * ptPerm;       /* pointer to the permutation      */
@@ -2222,7 +2222,7 @@ void  PrPermP(FILE *stream, Obj hdPerm, int indent)
     }
 }
 
-void  PrPermQ(FILE* stream, Obj hdPerm, int indent)
+void  PrPermQ(STREAM stream, Obj hdPerm, int indent)
 {
 
     UInt       degPerm;        /* degree of the permutation       */
@@ -2314,7 +2314,7 @@ void  PrPermQ(FILE* stream, Obj hdPerm, int indent)
 **
 **  Linebreaks are prefered most after cycles and  next  most  after  commas.
 */
-void  PrMakeperm(FILE* stream, Obj hdPerm, int indent)
+void  PrMakeperm(STREAM stream, Obj hdPerm, int indent)
 {
     Bag        hdCyc;          /* handle of one cycle             */
     UInt       i;           /* loop variables                  */

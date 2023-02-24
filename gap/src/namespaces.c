@@ -477,7 +477,7 @@ Obj FunIsNamespace ( Obj hdCall ) {
 
 Obj  EvNS ( Obj hd ) { return hd; }
 
-void PrNS (FILE* stream, Obj hd, int indent) 
+void PrNS (STREAM stream, Obj hd, int indent)
 {
     int i, first = 1;
     if (TableId(hd) != 0)

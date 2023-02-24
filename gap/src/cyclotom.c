@@ -1207,7 +1207,7 @@ Bag       LtCyc (Bag hdL, Bag hdR)
 **  In principle this is very easy, but it is complicated because we  do  not
 **  want to print stuff like '+1*', '-1*', 'E(<n>)^0', 'E(<n>)^1, etc.
 */
-void  PrCyc(FILE* stream, Obj hdCyc, int indent)
+void  PrCyc(STREAM stream, Obj hdCyc, int indent)
 {
     Int                n;              /* order of the field              */
     Int                len;            /* number of terms                 */

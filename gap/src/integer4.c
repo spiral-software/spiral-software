@@ -230,7 +230,7 @@ Int		IntToPrintBase(Obj op)
 	return i - 1;
 }
 
-void	PrInteger(FILE* stream, Obj op, int indent)
+void	PrInteger(STREAM stream, Obj op, int indent)
 {
 	Int		i;           /* loop counter                    */
 

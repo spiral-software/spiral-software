@@ -240,7 +240,7 @@ UInt DbgExecStackDepth()
     return result;
 }
 
-void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt printValues )
+void PrintBacktraceExec(STREAM stream, Bag hdExec, UInt execDepth, UInt execStackDepth, UInt printValues )
 {
     int     nrArg;
     int     nrLoc;
@@ -250,12 +250,12 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
     if (execDepth == execStackDepth - DbgStackTop)
     {
         //Pr("* ", 0, 0);
-        SyFmtPrint(OUTFILE, "* ");
+        SyFmtPrint(stream, "* ");
     }
     else
     {
         //Pr("  ", 0, 0);
-        SyFmtPrint(OUTFILE, "  ");
+        SyFmtPrint(stream, "  ");
     }
 
     /* Print the depth like gdb does                                   */
@@ -264,84 +264,84 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
     if (execDepth < 10)
     {
         //Pr("#%d -> ", execDepth, 0);
-        SyFmtPrint(OUTFILE, "#%d -> ", execDepth);
+        SyFmtPrint(stream, "#%d -> ", execDepth);
     }
     else
     {
         //Pr("#%d-> ", execDepth, 0);
-        SyFmtPrint(OUTFILE, "#%d-> ", execDepth);
+        SyFmtPrint(stream, "#%d-> ", execDepth);
     }
     
     if ( hdExec == 0 ) 
     {
         //Pr("main loop\n",0,0);
-        SyFmtPrint(OUTFILE, "main loop\n");
+        SyFmtPrint(stream, "main loop\n");
     } 
     else 
     {
         if (PTR_BAG(hdExec)[3] == HdCallSum) 
         {
             //Pr("<rec1> + <rec2>", 0, 0); 
-            SyFmtPrint(OUTFILE, "<rec1> + <rec2>");
+            SyFmtPrint(stream, "<rec1> + <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallDiff) 
         {
             //Pr("<rec1> - <rec2>", 0, 0); 
-            SyFmtPrint(OUTFILE, "<rec1> - <rec2>");
+            SyFmtPrint(stream, "<rec1> - <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallProd) 
         { 
             //Pr("<rec1> * <rec2>", 0, 0); 
-            SyFmtPrint(OUTFILE, "<rec1> * <rec2>");
+            SyFmtPrint(stream, "<rec1> * <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallQuo) 
         {
             //Pr("<rec1> / <rec2>", 0, 0); 
-            SyFmtPrint(OUTFILE, "<rec1> / <rec2>");
+            SyFmtPrint(stream, "<rec1> / <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallMod) 
         {
             //Pr("<rec1> mod <rec2>", 0, 0); 
-            SyFmtPrint(OUTFILE, "<rec1> mod <rec2>");
+            SyFmtPrint(stream, "<rec1> mod <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallPow) 
         { 
             //Pr("<rec1> ^ <rec2>", 0, 0);
-            SyFmtPrint(OUTFILE, "<rec1> ^ <rec2>");
+            SyFmtPrint(stream, "<rec1> ^ <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallComm) 
         { 
             //Pr("Comm(<rec1>,<rec2>)", 0, 0);
-            SyFmtPrint(OUTFILE, "Comm(<rec1>,<rec2>)");
+            SyFmtPrint(stream, "Comm(<rec1>,<rec2>)");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallEq)
         {
             //Pr("<rec1> = <rec2>", 0, 0);
-            SyFmtPrint(OUTFILE, "<rec1> = <rec2>");
+            SyFmtPrint(stream, "<rec1> = <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallLt)
         { 
             //Pr("<rec1> < <rec2>", 0, 0);
-            SyFmtPrint(OUTFILE, "<rec1> = <rec2>");
+            SyFmtPrint(stream, "<rec1> = <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallIn) 
         { 
             //Pr("<elm> in <rec>", 0, 0);
-            SyFmtPrint(OUTFILE, "<elm> in <rec>");
+            SyFmtPrint(stream, "<elm> in <rec>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallPrint)
         { 
             //Pr("Print( <rec> )", 0, 0); 
-            SyFmtPrint(OUTFILE, "Print( <rec> )");
+            SyFmtPrint(stream, "Print( <rec> )");
         }
         else 
         {
             if (printValues) 
             {
                 //Print( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
-                PrintObj(OUTFILE, PTR_BAG(PTR_BAG(hdExec)[3])[0], 0);
+                PrintObj(stream, PTR_BAG(PTR_BAG(hdExec)[3])[0], 0);
                 //**INDENT** Pr("%>( %>",0,0);
-                SyFmtPrint(OUTFILE, "( ");
+                SyFmtPrint(stream, "( ");
                 hdDef = EVAL( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
                 ACT_NUM_ARGS_FUNC(hdDef, nrArg);
                 ACT_NUM_LOCALS_FUNC(hdDef, nrLoc);
@@ -349,30 +349,30 @@ void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt pr
                 for ( i = 1; i <= nrArg; ++i ) 
                 {
                     //Print( PTR_BAG(hdExec)[EXEC_ARGS_START+i+nrArg+nrLoc-1] );
-                    PrintObj(OUTFILE, PTR_BAG(hdExec)[EXEC_ARGS_START + i + nrArg + nrLoc - 1], 0);
+                    PrintObj(stream, PTR_BAG(hdExec)[EXEC_ARGS_START + i + nrArg + nrLoc - 1], 0);
                     if (i < nrArg)
                     { 
                         //**INDENT**  Pr("%<, %>", 0, 0);
-                        SyFmtPrint(OUTFILE, ", ");
+                        SyFmtPrint(stream, ", ");
                     }
                 }
 
                 //**INDENT** Pr(" %2<)",0,0);
-                SyFmtPrint(OUTFILE, ")");
+                SyFmtPrint(stream, ")");
 
             }
             else
             {
                 //Print( PTR_BAG(hdExec)[3] );
-                PrintObj(OUTFILE, PTR_BAG(hdExec)[3], 0);
+                PrintObj(stream, PTR_BAG(hdExec)[3], 0);
             }
         }
         //Pr("\n",0,0);
-        SyFmtPrint(OUTFILE, "\n");
+        SyFmtPrint(stream, "\n");
     }
 }
 
-void    PrintBacktraceEval(Bag hdExec)
+void    PrintBacktraceEval(STREAM stream, Bag hdExec)
 {
     int StackPnt = HD_TO_INT(PTR_BAG(hdExec)[EXEC_EVAL_STACK]) + 1;
     int StackStart = StackPnt;
@@ -392,14 +392,14 @@ void    PrintBacktraceEval(Bag hdExec)
         if (GET_TYPE_BAG(item) == T_FUNCCALL)
         {
             //Pr("          %g\n", (Int)PTR_BAG(item)[0], 0);
-            SyFmtPrint(OUTFILE, "          ");
-            PrintObj(OUTFILE, PTR_BAG(item)[0], 0);
-            SyFmtPrint(OUTFILE, "\n");
+            SyFmtPrint(stream, "          ");
+            PrintObj(stream, PTR_BAG(item)[0], 0);
+            SyFmtPrint(stream, "\n");
         }
         else
         {
             //Pr("          %s\n", (Int)NameType[GET_TYPE_BAG(item)], 0);
-            SyFmtPrint(OUTFILE, "          %s\n", NameType[GET_TYPE_BAG(item)]);
+            SyFmtPrint(stream, "          %s\n", NameType[GET_TYPE_BAG(item)]);
         }
 
         StackPnt--;
@@ -413,6 +413,10 @@ Bag     FunBacktrace(Bag hdCall)
     UInt    execStackDepth;
     Bag     hdExec;
     Bag     hdDef;
+    STREAM  stream;
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
     
     /* so that it is possible to call it FunBacktrace(INT_TO_HD(<level>))  */
     if ( hdCall != (Bag) 0 && GET_TYPE_BAG(hdCall) == T_INT )
@@ -454,13 +458,13 @@ Bag     FunBacktrace(Bag hdCall)
         /* if <level> is positive print only the names of the formal args  */
         if ( 0 < level ) 
         {
-            PrintBacktraceExec(hdExec,  depth, execStackDepth, 0);
+            PrintBacktraceExec(stream, hdExec,  depth, execStackDepth, 0);
             --level;
         }
         /* if <level> is negative print the values of the arguments        */
         else 
         {
-            PrintBacktraceExec(hdExec,  depth, execStackDepth, 1);
+            PrintBacktraceExec(stream, hdExec,  depth, execStackDepth, 1);
             ++level;
         }
         --depth;
@@ -469,12 +473,12 @@ Bag     FunBacktrace(Bag hdCall)
     /* print the bottom of the function stack                              */
     if ( hdExec == 0 ) 
     {
-        PrintBacktraceExec(0, depth, execStackDepth, 0);
+        PrintBacktraceExec(stream, 0, depth, execStackDepth, 0);
     }
     else 
     {
         //Pr("...\n",0,0);
-        SyFmtPrint(OUTFILE, "...\n");
+        SyFmtPrint(stream, "...\n");
     }
     
     return HdVoid;
@@ -488,6 +492,10 @@ Bag       FunBacktrace2(Bag hdCall)
     UInt    execStackDepth;
     Bag     hdExec;
     Bag     hdDef;
+    STREAM  stream;
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
     
     /* so that it is possible to call it FunBacktrace2(INT_TO_HD(<level>))  */
     if ( hdCall != (Bag) 0 && GET_TYPE_BAG(hdCall) == T_INT )
@@ -528,16 +536,16 @@ Bag       FunBacktrace2(Bag hdCall)
     for ( hdExec=HdDbgStackRoot; hdExec!=0 && level!=0; hdExec=PTR_BAG(hdExec)[4] ) 
     {
         /* if <level> is positive print only the names of the formal args  */
-        PrintBacktraceEval(hdExec);
+        PrintBacktraceEval(stream, hdExec);
         if ( 0 < level ) 
         {
-            PrintBacktraceExec(hdExec,  depth, execStackDepth, 0);
+            PrintBacktraceExec(stream, hdExec,  depth, execStackDepth, 0);
             --level;
         }
         /* if <level> is negative print the values of the arguments        */
         else 
         {
-            PrintBacktraceExec(hdExec,  depth, execStackDepth, 1);
+            PrintBacktraceExec(stream, hdExec,  depth, execStackDepth, 1);
             ++level;
         }
         --depth;
@@ -546,12 +554,12 @@ Bag       FunBacktrace2(Bag hdCall)
     /* print the bottom of the function stack                              */
     if ( hdExec == 0 )
     {
-        PrintBacktraceExec(0, depth, execStackDepth, 0);
+        PrintBacktraceExec(stream, 0, depth, execStackDepth, 0);
     }
     else 
     {
         //Pr("...\n",0,0);
-        SyFmtPrint(OUTFILE, "...\n");
+        SyFmtPrint(stream, "...\n");
     }
     
     return HdVoid;
@@ -840,6 +848,10 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 	extern char   *In;
 	TypInputFile  *parent;
 	extern Bag     FunPrint(Bag hdCall);
+    STREAM  stream;
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
 
     ErrorCount++;
 
@@ -870,7 +882,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
             if (!isBreakpoint)
             {
                 //Pr("[[ while reading %s:%d ]]\n", (Int)Input->name, (Int)Input->number);
-                SyFmtPrint(OUTFILE, "[[ while reading %s:%d ]]\n", Input->name, Input->number);
+                SyFmtPrint(stream, "[[ while reading %s:%d ]]\n", Input->name, Input->number);
             }
 		}
 
@@ -880,15 +892,15 @@ Bag       Error (char *msg, Int arg1, Int arg2)
             {
 			    case 2:
                     //Pr("Read Access Breakpoint",0,0); 
-                    SyFmtPrint(OUTFILE, "Read Access Breakpoint");
+                    SyFmtPrint(stream, "Read Access Breakpoint");
                     break;  
 			    case 3:  
                     //Pr("Write Access Breakpoint",0,0);
-                    SyFmtPrint(OUTFILE, "Write Access Breakpoint");
+                    SyFmtPrint(stream, "Write Access Breakpoint");
                     break; 
 			    default:
 				    //Pr("Breakpoint",0,0); 
-                    SyFmtPrint(OUTFILE, "Breakpoint");
+                    SyFmtPrint(stream, "Breakpoint");
                     break;
 			}
 		} 
@@ -898,14 +910,14 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			if ( strcmp( msg, "FunError" ) != 0 )
             {
 				//Pr("Error, ",0,0);  
-                SyFmtPrint(OUTFILE, "Breakpoint");
+                SyFmtPrint(stream, "Breakpoint");
                 //Pr( msg, arg1, arg2 );
-                SyFmtPrint(OUTFILE, msg, arg1, arg2); //GS4 - look into variables
+                SyFmtPrint(stream, msg, arg1, arg2); //GS4 - look into variables
 			} 
             else 
             {
 				//Pr("Error, ",0,0);  
-                SyFmtPrint(OUTFILE, "Error");
+                SyFmtPrint(stream, "Error");
                 FunPrint( (Bag)arg1 );
 			}
 		}
@@ -925,20 +937,20 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			if ((DbgEvalStackTop > 0) && (strcmp( msg, "FunError" ) != 0)) 
             {
 				//Pr(" at\n", 0, 0 );
-                SyFmtPrint(OUTFILE, " at\n");
+                SyFmtPrint(stream, " at\n");
 				//Print( EvalStack[DbgEvalStackTop] );
-                PrintObj(OUTFILE, EvalStack[DbgEvalStackTop], 0);
+                PrintObj(stream, EvalStack[DbgEvalStackTop], 0);
 				//Pr(" ...",0,0);
-                SyFmtPrint(OUTFILE, " ...");
+                SyFmtPrint(stream, " ...");
 			}
 
 			//Pr(" in\n",0,0);
-            SyFmtPrint(OUTFILE, " in\n");
+            SyFmtPrint(stream, " in\n");
 		}
 		else
         {
 			//Pr("\n",0,0);
-            SyFmtPrint(OUTFILE, "\n");
+            SyFmtPrint(stream, "\n");
 		}
 
 		if ( DbgInBreakLoop == 0 )
@@ -980,7 +992,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
                     {
 						FunBacktrace( (Bag)0 );
 						//Pr("web:error\n", 0, 0);
-                        SyFmtPrint(OUTFILE, "web:error\n");
+                        SyFmtPrint(stream, "web:error\n");
 					}
 
 					DbgErrorLoopStarting();
@@ -1055,9 +1067,9 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 								Try
                                 {
 									//Print( hd );
-                                    PrintObj(OUTFILE, hd, 0);
+                                    PrintObj(stream, hd, 0);
 									//Pr("\n",0,0);
-                                    SyFmtPrint(OUTFILE, " \n");
+                                    SyFmtPrint(stream, " \n");
 								} 
                                 Catch(e) 
                                 {
@@ -1409,7 +1421,7 @@ Bag       FunAUTO(Bag hdCall)
 }
 
 //void printOneBag(STREAM stream, Bag hd)
-void printOneBag(FILE *stream, Bag hd)
+void printOneBag(STREAM stream, Bag hd)
 {
     Int     type;
 
@@ -1487,7 +1499,7 @@ Bag       FunPrint(Bag hdCall)
     for (i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i)
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-        printOneBag(streamFile(stream), hd);
+        printOneBag(stream, hd);
         //printOneBag(stream, hd);
     }
     return HdVoid;
@@ -1557,7 +1569,7 @@ Bag       FunPrntTo(Bag hdCall)
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
         //printOneBag(stream, hd);
-        printOneBag(streamFile(stream), hd);
+        printOneBag(stream, hd);
     }
 
     fclose(streamFile(stream));
@@ -1618,7 +1630,7 @@ Bag       FunAppendTo(Bag hdCall)
     {
         hd = EVAL(PTR_BAG(hdCall)[i]);
         //printOneBag(stream, hd);
-        printOneBag(streamFile(stream), hd);
+        printOneBag(stream, hd);
     }
 
     fclose(streamFile(stream));
@@ -1744,8 +1756,12 @@ Bag       FunHelp(Bag hdCall)
     char *helpString = "Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n" 
         "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n" 
         "Use ?<func> or Doc(<func>) to learn about a function or a package\n";
+    STREAM  stream;
 
-    SyFmtPrint(OUTFILE, "%s", helpString);
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
+
+    SyFmtPrint(stream, "%s", helpString);
     return HdVoid;
 }
 
@@ -2201,6 +2217,10 @@ Bag       FunGASMAN(Bag hdCall)
     UInt     k;						// loop variables
 	Bag      hdRet = HdVoid;			// return value
 	char    *usageMessage = "usage: GASMAN( \"display\"|\"clear\"|\"collect\"|\"message\"|\"messageSTAT\"|\"traceON\"|\"traceOFF\"|\"traceSTAT\" )";
+    STREAM  stream;
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
 
     /* check the argument                                                  */
     if (GET_SIZE_BAG(hdCall) == SIZE_HD)
@@ -2227,44 +2247,44 @@ Bag       FunGASMAN(Bag hdCall)
             Int sumNrAll = 0;
             Int sumSizeAll = 0;
             //Pr("\t\t    type     alive     size     total     size\n",0,0);
-            SyFmtPrint(OUTFILE, "%s", "\t\t    type     alive     size     total     size\n");
+            SyFmtPrint(stream, "%s", "\t\t    type     alive     size     total     size\n");
 
             for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) 
             {
                 //Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
-                SyFmtPrint(OUTFILE, "%24s", InfoBags[k].name);
+                SyFmtPrint(stream, "%24s", InfoBags[k].name);
                 sumNrLive += InfoBags[k].nrLive;
                 sumSizeLive += InfoBags[k].sizeLive;
 
                 //Pr("%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10, (Int)InfoBags[k].sizeLive >> 10);
-                SyFmtPrint(OUTFILE, "%8dk %8dk ", InfoBags[k].nrLive >> 10, InfoBags[k].sizeLive >> 10);
+                SyFmtPrint(stream, "%8dk %8dk ", InfoBags[k].nrLive >> 10, InfoBags[k].sizeLive >> 10);
                 sumNrAll += InfoBags[k].nrAll;
                 sumSizeAll += InfoBags[k].sizeAll;
 
                 //Pr("%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10, (Int)InfoBags[k].sizeAll >> 10);
-                SyFmtPrint(OUTFILE, "%8dk %8dk\n", InfoBags[k].nrAll >> 10, InfoBags[k].sizeAll >> 10);
+                SyFmtPrint(stream, "%8dk %8dk\n", InfoBags[k].nrAll >> 10, InfoBags[k].sizeAll >> 10);
             }
             //Pr("%24s  ",   (Int)"SUMMARY", 0 );
-            SyFmtPrint(OUTFILE, "%24s  ", "SUMMARY");
+            SyFmtPrint(stream, "%24s  ", "SUMMARY");
             if (sumSizeLive<1000000000) 
             {
                 //Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
-                SyFmtPrint(OUTFILE, "%9d %9d  ", sumNrLive, sumSizeLive);
+                SyFmtPrint(stream, "%9d %9d  ", sumNrLive, sumSizeLive);
             } 
             else 
             {
                 //Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
-                SyFmtPrint(OUTFILE, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10);
+                SyFmtPrint(stream, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10);
             }
             if (sumSizeAll<1000000000) 
             {
                 //Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
-                SyFmtPrint(OUTFILE, "%9d %9d\n", sumNrAll, sumSizeAll);
+                SyFmtPrint(stream, "%9d %9d\n", sumNrAll, sumSizeAll);
             } 
             else
             {
                 //Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
-                SyFmtPrint(OUTFILE, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10);
+                SyFmtPrint(stream, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10);
             }
         } 
         else if ( strcmp( (char*)PTR_BAG(hdCmd), "display1" ) == 0 ) 
@@ -2275,25 +2295,25 @@ Bag       FunGASMAN(Bag hdCall)
             Int sumSizeAll = 0;
            
            // Pr("\t\t    type     alive     size     total     size\n",0,0);
-            SyFmtPrint(OUTFILE, "%s", "\t\t    type     alive     size     total     size\n");
+            SyFmtPrint(stream, "%s", "\t\t    type     alive     size     total     size\n");
             for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) 
             {
                     if ( (InfoBags[k].sizeLive > 0) && (InfoBags[k].sizeAll > 0) ) 
                     {
                         //Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
-                        SyFmtPrint(OUTFILE, "%24s  ", InfoBags[k].name);
+                        SyFmtPrint(stream, "%24s  ", InfoBags[k].name);
                         sumNrLive += InfoBags[k].nrLive;
                         sumSizeLive += InfoBags[k].sizeLive;
 
                         if (InfoBags[k].sizeLive < 1000000000)
                         {
                             //Pr("%9d %9d  ", (Int)InfoBags[k].nrLive, (Int)InfoBags[k].sizeLive);
-                            SyFmtPrint(OUTFILE, "%9d %9d  ", InfoBags[k].nrLive, InfoBags[k].sizeLive);
+                            SyFmtPrint(stream, "%9d %9d  ", InfoBags[k].nrLive, InfoBags[k].sizeLive);
                         }
                         else
                         {
                             //Pr("%8dk %8dk  ", (Int)InfoBags[k].nrLive >> 10, (Int)InfoBags[k].sizeLive >> 10);
-                            SyFmtPrint(OUTFILE, "%8dk %8dk  ", InfoBags[k].nrLive >> 10, InfoBags[k].sizeLive >> 10);
+                            SyFmtPrint(stream, "%8dk %8dk  ", InfoBags[k].nrLive >> 10, InfoBags[k].sizeLive >> 10);
                         }
 
                         sumNrAll += InfoBags[k].nrAll;
@@ -2302,36 +2322,36 @@ Bag       FunGASMAN(Bag hdCall)
                         if (InfoBags[k].sizeAll < 1000000000)
                         {
                             //Pr("%9d %9d\n", (Int)InfoBags[k].nrAll, (Int)InfoBags[k].sizeAll);
-                            SyFmtPrint(OUTFILE, "%9d %9d\n", InfoBags[k].nrAll, InfoBags[k].sizeAll);
+                            SyFmtPrint(stream, "%9d %9d\n", InfoBags[k].nrAll, InfoBags[k].sizeAll);
                         }
                         else
                         {
                             //Pr("%8dk %8dk\n", (Int)InfoBags[k].nrAll >> 10, (Int)InfoBags[k].sizeAll >> 10);
-                            SyFmtPrint(OUTFILE, "%8dk %8dk\n", InfoBags[k].nrAll >> 10, InfoBags[k].sizeAll >> 10);
+                            SyFmtPrint(stream, "%8dk %8dk\n", InfoBags[k].nrAll >> 10, InfoBags[k].sizeAll >> 10);
                         }
                 }
             }
             //Pr("%24s  ",   (Int)"SUMMARY", 0 );
-            SyFmtPrint(OUTFILE, "%24s  ", "SUMMARY");
+            SyFmtPrint(stream, "%24s  ", "SUMMARY");
 
             if (sumSizeLive<1000000000) 
             {
                 //Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
-                SyFmtPrint(OUTFILE, "%9d %9d  ", sumNrLive, sumSizeLive);
+                SyFmtPrint(stream, "%9d %9d  ", sumNrLive, sumSizeLive);
             } 
             else 
             {
                 //Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
-                SyFmtPrint(OUTFILE, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10);
+                SyFmtPrint(stream, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10);
             }
 
             if (sumSizeAll<1000000000)
             {
                 //Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
-                SyFmtPrint(OUTFILE, "%9d %9d\n", sumNrAll, sumSizeAll);
+                SyFmtPrint(stream, "%9d %9d\n", sumNrAll, sumSizeAll);
             } else {
                 //Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
-                SyFmtPrint(OUTFILE, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10);
+                SyFmtPrint(stream, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10);
             }
         }
         /* if request clear the statistics                               */

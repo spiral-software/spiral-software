@@ -137,7 +137,7 @@ extern  Bag       LtUnknown ( Bag hdL, Bag hdR );
 **
 **  'PrUnknown' prints the unknown <hdUnk> in the form 'Unknown(<n>)'.
 */
-extern void PrUnknown(FILE *stream, Obj hdUnk, int indent);
+extern void PrUnknown(STREAM stream, Obj hdUnk, int indent);
 
 
 /****************************************************************************

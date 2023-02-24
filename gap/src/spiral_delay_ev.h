@@ -166,10 +166,10 @@ Obj  DelayMod  ( Obj hdL, Obj hdR );
 Obj  DelayPow  ( Obj hdL, Obj hdR );
 
 Obj  EvDelay ( Obj hd );
-void PrDelay(FILE* stream, Obj hd, int indent);
+void PrDelay(STREAM stream, Obj hd, int indent);
 
 Obj  EvVarMap( Obj hd );
-void PrVarMap(FILE* stream, Obj hd, int indent);
+void PrVarMap(STREAM stream, Obj hd, int indent);
 
 
 /****************************************************************************

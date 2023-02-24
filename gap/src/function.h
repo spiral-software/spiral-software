@@ -278,7 +278,7 @@ Bag       FunProfile ( Bag hdCall );
 **  'PrFuncint' prints the internal function with the handle  <hdFun> in  the
 **  short form: 'function (...) internal; end'.
 */
-void  PrFuncint(FILE* stream, Obj hdFun, int indent);
+void  PrFuncint(STREAM stream, Obj hdFun, int indent);
 
 
 /****************************************************************************
@@ -300,8 +300,8 @@ void  PrFuncint(FILE* stream, Obj hdFun, int indent);
 **
 **  otherwise.
 */
-void   PrFunction(FILE *stream, Obj hdFun, int indent);
-void   PrMethod(FILE *stream, Obj hdFun, int indent);
+void   PrFunction(STREAM stream, Obj hdFun, int indent);
+void   PrMethod(STREAM stream, Obj hdFun, int indent);
 
 
 /****************************************************************************
@@ -311,7 +311,7 @@ void   PrMethod(FILE *stream, Obj hdFun, int indent);
 **  'PrintFunction' prints the function with the handle <hdFun> in  the  full
 **  form, i.e., with the statement sequence.  It is called from 'Print'.
 */
-void   PrintFunction(FILE* stream, Obj hdFun, int indent);
+void   PrintFunction(STREAM stream, Obj hdFun, int indent);
 
 
 /****************************************************************************
@@ -320,7 +320,7 @@ void   PrintFunction(FILE* stream, Obj hdFun, int indent);
 **
 **  Same as 'PrintFunction' but for a method.
 */
-void  PrintMethod(FILE* stream, Obj hdFun, int indent);
+void  PrintMethod(STREAM stream, Obj hdFun, int indent);
 
 
 /****************************************************************************
@@ -333,7 +333,7 @@ void  PrintMethod(FILE* stream, Obj hdFun, int indent);
 **  Linebreaks are preffered after the opening  parenthesis  and  the  commas
 **  between the arguments.
 */
-void  PrFunccall(FILE *stream, Obj hdCall, int indent);
+void  PrFunccall(STREAM stream, Obj hdCall, int indent);
 
 
 /****************************************************************************
@@ -343,7 +343,7 @@ void  PrFunccall(FILE *stream, Obj hdCall, int indent);
 **  'PrReturn' prints the return statement with the  handle  <hdRet>  in  the
 **  usual form 'return;' or 'return <expr>;'.
 */
-void PrReturn(FILE *stream, Obj hdRet, int indent);
+void PrReturn(STREAM stream, Obj hdRet, int indent);
 
 
 /****************************************************************************

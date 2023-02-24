@@ -555,7 +555,7 @@ Int            IsPossRange (Bag hdList)
 **
 **  'PrRange' handles bags of type 'T_RANGE' and 'T_MAKERANGE'.
 */
-void PrRange (FILE* stream, Obj hdRange, int indent)
+void PrRange (STREAM stream, Obj hdRange, int indent)
 {
     //**INDENT** Pr( "%2>[ %2>%d", LOW_RANGE(hdRange), 0 );
     SyFmtPrint(stream, "[ %d", (Int)(LOW_RANGE(hdRange)));
@@ -704,7 +704,7 @@ Bag       EvMakeRange (Bag hdMake)
 **  'PrMakeRange' prints the range literal  <hdMake> in the form '[  <low> ..
 **  <high> ]'.
 */
-void PrMakeRange (FILE* stream, Obj hdMake, int indent)
+void PrMakeRange (STREAM stream, Obj hdMake, int indent)
 {
     if ( GET_SIZE_BAG( hdMake ) == 2 * SIZE_HD ) 
     {

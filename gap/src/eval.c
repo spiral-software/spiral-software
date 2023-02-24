@@ -1305,7 +1305,7 @@ Obj       LtPtr(Obj hdL, Obj hdR)
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-void        PrBool(FILE* stream, Obj hd, int indent)
+void        PrBool(STREAM stream, Obj hd, int indent)
 {
     if (hd == HdTrue) 
     {
@@ -1870,12 +1870,12 @@ Obj       FunUnbind(Obj hdCall)
 **  is the main dispatching table that contains for every type a  pointer  to
 **  the function that should be executed if a bag  of  that  type  is  found.
 */
-void    (*PrTab[T_ILLEGAL]) (FILE* stream, Obj hd, int indent);
+void    (*PrTab[T_ILLEGAL]) (STREAM stream, Obj hd, int indent);
 
 
 /****************************************************************************
 **
-*F  PrintObj( FILE* stream, Obj objHandle, int indent ) . . . . . . . . . . . . . . . . . . . . . . print an object
+*F  PrintObj( STREAM stream, Obj objHandle, int indent ) . . . . . . . . . . . . . . . . . . . . . . print an object
 **
 **  'PrintObj'  prints  the  object  with passed in  handle  <hd>. 
 **   Pass in stream to write to.
@@ -1884,7 +1884,7 @@ void    (*PrTab[T_ILLEGAL]) (FILE* stream, Obj hd, int indent);
 */
 Obj     HdTildePr;
 
-void    PrintObj(FILE* stream, Obj hd, int indent)
+void    PrintObj(STREAM stream, Obj hd, int indent)
 {
     Obj             cur;            /* current object along that path  */
     Obj             hdObj[256];     /* '~' to <hd>, where hdObj[<i>+1] */
@@ -2063,7 +2063,7 @@ void CantPrint(Obj hd)
     Error("Panic: can't print bag of type %d", (Int)GET_TYPE_BAG(hd), 0);
 }
 
-void PrintBagType(FILE* stream, Obj hd, int indent)
+void PrintBagType(STREAM stream, Obj hd, int indent)
 {
     //Pr("_bag_%d_", GET_TYPE_BAG(hd), 0);
     SyFmtPrint(stream, "_bag_%d_", GET_TYPE_BAG(hd));
@@ -2076,10 +2076,10 @@ void PrintBagType(FILE* stream, Obj hd, int indent)
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
 */
-void        PrVar(FILE* stream, Obj hdVar, int indent)
+void        PrVar(STREAM stream, Obj hdVar, int indent)
 {
     char* name = VAR_NAME(hdVar);
-    PrVarName(name);
+    PrVarName(stream, name);
 }
 
 /****************************************************************************
@@ -2087,7 +2087,7 @@ void        PrVar(FILE* stream, Obj hdVar, int indent)
 *F  PrVarName( <string> )  . . prints identifier, escaping special characters
 **
 */
-void        PrVarName(char* name)
+void        PrVarName(STREAM stream, char* name)
 {
     if (!strcmp(name, "and") || !strcmp(name, "do")
         || !strcmp(name, "elif") || !strcmp(name, "else")
@@ -2102,7 +2102,7 @@ void        PrVarName(char* name)
         || !strcmp(name, "quit")) 
     {
         //Pr("\\", 0, 0);
-        SyFmtPrint(OUTFILE, "\\");
+        SyFmtPrint(stream, "\\");
     }
 
     /* print the name                                                      */
@@ -2111,12 +2111,12 @@ void        PrVarName(char* name)
         if (IsAlpha(*name) || IsDigit(*name) || *name == '_' || *name == '@')
         {
             //Pr("%c", (Int)(*name), 0);
-            SyFmtPrint(OUTFILE, "%c", (*name));
+            SyFmtPrint(stream, "%c", (*name));
         }
         else
         {
             //Pr("\\%c", (Int)(*name), 0);
-            SyFmtPrint(OUTFILE, "\\%c", (*name));
+            SyFmtPrint(stream, "\\%c", (*name));
         }
     }
 }
@@ -2129,7 +2129,7 @@ void        PrVarName(char* name)
 **
 **  Linebreaks are preffered before the ':='.
 */
-void        PrVarAss(FILE* stream, Obj hdAss, int indent)
+void        PrVarAss(STREAM stream, Obj hdAss, int indent)
 {
     //**INDENT** Pr("%2>", 0, 0);
 
@@ -2166,7 +2166,7 @@ Int     prPrec;
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
-void    PrNot(FILE* stream, Obj hdNot, int indent)
+void    PrNot(STREAM stream, Obj hdNot, int indent)
 {
     Int     oldPrec;
 
@@ -2188,7 +2188,7 @@ void    PrNot(FILE* stream, Obj hdNot, int indent)
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */
-void        PrBinop(FILE* stream, Obj hdOp, int indent)
+void        PrBinop(STREAM stream, Obj hdOp, int indent)
 {
     char    *op;
     Int      oldPrec = prPrec;
@@ -2323,7 +2323,7 @@ void        PrBinop(FILE* stream, Obj hdOp, int indent)
 **
 **  This prints a commutator.
 */
-void        PrComm(FILE* stream, Obj hd, int indent)
+void        PrComm(STREAM stream, Obj hd, int indent)
 {
     //**INDENT** Pr("%>Comm(%> ", 0, 0);
     SyFmtPrint(stream, "Comm(");
@@ -2594,7 +2594,7 @@ Obj EvMakeLet(Obj hd) {
     return res;
 }
 
-void PrMakeLet(FILE* stream, Obj hd, int indent) {
+void PrMakeLet(STREAM stream, Obj hd, int indent) {
     UInt    size = TableNumEnt(hd) - 1;
     UInt    lenres;
     UInt    i;

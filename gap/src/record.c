@@ -1047,17 +1047,22 @@ Obj DefaultPrRec ( Obj hdRec ) {
     UInt i;
     int  is_first_printed = 1;
     int  pr_populated = 0;
+    STREAM  stream;
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
+
     /*N 05-Jun-90 martin 'PrRec' should be capable of ignoring elements    */
     /*N 05-Jun-90 martin 'PrRec' should support '~.<path>'                 */
     if (GET_TYPE_BAG(hdRec) == T_MAKETAB)
     {
         //**INDENT**  Pr("%2>tab(", 0, 0);
-        SyFmtPrint(OUTFILE, "tab(");
+        SyFmtPrint(stream, "tab(");
     }
     else
     {
         //**INDENT** Pr("%2>rec(",0,0);
-        SyFmtPrint(OUTFILE, "rec(");
+        SyFmtPrint(stream, "rec(");
     }
     for ( i = 0; i < GET_SIZE_BAG(hdRec)/(2*SIZE_HD); ++i ) {
         /* print an ordinary record name                                   */
@@ -1071,18 +1076,18 @@ Obj DefaultPrRec ( Obj hdRec ) {
             if (!pr_populated++) 
             {
                 //**INDENT** Pr("\n%2>", 0, 0); 
-                SyFmtPrint(OUTFILE, "\n");
+                SyFmtPrint(stream, "\n");
             }
 
             if (!is_first_printed)
             { 
                 //**INDENT** Pr("%2<,\n%2>", 0, 0);
-                SyFmtPrint(OUTFILE, ",\n");
+                SyFmtPrint(stream, ",\n");
             }
 
             is_first_printed = 0;
 
-            PrVarName(name);
+            PrVarName(stream, name);
         }
         /* print an evaluating record name                                 */
         else
@@ -1090,37 +1095,37 @@ Obj DefaultPrRec ( Obj hdRec ) {
             if (!pr_populated++)
             {
                 //**INDENT** Pr("\n%2>", 0, 0); 
-                SyFmtPrint(OUTFILE, "\n");
+                SyFmtPrint(stream, "\n");
             }
             //Pr(" (",0,0);
-            SyFmtPrint(OUTFILE, " (");
+            SyFmtPrint(stream, " (");
             //Print( PTR_BAG(hdRec)[2*i] );
-            PrintObj(OUTFILE, PTR_BAG(hdRec)[2 * i], 0);
+            PrintObj(stream, PTR_BAG(hdRec)[2 * i], 0);
             //Pr(")",0,0);
-            SyFmtPrint(OUTFILE, ")");
+            SyFmtPrint(stream, ")");
         }
         /* print the component                                             */
         //**INDENT** Pr("%< := %>",0,0);
-        SyFmtPrint(OUTFILE, " := ");
+        SyFmtPrint(stream, " := ");
         //Print( PTR_BAG(hdRec)[2*i+1] );
-        PrintObj(OUTFILE, PTR_BAG(hdRec)[2 * i + 1], 0);
+        PrintObj(stream, PTR_BAG(hdRec)[2 * i + 1], 0);
     }
 
     if (pr_populated)
     {
         //**INDENT** Pr(" %4<)", 0, 0);
-        SyFmtPrint(OUTFILE, ")");
+        SyFmtPrint(stream, ")");
     }
     else
     {
         //**INDENT** Pr("%2<)", 0, 0);
-        SyFmtPrint(OUTFILE, ")");
+        SyFmtPrint(stream, ")");
     }
 
     return HdVoid;
 }
 
-void    PrRec(FILE* stream, Obj hdRec, int indent) 
+void    PrRec(STREAM stream, Obj hdRec, int indent)
 {
     EvUnaryRecOperator(HdRnPrint, "~.operations.Print", hdRec, DefaultPrRec);
 }
@@ -1133,7 +1138,7 @@ void    PrRec(FILE* stream, Obj hdRec, int indent)
 **
 **  '<record> . <name>'
 */
-void    PrRecElm(FILE* stream, Obj hdElm, int indent)
+void    PrRecElm(STREAM stream, Obj hdElm, int indent)
 {
     /* print the record                                                    */
     //**INDENT**  Pr( "%>", 0, 0 );
@@ -1146,7 +1151,7 @@ void    PrRecElm(FILE* stream, Obj hdElm, int indent)
         char * name = RECNAM_NAME( PTR_BAG(hdElm)[1] );
         //**INDENT**  Pr("%<.%>",0,0);
         SyFmtPrint(stream, ".");
-        PrVarName(name);
+        PrVarName(stream, name);
         //**INDENT**  Pr("%<",0,0);
     }
     /* print an evaluating record name                                     */
@@ -1170,7 +1175,7 @@ void    PrRecElm(FILE* stream, Obj hdElm, int indent)
 **
 **  '<record>.<name> := <expr>;'
 */
-void    PrRecAss(FILE* stream, Obj hdAss, int indent)
+void    PrRecAss(STREAM stream, Obj hdAss, int indent)
 {
     //**INDENT**  Pr( "%2>", 0, 0 );
 
@@ -1190,11 +1195,11 @@ void    PrRecAss(FILE* stream, Obj hdAss, int indent)
 *F  PrRecName( <hdName> ) . . . . . . . . . . . . . print a record field name
 **
 */
-void    PrRecName(FILE* stream, Obj hdNam, int indent)
+void    PrRecName(STREAM stream, Obj hdNam, int indent)
 {
     //Pr("RecName(\"", 0, 0);
     SyFmtPrint(stream, "RecName(\"");
-    PrVarName(RECNAM_NAME(hdNam));
+    PrVarName(stream, RECNAM_NAME(hdNam));
     //Pr("\")", 0, 0);
     SyFmtPrint(stream, "\")");
 }

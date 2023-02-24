@@ -234,7 +234,7 @@ Bag       LtUnknown (Bag hdL, Bag hdR)
 **
 **  'PrUnknown' prints the unknown <hdUnk> in the form 'Unknown(<n>)'.
 */
-void            PrUnknown (FILE* stream, Obj hdUnk, int indent)
+void            PrUnknown (STREAM stream, Obj hdUnk, int indent)
 {
     //**INDENT** Pr("%>Unknown(%d)%<",((Int*)PTR_BAG(hdUnk))[0], 0);
     SyFmtPrint(stream, "Unknown(%d)", ((Int*)PTR_BAG(hdUnk))[0]);

@@ -2308,7 +2308,7 @@ Bag       FunCommutatorsPcp (Bag hdCall )
 **
 *N  Can the presentation be printed such that it could be read in again?
 */
-void PrPcPres(FILE *stream, Obj hdP, int indent)
+void PrPcPres(STREAM stream, Obj hdP, int indent)
 {
     //Pr( "<Pcp: %d generators, %s collector>", (Int) NUMBER_OF_GENS( *PTR_BAG( hdP ) ), (Int) Collectors[ COLLECTOR( *PTR_BAG( hdP ) ) ].name );
     SyFmtPrint(stream, "<Pcp: %d generators, %s collector>", (Int)NUMBER_OF_GENS(*PTR_BAG(hdP)), Collectors[COLLECTOR(*PTR_BAG(hdP))].name);

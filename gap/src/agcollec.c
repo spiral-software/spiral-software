@@ -1987,6 +1987,10 @@ void        InitCombinatorial (Bag hdCall, Int nr)
     Bag       hdWrd,  hdGrp,  hdOld;
     char            *usage1 = "SetCollectorAgWord( <g>, \"combinatorial\" )";
     char            *usage2 = "SetCollectorAgWord( <g>, \"vaughanlee\" )";
+    STREAM  stream;
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
 
     /** Evaluate and check the arguments. **********************************/
     if ( nr == LEE_COLLECTOR )
@@ -2018,7 +2022,7 @@ void        InitCombinatorial (Bag hdCall, Int nr)
     if ( ! SetCWeightsAgGroup( hdGrp, HdVoid ) )
     {
         //Pr( "SetCollectorAgWord: leaves collector unchanged.\n", 0, 0 );
-        SyFmtPrint(OUTFILE, "SetCollectorAgWord: leaves collector unchanged.\n");
+        SyFmtPrint(stream, "SetCollectorAgWord: leaves collector unchanged.\n");
         RestoreCollector( hdGrp, hdOld );
         return;
     }
@@ -3072,6 +3076,10 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
     Int            * ptSeries, * ptWeights, * ptIndices;
     Int            nrGens, i, j, k, prime, max;
     char            * str;
+    STREAM  stream; // GS4 -- this is called by a few people who don't have a stream. 
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
 
     /** Give a hint why/who failed. We only print a warning, no error. *****/
     str = "#W  SetCollectorAgWord: %s\n";
@@ -3095,7 +3103,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if ( LEN_LIST( hdLst ) != nrGens )
         {
             //Pr( str, (Int) "too few/many weights", 0 );
-            SyFmtPrint(OUTFILE, str, "too few/many weights");
+            SyFmtPrint(stream, str, "too few/many weights");
             return FALSE;
         }
         for ( i = nrGens - 1; i >= 0; i-- )
@@ -3103,7 +3111,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
             if ( GET_TYPE_BAG( PTR_BAG( hdLst )[ i + 1 ] ) != T_INT )
             {
                 //Pr( str, (Int) "weights must integers", 0 );
-                SyFmtPrint(OUTFILE, str, "weights must integers");
+                SyFmtPrint(stream, str, "weights must integers");
                 return FALSE;
             }
             ptWeights[ i ] = HD_TO_INT( PTR_BAG( hdLst )[ i + 1 ] );
@@ -3164,7 +3172,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
               && ptWeights[ i ] != ( ptWeights[ i-1 ] + 1 ) )
         {
             //Pr( str, (Int) "incorrect central weights", 0 );
-            SyFmtPrint(OUTFILE, str, "incorrect central weights");
+            SyFmtPrint(stream, str, "incorrect central weights");
             return FALSE;
         }
     }
@@ -3182,7 +3190,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if ( prime != ptIndices[ i ] )
         {
             //Pr( str, (Int) "different indices", 0 );
-            SyFmtPrint(OUTFILE, str, "different indices");
+            SyFmtPrint(stream, str, "different indices");
             return FALSE;
         }
 
@@ -3192,7 +3200,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if ( prime % i == 0 )
         {
             //Pr( str, (Int) "no p-group", 0 );
-            SyFmtPrint(OUTFILE, str, "no p-group");
+            SyFmtPrint(stream, str, "no p-group");
             return FALSE;
         }
 
@@ -3208,7 +3216,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         else if ( ptWeights[ i ] < ptSeries[ 0 ] )
         {
             //Pr( str, (Int) "incorrect central weights", 0 );
-            SyFmtPrint(OUTFILE, str, "incorrect central weights");
+            SyFmtPrint(stream, str, "incorrect central weights");
             return FALSE;
         }
     }
@@ -3227,9 +3235,9 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
                 if ( ptWeights[ *PTR_AW(hd) ] < ptWeights[i]+ptWeights[j] )
                 {
                     //Pr( str, (Int) "commutator weights do not add.", 0 );
-                    SyFmtPrint(OUTFILE, str, "commutator weights do not add.");
+                    SyFmtPrint(stream, str, "commutator weights do not add.");
                     //Pr( "#W  commutator [ %s, %s ] failed.\n", (Int) NAME_AW( hdGrp, i ), (Int) NAME_AW( hdGrp, j ) );
-                    SyFmtPrint(OUTFILE, "#W  commutator [ %s, %s ] failed.\n", NAME_AW(hdGrp, i), NAME_AW(hdGrp, j));
+                    SyFmtPrint(stream, "#W  commutator [ %s, %s ] failed.\n", NAME_AW(hdGrp, i), NAME_AW(hdGrp, j));
                     return FALSE;
                 }
         }
@@ -3240,9 +3248,9 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if ( ptWeights[ *PTR_AW( hd )] < ptWeights[ i ] + 1  )
         {
             //Pr( str, (Int) "power weight does not change", 0 );
-            SyFmtPrint(OUTFILE, str, (Int)"power weight does not change");
+            SyFmtPrint(stream, str, (Int)"power weight does not change");
             //Pr( "#W  power %s ^ %d failed.\n", (Int) NAME_AW( hdGrp, i ), prime );
-            SyFmtPrint(OUTFILE, "#W  power %s ^ %d failed.\n", (Int)NAME_AW(hdGrp, i), prime);
+            SyFmtPrint(stream, "#W  power %s ^ %d failed.\n", (Int)NAME_AW(hdGrp, i), prime);
             return FALSE;
         }
     }

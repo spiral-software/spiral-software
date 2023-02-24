@@ -779,7 +779,7 @@ Bag       MakeList (Bag hdDst, Int ind, Bag hdLiteral)
 **
 **  'PrMakeList' prints the list literal <hdMake>.
 */
-void PrMakeList(FILE* stream, Obj hdMake, int indent)
+void PrMakeList(STREAM stream, Obj hdMake, int indent)
 {
     Int           lenList;        /* logical length of <list>        */
     Bag           hdElm;          /* one element from <list>         */

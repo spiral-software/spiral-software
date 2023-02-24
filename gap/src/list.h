@@ -401,7 +401,7 @@ extern  Bag       EvList (
 **
 **  Linebreaks are preferred after the commas.
 */
-extern  void PrList (FILE* stream, Obj hdList, int indent);
+extern  void PrList (STREAM stream, Obj hdList, int indent);
 
 
 /****************************************************************************
@@ -795,7 +795,7 @@ extern  Bag       EvAsssListLevel (
 **
 **  Linebreaks are preferred after the '['.
 */
-extern  void PrElmList(FILE* stream, Obj hdSel, int indent);
+extern  void PrElmList(STREAM stream, Obj hdSel, int indent);
 
 
 /****************************************************************************
@@ -806,7 +806,7 @@ extern  void PrElmList(FILE* stream, Obj hdSel, int indent);
 **
 **  Linebreaks are preferred after the '{'.
 */
-extern  void PrElmsList(FILE* stream, Obj hdSel, int indent);
+extern  void PrElmsList(STREAM stream, Obj hdSel, int indent);
 
 
 /****************************************************************************
@@ -817,7 +817,7 @@ extern  void PrElmsList(FILE* stream, Obj hdSel, int indent);
 **
 **  Linebreaks are preferred before the ':='.
 */
-extern  void PrAssList(FILE* stream, Obj hdAss, int indent);
+extern  void PrAssList(STREAM stream, Obj hdAss, int indent);
 
 
 /****************************************************************************

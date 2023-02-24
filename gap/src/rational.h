@@ -165,7 +165,7 @@ Bag       LtRat ( Bag hdL, Bag hdR );
 **
 **      <numerator> / <denominator>
 */
-void  PrRat(FILE* stream, Obj hdRat, int indent);
+void  PrRat(STREAM stream, Obj hdRat, int indent);
 
 
 /****************************************************************************

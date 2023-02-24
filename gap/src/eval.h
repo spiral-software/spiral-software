@@ -575,7 +575,7 @@ extern  Bag       LtBool ( Bag hdL, Bag hdR );
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-extern  void   PrBool(FILE* stream, Obj hd, int indent);
+extern  void   PrBool(STREAM stream, Obj hd, int indent);
 
 
 /****************************************************************************
@@ -675,7 +675,7 @@ extern  Bag       FunIsBound ( Bag hdCall );
 **  is the main dispatching table that contains for every type a  pointer  to
 **  the function that should be executed if a bag  of  that  type  is  found.
 */
-extern  void (*PrTab[T_ILLEGAL]) (FILE* stream, Obj hd, int indent);
+extern  void (*PrTab[T_ILLEGAL]) (STREAM stream, Obj hd, int indent);
 
 /****************************************************************************
 **  GS4 -- TODO: clean up
@@ -686,7 +686,7 @@ extern  void (*PrTab[T_ILLEGAL]) (FILE* stream, Obj hd, int indent);
 **  appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
 **  
 */
-extern  void PrintObj(FILE *stream, Obj objHandle, int indent);
+extern  void PrintObj(STREAM stream, Obj objHandle, int indent);
 
 
 
@@ -706,7 +706,7 @@ extern  void            CantPrint ( Bag hd );
 *F  PrVarName( <string> )  . . prints identifier, escaping special characters
 **
 */
-extern  void  PrVarName(char * name );
+extern  void  PrVarName(STREAM stream, char* name);
   
 /****************************************************************************
 **
@@ -715,7 +715,7 @@ extern  void  PrVarName(char * name );
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
 */
-extern  void  PrVar(FILE* stream, Obj hdVar, int indent);
+extern  void  PrVar(STREAM stream, Obj hdVar, int indent);
 
 
 /****************************************************************************
@@ -726,7 +726,7 @@ extern  void  PrVar(FILE* stream, Obj hdVar, int indent);
 **
 **  Linebreaks are preffered before the ':='.
 */
-extern  void   PrVarAss(FILE* stream, Obj hdAss, int indent);
+extern  void   PrVarAss(STREAM stream, Obj hdAss, int indent);
 
 
 /****************************************************************************
@@ -735,7 +735,7 @@ extern  void   PrVarAss(FILE* stream, Obj hdAss, int indent);
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
-extern  void   PrNot(FILE* stream, Obj hdNot, int indent);
+extern  void   PrNot(STREAM stream, Obj hdNot, int indent);
 
 
 /****************************************************************************
@@ -744,7 +744,7 @@ extern  void   PrNot(FILE* stream, Obj hdNot, int indent);
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */
-extern  void   PrBinop(FILE* stream, Obj hdOp, int indent);
+extern  void   PrBinop(STREAM stream, Obj hdOp, int indent);
 
 
 /****************************************************************************
@@ -753,7 +753,7 @@ extern  void   PrBinop(FILE* stream, Obj hdOp, int indent);
 **
 **  This prints a commutator.
 */
-extern  void  PrComm(FILE* stream, Obj hd, int indent);
+extern  void  PrComm(STREAM stream, Obj hd, int indent);
 
 
 /****************************************************************************

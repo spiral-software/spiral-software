@@ -1209,7 +1209,7 @@ Bag       LtFFE (Bag hdL, Bag hdR)
 **
 **  'PrFFE' prints the finite field element <hdFFE>.
 */
-void  PrFFE(FILE* stream, Obj hdFFE, int indent)
+void  PrFFE(STREAM stream, Obj hdFFE, int indent)
 {
     PrFF(stream, FLD_FFE(hdFFE), VAL_FFE(hdFFE), indent);
 }
@@ -1226,8 +1226,8 @@ void  PrFFE(FILE* stream, Obj hdFFE, int indent)
 **  to do so and calling 'NewBag' from a printing procedure is forbidden.
 */
 
-//GS4 -- End point
-void  PrFF(FILE* stream, Bag hdField, unsigned int value, int indent)
+
+void  PrFF(STREAM stream, Bag hdField, unsigned int value, int indent)
 {
     UInt       o;              /* order of the finite field       */
     UInt       p;              /* characteristic of finite field  */

@@ -139,7 +139,7 @@ Bag     LtChar(Bag hdL, Bag hdR)
 **
 **  'PrChar' prints the character <hdChr>.
 */
-void    PrChar(FILE *stream, Obj hdChr, int indent)
+void    PrChar(STREAM stream, Obj hdChr, int indent)
 {
     unsigned char currChr = *(unsigned char*)PTR_BAG(hdChr);
 
@@ -599,7 +599,7 @@ Bag     LtString(Bag hdL, Bag hdR)
 **  No linebreaks are allowed, if one must be inserted  anyhow,  it  must  be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-void PrString(FILE* stream, Obj hdStr, int indent)
+void PrString(STREAM stream, Obj hdStr, int indent)
 {
     char    *p;
 
@@ -660,7 +660,7 @@ void PrString(FILE* stream, Obj hdStr, int indent)
 **  'PrintString' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-void    PrintString(FILE* stream, Obj hdStr, int indent)
+void    PrintString(STREAM stream, Obj hdStr, int indent)
 {
     //Pr( "%s", (Int)(char*)PTR_BAG(hdStr), 0 );
     SyFmtPrint(stream, "%s", (char*)PTR_BAG(hdStr));

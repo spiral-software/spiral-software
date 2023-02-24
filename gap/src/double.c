@@ -331,7 +331,7 @@ Obj  EvDbl ( Obj hd ) { return hd; }
 
 
 
-void PrDbl(FILE *stream, Obj hd, int indent) 
+void PrDbl(STREAM stream, Obj hd, int indent)
 {
     char buf[30];
     double n = DBL_OBJ(hd);

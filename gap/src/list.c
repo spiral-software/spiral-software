@@ -495,7 +495,7 @@ Bag     EvList(Bag hdList)
 **
 **  Linebreaks are preferred after the commas.
 */
-void PrList(FILE* stream, Obj hdList, int indent)
+void PrList(STREAM stream, Obj hdList, int indent)
 {
     Bag     hdElm;          /* one element from <list>         */
     Int     lenList;        /* logical length of <list>        */
@@ -1811,7 +1811,7 @@ Bag       EvAsssListLevel (Bag hdAss)
 **
 **  Linebreaks are preferred after the '['.
 */
-void PrElmList(FILE* stream, Obj hdSel, int indent)
+void PrElmList(STREAM stream, Obj hdSel, int indent)
 {
     //**INDENT** Pr("%2>",0,0); 
 
@@ -1834,7 +1834,7 @@ void PrElmList(FILE* stream, Obj hdSel, int indent)
 **
 **  Linebreaks are preferred after the '{'.
 */
-void PrElmsList(FILE* stream, Obj hdSel, int indent)
+void PrElmsList(STREAM stream, Obj hdSel, int indent)
 {
     //**INDENT** Pr("%2>",0,0); 
 
@@ -1857,7 +1857,7 @@ void PrElmsList(FILE* stream, Obj hdSel, int indent)
 **
 **  Linebreaks are preferred before the ':='.
 */
-void PrAssList(FILE* stream, Obj hdAss, int indent)
+void PrAssList(STREAM stream, Obj hdAss, int indent)
 {
     //**INDENT** Pr("%2>",0,0);    
 

@@ -586,6 +586,10 @@ Bag       CommAg(Bag hdL, Bag hdR)
 {
         Int            i, * ptr;
         Bag       hdObj;
+        STREAM  stream;
+
+        stream.type = STREAM_TYPE_FILE;
+        stream.U.file = OUTFILE;
 
         /** Check and evaluate the arguments. ******************************/
         if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD )
@@ -599,10 +603,10 @@ Bag       CommAg(Bag hdL, Bag hdR)
         for (i = GET_SIZE_BAG(hdObj) - 1; i >= 0; i -= 4)
         {
             //Pr("%d ", *ptr++, 0);
-            SyFmtPrint(OUTFILE, "%d ", *ptr++);
+            SyFmtPrint(stream, "%d ", *ptr++);
         }
         //Pr( "\n", 0, 0 );
-        SyFmtPrint(OUTFILE, "\n");
+        SyFmtPrint(stream, "\n");
         return HdVoid;
     }
 
@@ -746,6 +750,10 @@ Bag       FunSetCollectorAgWord (Bag hdCall)
     Bag       hdWrd, hdStr;
     Int            i;
     char            * usage = "usage: SetCollectorAgWord( <g>, <name> )";
+    STREAM  stream;
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
 
     /** Evaluate and check the arguments. **********************************/
     if ( GET_SIZE_BAG( hdCall ) < 3 * SIZE_HD )
@@ -766,14 +774,14 @@ Bag       FunSetCollectorAgWord (Bag hdCall)
     if ( i > COMBI_COLLECTOR )
     {
         //Pr( "#I  Known collectors: ", 0, 0 );
-        SyFmtPrint(OUTFILE, "#I  Known collectors: ");
+        SyFmtPrint(stream, "#I  Known collectors: ");
         for (i = 0; i < COMBI2_COLLECTOR; i++)
         {
             //**INDENT** Pr("%2>%s%<,%< ", (Int)Collectors[i].name, 0);
-            SyFmtPrint(OUTFILE, "%s , ", Collectors[i].name);
+            SyFmtPrint(stream, "%s , ", Collectors[i].name);
         }
         //**INDENT**  Pr( "%2>%s%<.%<\n", (Int)Collectors[COMBI2_COLLECTOR].name, 0 );
-        SyFmtPrint(OUTFILE, "%s.\n", Collectors[COMBI2_COLLECTOR].name);
+        SyFmtPrint(stream, "%s.\n", Collectors[COMBI2_COLLECTOR].name);
         return Error( "Collector \"%s\" unkown", (Int) PTR_BAG( hdStr ), 0 );
     }
 
@@ -2357,6 +2365,10 @@ Bag       FunIsCompatibleAgWord (Bag hdCall)
    Bag       FunAgProfile (Bag hdCall)
 {
        Bag       hdInt;
+       STREAM  stream;
+
+       stream.type = STREAM_TYPE_FILE;
+       stream.U.file = OUTFILE;
 
        /** Evaluate and check the arguments. *******************************/
        if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD && GET_SIZE_BAG( hdCall ) != SIZE_HD )
@@ -2369,93 +2381,93 @@ Bag       FunIsCompatibleAgWord (Bag hdCall)
 
              /** User must start profiling first. **************************/
              //Pr( "No ag-profiling information, start profiling", 0, 0 );
-             SyFmtPrint(OUTFILE, "No ag-profiling information, start profiling");
+             SyFmtPrint(stream, "No ag-profiling information, start profiling");
              //Pr( " with 'AgProfile( <int> )'\n",                 0, 0 );
-             SyFmtPrint(OUTFILE, " with 'AgProfile( <int> )'\n");
+             SyFmtPrint(stream, " with 'AgProfile( <int> )'\n");
              return HdVoid;
           }
 
           /** Show the profile. ********************************************/
           // Pr( "function       calls        time   time/call\n", 0, 0 );
-          SyFmtPrint(OUTFILE, "function       calls        time   time/call\n");
+          SyFmtPrint(stream, "function       calls        time   time/call\n");
           // Pr( "--------------------------------------------\n", 0, 0 );
-          SyFmtPrint(OUTFILE, "--------------------------------------------\n");
+          SyFmtPrint(stream, "--------------------------------------------\n");
 
 
           if ( CallsProdAg > 0 )
           {
             //Pr( "ProdAg    %10d  %10d", CallsProdAg, TimeProdAg/RepTimes   );
-            SyFmtPrint(OUTFILE, "ProdAg    %10d  %10d", CallsProdAg, TimeProdAg / RepTimes);
+            SyFmtPrint(stream, "ProdAg    %10d  %10d", CallsProdAg, TimeProdAg / RepTimes);
             //Pr( "  %10d\n", TimeProdAg/RepTimes / CallsProdAg, 0          );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimeProdAg / RepTimes / CallsProdAg);
+            SyFmtPrint(stream, "  %10d\n", TimeProdAg / RepTimes / CallsProdAg);
           }
           if ( CallsQuoAg > 0 )
           {
             //Pr( "QuoAg     %10d  %10d", CallsQuoAg, TimeQuoAg/RepTimes     );
-            SyFmtPrint(OUTFILE, "QuoAg     %10d  %10d", CallsQuoAg, TimeQuoAg / RepTimes);
+            SyFmtPrint(stream, "QuoAg     %10d  %10d", CallsQuoAg, TimeQuoAg / RepTimes);
             //Pr( "  %10d\n", TimeQuoAg/RepTimes / CallsQuoAg, 0            );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimeQuoAg / RepTimes / CallsQuoAg);
+            SyFmtPrint(stream, "  %10d\n", TimeQuoAg / RepTimes / CallsQuoAg);
           }
           if ( CallsPowAgI > 0 )
           {
             //Pr( "PowAgI    %10d  %10d", CallsPowAgI, TimePowAgI/RepTimes   );
-            SyFmtPrint(OUTFILE, "PowAgI    %10d  %10d", CallsPowAgI, TimePowAgI / RepTimes);
+            SyFmtPrint(stream, "PowAgI    %10d  %10d", CallsPowAgI, TimePowAgI / RepTimes);
             //Pr( "  %10d\n", TimePowAgI/RepTimes / CallsPowAgI, 0          );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimePowAgI / RepTimes / CallsPowAgI);
+            SyFmtPrint(stream, "  %10d\n", TimePowAgI / RepTimes / CallsPowAgI);
           }
           if ( CallsPowAgAg > 0 )
           {
             //Pr( "PowAgAg   %10d  %10d", CallsPowAgAg, TimePowAgAg/RepTimes );
-            SyFmtPrint(OUTFILE, "PowAgAg   %10d  %10d", CallsPowAgAg, TimePowAgAg / RepTimes);
+            SyFmtPrint(stream, "PowAgAg   %10d  %10d", CallsPowAgAg, TimePowAgAg / RepTimes);
             //Pr( "  %10d\n", TimePowAgAg/RepTimes / CallsPowAgAg, 0        );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimePowAgAg / RepTimes / CallsPowAgAg);
+            SyFmtPrint(stream, "  %10d\n", TimePowAgAg / RepTimes / CallsPowAgAg);
           }
           if ( CallsModAg > 0 )
           {
             //Pr( "ModAg     %10d  %10d", CallsModAg, TimeModAg/RepTimes     );
-            SyFmtPrint(OUTFILE, "ModAg     %10d  %10d", CallsModAg, TimeModAg / RepTimes);
+            SyFmtPrint(stream, "ModAg     %10d  %10d", CallsModAg, TimeModAg / RepTimes);
             //Pr( "  %10d\n", TimeModAg/RepTimes / CallsModAg, 0            );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimeModAg / RepTimes / CallsModAg);
+            SyFmtPrint(stream, "  %10d\n", TimeModAg / RepTimes / CallsModAg);
           }
           if ( CallsCommAg > 0 )
           {
             //Pr( "CommAg    %10d  %10d", CallsCommAg, TimeCommAg/RepTimes   );
-            SyFmtPrint(OUTFILE, "CommAg    %10d  %10d", CallsCommAg, TimeCommAg / RepTimes);
+            SyFmtPrint(stream, "CommAg    %10d  %10d", CallsCommAg, TimeCommAg / RepTimes);
             //Pr( "  %10d\n", TimeCommAg/RepTimes / CallsCommAg, 0          );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimeCommAg / RepTimes / CallsCommAg);
+            SyFmtPrint(stream, "  %10d\n", TimeCommAg / RepTimes / CallsCommAg);
           }
           if ( CallsLtAg > 0 )
           {
             //Pr( "LtAg      %10d  %10d", CallsLtAg, TimeLtAg/RepTimes       );
-            SyFmtPrint(OUTFILE, "LtAg      %10d  %10d", CallsLtAg, TimeLtAg / RepTimes);
+            SyFmtPrint(stream, "LtAg      %10d  %10d", CallsLtAg, TimeLtAg / RepTimes);
             //Pr( "  %10d\n", TimeLtAg/RepTimes / CallsLtAg, 0              );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimeLtAg / RepTimes / CallsLtAg);
+            SyFmtPrint(stream, "  %10d\n", TimeLtAg / RepTimes / CallsLtAg);
           }
           if ( CallsEqAg > 0 )
           {
             //Pr( "EqAg      %10d  %10d", CallsEqAg, TimeEqAg/RepTimes       );
-            SyFmtPrint(OUTFILE, "EqAg      %10d  %10d", CallsEqAg, TimeEqAg / RepTimes);
+            SyFmtPrint(stream, "EqAg      %10d  %10d", CallsEqAg, TimeEqAg / RepTimes);
             //Pr( "  %10d\n", TimeEqAg/RepTimes / CallsEqAg, 0              );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimeEqAg / RepTimes / CallsEqAg);
+            SyFmtPrint(stream, "  %10d\n", TimeEqAg / RepTimes / CallsEqAg);
           }
           if ( CallsSumAg > 0 )
           {
             //Pr( "SumAg     %10d  %10d", CallsSumAg, TimeSumAg/RepTimes     );
-            SyFmtPrint(OUTFILE, "SumAg     %10d  %10d", CallsSumAg, TimeSumAg / RepTimes);
+            SyFmtPrint(stream, "SumAg     %10d  %10d", CallsSumAg, TimeSumAg / RepTimes);
             //Pr( "  %10d\n", TimeSumAg/RepTimes / CallsSumAg, 0            );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimeSumAg / RepTimes / CallsSumAg);
+            SyFmtPrint(stream, "  %10d\n", TimeSumAg / RepTimes / CallsSumAg);
           }
           if ( CallsDiffAg > 0 )
           {
             //Pr( "DiffAg    %10d  %10d", CallsSumAg, TimeDiffAg/RepTimes    );
-            SyFmtPrint(OUTFILE, "DiffAg    %10d  %10d", CallsSumAg, TimeDiffAg / RepTimes);
+            SyFmtPrint(stream, "DiffAg    %10d  %10d", CallsSumAg, TimeDiffAg / RepTimes);
             //Pr( "  %10d\n", TimeDiffAg/RepTimes / CallsDiffAg, 0          );
-            SyFmtPrint(OUTFILE, "  %10d\n", TimeDiffAg / RepTimes / CallsDiffAg);
+            SyFmtPrint(stream, "  %10d\n", TimeDiffAg / RepTimes / CallsDiffAg);
           }
           //Pr( "--------------------------------------------\n", 0, 0 );
-          SyFmtPrint(OUTFILE, "--------------------------------------------\n");
+          SyFmtPrint(stream, "--------------------------------------------\n");
         //Pr( "Evaluator functions repeated %d times.\n", RepTimes, 0 );
-        SyFmtPrint(OUTFILE, "Evaluator functions repeated %d times.\n", RepTimes);
+        SyFmtPrint(stream, "Evaluator functions repeated %d times.\n", RepTimes);
           return HdVoid;
       }
       else
@@ -2541,6 +2553,10 @@ Bag       FunCollectorProfile (Bag hdCall)
     Bag           hdA = 0;
     Int                i,  j;
     char                * usage = "usage: CollectorProfile( ... )";
+    STREAM  stream;
+
+    stream.type = STREAM_TYPE_FILE;
+    stream.U.file = OUTFILE;
 
     /** Evaluate and check the arguments. **********************************/
     if ( GET_SIZE_BAG( hdCall ) != 2 * SIZE_HD && GET_SIZE_BAG( hdCall ) != SIZE_HD )
@@ -2551,9 +2567,9 @@ Bag       FunCollectorProfile (Bag hdCall)
     if ( GET_SIZE_BAG( hdCall ) == SIZE_HD )
     {
         //Pr( "pnt    calls        time  time/call\n", 0, 0 );
-        SyFmtPrint(OUTFILE,"pnt    calls        time  time/call\n");
+        SyFmtPrint(stream,"pnt    calls        time  time/call\n");
         //Pr( "-----------------------------------\n", 0, 0 );
-        SyFmtPrint(OUTFILE, "-----------------------------------\n");
+        SyFmtPrint(stream, "-----------------------------------\n");
 
         for ( i = 1;  i <= LEN_LIST( HdCPL );  i++ )
         {
@@ -2564,13 +2580,13 @@ Bag       FunCollectorProfile (Bag hdCall)
             if ( c == 0 )
                 continue;
             //Pr( "%3d:  %6d  ", i, c );
-            SyFmtPrint(OUTFILE, "%3d:  %6d  ", i, c);
+            SyFmtPrint(stream, "%3d:  %6d  ", i, c);
 
             //Pr( "%10d   %8d\n", t, t/c );
-            SyFmtPrint(OUTFILE, "%10d   %8d\n", t, t / c);
+            SyFmtPrint(stream, "%10d   %8d\n", t, t / c);
         }
         //Pr( "\nProfile point %d, profiling %sactive\n", CPN, (Int)( (CPP) ? "" : "in" ) );
-        SyFmtPrint(OUTFILE, "\nProfile point %d, profiling %sactive\n", CPN, ((CPP) ? "" : "in"));
+        SyFmtPrint(stream, "\nProfile point %d, profiling %sactive\n", CPN, ((CPP) ? "" : "in"));
 
         return HdVoid;
     }
@@ -2651,7 +2667,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 #if ! PRINT_AG
 
     /** Print T_AGWORD in generator-exponent-form. *************************/
-    void  PrAgWord(FILE* stream, Obj hdAgWord, int indent)
+    void  PrAgWord(STREAM stream, Obj hdAgWord, int indent)
 {
         TypSword        * pt, * ptEnd;
         Bag       hdAgGroup;
@@ -2693,7 +2709,7 @@ Bag       FunCollectorProfile (Bag hdCall)
     //GS4 -- Confusing 
     /** Print T_AGWORD in tuple form. **************************************/
     void    PrAgWord(stream ,hdAgWord ,indent)
-        FILE* stream;
+        STREAM stream;
         Obj hdAgWord; 
         int indent;
     {
@@ -2736,7 +2752,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 */
 #if PRINT_AG | GROUP_REC
 
-void        PrAgExp(FILE* stream, Obj hdAgExp, int indent)
+void        PrAgExp(STREAM stream, Obj hdAgExp, int indent)
 {
         TypExp          * pt, * ptEnd;
 
@@ -2778,7 +2794,7 @@ void        PrAgExp(FILE* stream, Obj hdAgExp, int indent)
 */
 #if PRINT_AG | GROUP_REC
 
-void        PrAgList(FILE* stream, Obj hdAgList, int indent)
+void        PrAgList(STREAM stream, Obj hdAgList, int indent)
 {
         TypSword        * pt, * ptEnd;
         int             toggle;
@@ -2833,7 +2849,7 @@ void        PrAgList(FILE* stream, Obj hdAgList, int indent)
 */
 #if PRINT_AG | GROUP_REC
 
-void    PrAgen(FILE* stream, Obj hdAgen, int indent)
+void    PrAgen(STREAM stream, Obj hdAgen, int indent)
 {
         //Pr( "%s", (Int)( PTR_BAG( hdAgen ) + 1 ), 0 );
         SyFmtPrint(stream, "%s", (PTR_BAG(hdAgen) + 1));

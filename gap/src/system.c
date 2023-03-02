@@ -2724,6 +2724,7 @@ int SyFmtPrint(STREAM stream, const char* format, ...)
     if (stream.type == STREAM_TYPE_FILE) 
     {
         result = vfprintf(streamFile(stream), format, arglist);
+        fflush(streamFile(stream));
     }
     else if (stream.type == STREAM_TYPE_STRING)
     {

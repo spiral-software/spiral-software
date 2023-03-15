@@ -1079,7 +1079,6 @@ Int            OpenInput (char *filename)
 
     if (file == (FILE*)0)
     {
-        printf ( " ... no such file\n" );
         return 0;
     }
 
@@ -1111,9 +1110,6 @@ Int            OpenInput (char *filename)
 
     /**/HookAfterOpenInput();/**/
 
-    printf ( "\nOpenInput: file = %s, index = %d, ... success\n", filename,
-             (int) (Input - InputFiles) );
-    
     /* indicate success                                                    */
     return 1;
 }

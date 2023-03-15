@@ -66,7 +66,7 @@
 **  at all.  This plays a role similar to  '*the-non-printing-object*'  which
 **  exists in some lisp systems.
 */
-Obj       HdVoid;
+Obj     HdVoid;
 
 
 /****************************************************************************
@@ -78,7 +78,7 @@ Obj       HdVoid;
 **  execution functions all the  way  back  to  'EvFunccall'.  For  'return'
 **  statements without an expression 'EvReturn' puts 'HdVoid' into this bag.
 */
-Obj       HdReturn;
+Obj     HdReturn;
 
 
 /****************************************************************************
@@ -90,7 +90,8 @@ Obj       HdReturn;
 **  and 'HdFalse' is likewise the unique handle of the  bag  that  represents
 **  the value 'HdFalse'.
 */
-Obj       HdTrue,  HdFalse;
+Obj     HdTrue;
+Obj     HdFalse;
 
 
 /****************************************************************************
@@ -102,8 +103,8 @@ Obj       HdTrue,  HdFalse;
 **  EvalStackTop - index of the last plased element.
 */
 
-Bag         EvalStack[EVAL_STACK_COUNT+EVAL_STACK_CUSHION];
-UInt        EvalStackTop = 0;
+Bag     EvalStack[EVAL_STACK_COUNT + EVAL_STACK_CUSHION];
+UInt    EvalStackTop = 0;
 
 /****************************************************************************
 **
@@ -135,9 +136,9 @@ Obj       (* EvTab[ T_ILLEGAL ]) ( Obj hd );
 **  If this is actually ever executed in GAP it  indicates  serious  trouble,
 **  for  example  that  the  type  field  of  a  bag  has  been  overwritten.
 */
-Obj       CantEval (Obj hd)
+Obj     CantEval(Obj hd)
 {
-    return Error("Panic: can't eval bag of type %d",(Int)GET_TYPE_BAG(hd),0);
+    return Error("Panic: can't eval bag of type %d", (Int)GET_TYPE_BAG(hd), 0);
 }
 
 
@@ -146,7 +147,7 @@ Obj       CantEval (Obj hd)
 *F  NoEval( <hd> )  . . . . . . . . . . . . . . evaluation by returning self
 **
 */
-Obj       NoEval (Obj hd)
+Obj     NoEval(Obj hd)
 {
     return hd;
 }
@@ -156,11 +157,16 @@ Obj       NoEval (Obj hd)
 *F  Concat( <hdConcat> )  . . . . . . . . . . . evaluate a list concatenation
 **
 */
-Bag       Concat (Bag hdConcat) {
-    Bag           hdL,  hdR,  hdRes;
-    hdL = EVAL( PTR_BAG(hdConcat)[0] );
-    hdR = EVAL( PTR_BAG(hdConcat)[1] );
+Bag     Concat(Bag hdConcat)
+{
+    Bag     hdL;
+    Bag     hdR;
+    Bag     hdRes;
+
+    hdL = EVAL(PTR_BAG(hdConcat)[0]);
+    hdR = EVAL(PTR_BAG(hdConcat)[1]);
     hdRes = ShallowCopy(hdL);
+
     Append(hdRes, hdR);
     return hdRes;
 }
@@ -190,28 +196,33 @@ Bag       Concat (Bag hdConcat) {
 */
 Obj       (*TabSum[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
 
-Obj       Sum (Obj hd)
+Obj     Sum(Obj hd)
 {
-    Obj           hdL,  hdR;
-    Int                result;
+    Obj     hdL;
+    Obj     hdR;
+    Int     result;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
     /* add two small integers with a small sum                             */
     /* add and compare top two bits to check that no overflow occured      */
-    if ( (Int)hdL & (Int)hdR & T_INT ) {
+    if ((Int)hdL & (Int)hdR & T_INT)
+    {
         result = (Int)hdL + (Int)hdR - T_INT;
-        if ( ((result << 1) >> 1) == result )
+
+        if (((result << 1) >> 1) == result)
+        {
             return (Obj)result;
+        }
     }
 
-    return SUM( hdL, hdR );
+    return SUM(hdL, hdR);
 }
 
-Obj       CantSum (Obj hdL, Obj hdR)
+Obj     CantSum(Obj hdL, Obj hdR)
 {
-    return Error("operations: sum of %s and %s is not defined",
-                 (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)] );
+    return Error("operations: sum of %s and %s is not defined", (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)]);
 }
 
 
@@ -239,30 +250,35 @@ Obj       CantSum (Obj hdL, Obj hdR)
 **
 #define DIFF(hdL,hdR)   ((*TabDiff[GET_TYPE_BAG(hdL)][GET_TYPE_BAG(hdR)])((hdL),(hdR)))
 */
-Obj       (*TabDiff[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
+Obj(*TabDiff[EV_TAB_SIZE][EV_TAB_SIZE]) (Obj, Obj);
 
-Obj       Diff (Obj hd)
+Obj     Diff(Obj hd)
 {
-    Obj           hdL,  hdR;
-    Int                result;
+    Obj     hdL;
+    Obj     hdR;
+    Int     result;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
     /* subtract two small integers with a small difference                 */
     /* sub and compare top two bits to check that no overflow occured      */
-    if ( (Int)hdL & (Int)hdR & T_INT ) {
+    if ((Int)hdL & (Int)hdR & T_INT)
+    {
         result = (Int)hdL - (Int)hdR;
-        if ( ((result << 1) >> 1) == result )
+
+        if (((result << 1) >> 1) == result)
+        {
             return (Obj)(result + T_INT);
+        }
     }
 
-    return DIFF(hdL,hdR);
+    return DIFF(hdL, hdR);
 }
 
-Obj       CantDiff (Obj hdL, Obj hdR)
+Obj     CantDiff(Obj hdL, Obj hdR)
 {
-    return Error("operations difference of %s and %s is not defined",
-                 (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)] );
+    return Error("operations difference of %s and %s is not defined", (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)]);
 }
 
 /****************************************************************************
@@ -289,15 +305,16 @@ Obj       CantDiff (Obj hdL, Obj hdR)
 **
 #define PROD(hdL,hdR)   ((*TabProd[GET_TYPE_BAG(hdL)][GET_TYPE_BAG(hdR)])((hdL),(hdR)))
 */
-Obj       (*TabProd[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
+Obj(*TabProd[EV_TAB_SIZE][EV_TAB_SIZE]) (Obj, Obj);
 
-Obj       Prod (Obj hd)
+Obj     Prod(Obj hd)
 {
-    Obj           hdL,  hdR;
-    Obj           hdResult;
+    Obj     hdL;
+    Obj     hdR;
+    Obj     hdResult;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );
-	hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
 #if _DEBUG
     ObjType typeL = GET_TYPE_BAG(hdL);
@@ -305,15 +322,15 @@ Obj       Prod (Obj hd)
     Obj(*prodfunc)(Obj, Obj) = TabProd[typeL][typeR];
     hdResult = prodfunc(hdL, hdR);
 #else
-    hdResult = PROD( hdL, hdR );
+    hdResult = PROD(hdL, hdR);
 #endif
-	return hdResult;
+
+    return hdResult;
 }
 
-Obj       CantProd (Obj hdL, Obj hdR)
+Obj     CantProd(Obj hdL, Obj hdR)
 {
-    return Error("operations: product of %s and %s is not defined",
-				 (Int)InfoBags[GET_TYPE_BAG(hdL)].name, (Int)InfoBags[GET_TYPE_BAG(hdR)].name );
+    return Error("operations: product of %s and %s is not defined", (Int)InfoBags[GET_TYPE_BAG(hdL)].name, (Int)InfoBags[GET_TYPE_BAG(hdR)].name);
 }
 
 
@@ -336,21 +353,22 @@ Obj       CantProd (Obj hdL, Obj hdR)
 **
 #define QUO(hdL,hdR)    ((*TabQuo[GET_TYPE_BAG(hdL)][GET_TYPE_BAG(hdR)])((hdL),(hdR)))
 */
-Obj       (*TabQuo[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
+Obj(*TabQuo[EV_TAB_SIZE][EV_TAB_SIZE]) (Obj, Obj);
 
-Obj       Quo (Obj hd)
+Obj     Quo(Obj hd)
 {
-    Obj           hdL,  hdR;
+    Obj     hdL;
+    Obj     hdR;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
-    return QUO( hdL, hdR );
+    return QUO(hdL, hdR);
 }
 
-Obj       CantQuo (Obj hdL, Obj hdR)
+Obj     CantQuo(Obj hdL, Obj hdR)
 {
-    return Error("operations: quotient of %s and %s is not defined",
-                 (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)] );
+    return Error("operations: quotient of %s and %s is not defined", (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)]);
 }
 
 
@@ -373,21 +391,22 @@ Obj       CantQuo (Obj hdL, Obj hdR)
 **
 #define MOD(hdL,hdR)    ((*TabMod[GET_TYPE_BAG(hdL)][GET_TYPE_BAG(hdR)])((hdL),(hdR)))
 */
-Obj       (*TabMod[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
+Obj(*TabMod[EV_TAB_SIZE][EV_TAB_SIZE]) (Obj, Obj);
 
-Obj       Mod (Obj hd)
+Obj     Mod(Obj hd)
 {
-    Obj           hdL,  hdR;
+    Obj     hdL;
+    Obj     hdR;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
-    return MOD( hdL, hdR );
+    return MOD(hdL, hdR);
 }
 
-Obj       CantMod (Obj hdL, Obj hdR)
+Obj     CantMod(Obj hdL, Obj hdR)
 {
-    return Error("operations: remainder of %s and %s is not defined",
-                 (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)] );
+    return Error("operations: remainder of %s and %s is not defined", (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)]);
 }
 
 
@@ -410,25 +429,26 @@ Obj       CantMod (Obj hdL, Obj hdR)
 **
 #define POW(hdL,hdR)    ((*TabPow[GET_TYPE_BAG(hdL)][GET_TYPE_BAG(hdR)])((hdL),(hdR)))
 */
-Obj       (*TabPow[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
+Obj(*TabPow[EV_TAB_SIZE][EV_TAB_SIZE]) (Obj, Obj);
 
-Obj       Pow (Obj hd)
+Obj     Pow(Obj hd)
 {
-    Obj           hdL,  hdR;
-    Obj           hdResult;
+    Obj     hdL;
+    Obj     hdR;
+    Obj     hdResult;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );
-	hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
-    hdResult = POW( hdL, hdR );
-	return hdResult;
-	
+    hdResult = POW(hdL, hdR);
+
+    return hdResult;
+
 }
 
-Obj       CantPow (Obj hdL, Obj hdR)
+Obj     CantPow(Obj hdL, Obj hdR)
 {
-    return Error("operations: power of %s and %s is not defined",
-                 (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)] );
+    return Error("operations: power of %s and %s is not defined", (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)]);
 }
 
 
@@ -448,23 +468,25 @@ Obj       CantPow (Obj hdL, Obj hdR)
 */
 Obj       (*TabComm[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
 
-Obj       IntComm (Obj hdCall)
+Obj     IntComm(Obj hdCall)
 {
-    Obj       hdL, hdR;
+    Obj     hdL;
+    Obj     hdR;
 
     /* check the arguments                                                 */
-    if ( GET_SIZE_BAG(hdCall) != 3 * SIZE_HD )
-        return Error("usage: Comm( <expr>, <expr> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD))
+    {
+        return Error("usage: Comm( <expr>, <expr> )", 0, 0);
+    }
 
     /* evaluate the arguments and jump through the function table          */
-    hdL = EVAL( PTR_BAG(hdCall)[1] );  hdR = EVAL( PTR_BAG(hdCall)[2] );
-    return (* TabComm[ GET_TYPE_BAG(hdL) ][ GET_TYPE_BAG(hdR) ]) ( hdL, hdR );
+    hdL = EVAL(PTR_BAG(hdCall)[1]);  hdR = EVAL(PTR_BAG(hdCall)[2]);
+    return (*TabComm[GET_TYPE_BAG(hdL)][GET_TYPE_BAG(hdR)]) (hdL, hdR);
 }
 
-Obj       CantComm (Obj hdL, Obj hdR)
+Obj     CantComm(Obj hdL, Obj hdR)
 {
-    return Error("operations: commutator of %s and %s is not defined",
-                 (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)] );
+    return Error("operations: commutator of %s and %s is not defined", (Int)NameType[GET_TYPE_BAG(hdL)], (Int)NameType[GET_TYPE_BAG(hdR)]);
 }
 
 
@@ -479,18 +501,22 @@ Obj       CantComm (Obj hdL, Obj hdR)
 **  'LeftQuotient'  returns  the  left  quotient  of  the  two group elements
 **  <expr1> and <expr2>, i.e., '<expr1>^-1 * <expr2>'.
 */
-Obj       FunLeftQuotient (Obj hdCall)
+Obj     FunLeftQuotient(Obj hdCall)
 {
-    Obj       hdL, hdR;
+    Obj     hdL;
+    Obj     hdR;
 
     /** check the arguments ************************************************/
-    if ( GET_SIZE_BAG( hdCall ) != 3 * SIZE_HD )
-        return Error( "usage: LeftQuotient( <expr>, <expr> )", 0, 0 );
+    if (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD))
+    {
+        return Error("usage: LeftQuotient( <expr>, <expr> )", 0, 0);
+    }
 
     /** evaluate the arguments and jump through the function table *********/
-    hdL = EVAL( PTR_BAG( hdCall )[ 1 ] );
-    hdR = EVAL( PTR_BAG( hdCall )[ 2 ] );
-    return ( * TabMod[ GET_TYPE_BAG(hdL) ][ GET_TYPE_BAG(hdR) ] ) ( hdL, hdR );
+    hdL = EVAL(PTR_BAG(hdCall)[1]);
+    hdR = EVAL(PTR_BAG(hdCall)[2]);
+
+    return (*TabMod[GET_TYPE_BAG(hdL)][GET_TYPE_BAG(hdR)]) (hdL, hdR);
 }
 
 
@@ -519,23 +545,34 @@ Obj       FunLeftQuotient (Obj hdCall)
 */
 Obj       (*TabEq[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
 
-Obj       Eq (Obj hd)
+Obj     Eq(Obj hd)
 {
-    Obj           hdL,  hdR;
+    Obj     hdL;
+    Obj     hdR;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
     /* if the handles are equal the objects certainly will be equal too    */
-    if ( hdL == hdR )
+    if (hdL == hdR)
+    {
         return HdTrue;
-
-    /* Special code to compare two immediate integers.                     */
-    if ( ((Int)hdL & (Int)hdR & T_INT) ) {
-        if ( HD_TO_INT(hdL) == HD_TO_INT(hdR) )  return HdTrue;
-        else                                     return HdFalse;
     }
 
-    return EQ( hdL, hdR );
+    /* Special code to compare two immediate integers.                     */
+    if (((Int)hdL & (Int)hdR & T_INT))
+    {
+        if (HD_TO_INT(hdL) == HD_TO_INT(hdR))
+        {
+            return HdTrue;
+        }
+        else
+        {
+            return HdFalse;
+        }
+    }
+
+    return EQ(hdL, hdR);
 }
 
 
@@ -564,23 +601,34 @@ Obj       Eq (Obj hd)
 */
 Obj       (*TabLt[EV_TAB_SIZE][EV_TAB_SIZE]) ( Obj, Obj );
 
-Obj       Lt (Obj hd)
+Obj     Lt(Obj hd)
 {
-    Obj           hdL,  hdR;
+    Obj     hdL;
+    Obj     hdR;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
     /* if the handles are equal the objects certainly will be equal too    */
-    if ( hdL == hdR )
+    if (hdL == hdR)
+    {
         return HdFalse;
-
-    /* Special code to compare two immediate integers.                     */
-    if ( ((Int)hdL & (Int)hdR & T_INT) ) {
-        if ( HD_TO_INT(hdL) < HD_TO_INT(hdR) )  return HdTrue;
-        else                                    return HdFalse;
     }
 
-    return LT( hdL, hdR );
+    /* Special code to compare two immediate integers.                     */
+    if (((Int)hdL & (Int)hdR & T_INT))
+    {
+        if (HD_TO_INT(hdL) < HD_TO_INT(hdR))
+        {
+            return HdTrue;
+        }
+        else
+        {
+            return HdFalse;
+        }
+    }
+
+    return LT(hdL, hdR);
 }
 
 
@@ -593,25 +641,43 @@ Obj       Lt (Obj hd)
 **
 **  'Ne' is simply implemented as 'not <objL> = <objR>'.
 */
-Obj       Ne (Obj hd)
+Obj     Ne(Obj hd)
 {
-    Obj           hdL,  hdR;
+    Obj     hdL;
+    Obj     hdR;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
     /* if the handles are equal the objects certainly will be equal too    */
-    if ( hdL == hdR )
+    if (hdL == hdR)
+    {
         return HdFalse;
+    }
 
     /* Special code to compare two immediate integers.                     */
-    if ( ((Int)hdL & (Int)hdR & T_INT) ) {
-        if ( HD_TO_INT(hdL) != HD_TO_INT(hdR) )  return HdTrue;
-        else                                     return HdFalse;
+    if (((Int)hdL & (Int)hdR & T_INT))
+    {
+        if (HD_TO_INT(hdL) != HD_TO_INT(hdR))
+        {
+            return HdTrue;
+        }
+        else
+        {
+            return HdFalse;
+        }
     }
 
     /* compute 'not <objL> = <objR>' and return it                         */
-    if ( EQ(hdL,hdR) == HdTrue )  hdL = HdFalse;
-    else                          hdL = HdTrue;
+    if (EQ(hdL, hdR) == HdTrue)
+    {
+        hdL = HdFalse;
+    }
+    else
+    {
+        hdL = HdTrue;
+    }
+
     return hdL;
 }
 
@@ -626,25 +692,43 @@ Obj       Ne (Obj hd)
 **
 **  'Le' is simply implemented as 'not <objR> < <objL>'.
 */
-Obj       Le (Obj hd)
+Obj     Le(Obj hd)
 {
-    Obj           hdL,  hdR;
+    Obj     hdL;
+    Obj     hdR;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
     /* if the handles are equal the objects certainly will be equal too    */
-    if ( hdL == hdR )
+    if (hdL == hdR)
+    {
         return HdTrue;
+    }
 
     /* Special code to compare two immediate integers.                     */
-    if ( ((Int)hdL & (Int)hdR & T_INT) ) {
-        if ( HD_TO_INT(hdL) <= HD_TO_INT(hdR) )  return HdTrue;
-        else                                     return HdFalse;
+    if (((Int)hdL & (Int)hdR & T_INT))
+    {
+        if (HD_TO_INT(hdL) <= HD_TO_INT(hdR))
+        {
+            return HdTrue;
+        }
+        else
+        {
+            return HdFalse;
+        }
     }
 
     /* compute 'not <objR> < <objL>' and return it                         */
-    if ( LT( hdR, hdL ) == HdTrue )  hdL = HdFalse;
-    else                             hdL = HdTrue;
+    if (LT(hdR, hdL) == HdTrue) 
+    {
+        hdL = HdFalse; 
+    }
+    else 
+    {
+        hdL = HdTrue;
+    }
+
     return hdL;
 }
 
@@ -659,23 +743,34 @@ Obj       Le (Obj hd)
 **
 **  'Gt' is simply implemented as '<objR> < <objL>'.
 */
-Obj       Gt (Obj hd)
+Obj     Gt(Obj hd)
 {
-    Obj    hdL,  hdR;
+    Obj     hdL;
+    Obj     hdR;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);  
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
     /* if the handles are equal the objects certainly will be equal too    */
-    if ( hdL == hdR )
+    if (hdL == hdR)
+    {
         return HdFalse;
-
-    /* Special code to compare two immediate integers.                     */
-    if ( ((Int)hdL & (Int)hdR & T_INT) ) {
-        if ( HD_TO_INT(hdL) >  HD_TO_INT(hdR) )  return HdTrue;
-        else                                     return HdFalse;
     }
 
-    return LT( hdR, hdL );
+    /* Special code to compare two immediate integers.                     */
+    if (((Int)hdL & (Int)hdR & T_INT))
+    {
+        if (HD_TO_INT(hdL) > HD_TO_INT(hdR))
+        { 
+            return HdTrue; 
+        }
+        else 
+        {
+            return HdFalse;
+        }
+    }
+
+    return LT(hdR, hdL);
 }
 
 
@@ -689,25 +784,43 @@ Obj       Gt (Obj hd)
 **
 **  'Ge' is simply implemented as 'not <objL> < <objR>'.
 */
-Obj       Ge (Obj hd)
+Obj     Ge(Obj hd)
 {
-    Obj           hdL,  hdR;
+    Obj     hdL;
+    Obj     hdR;
 
-    hdL = EVAL( PTR_BAG(hd)[0] );  hdR = EVAL( PTR_BAG(hd)[1] );
+    hdL = EVAL(PTR_BAG(hd)[0]);
+    hdR = EVAL(PTR_BAG(hd)[1]);
 
     /* if the handles are equal the objects certainly will be equal too    */
-    if ( hdL == hdR )
+    if (hdL == hdR)
+    {
         return HdTrue;
+    }
 
     /* Special code to compare two immediate integers.                     */
-    if ( ((Int)hdL & (Int)hdR & T_INT) ) {
-        if ( HD_TO_INT(hdL) >= HD_TO_INT(hdR) )  return HdTrue;
-        else                                     return HdFalse;
+    if (((Int)hdL & (Int)hdR & T_INT))
+    {
+        if (HD_TO_INT(hdL) >= HD_TO_INT(hdR))
+        { 
+            return HdTrue; 
+        }
+        else
+        {
+            return HdFalse; 
+        }
     }
 
     /* compute 'not <objL> < <objR>' and return it                         */
-    if ( LT( hdL, hdR ) == HdTrue )  hdL = HdFalse;
-    else                             hdL = HdTrue;
+    if (LT(hdL, hdR) == HdTrue)
+    { 
+        hdL = HdFalse;
+    }
+    else
+    {
+        hdL = HdTrue;
+    }
+
     return hdL;
 }
 
@@ -722,7 +835,7 @@ Obj       Ge (Obj hd)
 **  'TabLt' table.
 */
 /*ARGSUSED*/
-Obj       IsTrue (Obj hdL, Obj hdR)
+Obj     IsTrue(Obj hdL, Obj hdR)
 {
     return HdTrue;
 }
@@ -738,7 +851,7 @@ Obj       IsTrue (Obj hdL, Obj hdR)
 **  'TabLt' table.
 */
 /*ARGSUSED*/
-Obj       IsFalse (Obj hdL, Obj hdR)
+Obj       IsFalse(Obj hdL, Obj hdR)
 {
     return HdFalse;
 }
@@ -749,11 +862,13 @@ Obj       IsFalse (Obj hdL, Obj hdR)
 *F  ProtectVar( <hdVar> ) . . . forbid variable overwriting from GAP session
 *F  UnprotectVar( <hdVar> ) . . . . . . . . . .removes ProtectVar protection
 */
-void       ProtectVar(Obj hdVar) {
+void        ProtectVar(Obj hdVar)
+{
     SET_FLAG_BAG(hdVar, BF_PROTECT_VAR);
 }
 
-void       UnprotectVar(Obj hdVar) {
+void        UnprotectVar(Obj hdVar) 
+{
     CLEAR_FLAG_BAG(hdVar, BF_PROTECT_VAR);
 }
 
@@ -763,55 +878,90 @@ void       UnprotectVar(Obj hdVar) {
 **
 **  ProtectVar(var) forbids variable overwriting from GAP session.
 **/
-Obj        FunProtectVar(Obj hdCall) {
+Obj     FunProtectVar(Obj hdCall)
+{
     Obj hdVar;
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error("Usage: ProtectVar(<variable>)", 0, 0);
-    hdVar = PTR_BAG(hdCall)[1];
-    if ( GET_TYPE_BAG(hdVar) != T_VAR && GET_TYPE_BAG(hdVar) != T_VARAUTO )
+
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
         return Error("Usage: ProtectVar(<variable>)", 0, 0);
+    }
+
+    hdVar = PTR_BAG(hdCall)[1];
+    if ((GET_TYPE_BAG(hdVar) != T_VAR) && (GET_TYPE_BAG(hdVar) != T_VARAUTO))
+    {
+        return Error("Usage: ProtectVar(<variable>)", 0, 0);
+    }
+
     ProtectVar(PTR_BAG(hdCall)[1]);
     return HdVoid;
 }
 
-Obj        FunProtectRec(Obj hdCall) {
+Obj        FunProtectRec(Obj hdCall) 
+{
     Obj hdRec;
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error("Usage: ProtectRec(<variable>)", 0, 0);
+
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("Usage: ProtectRec(<variable>)", 0, 0);
+    }
+
     hdRec = EVAL(PTR_BAG(hdCall)[1]);
-    if ( GET_TYPE_BAG(hdRec) != T_REC )
+
+    if (GET_TYPE_BAG(hdRec) != T_REC)
+    {
         return Error("Usage: ProtectRec(<record>)", 0, 0);
+    }
+
     ProtectVar(hdRec);
+
     return HdVoid;
 }
 
-Obj        FunProtectNamespace(Obj hdCall) {
-    Obj hdNS;
-    UInt size, i;
+Obj        FunProtectNamespace(Obj hdCall)
+{
+    Obj     hdNS;
+    UInt    size;
+    UInt    i;
 
-        if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-                return Error("Usage: ProtectNamespace(<variable>)", 0, 0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("Usage: ProtectNamespace(<variable>)", 0, 0);
+    }
 
     hdNS = EVAL(PTR_BAG(hdCall)[1]);
 
-    if ( GET_TYPE_BAG(hdNS) != T_NAMESPACE )
-                return Error("Usage: ProtectNamespace(<namespace>)", 0, 0);
+    if (GET_TYPE_BAG(hdNS) != T_NAMESPACE)
+    {
+        return Error("Usage: ProtectNamespace(<namespace>)", 0, 0);
+    }
 
     size = TableSize(hdNS);
-    for ( i = 0; i < size; ++i ) {
+
+    for (i = 0; i < size; ++i)
+    {
         Obj var = PTR_BAG(hdNS)[i];
-        if (var != 0) {
-        	ProtectVar(var);
-        	var = EVAL(var);
-        	if(var != 0){
-        		if((GET_TYPE_BAG(var)==T_FUNCTION)||(GET_TYPE_BAG(var)==T_METHOD)) ProtectVar(var);
-        	}
+
+        if (var != 0)
+        {
+            ProtectVar(var);
+            var = EVAL(var);
+            if (var != 0)
+            {
+                if ((GET_TYPE_BAG(var) == T_FUNCTION) || (GET_TYPE_BAG(var) == T_METHOD))
+                {
+                    ProtectVar(var);
+                }
+            }
         }
     }
     return HdVoid;
 }
 
-Obj        Fun_UnprotectVar(Obj hdCall) {
+Obj        Fun_UnprotectVar(Obj hdCall)
+{
     Obj hdVar = PTR_BAG(hdCall)[1];
-    if ( GET_TYPE_BAG(hdVar) != T_VAR && GET_TYPE_BAG(hdVar) != T_VARAUTO )
+    if (GET_TYPE_BAG(hdVar) != T_VAR && GET_TYPE_BAG(hdVar) != T_VARAUTO)
         return Error("Usage: UnprotectVar(<variable>)", 0, 0);
     UnprotectVar(PTR_BAG(hdCall)[1]);
     return HdVoid;
@@ -825,15 +975,21 @@ Obj        Fun_UnprotectVar(Obj hdCall) {
 **  The value is the only subobject <hdVar>.  If this has the handle '0' then
 **  no value has been assigned to the variable and  an  error  is  generated.
 */
-Obj       EvVar (Obj hdVar)
+Obj       EvVar(Obj hdVar)
 {
-    if ( PTR_BAG(hdVar)[0] == 0 )
-        return Error("Variable: '%s' must have a value",
-                     (Int)(PTR_BAG(hdVar)+OFS_IDENT), 0 );
-    if ( GET_FLAG_BAG(hdVar, BF_VAR_AUTOEVAL) )
+    if (PTR_BAG(hdVar)[0] == 0)
+    {
+        return Error("Variable: '%s' must have a value", (Int)(PTR_BAG(hdVar) + OFS_IDENT), 0);
+    }
+
+    if (GET_FLAG_BAG(hdVar, BF_VAR_AUTOEVAL))
+    {
         return EVAL(VAR_VALUE(hdVar));
+    }
     else
+    {
         return VAR_VALUE(hdVar);
+    }
 
 }
 
@@ -842,21 +998,23 @@ Obj       EvVar (Obj hdVar)
 **
 *F  EvVarAuto( <hdVar> )  . . . . . . . . . . . . . eval an autoread variable
 */
-Obj       EvVarAuto (Obj hdVar)
+Obj       EvVarAuto(Obj hdVar)
 {
-    Obj           ignore;
+    Obj     ignore;
 
     /* evaluate the value cell, unless it is already a constant            */
-    if ( T_VAR <= GET_TYPE_BAG( PTR_BAG(hdVar)[0] ) ) {
-        ignore = EVAL( PTR_BAG(hdVar)[0] );
-        if ( T_VAR <= GET_TYPE_BAG( PTR_BAG(hdVar)[0] ) ) {
-            return Error("AUTO: '%s' must be defined by the evaluation",
-                         (Int)(PTR_BAG(hdVar)+OFS_IDENT), 0 );
+    if (T_VAR <= GET_TYPE_BAG(PTR_BAG(hdVar)[0])) 
+    {
+        ignore = EVAL(PTR_BAG(hdVar)[0]);
+
+        if (T_VAR <= GET_TYPE_BAG(PTR_BAG(hdVar)[0]))
+        {
+            return Error("AUTO: '%s' must be defined by the evaluation", (Int)(PTR_BAG(hdVar) + OFS_IDENT), 0);
         }
     }
 
     /* convert the autoread variable to a normal one                       */
-    Retype( hdVar, T_VAR );
+    Retype(hdVar, T_VAR);
 
     /* return the value                                                    */
     return PTR_BAG(hdVar)[0];
@@ -872,22 +1030,29 @@ Obj       EvVarAuto (Obj hdVar)
 **
 **  'EvVarAss' is called from 'EVAL' for bags of type 'T_VARASS'.
 */
-Obj       EvVarAss (Obj hdAss)
+Obj     EvVarAss(Obj hdAss)
 {
-    Obj           hdVal;
-    Obj           hdVar;
+    Obj     hdVal;
+    Obj     hdVar;
 
     hdVar = PTR_BAG(hdAss)[0];
-    if ( GET_FLAG_BAG(hdVar, BF_PROTECT_VAR) ) {
+
+    if (GET_FLAG_BAG(hdVar, BF_PROTECT_VAR))
+    {
         return Error("Assignment: variable %g is write-protected", (Int)hdVar, 0);
     }
-    else {
-        hdVal = EVAL( PTR_BAG(hdAss)[1] );
-        if ( hdVal == HdVoid )
-            return Error("Assignment: function must return a value",0,0);
+    else
+    {
+        hdVal = EVAL(PTR_BAG(hdAss)[1]);
+        if (hdVal == HdVoid)
+        {
+            return Error("Assignment: function must return a value", 0, 0);
+        }
     }
-    SET_VAR_VALUE( hdVar, hdVal);
-    DocumentValue( hdVal, PTR_BAG(hdAss)[2] );
+
+    SET_VAR_VALUE(hdVar, hdVal);
+    DocumentValue(hdVal, PTR_BAG(hdAss)[2]);
+
     return hdVal;
 }
 
@@ -899,7 +1064,7 @@ Obj       EvVarAss (Obj hdAss)
 **  'EvBool' returns the value of the boolean value <hdBool>.  Since  boolean
 **  values are constants and thus selfevaluating it just returns <hdBool>.
 */
-Obj       EvBool (Obj hdBool)
+Obj     EvBool(Obj hdBool)
 {
     return hdBool;
 }
@@ -912,18 +1077,24 @@ Obj       EvBool (Obj hdBool)
 **  'EvNot' returns the boolean negation of the boolean value <hdBool>, i.e.,
 **  it returns 'HdTrue' if <hdBool> is 'HdFalse' and vica versa.
 */
-Obj       EvNot (Obj hdBool)
+Obj       EvNot(Obj hdBool)
 {
     /* evaluate the operand                                                */
-    hdBool = EVAL( PTR_BAG(hdBool)[0] );
+    hdBool = EVAL(PTR_BAG(hdBool)[0]);
 
     /* check that it is 'true' or 'false' and return the negation          */
-    if ( hdBool == HdTrue )
-        return HdFalse;
-    else if ( hdBool == HdFalse )
+    if (hdBool == HdTrue)
+    { 
+        return HdFalse; 
+    }
+    else if (hdBool == HdFalse)
+    {
         return HdTrue;
+    }
     else
-        return Error("not: <expr> must evaluate to 'true' or 'false'",0,0);
+    {
+        return Error("not: <expr> must evaluate to 'true' or 'false'", 0, 0);
+    }
 }
 
 
@@ -939,23 +1110,33 @@ Obj       EvNot (Obj hdBool)
 **
 **      if index <= max  and list[index] = 0  then ... fi;
 */
-Obj       EvAnd (Obj hd)
+Obj       EvAnd(Obj hd)
 {
-    Obj           hd1;
+    Obj     hd1;
 
     /* evaluate and check the left operand                                 */
-    hd1 = EVAL( PTR_BAG(hd)[0] );
-    if ( hd1 == HdFalse )
+    hd1 = EVAL(PTR_BAG(hd)[0]);
+
+    if (hd1 == HdFalse)
+    {
         return HdFalse;
-    else if ( hd1 != HdTrue )
-        return Error("and: <expr> must evaluate to 'true' or 'false'",0,0);
+    }
+    else if (hd1 != HdTrue)
+    {
+        return Error("and: <expr> must evaluate to 'true' or 'false'", 0, 0);
+    }
 
     /* evaluate and check the right operand                                */
-    hd1 = EVAL( PTR_BAG(hd)[1] );
-    if ( hd1 == HdFalse )
+    hd1 = EVAL(PTR_BAG(hd)[1]);
+
+    if (hd1 == HdFalse)
+    {
         return HdFalse;
-    else if ( hd1 != HdTrue )
-        return Error("and: <expr> must evaluate to 'true' or 'false'",0,0);
+    }
+    else if (hd1 != HdTrue)
+    {
+        return Error("and: <expr> must evaluate to 'true' or 'false'", 0, 0);
+    }
 
     return HdTrue;
 }
@@ -968,29 +1149,33 @@ Obj       EvAnd (Obj hd)
 **  'EvIs' evaliates boolean expression '_ObjId(<hdAnd>[0])=<hdAnd>[1]'
 **
 */
-Obj       EvIs (Obj hd)
+Obj       EvIs(Obj hd)
 {
-    Obj hdL   = 0;
-	Obj hdR   = 0;
+    Obj hdL = 0;
+    Obj hdR = 0;
     Obj hdRes = 0;
-	Obj hdEQ  = 0;
+    Obj hdEQ = 0;
 
     /* evaluate and check the left operand                                 */
-    hdL = _ObjId(EVAL( PTR_BAG(hd)[0] ));
-    hdR = EVAL( PTR_BAG(hd)[1] );
-	if (!IS_LIST(hdR)) {
-        hdEQ  = NewBag(T_EQ, 2*SIZE_HD);
-	    SET_BAG(hdEQ, 0,  hdL );
-	    SET_BAG(hdEQ, 1,  hdR );
+    hdL = _ObjId(EVAL(PTR_BAG(hd)[0]));
+    hdR = EVAL(PTR_BAG(hd)[1]);
+
+    if (!IS_LIST(hdR))
+    {
+        hdEQ = NewBag(T_EQ, 2 * SIZE_HD);
+        SET_BAG(hdEQ, 0, hdL);
+        SET_BAG(hdEQ, 1, hdR);
         hdRes = EVAL(hdEQ);
-	} else {
+    }
+    else 
+    {
         /* search the element                                              */
-        Int pos = POS_LIST( hdR, hdL, 0 );
+        Int pos = POS_LIST(hdR, hdL, 0);
         /* return the position                                             */
         hdRes = (pos != 0) ? HdTrue : HdFalse;
-	}
+    }
 
-	return hdRes;
+    return hdRes;
 }
 
 /****************************************************************************
@@ -1005,23 +1190,32 @@ Obj       EvIs (Obj hd)
 **
 **      if index > max  or list[index] = 0  then ... fi;
 */
-Obj       EvOr (Obj hd)
+Obj       EvOr(Obj hd)
 {
-    Obj           hd1;
+    Obj     hd1;
 
     /* evaluate and check the left operand                                 */
-    hd1 = EVAL( PTR_BAG(hd)[0] );
-    if ( hd1 == HdTrue )
+    hd1 = EVAL(PTR_BAG(hd)[0]);
+
+    if (hd1 == HdTrue)
+    {
         return HdTrue;
-    else if ( hd1 != HdFalse )
-        return Error("or: <expr> must evaluate to 'true' or 'false'",0,0);
+    }
+    else if (hd1 != HdFalse)
+    {
+        return Error("or: <expr> must evaluate to 'true' or 'false'", 0, 0);
+    }
 
     /* evaluate and check the right operand                                */
-    hd1 = EVAL( PTR_BAG(hd)[1] );
-    if ( hd1 == HdTrue )
+    hd1 = EVAL(PTR_BAG(hd)[1]);
+    if (hd1 == HdTrue)
+    {
         return HdTrue;
-    else if ( hd1 != HdFalse )
-        return Error("or: <expr> must evaluate to 'true' or 'false'",0,0);
+    }
+    else if (hd1 != HdFalse)
+    {
+        return Error("or: <expr> must evaluate to 'true' or 'false'", 0, 0);
+    }
 
     return HdFalse;
 }
@@ -1034,10 +1228,16 @@ Obj       EvOr (Obj hd)
 **  'EqBool' returns 'HdTrue' if the  two  boolean  values  <hdL>  and  <hdR>
 **  are equal, and 'HdFalse' otherwise.
 */
-Obj       EqBool (Obj hdL, Obj hdR)
+Obj       EqBool(Obj hdL, Obj hdR)
 {
-    if ( hdL == hdR )  return HdTrue;
-    else               return HdFalse;
+    if (hdL == hdR) 
+    { 
+        return HdTrue;
+    }
+    else
+    { 
+        return HdFalse;
+    }
 }
 
 
@@ -1048,10 +1248,16 @@ Obj       EqBool (Obj hdL, Obj hdR)
 **  'EqPtr' provides an ordering function for arbitrary objects by comparing
 **  masterpointers
 */
-Obj       EqPtr (Obj hdL, Obj hdR)
+Obj       EqPtr(Obj hdL, Obj hdR)
 {
-    if ( hdL == hdR )  return HdTrue;
-    else              return HdFalse;
+    if (hdL == hdR) 
+    {
+        return HdTrue;
+    }
+    else
+    { 
+        return HdFalse;
+    }
 }
 
 
@@ -1062,10 +1268,16 @@ Obj       EqPtr (Obj hdL, Obj hdR)
 **  'LtBool' return 'HdTrue' if  the  boolean value <hdL> is  less  than  the
 **  boolean value <hdR> and 'HdFalse' otherwise.
 */
-Obj       LtBool (Obj hdL, Obj hdR)
+Obj       LtBool(Obj hdL, Obj hdR)
 {
-    if ( hdL == HdTrue && hdR == HdFalse )  return HdTrue;
-    else                                    return HdFalse;
+    if (hdL == HdTrue && hdR == HdFalse)
+    {
+        return HdTrue;
+    }
+    else
+    {
+        return HdFalse;
+    }
 }
 
 /****************************************************************************
@@ -1075,10 +1287,16 @@ Obj       LtBool (Obj hdL, Obj hdR)
 **  'LtPtr' provides an ordering function for arbitrary objects by comparing
 **  masterpointers
 */
-Obj       LtPtr (Obj hdL, Obj hdR)
+Obj       LtPtr(Obj hdL, Obj hdR)
 {
-    if ( hdL < hdR )  return HdTrue;
-    else              return HdFalse;
+    if (hdL < hdR) 
+    {
+        return HdTrue;
+    }
+    else 
+    {
+        return HdFalse; 
+    }
 }
 
 /****************************************************************************
@@ -1087,10 +1305,18 @@ Obj       LtPtr (Obj hdL, Obj hdR)
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-void            PrBool (Obj hd)
+void        PrBool(STREAM stream, Obj hd, int indent)
 {
-    if ( hd == HdTrue )  Pr("true",0,0);
-    else                 Pr("false",0,0);
+    if (hd == HdTrue) 
+    {
+        //Pr("true", 0, 0);
+        SyFmtPrint(stream, "true");
+    }
+    else
+    { 
+        //Pr("false", 0, 0); 
+        SyFmtPrint(stream, "false");
+    }
 }
 
 
@@ -1101,22 +1327,32 @@ void            PrBool (Obj hd)
 **  'IsBool' returns 'true' if the object <obj>  is  a  boolean  and  'false'
 **  otherwise.  May cause an error if <obj> is an unbound variable.
 */
-Obj       FunIsBool (Obj hdCall)
+Obj       FunIsBool(Obj hdCall)
 {
-    Obj           hdObj;
+    Obj     hdObj;
 
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: IsBool( <obj> )",0,0);
-    hdObj = EVAL( PTR_BAG(hdCall)[1] );
-    if ( hdObj == HdVoid )
-        return Error("IsBool: function must return a value",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: IsBool( <obj> )", 0, 0);
+    }
+
+    hdObj = EVAL(PTR_BAG(hdCall)[1]);
+
+    if (hdObj == HdVoid)
+    {
+        return Error("IsBool: function must return a value", 0, 0);
+    }
 
     /* return 'true' if <obj> is a boolean and 'false' otherwise           */
-    if ( GET_TYPE_BAG(hdObj) == T_BOOL )
+    if (GET_TYPE_BAG(hdObj) == T_BOOL)
+    {
         return HdTrue;
+    }
     else
+    {
         return HdFalse;
+    }
 }
 
 /****************************************************************************
@@ -1134,37 +1370,42 @@ Obj       FunIsBool (Obj hdCall)
 **  'FullShallowCopy' is identical to ShallowCopy,  except  that  ShallowCopy
 **  does not copy objects with type > T_VARAUTO, while FullShalloCopy does.
 **/
-Obj       ShallowCopy (Obj hdOld)
+Obj       ShallowCopy(Obj hdOld)
 {
-    Obj           * ptOld;        /* pointer to the old object       */
-    Obj           hdNew;          /* handle of the new object        */
-    Obj           * ptNew;        /* pointer to the new object       */
-    UInt       i;              /* loop variable                   */
-
+    Obj     *ptOld;        /* pointer to the old object       */
+    Obj     *ptNew;        /* pointer to the new object       */
+    Obj      hdNew;          /* handle of the new object        */
+    UInt     i;              /* loop variable                   */
+    
     /* for mutable objects copy the bag                                    */
-    if ( IS_MUTABLE(hdOld)  && ! GET_FLAG_BAG(hdOld, BF_NO_COPY)) {
-        hdNew = NewBag( GET_TYPE_BAG(hdOld), GET_SIZE_BAG(hdOld) );
+    if (IS_MUTABLE(hdOld) && !GET_FLAG_BAG(hdOld, BF_NO_COPY)) 
+    {
+        hdNew = NewBag(GET_TYPE_BAG(hdOld), GET_SIZE_BAG(hdOld));
         ptOld = PTR_BAG(hdOld);
         ptNew = PTR_BAG(hdNew);
-        for ( i = (GET_SIZE_BAG(hdOld)+SIZE_HD-1)/SIZE_HD; 0 < i; i-- )
+
+        for (i = ((GET_SIZE_BAG(hdOld) + SIZE_HD - 1) / SIZE_HD); 0 < i; i--)
+        {
             *ptNew++ = *ptOld++;
+        }
 
         /* special handling of T_DELAY */
-        if ( GET_TYPE_BAG(hdNew) == T_DELAY ) {
+        if (GET_TYPE_BAG(hdNew) == T_DELAY)
+        {
             Obj hd = ShallowCopy(PTR_BAG(hdNew)[0]);
-            SET_BAG(hdNew, 0,  hd );
+            SET_BAG(hdNew, 0, hd);
         }
     }
-
     /* otherwise return the original object                                */
-    else {
+    else 
+    {
         hdNew = hdOld;
     }
 
     return hdNew;
 }
 
-Obj       FullShallowCopy (Obj hdOld)
+Obj       FullShallowCopy(Obj hdOld)
 {
     Obj hdResult;
     DoFullCopy = 1;
@@ -1187,14 +1428,18 @@ Obj       FullShallowCopy (Obj hdOld)
 **  subobjects.
 */
 
-Obj       FunShallowCopy (Obj hdCall)
+Obj       FunShallowCopy(Obj hdCall)
 {
     Obj           hdOld;          /* handle of the old object        */
+
     /* check the argument                                                  */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: ShallowCopy( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: ShallowCopy( <obj> )", 0, 0);
+    }
+
     /* evaluate the argument                                               */
-    hdOld = EVAL( PTR_BAG(hdCall)[1] );
+    hdOld = EVAL(PTR_BAG(hdCall)[1]);
     return FullShallowCopy(hdOld);
 }
 
@@ -1216,7 +1461,7 @@ Obj       FunShallowCopy (Obj hdCall)
 **  with type > T_VARAUTO, while FullCopy does.
 */
 
-Obj       FullCopy (Obj hdOld)
+Obj       FullCopy(Obj hdOld)
 {
     Obj hdResult;
     DoFullCopy = 1;
@@ -1225,75 +1470,94 @@ Obj       FullCopy (Obj hdOld)
     return hdResult;
 }
 
-Obj       CopyShadow (Obj hdOld)
+Obj       CopyShadow(Obj hdOld)
 {
-    Obj           hdNew;          /* shadow of <hdOld>               */
-    Obj           hdTmp;          /* shadow of element of <hdOld>    */
-    UInt       n;              /* number of handles of <hdOld>    */
-    UInt       i;              /* loop variable                   */
+    Obj     hdNew;          /* shadow of <hdOld>               */
+    Obj     hdTmp;          /* shadow of element of <hdOld>    */
+    UInt    n;              /* number of handles of <hdOld>    */
+    UInt    i;              /* loop variable                   */
 
-    if ( GET_FLAG_BAG(hdOld, BF_COPY) )
+    if (GET_FLAG_BAG(hdOld, BF_COPY))
+    {
         return GET_COPY_BAG(hdOld);
-    else if ( GET_FLAG_BAG(hdOld, BF_NO_COPY) )
+    }
+    else if (GET_FLAG_BAG(hdOld, BF_NO_COPY))
+    {
         return hdOld;
+    }
 
     /* make a shadow of the old bag                                        */
-    hdNew = NewBag( GET_TYPE_BAG(hdOld), GET_SIZE_BAG(hdOld) );
+    hdNew = NewBag(GET_TYPE_BAG(hdOld), GET_SIZE_BAG(hdOld));
     SET_FLAG_BAG(hdOld, BF_COPY);
     SET_COPY_BAG(hdOld, hdNew);
 
     /* and make recursively shadows of the subobjects                      */
-    n = NrHandles( GET_TYPE_BAG(hdOld), GET_SIZE_BAG(hdOld) );
-    for ( i = n; 0 < i; i-- ) {
-        hdTmp = PTR_BAG(hdOld)[i-1];
-        if ( hdTmp != 0 && IS_MUTABLE(hdTmp) ) {
-            hdTmp = CopyShadow( hdTmp );
-            SET_BAG(hdNew, i-1,  hdTmp );
+    n = NrHandles(GET_TYPE_BAG(hdOld), GET_SIZE_BAG(hdOld));
+    for (i = n; 0 < i; i--) 
+    {
+        hdTmp = PTR_BAG(hdOld)[i - 1];
+
+        if (hdTmp != 0 && IS_MUTABLE(hdTmp))
+        {
+            hdTmp = CopyShadow(hdTmp);
+            SET_BAG(hdNew, i - 1, hdTmp);
         }
-        else SET_BAG(hdNew, i-1,  0 );
+        else 
+        { 
+            SET_BAG(hdNew, i - 1, 0); 
+        }
     }
 
-    SET_FLAG_BAG(hdNew, GET_FLAGS_BAG(hdOld) & (BF_ENVIRONMENT | BF_ENV_VAR /* | BF_WEAKREFS */ ));
+    SET_FLAG_BAG(hdNew, GET_FLAGS_BAG(hdOld) & (BF_ENVIRONMENT | BF_ENV_VAR /* | BF_WEAKREFS */));
 
     /* return the shadow                                                   */
     return hdNew;
 }
 
-void            CopyCopy (Obj hdOld, Obj hdNew)
-                                        /* old bag                         */
-                                        /* shadow of <hdOld>               */
+void        CopyCopy(Obj hdOld, Obj hdNew)
+/* old bag                         */
+/* shadow of <hdOld>               */
 {
     UInt       n;              /* number of handles of <hdOld>    */
     UInt       i;              /* loop variable                   */
 
-    if ( ! GET_FLAG_BAG(hdOld, BF_COPY) )
+    if (!GET_FLAG_BAG(hdOld, BF_COPY))
+    {
         return;
+    }
+
     CLEAR_FLAG_BAG(hdOld, BF_COPY);
 
     /* copy the data area                                                  */
-    n = NrHandles( GET_TYPE_BAG(hdOld), GET_SIZE_BAG(hdOld) );
-    for ( i = (GET_SIZE_BAG(hdOld)+SIZE_HD-1)/SIZE_HD; n < i; i-- ) {
-        ((Bag*)(PTR_BAG(hdNew)))[i-1] = PTR_BAG(hdOld)[i-1];
+    n = NrHandles(GET_TYPE_BAG(hdOld), GET_SIZE_BAG(hdOld));
+    for (i = ((GET_SIZE_BAG(hdOld) + SIZE_HD - 1) / SIZE_HD); n < i; i--)
+    {
+        ((Bag*)(PTR_BAG(hdNew)))[i - 1] = PTR_BAG(hdOld)[i - 1];
     }
 
     /* copy the handles area                                               */
-    for(i = n; 0 < i; i--) {
-        if(PTR_BAG(hdOld)[i-1] != 0 && PTR_BAG(hdNew)[i-1] != 0)
-            CopyCopy(PTR_BAG(hdOld)[i-1], PTR_BAG(hdNew)[i-1]);
+    for (i = n; 0 < i; i--)
+    {
+        if (PTR_BAG(hdOld)[i - 1] != 0 && PTR_BAG(hdNew)[i - 1] != 0)
+        {
+            CopyCopy(PTR_BAG(hdOld)[i - 1], PTR_BAG(hdNew)[i - 1]);
+        }
         else
-            SET_BAG(hdNew, i-1,  PTR_BAG(hdOld)[i-1] );
+        {
+            SET_BAG(hdNew, i - 1, PTR_BAG(hdOld)[i - 1]);
+        }
     }
 
 }
 
-Obj       Copy (Obj hdOld)
+Obj     Copy(Obj hdOld)
 {
-    Obj           hdNew;          /* copy of <hdOld>                 */
+    Obj     hdNew;          /* copy of <hdOld>                 */
 
     /* copy mutable objects                                                */
-    if ( IS_MUTABLE(hdOld) && ! GET_FLAG_BAG(hdOld, BF_NO_COPY) ) {
-        hdNew = CopyShadow( hdOld );
-        CopyCopy( hdOld, hdNew );
+    if (IS_MUTABLE(hdOld) && !GET_FLAG_BAG(hdOld, BF_NO_COPY)) {
+        hdNew = CopyShadow(hdOld);
+        CopyCopy(hdOld, hdNew);
     }
     /* for other objects simply return the object                          */
     else {
@@ -1303,18 +1567,18 @@ Obj       Copy (Obj hdOld)
     return hdNew;
 }
 
-Obj       CopyFunc (Obj hdOld)
+Obj       CopyFunc(Obj hdOld)
 {
-    Obj           hdNew;          /* copy of <hdOld>                 */
+    Obj     hdNew;          /* copy of <hdOld>                 */
     Int                type;
 
     type = GET_TYPE_BAG(hdOld);
-    if ( type != T_FUNCTION && type != T_METHOD)
+    if (type != T_FUNCTION && type != T_METHOD)
         Error("CopyFunc() expects a function or method", 0, 0);
 
     DoFullCopy = 1;
-    hdNew = CopyShadow( hdOld );
-    CopyCopy( hdOld, hdNew );
+    hdNew = CopyShadow(hdOld);
+    CopyCopy(hdOld, hdNew);
     RecursiveClearFlagMutable(hdOld, BF_COPY);
     DoFullCopy = 0;
 
@@ -1340,22 +1604,28 @@ Obj       CopyFunc (Obj hdOld)
 **  'CopyFunc' copies a function, it is necessary when function bags are to be
 **  modified from within the interpreter (using Child/SetChild functions).
 */
-Obj       FunCopy (Obj hdCall)
+Obj       FunCopy(Obj hdCall)
 {
     /* check the argument                                                  */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: Copy( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: Copy( <obj> )", 0, 0);
+    }
 
     /* return a copy of the object                                         */
-    return Copy( EVAL( PTR_BAG(hdCall)[1] ) );
+    return Copy(EVAL(PTR_BAG(hdCall)[1]));
 }
 
-Obj       FunCopyFunc (Obj hdCall)
+Obj     FunCopyFunc(Obj hdCall)
 {
-    char * usage = "usage: CopyFunc( <func> )";
+    char* usage = "usage: CopyFunc( <func> )";
     /* check the argument                                                  */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error(usage, 0, 0);
-    return CopyFunc( EVAL( PTR_BAG(hdCall)[1] ) );
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error(usage, 0, 0);
+    }
+
+    return CopyFunc(EVAL(PTR_BAG(hdCall)[1]));
 }
 
 /****************************************************************************
@@ -1365,63 +1635,107 @@ Obj       FunCopyFunc (Obj hdCall)
 **  'FunIsBound' implements the internal function 'IsBound( <expr> )'.
 **
 */
-Obj       FunIsBound (Obj hdCall)
+Obj       FunIsBound(Obj hdCall)
 {
-    Obj           hd, hdList, hdInd, hdRec, hdNam, Result;
+    Obj     hd;
+    Obj     hdList; 
+    Obj     hdInd;
+    Obj     hdRec;
+    Obj     hdNam;
+    Obj     Result;
 
     /* check the argument                                                  */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: IsBound( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: IsBound( <obj> )", 0, 0);
+    }
+
     hd = PTR_BAG(hdCall)[1];
-    if ( GET_TYPE_BAG(hd) != T_VAR     && GET_TYPE_BAG(hd) != T_VARAUTO
-      && GET_TYPE_BAG(hd) != T_LISTELM && GET_TYPE_BAG(hd) != T_RECELM )
-        return Error("IsBound: <obj> must be a variable",0,0);
+
+    if (GET_TYPE_BAG(hd) != T_VAR && GET_TYPE_BAG(hd) != T_VARAUTO
+        && GET_TYPE_BAG(hd) != T_LISTELM && GET_TYPE_BAG(hd) != T_RECELM)
+    {
+        return Error("IsBound: <obj> must be a variable", 0, 0);
+    }
 
     /* easiest case first                                                  */
-    if ( GET_TYPE_BAG(hd) == T_VAR ) {
-        if ( PTR_BAG(hd)[0] != 0 )
+    if (GET_TYPE_BAG(hd) == T_VAR) 
+    {
+        if (PTR_BAG(hd)[0] != 0)
+        {
             Result = HdTrue;
+        }
         else
+        {
             Result = HdFalse;
+        }
     }
-
     /* an variable that autoreads a file is considered bound               */
-    else if ( GET_TYPE_BAG(hd) == T_VARAUTO ) {
+    else if (GET_TYPE_BAG(hd) == T_VARAUTO) 
+    {
         Result = HdTrue;
     }
-
     /* is a list element bound                                             */
-    else if ( GET_TYPE_BAG(hd) == T_LISTELM ) {
-        hdList = EVAL( PTR_BAG(hd)[0] );
-        if ( ! IS_LIST(hdList) )
-            return Error("IsBound: <list> must be a list",0,0);
-        hdInd = EVAL( PTR_BAG(hd)[1] );
-        if ( GET_TYPE_BAG(hdInd) != T_INT || HD_TO_INT(hdInd) <= 0 )
-            return Error("IsBound: <index> must be positive int",0,0);
-        if ( HD_TO_INT(hdInd) <= LEN_LIST(hdList)
-          && ELMF_LIST(hdList,HD_TO_INT(hdInd)) != 0 )
-            Result = HdTrue;
-        else
-            Result = HdFalse;
-    }
+    else if (GET_TYPE_BAG(hd) == T_LISTELM) 
+    {
+        hdList = EVAL(PTR_BAG(hd)[0]);
 
-    /* is a record element bound                                           */
-    else {
-        hdRec = EVAL( PTR_BAG(hd)[0] );
-        if ( GET_TYPE_BAG(hdRec) != T_REC && GET_TYPE_BAG(hdRec) != T_NAMESPACE)
-            return Error("IsBound: <record> must be a record",0,0);
-
-        hdNam = RecnameObj( PTR_BAG(hd)[1] );
-        if ( GET_TYPE_BAG(hdRec) == T_REC ) {
-            Obj tmp = 0;
-            if ( FindRecnameRec(hdRec, hdNam, &tmp) == 0 ) Result = HdFalse;
-            else Result = HdTrue;
+        if (!IS_LIST(hdList))
+        {
+            return Error("IsBound: <list> must be a list", 0, 0);
         }
-        else {
+
+        hdInd = EVAL(PTR_BAG(hd)[1]);
+
+        if (GET_TYPE_BAG(hdInd) != T_INT || HD_TO_INT(hdInd) <= 0)
+        {
+            return Error("IsBound: <index> must be positive int", 0, 0);
+        }
+
+        if (HD_TO_INT(hdInd) <= LEN_LIST(hdList)
+            && ELMF_LIST(hdList, HD_TO_INT(hdInd)) != 0)
+        {
+            Result = HdTrue;
+        }
+        else
+        {
+            Result = HdFalse;
+        }
+    }
+    /* is a record element bound                                           */
+    else 
+    {
+        hdRec = EVAL(PTR_BAG(hd)[0]);
+        if (GET_TYPE_BAG(hdRec) != T_REC && GET_TYPE_BAG(hdRec) != T_NAMESPACE)
+        {
+            return Error("IsBound: <record> must be a record", 0, 0);
+        }
+
+        hdNam = RecnameObj(PTR_BAG(hd)[1]);
+        if (GET_TYPE_BAG(hdRec) == T_REC)
+        {
+            Obj tmp = 0;
+            if (FindRecnameRec(hdRec, hdNam, &tmp) == 0) 
+            { 
+                Result = HdFalse; 
+            }
+            else
+            { 
+                Result = HdTrue; 
+            }
+        }
+        else 
+        {
             UInt k = TableLookup(hdRec, RECNAM_NAME(hdNam), OFS_IDENT);
             Obj hdIdent = PTR_BAG(hdRec)[k];
-            if ( hdIdent != 0 && VAR_VALUE(hdIdent)!=0) Result = HdTrue;
-            else Result = HdFalse;
+            if (hdIdent != 0 && VAR_VALUE(hdIdent) != 0) 
+            {
+                Result = HdTrue; 
+            }
+            else 
+            {
+                Result = HdFalse;
+            }
         }
     }
 
@@ -1435,78 +1749,114 @@ Obj       FunIsBound (Obj hdCall)
 **
 **  'FunUnbind' implements the internal function 'Unbind( <expr> )'.
 */
-Obj       FunUnbind (Obj hdCall)
+Obj       FunUnbind(Obj hdCall)
 {
-    Obj           hd, hdList, hdInd, hdRec, hdNam;
-    UInt       i;              /* loop variable                   */
+    Obj     hd;
+    Obj     hdList;
+    Obj     hdInd;
+    Obj     hdRec;
+    Obj     hdNam;
+    UInt    i;              /* loop variable                   */
 
     /* check the argument                                                  */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: Unbind( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != (2 * SIZE_HD))
+    {
+        return Error("usage: Unbind( <obj> )", 0, 0);
+    }
+
     hd = PTR_BAG(hdCall)[1];
-    if ( GET_TYPE_BAG(hd) != T_VAR     && GET_TYPE_BAG(hd) != T_VARAUTO
-      && GET_TYPE_BAG(hd) != T_LISTELM && GET_TYPE_BAG(hd) != T_RECELM )
-        return Error("Unbind: <obj> must be a variable",0,0);
+
+    if (GET_TYPE_BAG(hd) != T_VAR && GET_TYPE_BAG(hd) != T_VARAUTO
+        && GET_TYPE_BAG(hd) != T_LISTELM && GET_TYPE_BAG(hd) != T_RECELM)
+    {
+        return Error("Unbind: <obj> must be a variable", 0, 0);
+    }
 
     /* easiest case first                                                  */
-    if ( GET_TYPE_BAG(hd) == T_VAR ) {
-        SET_BAG(hd, 0,  0 );
+    if (GET_TYPE_BAG(hd) == T_VAR) 
+    {
+        SET_BAG(hd, 0, 0);
     }
-
     /* an variable that autoreads a file is considered bound               */
-    else if ( GET_TYPE_BAG(hd) == T_VARAUTO ) {
-        Retype( hd, T_VAR );
-        SET_BAG(hd, 0,  0 );
+    else if (GET_TYPE_BAG(hd) == T_VARAUTO)
+    {
+        Retype(hd, T_VAR);
+        SET_BAG(hd, 0, 0);
     }
-
     /* is a list element bound                                             */
-    else if ( GET_TYPE_BAG(hd) == T_LISTELM ) {
-        hdList = EVAL( PTR_BAG(hd)[0] );
-        if ( ! IS_LIST( hdList ) )
-            return Error("Unbind: <list> must be a list",0,0);
-        PLAIN_LIST( hdList );
-        Retype( hdList, T_LIST );
-        hdInd = EVAL( PTR_BAG(hd)[1] );
-        if ( GET_TYPE_BAG(hdInd) != T_INT || HD_TO_INT(hdInd) <= 0 )
-            return Error("Unbind: <index> must be positive int",0,0);
-        i = HD_TO_INT(hdInd);
-        if ( i < LEN_PLIST(hdList) ) {
-            SET_ELM_PLIST( hdList, i, 0 );
+    else if (GET_TYPE_BAG(hd) == T_LISTELM) 
+    {
+        hdList = EVAL(PTR_BAG(hd)[0]);
+
+        if (!IS_LIST(hdList))
+        {
+            return Error("Unbind: <list> must be a list", 0, 0);
         }
-        else if ( i == LEN_PLIST( hdList ) ) {
-            SET_ELM_PLIST( hdList, i, 0 );
-            while ( 0 < i && ELM_PLIST( hdList, i ) == 0 )
+
+        PLAIN_LIST(hdList);
+        Retype(hdList, T_LIST);
+        hdInd = EVAL(PTR_BAG(hd)[1]);
+
+        if (GET_TYPE_BAG(hdInd) != T_INT || HD_TO_INT(hdInd) <= 0)
+        {
+            return Error("Unbind: <index> must be positive int", 0, 0);
+        }
+
+        i = HD_TO_INT(hdInd);
+
+        if (i < LEN_PLIST(hdList))
+        {
+            SET_ELM_PLIST(hdList, i, 0);
+        }
+        else if (i == LEN_PLIST(hdList)) 
+        {
+            SET_ELM_PLIST(hdList, i, 0);
+            while (0 < i && ELM_PLIST(hdList, i) == 0)
+            {
                 i--;
-            SET_LEN_PLIST( hdList, i );
+            }
+            SET_LEN_PLIST(hdList, i);
         }
     }
-
     /* is a record element bound                                           */
     else {
-        hdRec = EVAL( PTR_BAG(hd)[0] );
-        if ( GET_TYPE_BAG(hdRec) != T_REC && GET_TYPE_BAG(hdRec) != T_NAMESPACE )
-            return Error("Unbind: <record> must be a record",0,0);
-        hdNam = RecnameObj( PTR_BAG(hd)[1] );
+        hdRec = EVAL(PTR_BAG(hd)[0]);
 
-        if ( GET_TYPE_BAG(hdRec) == T_REC ) {
-            for ( i = 0; i < GET_SIZE_BAG(hdRec)/(2*SIZE_HD); i++ ) {
-                if ( PTR_BAG(hdRec)[2*i] == hdNam )
+        if (GET_TYPE_BAG(hdRec) != T_REC && GET_TYPE_BAG(hdRec) != T_NAMESPACE)
+        {
+            return Error("Unbind: <record> must be a record", 0, 0);
+        }
+
+        hdNam = RecnameObj(PTR_BAG(hd)[1]);
+
+        if (GET_TYPE_BAG(hdRec) == T_REC) 
+        {
+            for (i = 0; i < GET_SIZE_BAG(hdRec) / (2 * SIZE_HD); i++) 
+            {
+                if (PTR_BAG(hdRec)[2 * i] == hdNam)
+                {
                     break;
+                }
             }
-            if ( i < GET_SIZE_BAG(hdRec)/(2*SIZE_HD) ) {
-                while ( i < GET_SIZE_BAG(hdRec)/(2*SIZE_HD)-1 ) {
-                    SET_BAG(hdRec, 2*i,  PTR_BAG(hdRec)[2*i+2] );
-                    SET_BAG(hdRec, 2*i+1,  PTR_BAG(hdRec)[2*i+3] );
+            if (i < GET_SIZE_BAG(hdRec) / (2 * SIZE_HD)) 
+            {
+                while (i < GET_SIZE_BAG(hdRec) / ((2 * SIZE_HD) - 1))
+                {
+                    SET_BAG(hdRec, (2 * i), PTR_BAG(hdRec)[2 * i + 2]);
+                    SET_BAG(hdRec, (2 * i + 1), PTR_BAG(hdRec)[2 * i + 3]);
                     i++;
                 }
-                Resize( hdRec, GET_SIZE_BAG(hdRec)-2*SIZE_HD );
+                Resize(hdRec, GET_SIZE_BAG(hdRec) - (2 * SIZE_HD));
             }
         }
         /* table (namespace) element */
-        else {
+        else 
+        {
             UInt k = TableLookup(hdRec, RECNAM_NAME(hdNam), OFS_IDENT);
-            if(PTR_BAG(hdRec)[k] != 0)
+            if (PTR_BAG(hdRec)[k] != 0)
+            {
                 SET_VAR_VALUE(PTR_BAG(hdRec)[k], 0);
+            }
         }
     }
     return HdVoid;
@@ -1520,116 +1870,179 @@ Obj       FunUnbind (Obj hdCall)
 **  is the main dispatching table that contains for every type a  pointer  to
 **  the function that should be executed if a bag  of  that  type  is  found.
 */
-void            (* PrTab[ T_ILLEGAL ] ) ( Obj hd );
+void    (*PrTab[T_ILLEGAL]) (STREAM stream, Obj hd, int indent);
 
 
 /****************************************************************************
 **
-*F  Print( <hd> ) . . . . . . . . . . . . . . . . . . . . . . print an object
+*F  PrintObj( STREAM stream, Obj objHandle, int indent ) . . . . . . . . . . . . . . . . . . . . . . print an object
 **
-**  'Print'  prints  the  object  with  handle  <hd>.  It dispatches   to the
-**  appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
+**  'PrintObj'  prints  the  object  with passed in  handle  <hd>. 
+**   Pass in stream to write to.
+**   Pass in number of indented characters
+**   It dispatches to the appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
 */
-Obj       HdTildePr;
+Obj     HdTildePr;
 
-void            Print (Obj hd)
+void    PrintObj(STREAM stream, Obj hd, int indent)
 {
-    UInt       len;            /* hdObj[1..<len>] are a path from */
-    Obj           hdObj[256];     /* '~' to <hd>, where hdObj[<i>+1] */
-    UInt       index[256];     /* is PTR_BAG(hdObj[<i>])[index[<i>]]  */
-    Obj           cur;            /* current object along that path  */
-    UInt       i;              /* loop variable                   */
-    exc_type_t          e;
+    Obj             cur;            /* current object along that path  */
+    Obj             hdObj[256];     /* '~' to <hd>, where hdObj[<i>+1] */
+    UInt            index[256];     /* is PTR_BAG(hdObj[<i>])[index[<i>]]  */
+    UInt            len;            /* hdObj[1..<len>] are a path from */
+    UInt            i;              /* loop variable                   */
+    exc_type_t      e;
+
+
+    /*
+    
+        indent    
+        -- this will be passed and handled on the Print from PrTab.
+        -- each object will handle it's own indent we just passing along
+    
+     int k;
+     for(k = 0; k < indent; k++)
+     SyFmtPrint(stream, "-X-");
+     */
+   
+
+
+    /*
+        GS4 - Going through
+    */
 
     /* check for interrupts                                                */
-    if ( SyIsIntr() ) {
-        Pr( "%c", (Int)'\03', 0 );
+    if (SyIsIntr()) 
+    {
+        //Pr("%c", (Int)'\03', 0);
+        SyFmtPrint(stream, "%c", '\03');
+
         /*N 19-Jun-90 martin do something about the current indent         */
         DbgBreak("user interrupt while printing", 0, 0);
     }
 
-    if ( hd == 0 )
-        Pr("_null_", 0, 0);
+    if (hd == 0)
+    {
+        //Pr("_null_", 0, 0);
+        SyFmtPrint(stream, "_null_");
 
-    else if ( ! IS_BAG(hd) && ! IS_INTOBJ(hd) )
-        Pr("_invalid_%d_", (Int)hd, 0);
-
+    }
+    else if (!IS_BAG(hd) && !IS_INTOBJ(hd))
+    {
+        //Pr("_invalid_%d_", (Int)hd, 0);
+        SyFmtPrint(stream, "_invalid_%d_", (Int)hd);
+    }
     /* print new objects                                                   */
-    else if ( GET_TYPE_BAG(hd) == T_INT || ! GET_FLAG_BAG(hd, BF_PRINT) ) {
-        Try {
+    else if (GET_TYPE_BAG(hd) == T_INT || !GET_FLAG_BAG(hd, BF_PRINT)) 
+    {
+        Try
+        {
             /* assign the current object to '~' if this is it              */
-            if ( PTR_BAG(HdTildePr)[0] == 0 )
-                SET_BAG(HdTildePr, 0,  hd );
+            if (PTR_BAG(HdTildePr)[0] == 0)
+            {
+                SET_BAG(HdTildePr, 0,  hd);
+            }
 
             /* mark objects for '~...' detection                           */
-            if ( (T_LIST <= GET_TYPE_BAG(hd) && GET_TYPE_BAG(hd) < T_VAR)
-                 || GET_TYPE_BAG(hd) == T_PERM16 || GET_TYPE_BAG(hd) == T_PERM32 )
+            if ((T_LIST <= GET_TYPE_BAG(hd) && GET_TYPE_BAG(hd) < T_VAR)
+                || GET_TYPE_BAG(hd) == T_PERM16 || GET_TYPE_BAG(hd) == T_PERM32)
+            {
                 SET_FLAG_BAG(hd, BF_PRINT);
+            }
 
             /* dispatch to the appropriate method                          */
-            (* PrTab[ GET_TYPE_BAG(hd) ] ) (hd);
+            (*PrTab[GET_TYPE_BAG(hd)]) (stream, hd, indent); 
 
             /* unmark object again                                         */
-            if ( (T_LIST <= GET_TYPE_BAG(hd) && GET_TYPE_BAG(hd) < T_VAR)
-                 || GET_TYPE_BAG(hd) == T_PERM16 || GET_TYPE_BAG(hd) == T_PERM32 )
+            if ((T_LIST <= GET_TYPE_BAG(hd) && GET_TYPE_BAG(hd) < T_VAR)
+                || GET_TYPE_BAG(hd) == T_PERM16 || GET_TYPE_BAG(hd) == T_PERM32)
+            {
                 CLEAR_FLAG_BAG(hd, BF_PRINT);
+            }
 
             /* unassign '~' again                                          */
-            if ( hd == PTR_BAG(HdTildePr)[0] )
-                SET_BAG(HdTildePr, 0,  0 );
+            if (hd == PTR_BAG(HdTildePr)[0])
+            {
+                SET_BAG(HdTildePr, 0, 0);
+            }
         }
-        Catch(e) {
+        Catch(e) 
+        {
             /* Cleanup, this ensures that CTRL-C interrupt will be Ok      */
 
             /* unmark object again                                         */
-            if ( (T_LIST <= GET_TYPE_BAG(hd) && GET_TYPE_BAG(hd) < T_VAR)
-                 || GET_TYPE_BAG(hd) == T_PERM16 || GET_TYPE_BAG(hd) == T_PERM32 )
+            if ((T_LIST <= GET_TYPE_BAG(hd) && GET_TYPE_BAG(hd) < T_VAR)
+                || GET_TYPE_BAG(hd) == T_PERM16 || GET_TYPE_BAG(hd) == T_PERM32)
+            {
                 CLEAR_FLAG_BAG(hd, BF_PRINT);
+            }
+
             /* unassign '~' again                                          */
-            if ( hd == PTR_BAG(HdTildePr)[0] )
-                SET_BAG(HdTildePr, 0,  0 );
+            if (hd == PTR_BAG(HdTildePr)[0])
+            {
+                SET_BAG(HdTildePr, 0, 0);
+            }
 
             Throw(e);
         }
     }
-
     /* handle common subobject                                             */
-    else {
-
+    else 
+    {
         /* find the subobject in the object again by a backtrack search    */
         len = 0;
         hdObj[0] = HdTildePr;
         index[0] = 0;
-        cur = PTR_BAG( hdObj[len] )[ index[len] ];
-        while ( hd != cur ) {
-            for ( i = 0; i <= len && hdObj[i] != cur; i++ ) ;
-            if ( cur != 0
-              && (GET_TYPE_BAG(cur)==T_LIST || GET_TYPE_BAG(cur)==T_SET || GET_TYPE_BAG(cur)==T_REC)
-              && GET_SIZE_BAG(cur) != 0
-              && len < i ) {
-                len++;
-                hdObj[len] = cur;
-                index[len] = 0;
-                cur = PTR_BAG( hdObj[len] )[ index[len] ];
-            }
-            else if ( index[len] < GET_SIZE_BAG(hdObj[len])/SIZE_HD-1 ) {
-                index[len]++;
-                cur = PTR_BAG( hdObj[len] )[ index[len] ];
-            }
-            else {
-                if ( len != 0 )  len--;
-                cur = 0;
+        cur = PTR_BAG(hdObj[len])[index[len]];
+
+        while (hd != cur) 
+        {
+            for (i = 0; i <= len && hdObj[i] != cur; i++)
+            {
+                if (cur != 0 
+                    && len < i 
+                    && GET_SIZE_BAG(cur) != 0
+                    && (GET_TYPE_BAG(cur) == T_LIST || GET_TYPE_BAG(cur) == T_SET || GET_TYPE_BAG(cur) == T_REC)) 
+                {
+                    len++;
+                    hdObj[len] = cur;
+                    index[len] = 0;
+                    cur = PTR_BAG(hdObj[len])[index[len]];
+                }
+                else if (index[len] < (GET_SIZE_BAG(hdObj[len]) / (SIZE_HD - 1))) 
+                {
+                    index[len]++;
+                    cur = PTR_BAG(hdObj[len])[index[len]];
+                }
+                else 
+                {
+                    if (len != 0) 
+                    { 
+                        len--; 
+                    }
+                    cur = 0;
+                }
             }
         }
 
         /* print the path just found                                       */
-        for ( i = 0; i <= len; i++ ) {
-            if ( GET_TYPE_BAG(hdObj[i]) == T_VAR )
-                Pr("~",0,0);
-            else if ( GET_TYPE_BAG(hdObj[i])==T_LIST || GET_TYPE_BAG(hdObj[i])==T_SET )
-                Pr("[%d]",index[i],0);
+        for (i = 0; i <= len; i++) 
+        {
+            if (GET_TYPE_BAG(hdObj[i]) == T_VAR)
+            {
+                //Pr("~", 0, 0);
+                SyFmtPrint(stream, "~");
+            }
+            else if (GET_TYPE_BAG(hdObj[i]) == T_LIST || GET_TYPE_BAG(hdObj[i]) == T_SET)
+            {
+                //Pr("[%d]", index[i], 0);
+                SyFmtPrint(stream, "[%d]");
+            }
             else
-                Pr(".%s",(Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i]-1]),0);
+            {
+                //Pr(".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]), 0);
+                SyFmtPrint(stream, ".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]));
+            }
         }
 
     }
@@ -1645,14 +2058,15 @@ void            Print (Obj hd)
 **  If this is actually ever executed in GAP it  indicates  serious  trouble,
 **  for  example  that  the  type  field  of  a  bag  has  been  overwritten.
 */
-void            CantPrint (Obj hd)
+void CantPrint(Obj hd)
 {
-    Error("Panic: can't print bag of type %d",(Int)GET_TYPE_BAG(hd),0);
+    Error("Panic: can't print bag of type %d", (Int)GET_TYPE_BAG(hd), 0);
 }
 
-void            PrintBagType (Obj hd)
+void PrintBagType(STREAM stream, Obj hd, int indent)
 {
-    Pr("_bag_%d_", GET_TYPE_BAG(hd), 0);
+    //Pr("_bag_%d_", GET_TYPE_BAG(hd), 0);
+    SyFmtPrint(stream, "_bag_%d_", GET_TYPE_BAG(hd));
 }
 
 /****************************************************************************
@@ -1662,10 +2076,10 @@ void            PrintBagType (Obj hd)
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
 */
-void            PrVar (Obj hdVar)
+void        PrVar(STREAM stream, Obj hdVar, int indent)
 {
-    char * name = VAR_NAME(hdVar);
-    PrVarName(name);
+    char* name = VAR_NAME(hdVar);
+    PrVarName(stream, name);
 }
 
 /****************************************************************************
@@ -1673,28 +2087,37 @@ void            PrVar (Obj hdVar)
 *F  PrVarName( <string> )  . . prints identifier, escaping special characters
 **
 */
-void            PrVarName (char *name)
+void        PrVarName(STREAM stream, char* name)
 {
-    if ( !strcmp(name,"and")      || !strcmp(name,"do")
-      || !strcmp(name,"elif")     || !strcmp(name,"else")
-      || !strcmp(name,"end")      || !strcmp(name,"fi")
-      || !strcmp(name,"for")      || !strcmp(name,"function")
-      || !strcmp(name,"if")       || !strcmp(name,"in")
-      || !strcmp(name,"local")    || !strcmp(name,"mod")
-      || !strcmp(name,"not")      || !strcmp(name,"od")
-      || !strcmp(name,"or")       || !strcmp(name,"repeat")
-      || !strcmp(name,"return")   || !strcmp(name,"then")
-      || !strcmp(name,"until")    || !strcmp(name,"while")
-      || !strcmp(name,"quit") ) {
-        Pr("\\",0,0);
+    if (!strcmp(name, "and") || !strcmp(name, "do")
+        || !strcmp(name, "elif") || !strcmp(name, "else")
+        || !strcmp(name, "end") || !strcmp(name, "fi")
+        || !strcmp(name, "for") || !strcmp(name, "function")
+        || !strcmp(name, "if") || !strcmp(name, "in")
+        || !strcmp(name, "local") || !strcmp(name, "mod")
+        || !strcmp(name, "not") || !strcmp(name, "od")
+        || !strcmp(name, "or") || !strcmp(name, "repeat")
+        || !strcmp(name, "return") || !strcmp(name, "then")
+        || !strcmp(name, "until") || !strcmp(name, "while")
+        || !strcmp(name, "quit")) 
+    {
+        //Pr("\\", 0, 0);
+        SyFmtPrint(stream, "\\");
     }
 
     /* print the name                                                      */
-    for (   ; *name != '\0'; name++ ) {
-        if ( IsAlpha(*name) || IsDigit(*name) || *name == '_' || *name == '@')
-            Pr("%c",(Int)(*name),0);
+    for (; *name != '\0'; name++)
+    {
+        if (IsAlpha(*name) || IsDigit(*name) || *name == '_' || *name == '@')
+        {
+            //Pr("%c", (Int)(*name), 0);
+            SyFmtPrint(stream, "%c", (*name));
+        }
         else
-            Pr("\\%c",(Int)(*name),0);
+        {
+            //Pr("\\%c", (Int)(*name), 0);
+            SyFmtPrint(stream, "\\%c", (*name));
+        }
     }
 }
 
@@ -1706,13 +2129,18 @@ void            PrVarName (char *name)
 **
 **  Linebreaks are preffered before the ':='.
 */
-void            PrVarAss (Obj hdAss)
+void        PrVarAss(STREAM stream, Obj hdAss, int indent)
 {
-    Pr("%2>",0,0);
-    Print(PTR_BAG(hdAss)[0]);
-    Pr("%< %>:= ",0,0);
-    Print(PTR_BAG(hdAss)[1]);
-    Pr("%2<",0,0);
+    //**INDENT** Pr("%2>", 0, 0);
+
+    //Print(PTR_BAG(hdAss)[0]);
+    PrintObj(stream, PTR_BAG(hdAss)[0], 0);
+    //**INDENT**  Pr("%< %>:= ", 0, 0);
+    SyFmtPrint(stream, " := ");
+    //Print(PTR_BAG(hdAss)[1]);
+    PrintObj(stream, PTR_BAG(hdAss)[1], 0);
+    //**INDENT** Pr("%2<", 0, 0);
+
 }
 
 
@@ -1729,7 +2157,7 @@ void            PrVarAss (Obj hdAss)
 **  This sometimes puts in superflous  parenthesis:  2 * f( (3 + 4) ),  since
 **  it doesn't know that a  function  call  adds  automatically  parenthesis.
 */
-Int            prPrec;
+Int     prPrec;
 
 
 /****************************************************************************
@@ -1738,12 +2166,18 @@ Int            prPrec;
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
-void            PrNot (Obj hdNot)
+void    PrNot(STREAM stream, Obj hdNot, int indent)
 {
-    Int                oldPrec;
+    Int     oldPrec;
 
-    oldPrec = prPrec;  prPrec = 4;
-    Pr("not%> ",0,0);  Print( PTR_BAG(hdNot)[0] );  Pr("%<",0,0);
+    oldPrec = prPrec;
+    prPrec = 4;
+    //**INDENT** Pr("not%> ", 0, 0);
+    SyFmtPrint(stream, "not ");
+    //Print(PTR_BAG(hdNot)[0]);
+    PrintObj(stream, PTR_BAG(hdNot)[0], 0);
+    //**INDENT** Pr("%<", 0, 0);
+
     prPrec = oldPrec;
 }
 
@@ -1754,51 +2188,131 @@ void            PrNot (Obj hdNot)
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */
-void            PrBinop (Obj hdOp)
+void        PrBinop(STREAM stream, Obj hdOp, int indent)
 {
-    Int                oldPrec;
-    char                * op;
+    char    *op;
+    Int      oldPrec = prPrec;
 
-    oldPrec = prPrec;
 
-    switch ( GET_TYPE_BAG(hdOp) ) {
-    case T_AND:    op = "and";  prPrec = 2;   break;
-    case T_OR:     op = "or";   prPrec = 2;   break;
-    case T_EQ:     op = "=";    prPrec = 6;   break;
-    case T_LT:     op = "<";    prPrec = 6;   break;
-    case T_GT:     op = ">";    prPrec = 6;   break;
-    case T_NE:     op = "<>";   prPrec = 6;   break;
-    case T_LE:     op = "<=";   prPrec = 6;   break;
-    case T_GE:     op = ">=";   prPrec = 6;   break;
-    case T_IN:     op = "in";   prPrec = 6;   break;
-	case T_IS:     op = "_is";  prPrec = 6;   break;
-    case T_CONCAT: op = "::";   prPrec = 8;   break;
-    case T_SUM:    op = "+";    prPrec = 8;   break;
-    case T_DIFF:   op = "-";    prPrec = 8;   break;
-    case T_PROD:   op = "*";    prPrec = 10;  break;
-    case T_QUO:    op = "/";    prPrec = 10;  break;
-    case T_MOD:    op = "mod";  prPrec = 10;  break;
-    case T_POW:    op = "^";    prPrec = 12;  break;
-    default:       op = "<bogus-operator>";   break;
+    switch (GET_TYPE_BAG(hdOp)) 
+    {
+        case T_AND:    
+            op = "and";  
+            prPrec = 2;   
+            break;
+        case T_OR:     
+            op = "or";   
+            prPrec = 2;  
+            break;
+        case T_EQ:     
+            op = "=";    
+            prPrec = 6;  
+            break;
+        case T_LT:     
+            op = "<";  
+            prPrec = 6; 
+            break;
+        case T_GT: 
+          op = ">"; 
+          prPrec = 6;  
+          break;
+        case T_NE:    
+            op = "<>";  
+            prPrec = 6;  
+            break;
+        case T_LE: 
+            op = "<="; 
+            prPrec = 6;
+            break;
+        case T_GE:
+            op = ">=";
+            prPrec = 6; 
+            break;
+        case T_IN:  
+            op = "in"; 
+            prPrec = 6; 
+            break;
+        case T_IS: 
+            op = "_is"; 
+            prPrec = 6; 
+            break;
+        case T_CONCAT: 
+            op = "::";
+            prPrec = 8;
+            break;
+        case T_SUM:
+            op = "+";  
+            prPrec = 8;
+            break;
+        case T_DIFF: 
+            op = "-";  
+            prPrec = 8;
+            break;
+        case T_PROD:
+            op = "*";   
+            prPrec = 10;
+            break;
+        case T_QUO:
+            op = "/";
+            prPrec = 10;
+            break;
+        case T_MOD:
+            op = "mod"; 
+            prPrec = 10;
+            break;
+        case T_POW:   
+            op = "^";   
+            prPrec = 12;
+            break;
+        default:    
+            op = "<bogus-operator>"; 
+            break;
     }
 
-    if ( oldPrec > prPrec )  Pr("%>(%>",0,0);
-    else                     Pr("%2>",0,0);
-    if ( GET_TYPE_BAG(hdOp) == T_POW
-      && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
-        || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG) )
-        Pr("(",0,0);
-    Print( PTR_BAG(hdOp)[0] );
-    if ( GET_TYPE_BAG(hdOp) == T_POW
-      && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
-        || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG) )
-        Pr(")",0,0);
-    Pr("%2< %2>%s%> %<",(Int)op,0);
+    if (oldPrec > prPrec)
+    {
+        //**INDENT** Pr("%>(%>", 0, 0); 
+        SyFmtPrint(stream, "(");
+    }
+    else 
+    { 
+        //**INDENT** Pr("%2>", 0, 0); 
+    }
+    if (GET_TYPE_BAG(hdOp) == T_POW
+        && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
+            || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG))
+    {
+        //Pr("(", 0, 0);
+        SyFmtPrint(stream, "(");
+    }
+
+    //Print(PTR_BAG(hdOp)[0]);
+    PrintObj(stream, PTR_BAG(hdOp)[0], 0);
+
+    if (GET_TYPE_BAG(hdOp) == T_POW
+        && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
+            || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG))
+    {
+        //Pr(")", 0, 0);
+        SyFmtPrint(stream, ")");
+    }
+
+    //**INDENT** Pr("%2< %2>%s%> %<", (Int)op, 0);
+    SyFmtPrint(stream, " %s ", op);
     ++prPrec;
-    Print( PTR_BAG(hdOp)[1] );
+    //Print(PTR_BAG(hdOp)[1]);
+    PrintObj(stream, PTR_BAG(hdOp)[1], 0);
     --prPrec;
-    if ( oldPrec > prPrec )  Pr("%2<)",0,0);
-    else                     Pr("%2<",0,0);
+    if (oldPrec > prPrec)
+    { 
+        //**INDENT** Pr("%2<)", 0, 0); 
+        SyFmtPrint(stream, ")");
+    }
+    else 
+    {
+        //**INDENT** Pr("%2<", 0, 0);
+    }
+
     prPrec = oldPrec;
 }
 
@@ -1809,13 +2323,18 @@ void            PrBinop (Obj hdOp)
 **
 **  This prints a commutator.
 */
-void            PrComm (Obj hd)
+void        PrComm(STREAM stream, Obj hd, int indent)
 {
-    Pr("%>Comm(%> ",0,0);
-    Print(PTR_BAG(hd)[0]);
-    Pr("%<,%>",0,0);
-    Print(PTR_BAG(hd)[1]);
-    Pr("%2<)",0,0);
+    //**INDENT** Pr("%>Comm(%> ", 0, 0);
+    SyFmtPrint(stream, "Comm(");
+    //Print(PTR_BAG(hd)[0]);
+    PrintObj(stream, PTR_BAG(hd)[0], 0);
+    //**INDENT** Pr("%<,%>", 0, 0);
+    SyFmtPrint(stream, " , ");
+    //Print(PTR_BAG(hd)[1]);
+    PrintObj(stream, PTR_BAG(hd)[1], 0);
+    //**INDENT** Pr("%2<)", 0, 0);
+    SyFmtPrint(stream, ")");
 }
 
 
@@ -1825,9 +2344,9 @@ void            PrComm (Obj hd)
 **
 **  Installs the function  <func> as evaluation function for bags of  <type>.
 */
-void            InstEvFunc (unsigned int type, Bag (*func) (Bag))
+void        InstEvFunc(unsigned int type, Bag(*func) (Bag))
 {
-    EvTab[ type ] = func;
+    EvTab[type] = func;
 }
 
 
@@ -1838,9 +2357,9 @@ void            InstEvFunc (unsigned int type, Bag (*func) (Bag))
 **  Installs the function  <func>  as  evaluation  function  for  the  binary
 **  operation with the table <tab> for operands of type  <typeL> and <typeR>.
 */
-void            InstBinOp (Bag  (* table [EV_TAB_SIZE][EV_TAB_SIZE]) (), unsigned int leftType, unsigned int rightType, Obj (*func) (/* ??? */))
+void            InstBinOp(Bag(*table[EV_TAB_SIZE][EV_TAB_SIZE]) (), unsigned int leftType, unsigned int rightType, Obj(*func) (/* ??? */))
 {
-    table[ leftType ][ rightType ] = func;
+    table[leftType][rightType] = func;
 }
 
 
@@ -1850,9 +2369,11 @@ void            InstBinOp (Bag  (* table [EV_TAB_SIZE][EV_TAB_SIZE]) (), unsigne
 **
 **  Installs the function <func> as printing function  for  bags  of  <type>.
 */
-void            InstPrFunc (unsigned int type, void (*func) (Bag))
+void        InstPrFunc(unsigned int type, void (*func) (FILE, Bag, int))
 {
-    PrTab[ type ] = func;
+    //GS4 - Going through these. InstPrFunc needs to accept stream, hd, indent
+
+    PrTab[type] = func;
 }
 
 
@@ -1862,14 +2383,17 @@ void            InstPrFunc (unsigned int type, void (*func) (Bag))
 **
 **  Installs the value <hdVal> ar value of the new variable with name <name>.
 */
-void            InstVar (char *name, Obj hdVal)
+void            InstVar(char* name, Obj hdVal)
 {
-    Obj           hdVar;
+    Obj                 
+    hdVar = FindIdentWr(name);
 
-    hdVar = FindIdentWr( name );
-    if ( PTR_BAG(hdVar)[0] != 0 )
-        Error("Panic: symbol clash %s during initialization",(Int)name,0);
-    SET_BAG(hdVar, 0,  hdVal );
+    if (PTR_BAG(hdVar)[0] != 0)
+    {
+        Error("Panic: symbol clash %s during initialization", (Int)name, 0);
+    }
+
+    SET_BAG(hdVar, 0, hdVal);
 }
 
 #define MAX_INT_FUNCS   768
@@ -1877,9 +2401,9 @@ void            InstVar (char *name, Obj hdVal)
 /* NOTE: IntFuncs would really be better as a search tree */
 
 typedef struct {
-    char*       name;
+    char* name;
     PtrIntFunc  func;
-} IntFuncs_t;
+} IntFuncs_t; 
 
 static IntFuncs_t   IntFuncs[MAX_INT_FUNCS];
 static UInt         IntFuncsCount = 0;
@@ -1895,8 +2419,10 @@ static UInt         IntFuncsCount = 0;
 PtrIntFunc     FindIntFunc(char* name)
 {
     UInt i;
-    for (i=0; i<IntFuncsCount; i++) {
-        if (strcmp(IntFuncs[i].name, name)==0) {
+    for (i = 0; i < IntFuncsCount; i++)
+    {
+        if (strcmp(IntFuncs[i].name, name) == 0) 
+        {
             return IntFuncs[i].func;
         }
     }
@@ -1909,24 +2435,34 @@ PtrIntFunc     FindIntFunc(char* name)
 **
 **  Installs the function <func> as internal function with the  name  <name>.
 */
-Bag            InstIntFunc (char *name, PtrIntFunc func)
+Bag            InstIntFunc(char* name, PtrIntFunc func)
 {
-    Obj           hdDef,  hdVar;
+    Obj     hdDef;
+    Obj     hdVar;
 
-    hdDef = NewBag( T_FUNCINT, sizeof(PtrIntFunc) + strlen(name) + 1 );
-    * (PtrIntFunc*) PTR_BAG(hdDef) = func;
+    hdDef = NewBag(T_FUNCINT, sizeof(PtrIntFunc) + strlen(name) + 1);
+    *(PtrIntFunc*)PTR_BAG(hdDef) = func;
 
     if (FindIntFunc(name) != 0)
-        Error("Panic: symbol clash %s during initialization",(Int)name,0);
+    {
+        Error("Panic: symbol clash %s during initialization", (Int)name, 0);
+    }
 
-    hdVar = FindIdentWr( name );
-    if ( PTR_BAG(hdVar)[0] != 0 )
-        Error("Panic: symbol clash %s during initialization",(Int)name,0);
-    SET_BAG(hdVar, 0,  hdDef );
+    hdVar = FindIdentWr(name);
 
-    if (IntFuncsCount>=MAX_INT_FUNCS) {
-        Error("Panic: no more room for internal functions. Increase MAX_INT_FUNCS in eval.c to get more space.",0,0);
-    } else {
+    if (PTR_BAG(hdVar)[0] != 0)
+    {
+        Error("Panic: symbol clash %s during initialization", (Int)name, 0);
+    }
+
+    SET_BAG(hdVar, 0, hdDef);
+
+    if (IntFuncsCount >= MAX_INT_FUNCS) 
+    {
+        Error("Panic: no more room for internal functions. Increase MAX_INT_FUNCS in eval.c to get more space.", 0, 0);
+    }
+    else
+    {
         IntFuncs[IntFuncsCount].name = name;
         IntFuncs[IntFuncsCount].func = func;
         IntFuncsCount++;
@@ -1934,7 +2470,8 @@ Bag            InstIntFunc (char *name, PtrIntFunc func)
 
     ProtectVar(hdVar);
     /* this enables us to print internal functions */
-    strncat( (char*)PTR_BAG(hdDef) + sizeof(PtrIntFunc), name, strlen(name));
+    strncat((char*)PTR_BAG(hdDef) + sizeof(PtrIntFunc), name, strlen(name));
+
     return hdDef;
 }
 
@@ -1946,15 +2483,22 @@ Bag            InstIntFunc (char *name, PtrIntFunc func)
 **  CantCopy(<obj>) marks object with BF_NO_COPY, so that the object is never
 **  copied with Copy(). (Although ShallowCopy may still be used)
 */
-Obj       FunCantCopy (Obj hdCall)
+Obj       FunCantCopy(Obj hdCall)
 {
-    Obj           hd = 0;
+    Obj     hd = 0;
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: CantCopy( <obj> )",0,0);
-    hd = EVAL( PTR_BAG(hdCall)[1] );
-    if ( GET_TYPE_BAG(hd) != T_INT )
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: CantCopy( <obj> )", 0, 0);
+    }
+
+    hd = EVAL(PTR_BAG(hdCall)[1]);
+
+    if (GET_TYPE_BAG(hd) != T_INT)
+    {
         SET_FLAG_BAG(hd, BF_NO_COPY);
+    }
+
     return hd;
 }
 
@@ -1965,35 +2509,46 @@ Obj       FunCantCopy (Obj hdCall)
 **  MayCopy(<obj>) removes BF_NO_COPY flag, so that the object can be copied
 **  again with Copy(),
 */
-Obj       FunMayCopy (Obj hdCall)
+Obj       FunMayCopy(Obj hdCall)
 {
-    Obj           hd = 0;
+    Obj     hd = 0;
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: MayCopy( <obj> )",0,0);
-    hd = EVAL( PTR_BAG(hdCall)[1] );
-    if ( GET_TYPE_BAG(hd) != T_INT )
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: MayCopy( <obj> )", 0, 0);
+    }
+    hd = EVAL(PTR_BAG(hdCall)[1]);
+
+    if (GET_TYPE_BAG(hd) != T_INT)
+    {
         CLEAR_FLAG_BAG(hd, BF_NO_COPY);
+    }
+
     return hd;
 }
 
 
-Obj EvMakeLet( Obj hd ) {
-    UInt size = TableNumEnt(hd) - 1, lenres = 0;
-    UInt i, evaluated = 0;
-    Obj bindings = NewList((int)(size+1));
-    Obj res = 0;
-    exc_type_t e = 0;
-    SET_BAG(bindings, 1,  hd );
+Obj EvMakeLet(Obj hd) {
+    UInt         size = TableNumEnt(hd) - 1;
+    UInt         lenres = 0;
+    UInt         i;
+    UInt         evaluated = 0;
+    Obj          bindings = NewList((int)(size + 1));
+    Obj          res = 0;
+    exc_type_t   e = 0;
+
+    SET_BAG(bindings, 1, hd);
     EVAL_STACK_PUSH(bindings);
-    Try {
+    Try
+    {
         /* evaluate all variables and set their values */
-        for ( i = 0; i < size; ++i ) {
+        for (i = 0; i < size; ++i) 
+        {
             Obj var = PTR_BAG(hd)[i];
             Obj uneval = PTR_BAG(var)[1];
             Obj oldbinding = VAR_VALUE(var);
             Obj eval;
-            SET_BAG(bindings, i+2,  oldbinding );
+            SET_BAG(bindings, i + 2,  oldbinding);
             eval = EVAL(uneval);
             SET_VAR_VALUE(var, eval);
             evaluated++;
@@ -2001,52 +2556,86 @@ Obj EvMakeLet( Obj hd ) {
         /* evaluate all statements, return result of last */
         res = PTR_BAG(PTR_BAG(hd)[size])[1];
         lenres = LEN_PLIST(res);
-        for(i = 1; i < lenres; ++i)
+        for (i = 1; i < lenres; ++i)
+        {
             EVAL(PTR_BAG(res)[i]);
-        if ( lenres == 0 ) res = HdVoid;
-        else res = EVAL(PTR_BAG(res)[lenres]);
-    } Catch(e) {
+        }
+        if (lenres == 0) 
+        { 
+            res = HdVoid; 
+        }
+        else 
+        { 
+            res = EVAL(PTR_BAG(res)[lenres]); 
+        }
+    } 
+    Catch(e) 
+    {
         // restore what we already did
-        for ( i = 0; i < evaluated; ++i ) {
+        for (i = 0; i < evaluated; ++i) 
+        {
             Obj var = PTR_BAG(hd)[i];
-            Obj oldbinding = PTR_BAG(bindings)[i+2];
+            Obj oldbinding = PTR_BAG(bindings)[i + 2];
             SET_VAR_VALUE(var, oldbinding);
         }
+
         Throw(e);
     }
     /* restore original variable bindings */
-    for ( i = 0; i < size; ++i ) {
+    for (i = 0; i < size; ++i) 
+    {
         Obj var = PTR_BAG(hd)[i];
-        Obj oldbinding = PTR_BAG(bindings)[i+2];
+        Obj oldbinding = PTR_BAG(bindings)[i + 2];
         SET_VAR_VALUE(var, oldbinding);
     }
+
     EVAL_STACK_POP;
+
     return res;
 }
 
-void PrMakeLet( Obj hd ) {
-    UInt size = TableNumEnt(hd) - 1, lenres;
-    UInt i;
-    Obj res;
-    Pr("let(%2>", 0, 0);
-    /* evaluate all variables and set their values */
-    for ( i = 0; i < size; ++i ) {
+void PrMakeLet(STREAM stream, Obj hd, int indent) {
+    UInt    size = TableNumEnt(hd) - 1;
+    UInt    lenres;
+    UInt    i;
+    Obj     res;
+
+    //**INDENT** Pr("let(%2>", 0, 0);
+    SyFmtPrint(stream, "let(");
+
+    /* evaluate all variables and set their values */    
+    for (i = 0; i < size; ++i) 
+    {
         Obj var = PTR_BAG(hd)[i];
         Obj uneval = PTR_BAG(var)[1];
-        Pr("%g := %2>%g%2<,\n", (Int)var, (Int)uneval);
+        //**INDENT**  Pr("%g := %2>%g%2<,\n", (Int)var, (Int)uneval);
+        PrintObj(stream, var, 0);
+        SyFmtPrint(stream, " := ");
+        PrintObj(stream, uneval, 0);
+        SyFmtPrint(stream, ",\n");
     }
 
     res = PTR_BAG(PTR_BAG(hd)[size])[1];
     lenres = LEN_PLIST(res);
+
     /* expressions separated by a comma */
-    for(i = 1; i <= lenres-1; ++i) {
-        Pr("%2>%g%2<, ", (Int) PTR_BAG(res)[i], 0);
+    for (i = 1; i <= lenres - 1; ++i) 
+    {
+        //**INDENT** Pr("%2>%g%2<, ", (Int)PTR_BAG(res)[i], 0);
+        PrintObj(stream, PTR_BAG(res)[i], 0);
+        SyFmtPrint(stream, ", ");
     }
+
     /* and the final expression without trailing comma */
-    if (lenres >= 1) {
-        Pr("%2>%g%2< ", (Int) PTR_BAG(res)[lenres], 0);
+    if (lenres >= 1) 
+    {
+        //**INDENT** Pr("%2>%g%2< ", (Int)PTR_BAG(res)[lenres], 0);
+        PrintObj(stream, PTR_BAG(res)[lenres], 0);
+        SyFmtPrint(stream, " ");
     }
-    Pr("%2<)\n", 0, 0);
+
+    //**INDENT** Pr("%2<)\n", 0, 0);
+    SyFmtPrint(stream, ")\n");
 }
 
 
@@ -2057,58 +2646,86 @@ void PrMakeLet( Obj hd ) {
 **  CantCopy(<obj>) marks object with BF_NO_COPY, so that the object is never
 **  copied with Copy(). (Although ShallowCopy may still be used)
 */
-Obj       FunInherited (Obj hdCall)
+Obj       FunInherited(Obj hdCall)
 {
-    Obj     hd = 0;
-    Obj     hdRecElm = 0;
-    Obj     hdSelf = 0;
-    Obj     hdMeth = 0;
-    Obj*    ptRec = 0;
+    Obj      hd = 0;
+    Obj      hdRecElm = 0;
+    Obj      hdSelf = 0;
+    Obj      hdMeth = 0;
+    Obj     *ptRec = 0;
     /* find method on the call stack and count how many times Inherited() was called */
-    Int     top = EvalStackTop;
-    Int     inherited = 0, i = 0;
-    while (top>0) {
-        if (GET_TYPE_BAG(EvalStack[top]) == T_EXEC && GET_TYPE_BAG(PTR_BAG(EvalStack[top])[2]) == T_METHOD) {
-            if (GET_FLAG_BAG(PTR_BAG(EvalStack[top])[3], BF_INHERITED_CALL)) {
+    Int      top = EvalStackTop;
+    Int      inherited = 0;
+    Int      i = 0;
+
+
+    while (top > 0)
+    {
+        if (GET_TYPE_BAG(EvalStack[top]) == T_EXEC && GET_TYPE_BAG(PTR_BAG(EvalStack[top])[2]) == T_METHOD) 
+        {
+            if (GET_FLAG_BAG(PTR_BAG(EvalStack[top])[3], BF_INHERITED_CALL))
+            {
                 /* found call to Inherited() */
                 inherited++;
-            } else { /* found T_EXEC with T_METHOD */
-                /* get self pointer from hd call and method defenition */
+            }
+            else 
+            { /* found T_EXEC with T_METHOD */
+             /* get self pointer from hd call and method defenition */
                 hdRecElm = PTR_BAG(PTR_BAG(EvalStack[top])[3])[0]; /* first argument of hdCall is T_RECELM */
                 break;
             }
         }
         top--;
     }
-    if (top<=0)
+    if (top <= 0)
+    {
         return Error("Inherited: method not found", 0, 0);
+    }
+
     if (GET_TYPE_BAG(hdRecElm) != T_RECELM)
+    {
         return Error("Inherited: ambiguity, method called in non-standard way.", 0, 0);
+    }
 
     /* find next inherited method */
     inherited++;
 
     hdSelf = PTR_BAG(hdRecElm)[0];
+
     if (GET_TYPE_BAG(hdSelf) != T_REC)
+    {
         return Error("Inherited: hd is not a record", (Int)hdSelf, 0);
+    }
     hd = PTR_BAG(hdRecElm)[1];
+
     if (GET_TYPE_BAG(hd) != T_RECNAM)
+    {
         return Error("Inherited: %g is not a field name", (Int)hd, 0);
+    }
 
     ptRec = FindRecnameRecWithDepth(hdSelf, hd, &hd, &inherited);
-    if (ptRec==0)
+
+    if (ptRec == 0)
+    {
         return HdVoid;
+    }
 
     hdMeth = EVAL(ptRec[1]);
+
     if (GET_TYPE_BAG(hdMeth) != T_METHOD)
+    {
         return Error("Inherited: %g is not a method", (Int)hdMeth, 0);
+    }
 
     hd = NewBag(T_FUNCCALL, GET_SIZE_BAG(hdCall) + SIZE_HD);
     SET_BAG(hd, 0, hdMeth);
     SET_BAG(hd, 1, hdSelf);
-    for( i=1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i) {
-        SET_BAG(hd, i+1, PTR_BAG(hdCall)[i]);
+
+    for (i = 1; i < GET_SIZE_BAG(hdCall) / SIZE_HD; ++i)
+    {
+        SET_BAG(hd, i + 1, PTR_BAG(hdCall)[i]);
     }
+
     SET_FLAG_BAG(hd, BF_METHCALL);
     SET_FLAG_BAG(hd, BF_INHERITED_CALL);
     return EVAL(hd);
@@ -2120,19 +2737,24 @@ Obj       FunInherited (Obj hdCall)
 **
 **  This is called relative lately during the initialization from  InitGap().
 */
-void            InitEval (void)
+void        InitEval(void)
 {
-    unsigned int        type,  typeL,  typeR;
+    unsigned int    type;
+    unsigned int    typeL;
+    unsigned int    typeR;
 
     /* clear the tables for the evaluation dispatching                     */
-    for ( type = 0; type < T_ILLEGAL; ++type ) {
+    for (type = 0; type < T_ILLEGAL; ++type) 
+    {
         EvTab[type] = NoEval;
         PrTab[type] = PrintBagType;
     }
 
-    for ( typeL = 0; typeL < EV_TAB_SIZE; ++typeL ) {
-        for ( typeR = 0; typeR < EV_TAB_SIZE; ++typeR ) {
-            TabSum[typeL][typeR]  = CantSum;
+    for (typeL = 0; typeL < EV_TAB_SIZE; ++typeL) 
+    {
+        for (typeR = 0; typeR < EV_TAB_SIZE; ++typeR) 
+        {
+            TabSum[typeL][typeR] = CantSum;
             TabDiff[typeL][typeR] = CantDiff;
             TabProd[typeL][typeR] = CantProd;
             TabQuo[typeL][typeR]  = CantQuo;
@@ -2141,12 +2763,17 @@ void            InitEval (void)
             TabComm[typeL][typeR] = CantComm;
         }
     }
-    for ( typeL = 0; typeL < EV_TAB_SIZE; ++typeL ) {
-        for ( typeR = 0; typeR <= typeL; ++typeR ) {
+
+    for (typeL = 0; typeL < EV_TAB_SIZE; ++typeL)
+    {
+        for (typeR = 0; typeR <= typeL; ++typeR) 
+        {
             TabEq[typeL][typeR] = EqPtr;
             TabLt[typeL][typeR] = LtPtr;
         }
-        for ( typeR = typeL+1; typeR < EV_TAB_SIZE; ++typeR ) {
+
+        for (typeR = typeL + 1; typeR < EV_TAB_SIZE; ++typeR) 
+        {
             TabEq[typeL][typeR] = EqPtr;
             TabLt[typeL][typeR] = LtPtr;
         }

@@ -1047,12 +1047,22 @@ Obj DefaultPrRec ( Obj hdRec ) {
     UInt i;
     int  is_first_printed = 1;
     int  pr_populated = 0;
+    
+
+    // GS4 -- revist this is the right stream std_out. 
+
     /*N 05-Jun-90 martin 'PrRec' should be capable of ignoring elements    */
     /*N 05-Jun-90 martin 'PrRec' should support '~.<path>'                 */
     if (GET_TYPE_BAG(hdRec) == T_MAKETAB)
-        Pr("%2>tab(",0,0);
+    {
+        //**INDENT**  Pr("%2>tab(", 0, 0);
+        SyFmtPrint(stdout_stream, "tab(");
+    }
     else
-        Pr("%2>rec(",0,0);
+    {
+        //**INDENT** Pr("%2>rec(",0,0);
+        SyFmtPrint(stdout_stream, "rec(");
+    }
     for ( i = 0; i < GET_SIZE_BAG(hdRec)/(2*SIZE_HD); ++i ) {
         /* print an ordinary record name                                   */
         if ( GET_TYPE_BAG( PTR_BAG(hdRec)[2*i] ) == T_RECNAM ) {
@@ -1062,31 +1072,60 @@ Obj DefaultPrRec ( Obj hdRec ) {
                some information in records, when using methods with 'meth' */
             if(name != 0 && name[0]=='_') continue;
 
-            if (! pr_populated++) Pr("\n%2>",0,0);
-            if ( ! is_first_printed ) Pr("%2<,\n%2>",0,0);
+            if (!pr_populated++) 
+            {
+                //**INDENT** Pr("\n%2>", 0, 0); 
+                SyFmtPrint(stdout_stream, "\n");
+            }
+
+            if (!is_first_printed)
+            { 
+                //**INDENT** Pr("%2<,\n%2>", 0, 0);
+                SyFmtPrint(stdout_stream, ",\n");
+            }
+
             is_first_printed = 0;
 
-            PrVarName(name);
+            PrVarName(stdout_stream, name);
         }
         /* print an evaluating record name                                 */
-        else {
-            if (! pr_populated++) Pr("\n%2>",0,0);
-            Pr(" (",0,0);
-            Print( PTR_BAG(hdRec)[2*i] );
-            Pr(")",0,0);
+        else
+        {
+            if (!pr_populated++)
+            {
+                //**INDENT** Pr("\n%2>", 0, 0); 
+                SyFmtPrint(stdout_stream, "\n");
+            }
+            //Pr(" (",0,0);
+            SyFmtPrint(stdout_stream, " (");
+            //Print( PTR_BAG(hdRec)[2*i] );
+            PrintObj(stdout_stream, PTR_BAG(hdRec)[2 * i], 0);
+            //Pr(")",0,0);
+            SyFmtPrint(stdout_stream, ")");
         }
         /* print the component                                             */
-        Pr("%< := %>",0,0);
-        Print( PTR_BAG(hdRec)[2*i+1] );
+        //**INDENT** Pr("%< := %>",0,0);
+        SyFmtPrint(stdout_stream, " := ");
+        //Print( PTR_BAG(hdRec)[2*i+1] );
+        PrintObj(stdout_stream, PTR_BAG(hdRec)[2 * i + 1], 0);
     }
+
     if (pr_populated)
-    Pr(" %4<)",0,0);
+    {
+        //**INDENT** Pr(" %4<)", 0, 0);
+        SyFmtPrint(stdout_stream, ")");
+    }
     else
-        Pr("%2<)",0,0);
+    {
+        //**INDENT** Pr("%2<)", 0, 0);
+        SyFmtPrint(stdout_stream, ")");
+    }
+
     return HdVoid;
 }
 
-void  PrRec ( Obj hdRec ) {
+void    PrRec(STREAM stream, Obj hdRec, int indent)
+{
     EvUnaryRecOperator(HdRnPrint, "~.operations.Print", hdRec, DefaultPrRec);
 }
 
@@ -1098,23 +1137,31 @@ void  PrRec ( Obj hdRec ) {
 **
 **  '<record> . <name>'
 */
-void            PrRecElm (Bag hdElm)
+void    PrRecElm(STREAM stream, Obj hdElm, int indent)
 {
     /* print the record                                                    */
-    Pr( "%>", 0, 0 );
-    Print( PTR_BAG(hdElm)[0] );
+    //**INDENT**  Pr( "%>", 0, 0 );
+
+    //Print( PTR_BAG(hdElm)[0] );
+    PrintObj(stream, PTR_BAG(hdElm)[0], 0);
     /* print an ordinary record name                                       */
-    if ( GET_TYPE_BAG( PTR_BAG(hdElm)[1] ) == T_RECNAM ) {
+    if ( GET_TYPE_BAG( PTR_BAG(hdElm)[1] ) == T_RECNAM )
+    {
         char * name = RECNAM_NAME( PTR_BAG(hdElm)[1] );
-        Pr("%<.%>",0,0);
-        PrVarName(name);
-        Pr("%<",0,0);
+        //**INDENT**  Pr("%<.%>",0,0);
+        SyFmtPrint(stream, ".");
+        PrVarName(stream, name);
+        //**INDENT**  Pr("%<",0,0);
     }
     /* print an evaluating record name                                     */
-    else {
-        Pr( "%<.%>(", 0, 0 );
-        Print( PTR_BAG(hdElm)[1] );
-        Pr( ")%<", 0, 0 );
+    else
+    {
+        //**INDENT**  Pr( "%<.%>(", 0, 0 );
+        SyFmtPrint(stream, ".(");
+        //Print( PTR_BAG(hdElm)[1] );
+        PrintObj(stream, PTR_BAG(hdElm)[1], 0);
+        //**INDENT**  Pr( ")%<", 0, 0 );
+        SyFmtPrint(stream, ")");
     }
 }
 
@@ -1127,13 +1174,18 @@ void            PrRecElm (Bag hdElm)
 **
 **  '<record>.<name> := <expr>;'
 */
-void            PrRecAss (Bag hdAss)
+void    PrRecAss(STREAM stream, Obj hdAss, int indent)
 {
-    Pr( "%2>", 0, 0 );
-    Print( PTR_BAG(hdAss)[0] );
-    Pr( "%< %>:= ", 0, 0 );
-    Print( PTR_BAG(hdAss)[1] );
-    Pr( "%2<", 0, 0 );
+    //**INDENT**  Pr( "%2>", 0, 0 );
+
+    //Print( PTR_BAG(hdAss)[0] );
+    PrintObj(stream, PTR_BAG(hdAss)[0], 0);
+    //**INDENT**  Pr( "%< %>:= ", 0, 0 );
+    SyFmtPrint(stream, " := ");
+    //Print( PTR_BAG(hdAss)[1] );
+    PrintObj(stream, PTR_BAG(hdAss)[1], 0);
+    //**INDENT**  Pr( "%2<", 0, 0 );
+
 }
 
 
@@ -1142,11 +1194,13 @@ void            PrRecAss (Bag hdAss)
 *F  PrRecName( <hdName> ) . . . . . . . . . . . . . print a record field name
 **
 */
-void            PrRecName (Bag hdNam)
+void    PrRecName(STREAM stream, Obj hdNam, int indent)
 {
-    Pr("RecName(\"", 0, 0);
-    PrVarName(RECNAM_NAME(hdNam));
-    Pr("\")", 0, 0);
+    //Pr("RecName(\"", 0, 0);
+    SyFmtPrint(stream, "RecName(\"");
+    PrVarName(stream, RECNAM_NAME(hdNam));
+    //Pr("\")", 0, 0);
+    SyFmtPrint(stream, "\")");
 }
 
 

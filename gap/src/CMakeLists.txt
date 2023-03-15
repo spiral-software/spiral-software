@@ -9,20 +9,15 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 ##  Setup preprocessor definitions
 
-set(SYSSRCS_COMPILE_DEFNS
-    SYS_HAS_TIME_PROTO SYS_HAS_IOCTL_PROTO SYS_HAS_READ_PROTO
-    SYS_HAS_MISC_PROTO 
-    )
-
 message(STATUS "CMAKE_HOST_APPLE = ${CMAKE_HOST_APPLE}")
 if (WIN32)
-    list (APPEND SYSSRCS_COMPILE_DEFNS SYS_HAS_MALLOC_PROTO SYS_HAS_STRING_PROTO)
+    set(SYSSRCS_COMPILE_DEFNS SYS_HAS_STRING_PROTO)
 else()
     ##  Not Windows ... linux or Darwin/Mac
     if (${CMAKE_HOST_APPLE})
-	list (APPEND SYSSRCS_COMPILE_DEFNS SYS_IS_BSD)
+	set(SYSSRCS_COMPILE_DEFNS SYS_IS_BSD)
     else ()
-	list (APPEND SYSSRCS_COMPILE_DEFNS SYS_IS_USG SYS_HAS_SIG_T=void)
+	set(SYSSRCS_COMPILE_DEFNS SYS_IS_USG SYS_HAS_SIG_T=void)
     endif ()
 endif()
 
@@ -86,7 +81,6 @@ set(SOURCES
     buf_list.c
     iface.c
     debug.c
-    md5.c
     hash.c
     namespaces_bin.c
     integer.c
@@ -148,7 +142,6 @@ set(SOURCES
     integer4.h
     list.h
     machine_endian.h
-    md5.h
     memmgr.h
     namespaces.h
     namespaces_bin.h

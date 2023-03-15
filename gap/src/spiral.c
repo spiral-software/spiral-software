@@ -89,7 +89,7 @@ void            InitSPIRAL_Paths (void)
 **       KernelARep
 **       ...
 */
-void Apropos(Obj hdSubStr, Obj tab, int recursive);
+void Apropos(STREAM stream, Obj hdSubStr, Obj tab, int recursive);
 
 Bag       FunApropos (Bag hdCall)
 {
@@ -103,12 +103,13 @@ Bag       FunApropos (Bag hdCall)
     if ( GET_TYPE_BAG(hdSubStr)!=T_STRING)
         return Error("usage: Apropos( <sub_string> )", 0,0);
 
-    Apropos(hdSubStr, HdIdenttab, 1);
+    Apropos(stdout_stream, hdSubStr, HdIdenttab, 1);
+
     RecursiveClearFlag(HdIdenttab, BF_VISITED);
     return HdVoid;
 }
 
-void Apropos(Obj hdSubStr, Obj tab, int recursive) {
+void Apropos(STREAM stream, Obj hdSubStr, Obj tab, int recursive) {
     char * sub_str = (char*) PTR_BAG(hdSubStr);
     UInt i, printed_header = 0;
 
@@ -123,10 +124,15 @@ void Apropos(Obj hdSubStr, Obj tab, int recursive) {
 
         if(val != 0 && strstr(VAR_NAME(ent), sub_str) != NULL) { /* found something */
             if(! printed_header) {
-                Pr("**** %g ****\n", (Int)tab, (Int)tab);
+                //Pr("**** %g ****\n", (Int)tab, (Int)tab);
+                SyFmtPrint(stream, "****");
+                //Print(tab);
+                PrintObj(stream, tab, 0);
+                SyFmtPrint(stream, "****\n");
             }
             printed_header = 1;
-            Pr("%s\n", (Int)VAR_NAME(ent), 0);
+            //Pr("%s\n", (Int)VAR_NAME(ent), 0);
+            SyFmtPrint(stream, "%s\n", (Int)VAR_NAME(ent));
         }
     }
     for ( i = 0; i < TableSize(tab); i++ ) {
@@ -137,7 +143,7 @@ void Apropos(Obj hdSubStr, Obj tab, int recursive) {
 
         if ( recursive && val != 0 && val != tab && val != HdIdenttab && GET_TYPE_BAG(val) == T_NAMESPACE ) {
             SET_FLAG_BAG(ent, BF_VISITED);
-            Apropos(hdSubStr, val, 1);
+            Apropos(stream, hdSubStr, val, 1);
         }
     }
 }
@@ -591,32 +597,50 @@ Obj  FunCond( Obj hdCall ) {
 **
 *F  BagInfo() . . . . . . . . . . . . . . . . . . . . display bag information
 */
-void BagInfo ( Obj hd ) {
-    if(hd == NULL)
-        Pr("NULL bag\n", 0, 0);
-    else if(! IS_BAG(hd))
-        Pr("INVALID bag\n", 0, 0);
-    else {
-        Pr("Type    : %d ( %s )\n", (Int)GET_TYPE_BAG(hd),  (Int)NameType[GET_TYPE_BAG(hd)]);
-        if(GET_TYPE_BAG(hd)==T_INT) {
-            Pr("Value   : %g\n", (Int)hd, 0);
+void BagInfo (STREAM stream, Obj hd ) {
+    if (hd == NULL)
+    {
+        //Pr("NULL bag\n", 0, 0);
+        SyFmtPrint(stream, "NULL bag\n");
+    }
+    else if (!IS_BAG(hd))
+    {
+        //Pr("INVALID bag\n", 0, 0);
+        SyFmtPrint(stream, "INVALID bag\n");
+    }
+    else 
+    {
+        //Pr("Type    : %d ( %s )\n", (Int)GET_TYPE_BAG(hd),  (Int)NameType[GET_TYPE_BAG(hd)]);
+        SyFmtPrint(stream, "Type    : %d ( %s )\n", (Int)GET_TYPE_BAG(hd), NameType[GET_TYPE_BAG(hd)]);
+        if(GET_TYPE_BAG(hd)==T_INT) 
+        {
+            //Pr("Value   : %g\n", (Int)hd, 0);
+            SyFmtPrint(stream, "Value   : ");
+            //Print(hd);
+            PrintObj(stream, hd, 0);
+            SyFmtPrint(stream, "\n");
+
             return;
         }
-        Pr("Size    : %d \t Addr : 0x%s \n",
-           (Int) GET_SIZE_BAG(hd),
-           (Int) PTR_BAG(HexStringInt(INT_TO_HD(hd))));
-        Pr("Handles : %d \t PTR_BAG  : 0x%s \n",
-           (Int) NrHandles(GET_TYPE_BAG(hd), GET_SIZE_BAG(hd)),
-           (Int) PTR_BAG(HexStringInt(INT_TO_HD(PTR_BAG(hd)))));
-        Pr("Flags   : %d\n", (Int)GET_FLAGS_BAG(hd), 0);
-        Pr("Value   : %g\n", (Int)hd, 0);
+        //Pr("Size    : %d \t Addr : 0x%s \n", (Int) GET_SIZE_BAG(hd), (Int) PTR_BAG(HexStringInt(INT_TO_HD(hd))));
+        SyFmtPrint(stream, "Size    : %d \t Addr : 0x%s \n", (Int)GET_SIZE_BAG(hd), (char*)PTR_BAG(HexStringInt(INT_TO_HD(hd))));
+        //Pr("Handles : %d \t PTR_BAG  : 0x%s \n", (Int) NrHandles(GET_TYPE_BAG(hd), GET_SIZE_BAG(hd)), (Int) PTR_BAG(HexStringInt(INT_TO_HD(PTR_BAG(hd)))));
+        SyFmtPrint(stream, "Handles : %d \t PTR_BAG  : 0x%s \n", (Int)NrHandles(GET_TYPE_BAG(hd), GET_SIZE_BAG(hd)), (char*)PTR_BAG(HexStringInt(INT_TO_HD(PTR_BAG(hd)))));
+        //Pr("Flags   : %d\n", (Int)GET_FLAGS_BAG(hd), 0);
+        SyFmtPrint(stream, "Flags   : %d\n", (Int)GET_FLAGS_BAG(hd));
+        //Pr("Value   : %g\n", (Int)hd, 0);
+        SyFmtPrint(stream, "Value   : %g\n", (Int)hd);
     }
 }
 
 Obj  FunBagInfo ( Obj hdCall ) {
     char * usage = "usage: BagInfo( <obj> )";
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
-    BagInfo(EVAL(PTR_BAG(hdCall)[1]));
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error(usage, 0, 0);
+    }
+
+    BagInfo(stdout_stream, EVAL(PTR_BAG(hdCall)[1]));
     return HdVoid;
 }
 
@@ -808,7 +832,7 @@ Obj  FunPkg ( Obj hdCall ) {
 }
 
 
-int  reachableFrom ( Obj root, Obj hd ) {
+int  reachableFrom (STREAM stream, Obj root, Obj hd ) {
     if ( ! IS_BAG(root) || (! IS_INTOBJ(root) && GET_FLAG_BAG(root, BF_VISITED)) )
         return 0;
     else if ( root == hd )
@@ -822,12 +846,18 @@ int  reachableFrom ( Obj root, Obj hd ) {
         for(i = 0; i < nhandles; ++i) {
             Obj child = PTR_BAG(root)[i];
             if(! IS_BAG(child)) continue;
-            if(reachableFrom(child, hd)) {
-                Pr("%d %s ", (Int)child, (Int)NameType[GET_TYPE_BAG(child)]);
-                if ( GET_TYPE_BAG(child) == T_VAR || GET_TYPE_BAG(child) == T_VARAUTO || GET_TYPE_BAG(child) < T_MUTABLE ||
-                     (GET_TYPE_BAG(child) > T_DELAY && GET_TYPE_BAG(child) < T_STATSEQ) || GET_TYPE_BAG(child) >= T_RETURN)
-                    Pr("%g", (Int)child, 0);
-                Pr("\n", 0, 0);
+            if(reachableFrom(stream, child, hd)) {
+                //Pr("%d %s ", (Int)child, (Int)NameType[GET_TYPE_BAG(child)]);
+                SyFmtPrint(stream, "%d %s ", (Int)child, NameType[GET_TYPE_BAG(child)]);
+                if (GET_TYPE_BAG(child) == T_VAR || GET_TYPE_BAG(child) == T_VARAUTO || GET_TYPE_BAG(child) < T_MUTABLE ||
+                    (GET_TYPE_BAG(child) > T_DELAY && GET_TYPE_BAG(child) < T_STATSEQ) || GET_TYPE_BAG(child) >= T_RETURN)
+                {
+                    //Pr("%g", (Int)child, 0);
+                    //Print(child);
+                    PrintObj(stream, child, 0);
+                }
+                //Pr("\n", 0, 0);
+                SyFmtPrint(stream, "\n");
                 return 1;
             }
         }
@@ -835,12 +865,12 @@ int  reachableFrom ( Obj root, Obj hd ) {
     }
 }
 
-int  reachable ( Obj hd ) {
+int  reachable (STREAM stream, Obj hd ) {
     UInt i, j, found = 0;
     for (i = 0; i < GlobalBags.nr && !found; i++) {
-        if(reachableFrom(*GlobalBags.addr[i], hd)) {
-            Pr("global : %d : %s\n", (Int)*GlobalBags.addr[i],
-                                     (Int) GlobalBags.cookie[i] );
+        if(reachableFrom(stream , *GlobalBags.addr[i], hd)) {
+            //Pr("global : %d : %s\n", (Int)*GlobalBags.addr[i], (Int) GlobalBags.cookie[i] );
+            SyFmtPrint(stream, "global : %d : %s\n", (Int)*GlobalBags.addr[i], GlobalBags.cookie[i]);
             found = 1;
         }
     }
@@ -852,20 +882,30 @@ int  reachable ( Obj hd ) {
 
 
 Obj  FunReachability ( Obj hdCall ) {
-    char * usage = "usage: Reachability( <obj> [, <root>] )";
-    Obj hd, hdRoot = 0;
-    if ( GET_SIZE_BAG(hdCall) < 2 * SIZE_HD || GET_SIZE_BAG(hdCall) > 3 * SIZE_HD)
-        return Error(usage, 0,0);
-    if ( GET_SIZE_BAG(hdCall) == 3 * SIZE_HD )
+    char*   usage = "usage: Reachability( <obj> [, <root>] )";
+    Obj     hd;
+    Obj     hdRoot = 0;
+
+
+    if (GET_SIZE_BAG(hdCall) < 2 * SIZE_HD || GET_SIZE_BAG(hdCall) > 3 * SIZE_HD)
+    {
+        return Error(usage, 0, 0);
+    }
+
+    if (GET_SIZE_BAG(hdCall) == 3 * SIZE_HD)
+    {
         hdRoot = INJECTION_D(EVAL(PTR_BAG(hdCall)[2]));
+    }
 
     hd = EVAL(PTR_BAG(hdCall)[1]);
     hd = INJECTION_D(hd); /* strip T_DELAY, if needed */
 
-    if ( hdRoot == 0 )
-        return reachable(hd) ? HdTrue : HdFalse;
+    if (hdRoot == 0)
+    {
+        return reachable(stdout_stream, hd) ? HdTrue : HdFalse;
+    }
     else {
-        Obj res = reachableFrom(hdRoot, hd) ? HdTrue : HdFalse;
+        Obj res = reachableFrom(stdout_stream, hdRoot, hd) ? HdTrue : HdFalse;
         RecursiveClearFlag(hdRoot, BF_VISITED);
         return res;
     }
@@ -896,6 +936,7 @@ extern int BACKTRACE_DEFAULT_LEVEL;
 extern int ERROR_QUIET;
 extern Obj HdLastErrorMsg;
 extern int ErrorCount;
+
 Obj  FunTry ( Obj hdCall ) {
     char * usage = "usage: Try(<expr>)";
     Obj hd;
@@ -903,7 +944,7 @@ Obj  FunTry ( Obj hdCall ) {
     volatile UInt stack, evalStack;
     volatile Obj exec;
 	volatile TypInputFile  * inputStackTop;
-	volatile TypOutputFile * outputStackTop;
+	//volatile TypOutputFile * outputStackTop;
     exc_type_t e;
 
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
@@ -917,7 +958,7 @@ Obj  FunTry ( Obj hdCall ) {
     stack = TopStack;
     evalStack = EvalStackTop;
 	inputStackTop  = Input;
-	outputStackTop = Output;
+	//outputStackTop = Output;
 
     Try {
         hd = EVAL(hd);
@@ -942,9 +983,9 @@ Obj  FunTry ( Obj hdCall ) {
 
 		// close files opened during context of Try()
 
-		ok = 1;
-		while ( ( Output > outputStackTop) && ok )
-			ok = CloseOutput();
+		//ok = 1;
+		//while ( ( Output > outputStackTop) && ok )
+			//ok = CloseOutput();
 		ok = 1;
 		while ( ( Input > inputStackTop) && ok )
 			ok = CloseInput();
@@ -1080,12 +1121,27 @@ Bag  FunEditDef ( Bag hdCall ) {
     char *      usage = "usage: EditDef(<obj>)";
     char        fileName[512];
     Int         line;
+
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
 
     switch(FindDocAndExtractLoc(PTR_BAG(hdCall)[1], fileName, &line)) {
-        case  0: { Pr("--no documentation--\n", 0, 0); break; }
-        case -1: { Pr("--defnition not found--\n", 0, 0); break; }
-        case  1: { HooksEditFile(fileName, line); break; }
+        case  0: 
+        { 
+            //Pr("--no documentation--\n", 0, 0); 
+            SyFmtPrint(stdout_stream, "--no documentation--\n");
+            break; 
+        }
+        case -1:
+        {
+            //Pr("--defnition not found--\n", 0, 0);
+            SyFmtPrint(stdout_stream, "--defnition not found--\n");
+            break;
+        }
+        case  1: 
+        { 
+            HooksEditFile(fileName, line);
+            break; 
+        }
     }
     return HdVoid;
 }
@@ -1147,7 +1203,7 @@ int  findrefs_recursion ( Obj root, Obj hd, refs_search_t* result ) {
     return 0;
 }
 
-Bag  findrefs_global( Obj hd ) {
+Bag  findrefs_global(STREAM stream, Obj hd ) {
     char* mem_err = "Cannot allocate enough memory.\n";
     UInt i;
     Bag list;
@@ -1159,14 +1215,16 @@ Bag  findrefs_global( Obj hd ) {
     result.list = malloc(result.list_capacity*SIZE_HD);
     
     if (result.list==0) {
-        Pr(mem_err, 0, 0);
+        //Pr(mem_err, 0, 0);
+        SyFmtPrint(stream, mem_err);
         return NewList(0);
     }
     
     for (i = 0; i < GlobalBags.nr; i++) {
         if(findrefs_recursion(*GlobalBags.addr[i], hd, &result)) {
             if (result.mem_err) {
-                Pr(mem_err, 0, 0);
+                //Pr(mem_err, 0, 0);
+                SyFmtPrint(stream, mem_err);
                 free(result.list);
                 return NewList(0);
             }
@@ -1197,7 +1255,7 @@ Bag  FunFindRefs( Bag hdCall ) {
             by_value = EVAL(PTR_BAG(hdCall)[2]) == HdTrue;
         case 2 * SIZE_HD: {
             hd = (by_value) ? EVAL(PTR_BAG(hdCall)[1]) : PTR_BAG(hdCall)[1];
-            return findrefs_global(hd);
+            return findrefs_global(stdout_stream, hd);
             break;
         }
     }   
@@ -1342,6 +1400,47 @@ Obj FunIsWindows(Obj hdCall) {
 }
 
 
+Bag FunGetPid(Bag hd)
+{
+	Int pid;
+	Bag hdPid;
+
+	pid = SyGetPid();
+	hdPid = INT_TO_HD(pid);
+
+	return hdPid;
+}
+
+
+
+Bag FunMakeDir(Bag hdString)
+{
+	char str[512];
+
+	// make sure we get one argument.
+	if(GET_SIZE_BAG(hdString) != 2 * SIZE_HD)
+		return Error("usage: MakeDir( <dirname> )", 0, 0);
+
+	// eval the argument
+    hdString = EVAL( PTR_BAG(hdString)[1] );
+	
+	// make sure it's a string
+	if(GET_TYPE_BAG(hdString) != T_STRING)
+		return Error("<dirname> must be a string", 0, 0);
+	
+	// since we have to copy the string, make sure its not too long.
+	if(strlen(HD_TO_STRING(hdString)) >= 512)
+		return Error("<dirname> must be less than 511 chars long!", 0, 0);
+
+	strcpy(str, HD_TO_STRING(hdString));
+
+	if(!SuperMakeDir(str))
+		return Error("could not create the directory!", 0, 0);
+
+	return INT_TO_HD(1);
+}
+
+
 
 /****************************************************************************
 **
@@ -1391,15 +1490,8 @@ void            InitSPIRAL (void) {
     InstIntFunc( "When",             FunWhen);
     InstIntFunc( "Cond",             FunCond);
     InstIntFunc( "Same",             FunSame);
-    InstIntFunc( "MD5File",          FunMD5File);
-    InstIntFunc( "MD5String",        FunMD5String);
-    InstIntFunc( "FileTime",         FunFileMTime);
     InstIntFunc( "GetPid",           FunGetPid);
     InstIntFunc( "MakeDir",          FunMakeDir);
-
-    InstIntFunc( "WinGetValue",      FunWinGetValue);
-    InstIntFunc( "WinPathFixSpaces", FunWinPathFixSpaces);
-	InstIntFunc( "WinShortPathName", FunWinShortPathName);
 
     InstIntFunc( "GetEnv",  FunGetEnv );
 

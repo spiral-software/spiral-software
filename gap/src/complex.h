@@ -22,4 +22,4 @@ Obj  CplxAnyPow  (Obj l, Obj r);
 Obj  EqCplxAny (Obj l, Obj r) ;
 Obj  LtCplxAny (Obj l, Obj r) ;
 Obj  EvCplx ( Obj hd ) ;
-void PrCplx ( Obj hd );
+void PrCplx (STREAM stream, Obj hd, int indent);

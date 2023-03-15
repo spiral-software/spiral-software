@@ -482,13 +482,18 @@ Bag       LtRat (Bag hdL, Bag hdR)
 **
 **      <numerator> / <denominator>
 */
-void            PrRat (Bag hdRat)
+void   PrRat(STREAM stream, Obj hdRat, int indent)
 {
-    Pr("%>",0,0);
-    Print( PTR_BAG(hdRat)[0] );
-    Pr("%</%>",0,0);
-    Print( PTR_BAG(hdRat)[1] );
-    Pr("%<",0,0);
+    //**INDENT** Pr("%>",0,0);
+
+    //Print( PTR_BAG(hdRat)[0] );
+    PrintObj(stream, PTR_BAG(hdRat)[0], 0);
+    //**INDENT** Pr("%/%>",0,0);
+    SyFmtPrint(stream, "/");
+    //Print( PTR_BAG(hdRat)[1] );
+    PrintObj(stream, PTR_BAG(hdRat)[1], 0);
+    //**INDENT** Pr("%<",0,0);
+
 }
 
 

@@ -313,39 +313,6 @@ void            SyntaxError ( char * msg );
 void            Match ( UInt symbol, char * msg,
                         TypSymbolSet skipto );
 
-
-/****************************************************************************
-**
-*F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
-**
-**  'Pr' is the output function. The first argument is a 'printf' like format
-**  string containing   up   to 2  '%'  format   fields,   specifing  how the
-**  corresponding arguments are to be  printed.  The two arguments are passed
-**  as  'long'  integers.   This  is possible  since every  C object  ('int',
-**  'char', pointers) except 'float' or 'double', which are not used  in GAP,
-**  can be converted to a 'long' without loss of information.
-**
-**  The function 'Pr' currently support the following '%' format  fields:
-**  '%c'    the corresponding argument represents a character,  usually it is
-**          its ASCII or EBCDIC code, and this character is printed.
-**  '%s'    the corresponding argument is the address of  a  null  terminated
-**          character string which is printed.
-**  '%d'    the corresponding argument is a signed integer, which is printed.
-**          Between the '%' and the 'd' an integer might be used  to  specify
-**          the width of a field in which the integer is right justified.  If
-**          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%>'    increment the indentation level.
-**  '%<'    decrement the indentation level.
-**  '%%'    can be used to print a single '%' character. No argument is used.
-**
-**  You must always  cast the arguments to  '(long)' to avoid  problems  with
-**  those compilers with a default integer size of 16 instead of 32 bit.  You
-**  must pass 0L if you don't make use of an argument to please lint.
-*/
-void            Pr ( char * format, Int arg1, Int arg2 );
-
-
-
 /****************************************************************************
 **
 *T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
@@ -377,43 +344,25 @@ void            Pr ( char * format, Int arg1, Int arg2 );
 #define SCANNER_INPUTS      16
 
 typedef struct {
-    Obj         package;
-    Obj         packages;
-    Obj         imports;
-    Obj         data;
-    Int        importTop;
-    Int        packageTop;
-    Int        global;
-
-    Int        file;
-    char        name [1024];
-    char        line [2048];
-    char        * ptr;
-    Int        number;
+	Obj   package;
+	Obj   packages;
+	Obj   imports;
+	Obj   data;
+	Int   importTop;
+	Int   packageTop;
+	Int   global;
+	Int   fid;
+	Int   number;
+	FILE *file;
+	char  name[1024];
+	char  line[2048];
+	char *ptr;
 } TypInputFile;
 
 extern TypInputFile    InputFiles [SCANNER_INPUTS];
 extern TypInputFile    * Input;
 extern char            * In;
 
-
-typedef struct {
-    Int        file;
-    char        *line;
-    Int        pos;
-    Int        indent;
-    Int        spos;
-    Int        sindent;
-    char*       mem; /* holds memory buffer if output goes into memory         */
-                     /* first UInt is the buffer size without 2*sizeof(UInt);  */
-                     /* second UInt is the number of characters written        */
-                     /* (without terminating zero);                            */
-                     /* null terminated characters array;                      */
-
-    Bag		hdList;
-}       TypOutputFile;
-
-extern TypOutputFile   * Output;
 
 /****************************************************************************
 **
@@ -532,61 +481,6 @@ Int            CloseInput ( void );
 Int            OpenOutput ( char * filename );
 
 
-/****************************************************************************
-**
-*F  CloseOutput() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseOutput' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseOutput' returns 1 to indicate success.
-**
-**  'CloseOutput' will  not  close the  initial output file   '*stdout*', and
-**  returns 0 if such attempt is made.  This  is  used in 'Error' which calls
-**  'CloseOutput' until it returns 0, thereby closing all open output files.
-**
-**  Calling 'CloseOutput' if the corresponding 'OpenOutput' call failed  will
-**  close the current output file, which will lead to very strange behaviour.
-**  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
-**  'PrintTo' call or an error will not yield much better results.
-*/
-Int            CloseOutput ( void );
-
-
-/****************************************************************************
-**
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-Int            OpenAppend ( char * filename );
-
-/****************************************************************************
-**
-*F  OpenMemory( )  . . . . . . . . . . . redirecting output into memory block
-**
-**  'OpenMemory' uses memory buffer as current output.
-**  All subsequent output will go to that memory buffer, until either   
-**  it is  closed with 'CloseMemory'/'CloseOutput' or  another  file is  
-**  opened with 'OpenOutput'. The size of memory buffer grows to hold all 
-**  redirected data.
-*/
-
-Int            OpenMemory ();
-
-/****************************************************************************
-**
-*F  CloseMemory( )  . . . . . . . . . . . close current output memory buffer
-**
-**  CloseMemory(Obj* hdStr) closing current output and returns all 
-**  accumulated output as string in hdStr.
-*/
-
-Int            CloseMemory(Obj* hdStr);
 
 /****************************************************************************
 **

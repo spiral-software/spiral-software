@@ -101,7 +101,7 @@ Bag       EvRepeat ( Bag hdRep );
 **
 **  A linebreak is forced after each <statement> except the last one.
 */
-void            PrStatseq ( Bag hdSSeq );
+void	PrStatseq(STREAM stream, Obj hdSSeq, int indent);
 
 
 /****************************************************************************
@@ -113,7 +113,7 @@ void            PrStatseq ( Bag hdSSeq );
 **  A Linebreak is forced after the 'then'  and  <statements>.  If  necessary
 **  it is preferred immediately before the 'then'.
 */
-void            PrIf ( Bag hdIf );
+void PrIf(STREAM stream, Obj hdIf, int indent);
 
 
 /****************************************************************************
@@ -125,7 +125,7 @@ void            PrIf ( Bag hdIf );
 **  A linebreak is forced after the 'do' and the <statements>.  If  necesarry
 **  it is preferred immediately before the 'in'.
 */
-void            PrFor ( Bag hdFor );
+void	PrFor(STREAM stream, Obj hdFor, int indent);
 
 
 /****************************************************************************
@@ -137,7 +137,7 @@ void            PrFor ( Bag hdFor );
 **  A linebreak is forced after the 'do' and the <statements>.  If  necessary
 **  it is preferred immediately before the 'do'.
 */
-void            PrWhile ( Bag hdWhile );
+void	PrWhile(STREAM stream, Obj hdWhile, int indent);
 
 
 /****************************************************************************
@@ -148,7 +148,7 @@ void            PrWhile ( Bag hdWhile );
 **
 **  A linebreak is forced after the 'repeat' and the <statements>.
 */
-void            PrRepeat ( Bag hdRep );
+void	PrRepeat(STREAM stream, Obj hdRep, int indent);
 
 
 /****************************************************************************

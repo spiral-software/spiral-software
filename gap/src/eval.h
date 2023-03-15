@@ -575,7 +575,7 @@ extern  Bag       LtBool ( Bag hdL, Bag hdR );
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-extern  void            PrBool ( Bag hd );
+extern  void   PrBool(STREAM stream, Obj hd, int indent);
 
 
 /****************************************************************************
@@ -675,17 +675,19 @@ extern  Bag       FunIsBound ( Bag hdCall );
 **  is the main dispatching table that contains for every type a  pointer  to
 **  the function that should be executed if a bag  of  that  type  is  found.
 */
-extern  void            (* PrTab[ T_ILLEGAL ] ) ( Bag hd );
-
+extern  void (*PrTab[T_ILLEGAL]) (STREAM stream, Obj hd, int indent);
 
 /****************************************************************************
+**  GS4 -- TODO: clean up
+**  PrintObj( file stream, ) . . . . . . . . . . . . . . . . . . . . . . print an object
 **
-*F  Print( <hd> ) . . . . . . . . . . . . . . . . . . . . . . print an object
-**
+**  'Print'  will pull in an input stream, an object, and an integer. 
 **  'Print'  prints  the  object  with  handle  <hd>.  It dispatches   to the
 **  appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
+**  
 */
-extern  void            Print ( Bag hd );
+extern  void PrintObj(STREAM stream, Obj objHandle, int indent);
+
 
 
 /****************************************************************************
@@ -704,7 +706,7 @@ extern  void            CantPrint ( Bag hd );
 *F  PrVarName( <string> )  . . prints identifier, escaping special characters
 **
 */
-extern  void            PrVarName ( char * name );
+extern  void  PrVarName(STREAM stream, char* name);
   
 /****************************************************************************
 **
@@ -713,7 +715,7 @@ extern  void            PrVarName ( char * name );
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
 */
-extern  void            PrVar ( Bag hdVar );
+extern  void  PrVar(STREAM stream, Obj hdVar, int indent);
 
 
 /****************************************************************************
@@ -724,7 +726,7 @@ extern  void            PrVar ( Bag hdVar );
 **
 **  Linebreaks are preffered before the ':='.
 */
-extern  void            PrVarAss ( Bag hdAss );
+extern  void   PrVarAss(STREAM stream, Obj hdAss, int indent);
 
 
 /****************************************************************************
@@ -733,7 +735,7 @@ extern  void            PrVarAss ( Bag hdAss );
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
-extern  void            PrNot ( Bag hdNot );
+extern  void   PrNot(STREAM stream, Obj hdNot, int indent);
 
 
 /****************************************************************************
@@ -742,7 +744,7 @@ extern  void            PrNot ( Bag hdNot );
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */
-extern  void            PrBinop ( Bag hdOp );
+extern  void   PrBinop(STREAM stream, Obj hdOp, int indent);
 
 
 /****************************************************************************
@@ -751,7 +753,7 @@ extern  void            PrBinop ( Bag hdOp );
 **
 **  This prints a commutator.
 */
-extern  void            PrComm ( Bag hd );
+extern  void  PrComm(STREAM stream, Obj hd, int indent);
 
 
 /****************************************************************************
@@ -771,6 +773,7 @@ extern  void            InstEvFunc ( unsigned int     type,
 **  Installs the function  <func>  as  evaluation  function  for  the  binary
 **  operation with the table <tab> for operands of type  <typeL> and <typeR>.
 */
+//GS4-- Possibly Remove This
 extern  void            InstBinOp ( Bag  (* table [EV_TAB_SIZE][EV_TAB_SIZE]) (),
                                       unsigned int      leftType,
                                       unsigned int      rightType,

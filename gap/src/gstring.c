@@ -52,18 +52,18 @@
 **
 */
 
-#include        "system.h"              /* system dependent functions      */
-#include        "memmgr.h"              /* dynamic storage manager         */
-#include        "scanner.h"             /* reading of symbols and printing */
-#include        "eval.h"                /* evaluator main dispatcher       */
-#include        "integer.h"             /* arbitrary size integers         */
+#include    "system.h"              /* system dependent functions      */
+#include    "memmgr.h"              /* dynamic storage manager         */
+#include    "scanner.h"             /* reading of symbols and printing */
+#include    "eval.h"                /* evaluator main dispatcher       */
+#include    "integer.h"             /* arbitrary size integers         */
 
-#include        "list.h"                /* generic list package            */
-#include        "plist.h"               /* 'LEN_PLIST', 'SET_LEN_PLIST',.. */
-#include        "range.h"               /* 'LEN_RANGE', 'LOW_RANGE', ..    */
+#include    "list.h"                /* generic list package            */
+#include    "plist.h"               /* 'LEN_PLIST', 'SET_LEN_PLIST',.. */
+#include    "range.h"               /* 'LEN_RANGE', 'LOW_RANGE', ..    */
 
-#include        "gstring.h"              /* declaration part of the package */
-#include        "string4.h"
+#include    "gstring.h"              /* declaration part of the package */
+#include    "string4.h"
 
 /****************************************************************************
 **
@@ -72,7 +72,7 @@
 **  'HdChars' contains the handles of all the character objects.  That way we
 **  dont need to allocate new bags for new characters.
 */
-Bag               HdChars [256];
+Bag     HdChars[256];
 
 
 /****************************************************************************
@@ -83,7 +83,7 @@ Bag               HdChars [256];
 **  characters are  constant and thus  selfevaluating, 'EvChar'  just returns
 **  <hdChr>.
 */
-Bag       EvChar (Bag hdChr)
+Bag     EvChar(Bag hdChr)
 {
     return hdChr;
 }
@@ -98,12 +98,16 @@ Bag       EvChar (Bag hdChr)
 **
 **  Is called from the 'Eq' binop, so both operands are already evaluated.
 */
-Bag       EqChar (Bag hdL, Bag hdR)
+Bag     EqChar(Bag hdL, Bag hdR)
 {
-    if ( *(unsigned char*)PTR_BAG(hdL) == *(unsigned char*)PTR_BAG(hdR) )
+    if (*(unsigned char*)PTR_BAG(hdL) == *(unsigned char*)PTR_BAG(hdR))
+    {
         return HdTrue;
+    }
     else
+    {
         return HdFalse;
+    }
 }
 
 
@@ -116,12 +120,16 @@ Bag       EqChar (Bag hdL, Bag hdR)
 **
 **  Is called from the 'Lt' binop, so both operands are already evaluated.
 */
-Bag       LtChar (Bag hdL, Bag hdR)
+Bag     LtChar(Bag hdL, Bag hdR)
 {
-    if ( *(unsigned char*)PTR_BAG(hdL) < *(unsigned char*)PTR_BAG(hdR) )
+    if (*(unsigned char*)PTR_BAG(hdL) < *(unsigned char*)PTR_BAG(hdR))
+    {
         return HdTrue;
+    }
     else
+    {
         return HdFalse;
+    }
 }
 
 
@@ -131,19 +139,50 @@ Bag       LtChar (Bag hdL, Bag hdR)
 **
 **  'PrChar' prints the character <hdChr>.
 */
-void            PrChar (Bag hdChr)
+void    PrChar(STREAM stream, Obj hdChr, int indent)
 {
-    unsigned char       chr;
+    unsigned char currChr = *(unsigned char*)PTR_BAG(hdChr);
 
-    chr = *(unsigned char*)PTR_BAG(hdChr);
-    if      ( chr == '\n'  )  Pr("'\\n'",0,0);
-    else if ( chr == '\t'  )  Pr("'\\t'",0,0);
-    else if ( chr == '\r'  )  Pr("'\\r'",0,0);
-    else if ( chr == '\b'  )  Pr("'\\b'",0,0);
-    else if ( chr == '\03' )  Pr("'\\c'",0,0);
-    else if ( chr == '\''  )  Pr("'\\''",0,0);
-    else if ( chr == '\\'  )  Pr("'\\\\'",0,0);
-    else                      Pr("'%c'",(Int)chr,0);
+    if (currChr == '\n') 
+    { 
+        //Pr("'\\n'", 0, 0);
+        SyFmtPrint(stream, "'\\n'");
+    }
+    else if (currChr == '\t') 
+    {
+        //Pr("'\\t'", 0, 0); 
+        SyFmtPrint(stream, "'\\t'");
+    }
+    else if (currChr == '\r') 
+    {
+        //Pr("'\\r'", 0, 0);
+        SyFmtPrint(stream, "'\\r'");
+    }
+    else if (currChr == '\b') 
+    {
+        //Pr("'\\b'", 0, 0); 
+        SyFmtPrint(stream, "'\\b'");
+    }
+    else if (currChr == '\03')
+    { 
+        //Pr("'\\c'", 0, 0); 
+        SyFmtPrint(stream, "'\\c'");
+    }
+    else if (currChr == '\'') 
+    {
+        //Pr("'\\''", 0, 0); 
+        SyFmtPrint(stream, "'\\''");
+    }
+    else if (currChr == '\\') 
+    { 
+        //Pr("'\\\\'", 0, 0); 
+        SyFmtPrint(stream, "'\\\\'");
+    }
+    else
+    { 
+        //Pr("'%c'", (Int)currChr, 0);
+        SyFmtPrint(stream, "'%c'", currChr);
+    }
 
 }
 
@@ -206,7 +245,7 @@ void            PrChar (Bag hdChr)
 **
 **  'LenString' is the function in 'TabLenList' for strings.
 */
-Int            LenString (Bag hdList)
+Int     LenString (Bag hdList)
 {
     return LEN_STRING( hdList );
 }
@@ -229,20 +268,19 @@ Int            LenString (Bag hdList)
 **  the  function  in  'TabElmfList', 'TabElmlList',  and  'TabElmrList'  for
 **  strings.
 */
-Bag       ElmString (Bag hdList, Int pos)
+Bag     ElmString(Bag hdList, Int pos)
 {
     /* check the position                                                  */
-    if ( LEN_STRING( hdList ) < pos ) {
-        return Error(
-          "List Element: <list>[%d] must have a value",
-                     pos, 0 );
+    if ( LEN_STRING( hdList ) < pos ) 
+    {
+        return Error("List Element: <list>[%d] must have a value", pos, 0 );
     }
 
     /* return the selected element                                         */
     return ELM_STRING( hdList, pos );
 }
 
-Bag       ElmfString (Bag hdList, Int pos)
+Bag     ElmfString(Bag hdList, Int pos)
 {
     return ELM_STRING( hdList, pos );
 }
@@ -260,19 +298,19 @@ Bag       ElmfString (Bag hdList, Int pos)
 **
 **  'ElmsString' is the function in 'TabElmsList' for strings.
 */
-Bag       ElmsString (Bag hdList, Bag hdPoss)
+Bag     ElmsString(Bag hdList, Bag hdPoss)
 {
-    Bag           hdElms;         /* selected sublist, result        */
-    Int                lenList;        /* length of <list>                */
-    unsigned char       elm;            /* one element from <list>         */
-    Int                lenPoss;        /* length of <positions>           */
-    Int                pos;            /* <position> as integer           */
-    Int                inc;            /* increment in a range            */
-    Int                i;              /* loop variable                   */
+    Bag             hdElms;         /* selected sublist, result        */
+    Int             lenList;        /* length of <list>                */
+    Int             lenPoss;        /* length of <positions>           */
+    Int             pos;            /* <position> as integer           */
+    Int             inc;            /* increment in a range            */
+    Int             i;              /* loop variable                   */
+    unsigned char   elm;            /* one element from <list>         */
 
     /* general code                                                        */
-    if ( GET_TYPE_BAG(hdPoss) != T_RANGE ) {
-
+    if ( GET_TYPE_BAG(hdPoss) != T_RANGE ) 
+    {
         /* get the length of <list>                                        */
         lenList = LEN_LIST( hdList );
 
@@ -283,14 +321,14 @@ Bag       ElmsString (Bag hdList, Bag hdPoss)
         hdElms = NewBag( T_STRING, SIZE_PLEN_STRING( lenPoss ) );
 
         /* loop over the entries of <positions> and select                 */
-        for ( i = 1; i <= lenPoss; i++ ) {
-
+        for ( i = 1; i <= lenPoss; i++ )
+        {
             /* get <position>                                              */
             pos = HD_TO_INT( ELMF_LIST( hdPoss, i ) );
-            if ( lenList < pos ) {
-                return Error(
-                  "List Elements: <list>[%d] must have a value",
-                             pos, 0 );
+
+            if ( lenList < pos ) 
+            {
+                return Error("List Elements: <list>[%d] must have a value", pos, 0 );
             }
 
             /* select the element                                          */
@@ -298,14 +336,11 @@ Bag       ElmsString (Bag hdList, Bag hdPoss)
 
             /* assign the element into <elms>                              */
             ((unsigned char*)PTR_BAG(hdElms))[i-1] = elm;
-
         }
-
     }
-
     /* special code for ranges                                             */
-    else {
-
+    else 
+    {
         /* get the length of <list>                                        */
         lenList = LEN_LIST( hdList );
 
@@ -314,26 +349,27 @@ Bag       ElmsString (Bag hdList, Bag hdPoss)
         pos = LOW_RANGE( hdPoss );
         inc = INC_RANGE( hdPoss );
 
-	if (lenList < pos) 
-	    lenPoss = 0;
-	else if (lenList < pos + (lenPoss-1) * inc) 
-	    lenPoss = (lenList-pos)/inc + 1;
+        if (lenList < pos)
+        {
+            lenPoss = 0;
+        }
+        else if (lenList < pos + (lenPoss - 1) * inc)
+        {
+            lenPoss = (lenList - pos) / inc + 1;
+        }
 
-	/* make the result list                                            */
+	    /* make the result list                                            */
         hdElms = NewBag( T_STRING, SIZE_PLEN_STRING( lenPoss ) );
 
         /* loop over the entries of <positions> and select                 */
-        for ( i = 1; i <= lenPoss; i++, pos += inc ) {
-
+        for ( i = 1; i <= lenPoss; i++, pos += inc ) 
+        {
             /* select the element                                          */
             elm = ((unsigned char*)PTR_BAG(hdList))[pos-1];
             /* assign the element into <elms>                              */
             ((unsigned char*)PTR_BAG(hdElms))[i-1] = elm;
-
         }
-
     }
-
     /* return the result                                                   */
     return hdElms;
 }
@@ -353,7 +389,7 @@ Bag       ElmsString (Bag hdList, Bag hdPoss)
 **  the  same  stuff as 'AssPlist'.  This  is because  a  string is not  very
 **  likely to stay a string after the assignment.
 */
-Bag       AssString (Bag hdList, Int pos, Bag hdVal)
+Bag     AssString(Bag hdList, Int pos, Bag hdVal)
 {
     Int                plen;           /* physical length of <list>       */
 
@@ -362,15 +398,21 @@ Bag       AssString (Bag hdList, Int pos, Bag hdVal)
     Retype( hdList, T_LIST );
 
     /* resize the list if necessary                                        */
-    if ( LEN_PLIST(hdList) < pos ) {
+    if ( LEN_PLIST(hdList) < pos ) 
+    {
         plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(hdList) );
-        if ( plen + plen/8 + 4 < pos )
-            Resize( hdList, SIZE_PLEN_PLIST( pos ) );
-        else if ( plen < pos )
-            Resize( hdList, SIZE_PLEN_PLIST( plen + plen/8 + 4 ) );
+
+        if (plen + plen / 8 + 4 < pos)
+        {
+            Resize(hdList, SIZE_PLEN_PLIST(pos));
+        }
+        else if (plen < pos)
+        {
+            Resize(hdList, SIZE_PLEN_PLIST(plen + plen / 8 + 4));
+        }
+
         SET_LEN_PLIST( hdList, pos );
     }
-
     /* now perform the assignment and return the assigned value            */
     SET_ELM_PLIST( hdList, pos, hdVal );
     return hdVal;
@@ -393,7 +435,7 @@ Bag       AssString (Bag hdList, Int pos, Bag hdVal)
 **  same stuff as 'AsssPlist'.  This is because a  string  is not very likely
 **  to stay a string after the assignment.
 */
-Bag       AsssString (Bag hdList, Bag hdPoss, Bag hdVals)
+Bag     AsssString(Bag hdList, Bag hdPoss, Bag hdVals)
 {
     /* convert <list> to a plain list                                      */
     PLAIN_LIST( hdList );
@@ -414,27 +456,27 @@ Bag       AsssString (Bag hdList, Bag hdPoss, Bag hdVals)
 **
 **  'PosString' is the function in 'TabPosList' for strings.
 */
-Int            PosString (Bag hdList, Bag hdVal, Int start)
+Int     PosString(Bag hdList, Bag hdVal, Int start)
 {
-    Int                lenList;        /* length of <list>                */
-    Bag           hdElm;          /* one element of <list>           */
-    Int                i;              /* loop variable                   */
+    Int     lenList;        /* length of <list>                */
+    Bag     hdElm;          /* one element of <list>           */
+    Int     i;              /* loop variable                   */
 
     /* get the length of <list>                                            */
     lenList = LEN_STRING( hdList );
 
     /* loop over all entries in <list>                                     */
-    for ( i = start+1; i <= lenList; i++ ) {
-
+    for ( i = start+1; i <= lenList; i++ ) 
+    {
         /* select one element from <list>                                  */
         hdElm = ELML_LIST( hdList, i );
 
         /* compare with <val>                                              */
-        if ( hdElm != 0 && (hdElm == hdVal || EQ( hdElm, hdVal ) == HdTrue) )
+        if (hdElm != 0 && (hdElm == hdVal || EQ(hdElm, hdVal) == HdTrue))
+        {
             break;
-
+        }
     }
-
     /* return the position (0 if <val> was not found)                      */
     return (lenList < i ? 0 : i);
 }
@@ -449,19 +491,21 @@ Int            PosString (Bag hdList, Bag hdVal, Int start)
 **
 **  'PlainString' is the function in 'TabPlainList' for strings.
 */
-void            PlainString (Bag hdList)
+void    PlainString(Bag hdList)
 {
-    Int                lenList;        /* logical length of the string    */
-    Bag           hdCopy;         /* handle of the list              */
-    Int                i;              /* loop variable                   */
+    Bag     hdCopy;         /* handle of the list              */
+    Int     lenList;        /* logical length of the string    */
+    Int     i;              /* loop variable                   */
 
     /* find the length and allocate a temporary copy                       */
     lenList = LEN_STRING( hdList );
     hdCopy = NewBag( T_LIST, SIZE_PLEN_PLIST( lenList ) );
+
     SET_LEN_PLIST( hdCopy, lenList );
 
     /* create the finite field entries                                     */
-    for ( i = 1; i <= lenList; i++ ) {
+    for ( i = 1; i <= lenList; i++ ) 
+    {
         SET_ELM_PLIST( hdCopy, i, ELM_STRING( hdList, i ) );
     }
 
@@ -470,10 +514,11 @@ void            PlainString (Bag hdList)
     SET_BAG(hdList, 0, 0);
     Retype( hdList, T_LIST );
     SET_LEN_PLIST( hdList, lenList );
-    for ( i = 1; i <= lenList; i++ ) {
+
+    for ( i = 1; i <= lenList; i++ ) 
+    {
         SET_ELM_PLIST( hdList, i, ELM_PLIST( hdCopy, i ) );
     }
-
 }
 
 
@@ -485,7 +530,7 @@ void            PlainString (Bag hdList)
 **
 **  'IsDenseString' is the function in 'TabIsDenseList' for strings.
 */
-Int            IsDenseString (Bag hdList)
+Int     IsDenseString(Bag hdList)
 {
     return 1;
 }
@@ -499,7 +544,7 @@ Int            IsDenseString (Bag hdList)
 **
 **  'IsPossString' is the function in 'TabIsPossList' for strings.
 */
-Int            IsPossString (Bag hdList)
+Int     IsPossString(Bag hdList)
 {
     return LEN_STRING( hdList ) == 0;
 }
@@ -514,10 +559,13 @@ Int            IsPossString (Bag hdList)
 **
 **  Is called from the 'Eq' binop, so both operands are already evaluated.
 */
-Bag       EqString (Bag hdL, Bag hdR)
+Bag     EqString(Bag hdL, Bag hdR)
 {
-    if ( strcmp( (char*)PTR_BAG(hdL), (char*)PTR_BAG(hdR) ) == 0 )
+    if (strcmp((char*)PTR_BAG(hdL), (char*)PTR_BAG(hdR)) == 0)
+    {
         return HdTrue;
+    }
+
     return HdFalse;
 }
 
@@ -531,10 +579,13 @@ Bag       EqString (Bag hdL, Bag hdR)
 **
 **  Is called from the 'Lt' binop, so both operands are already evaluated.
 */
-Bag       LtString (Bag hdL, Bag hdR)
+Bag     LtString(Bag hdL, Bag hdR)
 {
-    if ( strcmp( (char*)PTR_BAG(hdL), (char*)PTR_BAG(hdR) ) < 0 )
+    if (strcmp((char*)PTR_BAG(hdL), (char*)PTR_BAG(hdR)) < 0)
+    {
         return HdTrue;
+    }
+
     return HdFalse;
 }
 
@@ -548,22 +599,57 @@ Bag       LtString (Bag hdL, Bag hdR)
 **  No linebreaks are allowed, if one must be inserted  anyhow,  it  must  be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-void            PrString (Bag hdStr)
+void PrString(STREAM stream, Obj hdStr, int indent)
 {
-    char                * p;
+    char    *p;
 
-    Pr("\"",0,0);
-    for ( p = (char*)PTR_BAG(hdStr); *p != '\0'; ++p ) {
-        if      ( *p == '\n'  )  Pr("\\n",0,0);
-        else if ( *p == '\t'  )  Pr("\\t",0,0);
-        else if ( *p == '\r'  )  Pr("\\r",0,0);
-        else if ( *p == '\b'  )  Pr("\\b",0,0);
-        else if ( *p == '\03' )  Pr("\\c",0,0);
-        else if ( *p == '"'   )  Pr("\\\"",0,0);
-        else if ( *p == '\\'  )  Pr("\\\\",0,0);
-        else                     Pr("%c",(Int)*p,0);
+    //Pr("\"",0,0);
+    SyFmtPrint(stream, "\"");
+    for ( p = (char*)PTR_BAG(hdStr); *p != '\0'; ++p ) 
+    {
+        if (*p == '\n') 
+        {
+            //Pr("\\n", 0, 0);
+            SyFmtPrint(stream, "\\n");
+        }
+        else if (*p == '\t')
+        {
+            //Pr("\\t", 0, 0); 
+            SyFmtPrint(stream, "\\t");
+        }
+        else if (*p == '\r') 
+        { 
+            //Pr("\\r", 0, 0);
+            SyFmtPrint(stream, "\\r");
+        }
+        else if (*p == '\b')
+        { 
+            //Pr("\\b", 0, 0);
+            SyFmtPrint(stream, "\\b");
+        }
+        else if (*p == '\03')
+        { 
+            //Pr("\\c", 0, 0); 
+            SyFmtPrint(stream, "\\c");
+        }
+        else if (*p == '"')
+        {
+            //Pr("\\\"", 0, 0); 
+            SyFmtPrint(stream, "\\\"");
+        }
+        else if (*p == '\\')
+        {
+            //Pr("\\\\", 0, 0);
+            SyFmtPrint(stream, "\\\\");
+        }
+        else 
+        { 
+            //Pr("%c", (Int)*p, 0);
+            SyFmtPrint(stream, "%c", *p);
+        }
     }
-    Pr("\"",0,0);
+    //Pr("\"",0,0);
+    SyFmtPrint(stream, "\"");
 }
 
 
@@ -574,9 +660,10 @@ void            PrString (Bag hdStr)
 **  'PrintString' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-void            PrintString (Bag hdStr)
+void    PrintString(STREAM stream, Obj hdStr, int indent)
 {
-    Pr( "%s", (Int)(char*)PTR_BAG(hdStr), 0 );
+    //Pr( "%s", (Int)(char*)PTR_BAG(hdStr), 0 );
+    SyFmtPrint(stream, "%s", (char*)PTR_BAG(hdStr));
 }
 
 
@@ -586,57 +673,62 @@ void            PrintString (Bag hdStr)
 **
 **  'IsString' returns 1 if the list <hdList> is a string, and 0 otherwise.
 */
-Int            IsString (Bag hdList)
+Int     IsString(Bag hdList)
 {
-    Int                isString;       /* result                          */
-    Int                lenList;        /* length of the list              */
-    Bag           hdElm;          /* one element of the list         */
-    Int                i;              /* loop variable                   */
+    Bag     hdElm;          /* one element of the list         */
+    Int     isString;       /* result                          */
+    Int     lenList;        /* length of the list              */
+    Int     i;              /* loop variable                   */
 
     /* something that is not a list is not a string                        */
-    if ( ! IS_LIST( hdList ) ) {
+    if ( ! IS_LIST( hdList ) ) 
+    {
         isString = 0;
     }
-
     /* a string is a string                                                */
-    else if ( GET_TYPE_BAG(hdList) == T_STRING ) {
+    else if ( GET_TYPE_BAG(hdList) == T_STRING ) 
+    {
         isString = 1;
     }
-
     /* an empty list is a string                                           */
     /* NOTE that the empty list must not be converted into a string,       */
     /* so the string literal "" is the only empty list of type 'T_STRING'. */
     /* This is used in 'Print' to distinguish between empty strings (which */
     /* print nothing) and empty lists (which print as '[ ]').              */
-    else if ( LEN_LIST( hdList ) == 0 ) {
+    else if ( LEN_LIST( hdList ) == 0 ) 
+    {
         isString = 1;
     }
-
-    else {
-
+    else 
+    {
         /* check that all elements are characters                          */
         lenList = LEN_LIST( hdList );
-        for ( i = 1; i <= lenList; i++ ) {
+
+        for ( i = 1; i <= lenList; i++ ) 
+        {
             hdElm = ELMF_LIST( hdList, i );
-            if ( hdElm == 0 || GET_TYPE_BAG( hdElm ) != T_CHAR )
+            if (hdElm == 0 || GET_TYPE_BAG(hdElm) != T_CHAR)
+            {
                 break;
+            }
         }
+
         isString = lenList < i;
 
         /* if possible convert to a string                                 */
-        if ( isString ) {
-            for ( i = 1; i <= lenList; i++ ) {
+        if ( isString )
+        {
+            for ( i = 1; i <= lenList; i++ ) 
+            {
                 hdElm = ELMF_LIST( hdList, i );
-                ((unsigned char*)PTR_BAG(hdList))[i-1] =
-                    *((unsigned char*)PTR_BAG(hdElm));
+                ((unsigned char*)PTR_BAG(hdList))[i-1] = *((unsigned char*)PTR_BAG(hdElm));
             }
+
             ((unsigned char*)PTR_BAG(hdList))[lenList] = '\0';
             Retype( hdList, T_STRING );
             Resize( hdList, SIZE_PLEN_STRING( lenList ) );
         }
-
     }
-
     /* return the result                                                   */
     return isString;
 }
@@ -653,22 +745,30 @@ Int            IsString (Bag hdList)
 **  'IsString' returns 'true' if the object <obj> is a  string,  and  'false'
 **  otherwise.  Will cause an error if <obj> is an unbound variable.
 */
-Bag       FunIsString (Bag hdCall)
+Bag     FunIsString(Bag hdCall)
 {
-    Bag           hdObj;
+    Bag     hdObj;
 
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: IsString( <obj> )",0,0);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    {
+        return Error("usage: IsString( <obj> )", 0, 0);
+    }
     hdObj = EVAL( PTR_BAG(hdCall)[1] );
-    if ( hdObj == HdVoid )
-        return Error("IsString: function must return a value",0,0);
+    if (hdObj == HdVoid)
+    {
+        return Error("IsString: function must return a value", 0, 0);
+    }
 
     /* return 'true' if <obj> is a string and 'false' otherwise            */
-    if ( IsString( hdObj ) )
+    if (IsString(hdObj))
+    {
         return HdTrue;
+    }
     else
+    {
         return HdFalse;
+    }
 }
 
 /****************************************************************************
@@ -681,21 +781,34 @@ Bag       FunIsString (Bag hdCall)
 **
 **  'StringToLower' converts string to lowercase.
 */
-Bag       FunStringToLower (Bag hdCall)
+Bag     FunStringToLower(Bag hdCall)
 {
-    Bag   hd;
-    char * usage = "usage: StringToLower( <str> )";
-    UInt  i, len;
+    Bag      hd;
+    UInt     i;
+    UInt     len;
+    char    *usage = "usage: StringToLower( <str> )";
 
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error(usage, 0, 0); 
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) 
+    { 
+        return Error(usage, 0, 0); 
+    }
+
     hd = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hd) ) return Error(usage, 0, 0);
+
+    if (!IsString(hd))
+    { 
+        return Error(usage, 0, 0); 
+    }
+
     hd = Copy(hd);
 
     len = LEN_STRING(hd); 
-    for(i = 1; i <= len; ++i)
-        SET_ELM_STRING(hd, i, tolower(GET_ELM_STRING(hd, i))); 
+
+    for (i = 1; i <= len; ++i)
+    {
+        SET_ELM_STRING(hd, i, tolower(GET_ELM_STRING(hd, i)));
+    }
 
     return hd;
 }
@@ -710,21 +823,33 @@ Bag       FunStringToLower (Bag hdCall)
 **
 **  'StringToUpper' converts string to uppercase.
 */
-Bag       FunStringToUpper (Bag hdCall)
+Bag     FunStringToUpper(Bag hdCall)
 {
-    Bag   hd;
-    char * usage = "usage: StringToUpper( <str> )";
-    UInt  i, len;
+    Bag      hd;
+    UInt     i;
+    UInt     len;
+    char    *usage = "usage: StringToUpper( <str> )";
 
     /* evaluate and check the argument                                     */
-    if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error(usage, 0, 0); 
-    hd = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hd) ) return Error(usage, 0, 0);
-    hd = Copy(hd);
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
+    { 
+        return Error(usage, 0, 0); 
+    }
 
+    hd = EVAL( PTR_BAG(hdCall)[1] );
+
+    if (!IsString(hd))
+    { 
+        return Error(usage, 0, 0); 
+    }
+
+    hd = Copy(hd);
     len = LEN_STRING(hd); 
-    for(i = 1; i <= len; ++i)
-        SET_ELM_STRING(hd, i, toupper(GET_ELM_STRING(hd, i))); 
+
+    for (i = 1; i <= len; ++i)
+    {
+        SET_ELM_STRING(hd, i, toupper(GET_ELM_STRING(hd, i)));
+    }
 
     return hd;
 }
@@ -735,9 +860,9 @@ Bag       FunStringToUpper (Bag hdCall)
 **
 **  'EvMakeString' evaluates the string literal <hdString> to a constant one.
 */
-Bag       EvMakeString (Bag hdMake)
+Bag     EvMakeString(Bag hdMake)
 {
-    Bag           hdString;
+    Bag     hdString;
 
     hdString = NewBag( T_STRING, GET_SIZE_BAG(hdMake) );
     strncat( (char*)PTR_BAG(hdString), (char*)PTR_BAG(hdMake), GET_SIZE_BAG(hdMake)-1 );
@@ -752,9 +877,9 @@ Bag       EvMakeString (Bag hdMake)
 **
 **  'InitString' initializes the string package.
 */
-void            InitString (void)
+void    InitString(void)
 {
-    Int                i;
+    Int     i;
 
     /* install the character functions                                     */
     EvTab[T_CHAR] = EvChar;
@@ -763,7 +888,8 @@ void            InitString (void)
     TabLt[T_CHAR][T_CHAR] = LtChar;
 
     /* make all the character constants once and for all                   */
-    for ( i = 0; i < 256; i++ ) {
+    for ( i = 0; i < 256; i++ )
+    {
         HdChars[i] = NewBag( T_CHAR, NUM_TO_UINT(1) );
         *(unsigned char*)PTR_BAG(HdChars[i]) = (unsigned char)i;
     }

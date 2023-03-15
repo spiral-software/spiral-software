@@ -23,6 +23,6 @@
  * return value will represent the condition of the kernel
  * SUCCESS / FAILURE / SIG_STOP / ERROR 
  */
-int execute(char *input, char *output);
+int execute();
 
 #endif

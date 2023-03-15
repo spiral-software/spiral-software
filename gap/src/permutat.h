@@ -207,7 +207,7 @@ extern  void            PrPerm ( Bag hdPerm );
 **
 **  Linebreaks are prefered most after cycles and  next  most  after  commas.
 */
-extern  void            PrMakeperm ( Bag hdPerm );
+extern  void  PrMakeperm(STREAM stream, Obj hdPerm, int indent);
 
 
 /****************************************************************************

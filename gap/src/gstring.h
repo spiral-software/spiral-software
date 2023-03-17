@@ -332,7 +332,7 @@ extern void PrString(STREAM stream, Obj hdStr, int indent);
 **  'PrintString' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-extern void PrintString (STREAM stream, Bag hdStr);
+extern void PrintString (STREAM stream, Bag hdStr, int indent);
 
 
 /****************************************************************************

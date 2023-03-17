@@ -8,23 +8,23 @@
 **
 */
 
-#include		<stdlib.h>
+#include        <stdlib.h>
 #include        <stdarg.h>
 #include        "system.h"              /* declaration part of the package */
 #include        "spiral.h"              /* InitLibName() */
 #include        "iface.h"
-#include		"GapUtils.h"
+#include        "GapUtils.h"
 
 
 #ifdef WIN32
-#define WIN32_CTRLV_SUPPORT
-#include <direct.h> // for mkdir, getdrive, etc.
-#include <process.h> // for getpid()
-#include <windows.h>
+  #define WIN32_CTRLV_SUPPORT
+  #include <direct.h> // for mkdir, getdrive, etc.
+  #include <process.h> // for getpid()
+  #include <windows.h>
 #endif
 
 #ifdef HAVE_UNISTD_H
-# include <unistd.h>
+  #include <unistd.h>
 #endif
 
 
@@ -60,9 +60,11 @@
 **
 **  Put in this package because the command line processing takes place here.
 */
+
 #if SYS_BSD || SYS_USG 
 char            SyLibname [2048] = "lib/";
 #endif
+
 #if WIN32
 char            SyLibname [2048] = "";
 #endif
@@ -79,6 +81,7 @@ char            SyLibname [2048] = "";
 **
 **  It is used by 'SyHelp' to find the online documentation.
 */
+
 char            SyHelpname [2048];
 
 
@@ -95,6 +98,7 @@ char            SyHelpname [2048];
 **
 **  Put in this package because the command line processing takes place here.
 */
+
 Int            SyBanner = 1;
 
 
@@ -112,6 +116,7 @@ Int            SyBanner = 1;
 **
 **  Put in this package because the command line processing takes place here.
 */
+
 Int            SyQuiet = 0;
 
 
@@ -129,6 +134,7 @@ Int            SyQuiet = 0;
 **
 **  Put in this package because the command line processing takes place here.
 */
+
 Int            SyNrCols = 80;
 
 
@@ -143,6 +149,7 @@ Int            SyNrCols = 80;
 **
 **  'SyHelp' uses this to decide where to stop with '-- <space> for more --'.
 */
+
 Int            SyNrRows = 24;
 
 
@@ -157,7 +164,8 @@ Int            SyNrRows = 24;
 **  It can be changed by using the  '-g' option (deprecated) on the GAP command line.
 **
 */
-Int		SyMemMgrTrace = 0;
+
+Int        SyMemMgrTrace = 0;
 
 
 /****************************************************************************
@@ -173,9 +181,11 @@ Int		SyMemMgrTrace = 0;
 **
 **  Put in this package because the command line processing takes place here.
 */
+
 #if SYS_BSD || SYS_USG 
 Int            SyMemory = 4 * 1024 * 1024;
 #endif
+
 #if WIN32
 Int            SyMemory = 4 * 1024 * 1024;
 #endif
@@ -196,6 +206,7 @@ Int            SyMemory = 4 * 1024 * 1024;
 **
 **  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
 */
+
 char            SyInitfiles [16] [256];
 
 
@@ -203,8 +214,8 @@ char            SyInitfiles [16] [256];
 **
 *V  syStartTime . . . . . . . . . . . . . . time when GAP was started in msec
 */
-UInt   syStartTime;
 
+UInt   syStartTime;
 
 
 /****************************************************************************
@@ -215,12 +226,14 @@ UInt   syStartTime;
 **  routines  from   allocating theis  buffers  using  'malloc',  which would
 **  otherwise confuse Gasman.
 */
+
 #ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include       <stdio.h>
-# define SYS_STDIO_H
+  #include       <stdio.h>
+  #define SYS_STDIO_H
 #endif
 
 struct {
+    // File pointers for open files no longer tracked here ??
     //FILE *      fp;                     /* file pointer for this file      */
     FILE *      echo;                   /* file pointer for the echo       */
 }       syBuf [16];
@@ -230,25 +243,27 @@ struct {
 **
 *F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
 **
-**  The function 'SyFopen'  is called to open the file with the name  <name>.
+**  The function 'SyFopen'  is called to open the file called  <name>.
 **  If <mode> is "r" it is opened for reading, in this case  it  must  exist.
 **  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
 **  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
 **
-**  'SyFopen' returns an integer used by the scanner to  identify  the  file.
-**  'SyFopen' returns -1 if it cannot open the file.
+**  'SyFopen' returns afile handle used by the scanner to  identify  the  file.
+**  'SyFopen' returns NULL if it cannot open the file.
 **
 **  The following standard files names and file identifiers  are  guaranteed:
-**  'SyFopen( "*stdin*", "r")' returns 0 identifying the standard input file.
-**  'SyFopen( "*stdout*","w")' returns 1 identifying the standard outpt file.
-**  'SyFopen( "*errin*", "r")' returns 2 identifying the brk loop input file.
-**  'SyFopen( "*errout*","w")' returns 3 identifying the error messages file.
+**
+**  'SyFopen( "*stdin*", "r")' returns stdin  ==>  standard input file.
+**  'SyFopen( "*stdout*","w")' returns stdout ==>  standard outpt file.
+**  'SyFopen( "*errin*", "r")' returns stdin  ==>  brk loop input file.
+**  'SyFopen( "*errout*","w")' returns stderr ==>  error messages file.
 **
 **  If it is necessary to adjust the  filename  this  should  be  done  here.
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary  mode.
 */
-FILE *            SyFopen (char * name, char *mode )
+
+FILE    *SyFopen ( char * name, char *mode )
 {
     FILE *file;
 
@@ -281,15 +296,15 @@ FILE *            SyFopen (char * name, char *mode )
 
 /****************************************************************************
 **
-*F  SyFclose( <fid> ) . . . . . . . . . . . . . . . . .  close the file <fid>
+*F  SyFclose( <file_handle> ) . . .. . . . . . . close the file <file_handle>
 **
-**  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
-**  from 'SyFopen'.
+**  'SyFclose' closes the file with file handle <file_handle> (obtained
+**  from 'SyFopen').
 */
 void            SyFclose (FILE *file)
 {
     /* check file identifier                                               */
-    if ( file == (FILE*)0 ) {
+    if ( file == (FILE *)NULL ) {
         fputs("gap: panic 'SyFclose' asked to close closed file!\n",stderr);
         SyExit( 1 );
     }
@@ -307,13 +322,13 @@ void            SyFclose (FILE *file)
 
 }
 
-Int	SyChDir(const char* filename)
+Int    SyChDir(const char* filename)
 {
-	if (!chdir(filename)) {
-		return 1;
-	}
+    if (!chdir(filename)) {
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 /****************************************************************************
@@ -326,14 +341,14 @@ Int	SyChDir(const char* filename)
 
 unsigned long long SyFmtime(char *filename)
 {
-	struct stat s;
+    struct stat s;
 
     /* try to stat the file                                               */
     if ( stat(filename, &s )  ) {
-		return 0;
+        return 0;
     }
 
-	return (unsigned long long) s.st_mtime;
+    return (unsigned long long) s.st_mtime;
 }
 
 
@@ -344,7 +359,7 @@ unsigned long long SyFmtime(char *filename)
 */
 UInt SyGetPid(void)
 {
-	return getpid();
+    return getpid();
 }
 
 /****************************************************************************
@@ -405,10 +420,10 @@ UInt SyGetPid(void)
 **      <esc>-T exchange two words.
 */
 extern  int             syStartraw ( FILE *file);
-extern  void            syStopraw  ( Int fid );
-extern  int             syGetch    ( Int fid );
-extern  void            syEchoch   ( int ch, Int fid );
-extern  void            syEchos    ( char * str, Int fid );
+extern  void            syStopraw  ( /* Int fid */ FILE *file );
+extern  int             syGetch    ( /* Int fid */ FILE *file );
+extern  void            syEchoch   ( int ch, /* Int fid */ FILE *file );
+extern  void            syEchos    ( char * str, /* Int fid */ FILE *file );
 
 extern  UInt   iscomplete ( char *           name,
                                        UInt    len,
@@ -449,10 +464,10 @@ char *          SyFgets (char *line, Int length, FILE *file )
     static int          smartcomplete=0;
     static int          viCommandMode = 0;
 #ifdef WIN32_CTRLV_SUPPORT
-    static char		win_clipboard_buffer[8192] = "";
-    static char		* win_clipboard = win_clipboard_buffer;
+    static char        win_clipboard_buffer[8192] = "";
+    static char        * win_clipboard = win_clipboard_buffer;
 #endif
-    int			forRecord = 1; /* indicates that we should save line in history */
+    int            forRecord = 1; /* indicates that we should save line in history */
     char                old [512],  new [512];
     Int                oldc,  newc;
     Int                rep;
@@ -463,16 +478,16 @@ char *          SyFgets (char *line, Int length, FILE *file )
     /* no line editing if the file is not '*stdin*' or '*errin*'           */
     if (file != stdin) {
         p = fgets( line, (Int)length, file);
-		if(isReadValFromFile){
- 			if(!p){
-				if(addEndOfLineOnlyOnce){
-					line[0] = '\n';
-					line[1] = '\0';
-					p = line;
-					addEndOfLineOnlyOnce = 0;
-				}
-			}
-		}
+        if(isReadValFromFile){
+             if(!p){
+                if(addEndOfLineOnlyOnce){
+                    line[0] = '\n';
+                    line[1] = '\0';
+                    p = line;
+                    addEndOfLineOnlyOnce = 0;
+                }
+            }
+        }
         return p;
     }
 
@@ -489,9 +504,7 @@ char *          SyFgets (char *line, Int length, FILE *file )
         return p;
     }
 
-
-    Int fid = 0; //GS4 this is to be removed when input/output file struct is finished. 
-    // After this is mimicing reading from console
+    //  Kill this, use file; Int fid = 0; //GS4 this is to be removed when input/output file struct is finished. 
     /* the line starts out blank                                           */
     line[0] = '\0';  p = line;  h = syHistory;
     for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';
@@ -505,24 +518,24 @@ char *          SyFgets (char *line, Int length, FILE *file )
     }
 
     while ( 1 ) {
-	Int hexEsc = 0;
+    Int hexEsc = 0;
         /* get a character, handle <ctr>V<chr>, <esc><num> and <ctr>U<num> */
         rep = 1;  ch2 = 0;
 #ifdef WIN32_CTRLV_SUPPORT
-	if ( *win_clipboard != '\0') {
-	    ch = *win_clipboard++;
-	    if (*win_clipboard == '\0') {
-		win_clipboard_buffer[0] = '\0';
-		win_clipboard = win_clipboard_buffer;
-	    }
-	} else
+    if ( *win_clipboard != '\0') {
+        ch = *win_clipboard++;
+        if (*win_clipboard == '\0') {
+        win_clipboard_buffer[0] = '\0';
+        win_clipboard = win_clipboard_buffer;
+        }
+    } else
 #endif
-	if (!smartcomplete)
+    if (!smartcomplete)
         do {
             if ( syCTRO % 2 == 1  )  { ch = CTR('N'); syCTRO = syCTRO - 1; }
             else if ( syCTRO != 0 )  { ch = CTR('O'); rep = syCTRO / 2; }
-            else ch = syGetch(fid);
-	    //printf("---->%d<-----\n", (unsigned long)ch);
+            else ch = syGetch ( file );
+        //printf("---->%d<-----\n", (unsigned long)ch);
 #ifndef WIN32_CTRLV_SUPPORT
             if ( ch2==0        && ch==CTR('V') ) {             ch2=ch; ch=0;}
 #endif
@@ -540,71 +553,71 @@ char *          SyFgets (char *line, Int length, FILE *file )
             if ( isdigit(ch2)  && ch==CTR('[') ) {             ch2=ch; ch=0;}
             if ( isdigit(ch2)  && ch==CTR('U') ) {             ch2=ch; ch=0;}
             if ( isdigit(ch2)  && isdigit(ch)  ) { rep=10*rep+ch-'0';  ch=0;}
-            if ( hexEsc	       && isxdigit(ch) )  {
-		rep = (rep << 4) | ((ch>'9') ? toupper(ch)-'A'+10 : ch-'0'); 
-		if (ch2==';') { 
-		    ch2=0; ch=0; 
-		} else ch2=';';
-	    }
+            if ( hexEsc           && isxdigit(ch) )  {
+        rep = (rep << 4) | ((ch>'9') ? toupper(ch)-'A'+10 : ch-'0'); 
+        if (ch2==';') { 
+            ch2=0; ch=0; 
+        } else ch2=';';
+        }
             if ( isdigit(ch2) && rep==1 && ch==';' ) { rep=0; ch2=';'; ch=0; hexEsc=1; }
             if (viCommandMode && ch=='d'      ) {             ch2=ch; ch=0;}
             if (viCommandMode && ch=='c'      ) {             ch2=ch; ch=0;}
             
         } while ( ch == 0 );
 
-	if (hexEsc) { 
-	    ch2 = 0;
-	    switch (rep) {
-		case 0x5D:	/* Ctrl+Left */
-		case 0x3D: {	/* Alt+Left */
-		    ch = ESC('B');
-		    break;
-		}
-		case 0x5C:	/* Ctrl+Right */
-		case 0x3C: {	/* Alt+Right */
-		    ch = ESC('F');
-		    break;
-		}
-		case 0x5A:	/* Ctrl+Up */
-		case 0x3A: {	/* Alt+Up */
-		    ch = ESC('P');
-		    break;
-		}
-		case 0x5B:	/* Ctrl+Down */
-		case 0x3B: {	/* Alt+Down */
-		    ch = ESC('N');
-		    break;
-		}
-		default:
-		    ch = ESC(rep); 
-	    } 
-	    rep=1; 
-	}
-	if ( ch =='~' && isdigit(ch2) ) { 
-	    switch (rep) {
-		case 1:  { ch = CTR('A'); break; } /* Home */
-		case 3:  { ch = CTR('D'); break; } /* Delete */
-		case 4:  { ch = CTR('E'); break; } /* End */
-		case 5:  { ch = CTR('P'); break; } /* PgUp */
-		case 6:  { ch = CTR('N'); break; } /* PgDown */
-		default: { ch = ESC(rep); break; } /* Fxx keys, we need normal escapes parser */
-	    }
-	    ch2 = '['; rep = 1; 
-	}
+    if (hexEsc) { 
+        ch2 = 0;
+        switch (rep) {
+        case 0x5D:    /* Ctrl+Left */
+        case 0x3D: {    /* Alt+Left */
+            ch = ESC('B');
+            break;
+        }
+        case 0x5C:    /* Ctrl+Right */
+        case 0x3C: {    /* Alt+Right */
+            ch = ESC('F');
+            break;
+        }
+        case 0x5A:    /* Ctrl+Up */
+        case 0x3A: {    /* Alt+Up */
+            ch = ESC('P');
+            break;
+        }
+        case 0x5B:    /* Ctrl+Down */
+        case 0x3B: {    /* Alt+Down */
+            ch = ESC('N');
+            break;
+        }
+        default:
+            ch = ESC(rep); 
+        } 
+        rep=1; 
+    }
+    if ( ch =='~' && isdigit(ch2) ) { 
+        switch (rep) {
+        case 1:  { ch = CTR('A'); break; } /* Home */
+        case 3:  { ch = CTR('D'); break; } /* Delete */
+        case 4:  { ch = CTR('E'); break; } /* End */
+        case 5:  { ch = CTR('P'); break; } /* PgUp */
+        case 6:  { ch = CTR('N'); break; } /* PgDown */
+        default: { ch = ESC(rep); break; } /* Fxx keys, we need normal escapes parser */
+        }
+        ch2 = '['; rep = 1; 
+    }
         if ( ch2==CTR('V') )       ch  = CTV(ch);
         if ( ch2==ESC(CTR('V')) )  ch  = CTV(ch | 0x80);
         if ( ch2==CTR('[') )       ch  = ESC(ch);
         if ( ch2==CTR('U') )       rep = 4*rep;
         if ( ch2=='[' ) {
-	    switch (ch) {
-		case 'A': { ch  = CTR('P'); break; }
-		case 'B': { ch  = CTR('N'); break; }
-		case 'C': { ch  = CTR('F'); break; }
-		case 'D': { ch  = CTR('B'); break; }
-		case 'F': { ch  = CTR('E'); break; }
-		case 'H': { ch  = CTR('A'); break; }
-	    }
-	}
+        switch (ch) {
+        case 'A': { ch  = CTR('P'); break; }
+        case 'B': { ch  = CTR('N'); break; }
+        case 'C': { ch  = CTR('F'); break; }
+        case 'D': { ch  = CTR('B'); break; }
+        case 'F': { ch  = CTR('E'); break; }
+        case 'H': { ch  = CTR('A'); break; }
+        }
+    }
         
 
         if (viCommandMode) { /* Map vi keys back to the original key bindings */
@@ -656,7 +669,7 @@ char *          SyFgets (char *line, Int length, FILE *file )
         }
 
         /* now perform the requested action <rep> times in the input line  */
-	while (( rep-- > 0 )&&(!smartcomplete)){
+    while (( rep-- > 0 )&&(!smartcomplete)){
             switch ( ch ) {
 
             case CTR('G'): /* change to viCommandMode                     */
@@ -849,7 +862,7 @@ char *          SyFgets (char *line, Int length, FILE *file )
                 syHi = h;
                 break;
 
-	    /* 
+        /* 
             case CTR('S'): /* search for a line forward                    */
                 /* search for a line forward, not fully implemented !!!    */
             /*    if ( *p != '\0' ) {
@@ -878,40 +891,40 @@ char *          SyFgets (char *line, Int length, FILE *file )
                 } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
                 break;
 #ifdef WIN32_CTRLV_SUPPORT
-	    case CTR('V'): { /* paste text from clipboard */
-		HANDLE h;
-		if (!IsClipboardFormatAvailable(CF_TEXT)) break;
-		if (!OpenClipboard(0)) break;
-		h = GetClipboardData(CF_TEXT); 
-		if (h) { 
-		    char* pClipboard = GlobalLock(h); 
-		    if (pClipboard){
-			if (strlen(pClipboard)+strlen(p)<sizeof(win_clipboard_buffer)) {
-			    /* copy first line from clipboard */
-			    for ( r = pClipboard; *r != '\0' && *r != '\n' && *r != '\r'; ++r ) {
-				ch2 = *r;
-				for ( q = p; ch2; ++q ) {
-				    ch3 = *q; *q = ch2; ch2 = ch3;
-				}
-				*q = '\0'; ++p;
-			    }
-			    /* move rest of the clipboard text and input line into local buffer */
-			    if (*r ) {
-				q = win_clipboard_buffer;
-				while( *r ) if (*r != '\r') *q++ = *r++; else r++;
-				r = p;
-				while( *r ) *q++ = *r++;
-				*p = '\0';
-				*q = '\0';
-				win_clipboard = win_clipboard_buffer;
-			    }
-			}
-			GlobalUnlock(h); 
-		    } 
-		} 
-		CloseClipboard(); 
-		break;
-	    }
+        case CTR('V'): { /* paste text from clipboard */
+        HANDLE h;
+        if (!IsClipboardFormatAvailable(CF_TEXT)) break;
+        if (!OpenClipboard(0)) break;
+        h = GetClipboardData(CF_TEXT); 
+        if (h) { 
+            char* pClipboard = GlobalLock(h); 
+            if (pClipboard){
+            if (strlen(pClipboard)+strlen(p)<sizeof(win_clipboard_buffer)) {
+                /* copy first line from clipboard */
+                for ( r = pClipboard; *r != '\0' && *r != '\n' && *r != '\r'; ++r ) {
+                ch2 = *r;
+                for ( q = p; ch2; ++q ) {
+                    ch3 = *q; *q = ch2; ch2 = ch3;
+                }
+                *q = '\0'; ++p;
+                }
+                /* move rest of the clipboard text and input line into local buffer */
+                if (*r ) {
+                q = win_clipboard_buffer;
+                while( *r ) if (*r != '\r') *q++ = *r++; else r++;
+                r = p;
+                while( *r ) *q++ = *r++;
+                *p = '\0';
+                *q = '\0';
+                win_clipboard = win_clipboard_buffer;
+                }
+            }
+            GlobalUnlock(h); 
+            } 
+        } 
+        CloseClipboard(); 
+        break;
+        }
 #endif
             case ESC('C'): /* capitalize word                              */
             case ESC('c'):
@@ -929,9 +942,9 @@ char *          SyFgets (char *line, Int length, FILE *file )
                 break;
 
             case ESC(CTR('L')): /* repaint input line                      */
-                syEchoch('\n',fid);
+                syEchoch ( '\n', file );
                 for ( q = syPrompt; q < syPrompt+syNrchar; ++q )
-                    syEchoch( *q, fid );
+                    syEchoch ( *q, file );
                 for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';
                 oldc = 0;
                 break;
@@ -939,8 +952,8 @@ char *          SyFgets (char *line, Int length, FILE *file )
             case EOF:     /* end of file on input                          */
                 break;
 
-	    case CTR('J'): /* CTR('J') is \r and CTR('M') is \n            */
-	    case CTR('M'): /* append \n and exit                           */
+        case CTR('J'): /* CTR('J') is \r and CTR('M') is \n            */
+        case CTR('M'): /* append \n and exit                           */
                 while ( *p != '\0' )  ++p;
                 *p++ = '\n'; *p = '\0';
                 rep = 0;
@@ -953,14 +966,14 @@ char *          SyFgets (char *line, Int length, FILE *file )
                 syCTRO = 2 * rep + 1;
                 rep = 0;
                 break;
-	    /*SMARTCOMPLETION after a point or a parenthesis */
+        /*SMARTCOMPLETION after a point or a parenthesis */
             case CTR('W'): {
                 char* uppart;
                 char* mybuffer;
 
                 if (( (q = p) > line )&&(!IS_PARPOINT(*(q-1)))) {
                     do {
-                	--q;
+                    --q;
                     } while ( q>line && (!IS_PARPOINT(*(q-1)) || IS_PARPOINT(*q)));
                 }
                 if (line < q && (IS_PARPOINT(*(q-1)))){
@@ -997,7 +1010,7 @@ char *          SyFgets (char *line, Int length, FILE *file )
                         sprintf(line,"SmartComplete(%s,\"%s\");\n",mybuffer,uppart);
                     else
                         sprintf(line,"Doc(%s);\n",mybuffer);
-				
+                
                     q = line;
                     p = strlen(line)+line;
 
@@ -1009,7 +1022,7 @@ char *          SyFgets (char *line, Int length, FILE *file )
                     forRecord = 0; /* do not save line in history */
                 }
                 break;
-            }		    
+            }            
 
             case CTR('I'): /* try to complete the identifier before dot    */
 
@@ -1040,40 +1053,39 @@ char *          SyFgets (char *line, Int length, FILE *file )
                     if ( iscomplete( buffer, p-q, rn ) ) {
                         // if the user already tried to complete, beep.
                         if ( last != CTR('I') ) {
-                            syEchoch( CTR('G'), fid );
+                            syEchoch( CTR('G'), file );
                             // otherwise, display the candidates.
                         } else  {
-                            syEchos( "\n    ", fid );
-                            syEchos( buffer, fid );
+                            syEchos( "\n    ", file );
+                            syEchos( buffer, file );
                             
                             while ( completion( buffer, p-q, rn ) ) {
-                                syEchos( "\n    ", fid );
-                                syEchos( buffer, fid );
+                                syEchos( "\n    ", file );
+                                syEchos( buffer, file );
                             }
-                            syEchos( "\n", fid );
+                            syEchos( "\n", file );
                             for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                syEchoch( *q, fid );
+                                syEchoch( *q, file );
                             for ( q = old; q < old+sizeof(old); ++q )
                                 *q = ' ';
                             oldc = 0;
                         }
                     } else if ( ! completion( buffer, p-q, rn ) ) 
-					{
+                    {
                         if ( last != CTR('I') )
-                            syEchoch( CTR('G'), fid );
+                            syEchoch( CTR('G'), file );
                         else 
-						{
-                            syEchos("\n    identifier has no completions\n",
-                                    fid);
+                        {
+                            syEchos ( "\n    identifier has no completions\n", file );
                             for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                syEchoch( *q, fid );
+                                syEchoch( *q, file );
                             for ( q = old; q < old+sizeof(old); ++q )
                                 *q = ' ';
                             oldc = 0;
                         }
                     }
                     else 
-					{
+                    {
                         t = p;
                         for ( s = buffer+(p-q); *s != '\0'; s++ ) {
                             ch2 = *s;
@@ -1093,16 +1105,16 @@ char *          SyFgets (char *line, Int length, FILE *file )
                         }
                         if ( t == p ) {
                             if ( last != CTR('I') )
-                                syEchoch( CTR('G'), fid );
+                                syEchoch( CTR('G'), file );
                             else {
                                 buffer[t-q] = '\0';
                                 while ( completion( buffer, t-q, rn ) ) {
-                                    syEchos( "\n    ", fid );
-                                    syEchos( buffer, fid );
+                                    syEchos( "\n    ", file );
+                                    syEchos( buffer, file );
                                 }
-                                syEchos( "\n", fid );
+                                syEchos( "\n", file );
                                 for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                    syEchoch( *q, fid );
+                                    syEchoch( *q, file );
                                 for ( q = old; q < old+sizeof(old); ++q )
                                     *q = ' ';
                                 oldc = 0;
@@ -1113,7 +1125,7 @@ char *          SyFgets (char *line, Int length, FILE *file )
                 break;
                 
             case ESC(CTR('J')):
-	    case ESC(CTR('M')):
+        case ESC(CTR('M')):
                 /* Escape+Return, run EditDef() for word at cursor. */
                 /* Falls into default switch branch if no word found   */
                 if (line[0] != '\0') { 
@@ -1143,50 +1155,50 @@ char *          SyFgets (char *line, Int length, FILE *file )
                 }
 
             default:      /* default, insert normal character              */
-		if (inBreakLoop() && line[0] == '\0' && p == line) { /* check debugger shortcuts */
-		    Int gotLine = 1;
-		    switch (ch) {
-		        case ESC(CTR('J')):
-			case ESC(CTR('M')): { /* Escape+Return*/
-			    sprintf(line,"EditTopFunc();\n");
-			    break;
-			}
-			case CTR('\\'): { /* Ctrl+\ */
-			    sprintf(line,"Top();\n");
-			    break;
-			}
-			case ESC('P'): { /* Ctrl+Arrow Up */
-			    sprintf(line,"Up();\n");
-			    break;
-			}
-			case ESC('N'): { /* Ctrl+Arrow Down */
-			    sprintf(line,"Down();\n"); 
-			    break;
-			}
-			case ESC(19): { /* F8 */
-			    sprintf(line,"StepOut(1);\n"); 
-			    break;
-			}
-			case ESC(21): { /* F10 */
-			    sprintf(line,"StepOver(1);\n"); 
-			    break;
-			}
-			case ESC(23): { /* F11 */
-			    sprintf(line,"StepInto(1);\n"); 
-			    break;
-			}
-			default: {
-			    gotLine = 0;
-			    break;
-			}
-		    }
-		    if (gotLine != 0) {   
-			forRecord = 0; /* don't put into history */
-			p=strlen(line)+line;
-			ch='\n';
-			break;
-		    }
-		}
+        if (inBreakLoop() && line[0] == '\0' && p == line) { /* check debugger shortcuts */
+            Int gotLine = 1;
+            switch (ch) {
+                case ESC(CTR('J')):
+            case ESC(CTR('M')): { /* Escape+Return*/
+                sprintf(line,"EditTopFunc();\n");
+                break;
+            }
+            case CTR('\\'): { /* Ctrl+\ */
+                sprintf(line,"Top();\n");
+                break;
+            }
+            case ESC('P'): { /* Ctrl+Arrow Up */
+                sprintf(line,"Up();\n");
+                break;
+            }
+            case ESC('N'): { /* Ctrl+Arrow Down */
+                sprintf(line,"Down();\n"); 
+                break;
+            }
+            case ESC(19): { /* F8 */
+                sprintf(line,"StepOut(1);\n"); 
+                break;
+            }
+            case ESC(21): { /* F10 */
+                sprintf(line,"StepOver(1);\n"); 
+                break;
+            }
+            case ESC(23): { /* F11 */
+                sprintf(line,"StepInto(1);\n"); 
+                break;
+            }
+            default: {
+                gotLine = 0;
+                break;
+            }
+            }
+            if (gotLine != 0) {   
+            forRecord = 0; /* don't put into history */
+            p=strlen(line)+line;
+            ch='\n';
+            break;
+            }
+        }
                 if (!viCommandMode) {
                    ch2 = ch & 0xff;
                    for ( q = p; ch2; ++q ) {
@@ -1206,10 +1218,10 @@ char *          SyFgets (char *line, Int length, FILE *file )
           viCommandMode = 0;
 
         if ( ch==EOF || ch=='\n' || ch=='\r' || ch==CTR('O') ) {
-            syEchoch('\r',fid);  syEchoch('\n',fid); break;
+            syEchoch('\r',file);  syEchoch('\n',file); break;
         }
-	else
-	  smartcomplete=0;
+    else
+      smartcomplete=0;
 
         /* now update the screen line according to the differences         */
         for ( q = line, r = new, newc = 0; *q != '\0'; ++q ) {
@@ -1239,12 +1251,12 @@ char *          SyFgets (char *line, Int length, FILE *file )
             new[SyNrCols-syNrchar-2] = '$';
         for ( q = old, r = new; r < new+sizeof(new); ++r, ++q ) {
             if ( *q == *r )  continue;
-            while (oldc<(q-old)) { syEchoch(old[oldc],fid);  ++oldc; }
-            while (oldc>(q-old)) { syEchoch('\b',fid);       --oldc; }
-            *q = *r;  syEchoch( *q, fid ); ++oldc;
+            while (oldc<(q-old)) { syEchoch(old[oldc],file);  ++oldc; }
+            while (oldc>(q-old)) { syEchoch('\b',file);       --oldc; }
+            *q = *r;  syEchoch( *q, file ); ++oldc;
         }
-        while ( oldc < newc ) { syEchoch(old[oldc],fid);  ++oldc; }
-        while ( oldc > newc ) { syEchoch('\b',fid);       --oldc; }
+        while ( oldc < newc ) { syEchoch(old[oldc],file);  ++oldc; }
+        while ( oldc > newc ) { syEchoch('\b',file);       --oldc; }
 
     }
 
@@ -1255,15 +1267,15 @@ char *          SyFgets (char *line, Int length, FILE *file )
         int lineLen = (forRecord==2) ? strlen(buffer) : p-line;
         
         if (*pLine != '\n' && *pLine != '\0') { /* don't add empty lines */
-	    for ( q = syHistory+sizeof(syHistory)-3; q >= syHistory+lineLen; --q )
-	        *q = *(q-lineLen);
-	    for ( p = pLine, q = syHistory; *p != '\0'; ++p, ++q )
-	        *q = *p;
-	    syHistory[sizeof(syHistory)-3] = '\n';
-	    if ( syHi != syHistory )
-	        syHi = syHi + lineLen;
-	    if ( syHi > syHistory+sizeof(syHistory)-2 )
-	        syHi = syHistory+sizeof(syHistory)-2;
+        for ( q = syHistory+sizeof(syHistory)-3; q >= syHistory+lineLen; --q )
+            *q = *(q-lineLen);
+        for ( p = pLine, q = syHistory; *p != '\0'; ++p, ++q )
+            *q = *p;
+        syHistory[sizeof(syHistory)-3] = '\n';
+        if ( syHi != syHistory )
+            syHi = syHi + lineLen;
+        if ( syHi > syHistory+sizeof(syHistory)-2 )
+            syHi = syHistory+sizeof(syHistory)-2;
         }
     }
 
@@ -1277,7 +1289,7 @@ char *          SyFgets (char *line, Int length, FILE *file )
 
     /* switch back to cooked mode                                          */
     if ( syLineEdit == 1 )
-        syStopraw(fid);
+        syStopraw(file);
 
     /* return the line (or '0' at end-of-file)                             */
     if ( *line == '\0' )
@@ -1514,10 +1526,10 @@ SYS_SIG_T       syAnswerTstp ( int signr )
 
 #endif
 
-int             syStartraw ( Int fid )
+int             syStartraw ( FILE *file )
 {
     /* try to get the terminal attributes, will fail if not terminal       */
-    if ( ioctl( fileno(syBuf[fid].fp), TCGETA, &syOld ) == -1 )   return 0;
+    if ( ioctl( fileno( /* syBuf[fid].fp */ file ), TCGETA, &syOld ) == -1 )   return 0;
 
     /* disable interrupt, quit, start and stop output characters           */
     syNew = syOld;
@@ -1531,11 +1543,11 @@ int             syStartraw ( Int fid )
     syNew.c_cc[VMIN]  = 1;
     syNew.c_cc[VTIME] = 0;
     syNew.c_lflag    &= ~(ECHO|ICANON);
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syNew ) == -1 )  return 0;
+    if ( ioctl( fileno ( /* syBuf[fid].fp */ file ), TCSETAW, &syNew ) == -1 )  return 0;
 
 #ifdef SIGTSTP
     /* install signal handler for stop                                     */
-    syFid = fid;
+    //  syFid = fid;
     signal( SIGTSTP, syAnswerTstp );
 #endif
 
@@ -1543,7 +1555,7 @@ int             syStartraw ( Int fid )
     return 1;
 }
 
-void            syStopraw ( Int fid )
+void            syStopraw ( /* Int fid */ FILE *file )
 {
 #ifdef SIGTSTP
     /* remove signal handler for stop                                      */
@@ -1551,34 +1563,34 @@ void            syStopraw ( Int fid )
 #endif
 
     /* enable input buffering, line editing and echo again                 */
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syOld ) == -1 )
+    if ( ioctl( fileno ( /* syBuf[fid].fp */ file ), TCSETAW, &syOld ) == -1 )
         fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
 }
 
-int             syGetch ( Int fid )
+int             syGetch ( /* Int fid */ FILE *file )
 {
     char                ch;
 
     /* read a character                                                    */
-    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
+    while ( read ( fileno ( /* syBuf[fid].fp */ file ), &ch, 1 ) != 1 || ch == '\0' )
         ;
 
     /* return the character                                                */
     return ch;
 }
 
-void            syEchoch ( int ch, Int fid )
+void            syEchoch ( int ch, /* Int fid */ FILE *file )
 {
     char                ch2;
 
     /* write the character to the associate echo output device             */
     ch2 = ch;
-    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+    write ( fileno ( syBuf[ /* fid */ fileno ( file ) ].echo), (char*)&ch2, 1 );
 }
 
-void            syEchos ( char *str, Int fid )
+void            syEchos ( char *str, /* Int fid */ FILE *file )
 {
-    write( fileno(syBuf[fid].echo), str, strlen(str) );
+    write ( fileno ( syBuf[ /* fid */ fileno ( file ) ].echo), str, strlen(str) );
 }
 
 #endif
@@ -1589,33 +1601,34 @@ void            syEchos ( char *str, Int fid )
 **  For MS-DOS we read directly from the keyboard.
 **  Note that the window handler is not currently supported.
 */
+
 #if WIN32
 
 #ifdef WIN32
 
-#include <conio.h>
-#include <io.h>
+#  include <conio.h>
+#  include <io.h>
 
-#undef read
-#define read			_read
-#undef isatty
-#define isatty			_isatty
-#undef write
-#define write			_write
+#  undef read
+#  define read           _read
+#  undef isatty
+#  define isatty         _isatty
+#  undef write
+#  define write          _write
 
-# define GETKEY()       getch()
-# define PUTCHAR(C)     putchar(C)
-# define KBHIT()        kbhit()
-# define SYS_KBD_H
-#endif
+#  define GETKEY()       getch()
+#  define PUTCHAR(C)     putchar(C)
+#  define KBHIT()        kbhit()
+#  define SYS_KBD_H
+#endif               // #ifdef WIN32
 
 #ifndef SYS_KBD_H                       /* keyboard functions              */
-# include       <pc.h>
-# define GETKEY()       getkey()
-# define PUTCHAR(C)     putchar(C)
-# define KBHIT()        kbhit()
-# define SYS_KBD_H
-#endif
+#  include       <pc.h>
+#  define GETKEY()       getkey()
+#  define PUTCHAR(C)     putchar(C)
+#  define KBHIT()        kbhit()
+#  define SYS_KBD_H
+#endif               // #ifndef SYS_KBD_H
 
 UInt   syStopout;              /* output is stopped by <ctr>-'S'  */
 
@@ -1640,62 +1653,64 @@ void            syStopraw ( Int intfid )
 int             syGetch ( Int fid )
 {
     int                 ch;
-#ifdef WIN32
-    int ch2;
-    #define K_LEFT		75
-    #define K_RIGHT		77
-    #define K_UP		72
-    #define K_PAGEUP		73
-    #define K_DOWN		80
-    #define K_PAGEDOWN		81
-    #define K_DEL		83
-    #define K_HOME		71
-    #define K_END		79
 
-    #define K_CTRL_LEFT		115
-    #define K_CTRL_RIGHT	116
-    #define K_CTRL_UP		141
-    #define K_CTRL_DOWN		145
+#ifdef WIN32
+
+    int ch2;
+    #define K_LEFT        75
+    #define K_RIGHT        77
+    #define K_UP        72
+    #define K_PAGEUP        73
+    #define K_DOWN        80
+    #define K_PAGEDOWN        81
+    #define K_DEL        83
+    #define K_HOME        71
+    #define K_END        79
+
+    #define K_CTRL_LEFT        115
+    #define K_CTRL_RIGHT    116
+    #define K_CTRL_UP        141
+    #define K_CTRL_DOWN        145
     
-    #define K_F1		59
-    #define K_F2		60
-    #define K_F3		61
-    #define K_F4		62
-    #define K_F5		63
-    #define K_F6		64
-    #define K_F7		65
-    #define K_F8		66
-    #define K_F9		67
-    #define K_F10		68
-    #define K_F11		133
-    #define K_F12		134
+    #define K_F1        59
+    #define K_F2        60
+    #define K_F3        61
+    #define K_F4        62
+    #define K_F5        63
+    #define K_F6        64
+    #define K_F7        65
+    #define K_F8        66
+    #define K_F9        67
+    #define K_F10        68
+    #define K_F11        133
+    #define K_F12        134
     
     ch = GETKEY();
     ch2 = ch;
 
     /* handle function keys                                                */
     if (( ch == '\0' ) || ( ch == 0xe0 )) {
-	ch = GETKEY();
-/*	define to find the correct numbers for the not yet defined K_... 
-		constants experimentally by pressing the keys	*/
-	switch ( ch ) {
-	    case K_LEFT:            ch2 = CTR('B');  break;
-	    case K_RIGHT:           ch2 = CTR('F');  break;
-	    case K_UP:
-	    case K_PAGEUP:          ch2 = CTR('P');  break;
-	    case K_DOWN:
-	    case K_PAGEDOWN:        ch2 = CTR('N');  break;
-	    case K_DEL:             ch2 = CTR('D');  break;
-	    case K_HOME:            ch2 = CTR('A');  break;
-	    case K_END:             ch2 = CTR('E');  break;
-	    case K_CTRL_LEFT:	    ch2 = ESC('B');  break;
-	    case K_CTRL_RIGHT:	    ch2 = ESC('F');  break;
-	    case K_CTRL_UP:	    ch2 = ESC('P');  break;
-	    case K_CTRL_DOWN:	    ch2 = ESC('N');  break;
-	    case K_F8:		    ch2 = ESC(19);  break;
-	    case K_F10:		    ch2 = ESC(21);  break;
-	    case K_F11:		    ch2 = ESC(23);  break;
-	}
+    ch = GETKEY();
+/*    define to find the correct numbers for the not yet defined K_...
+        constants experimentally by pressing the keys    */
+    switch ( ch ) {
+        case K_LEFT:            ch2 = CTR('B');  break;
+        case K_RIGHT:           ch2 = CTR('F');  break;
+        case K_UP:
+        case K_PAGEUP:          ch2 = CTR('P');  break;
+        case K_DOWN:
+        case K_PAGEDOWN:        ch2 = CTR('N');  break;
+        case K_DEL:             ch2 = CTR('D');  break;
+        case K_HOME:            ch2 = CTR('A');  break;
+        case K_END:             ch2 = CTR('E');  break;
+        case K_CTRL_LEFT:        ch2 = ESC('B');  break;
+        case K_CTRL_RIGHT:        ch2 = ESC('F');  break;
+        case K_CTRL_UP:        ch2 = ESC('P');  break;
+        case K_CTRL_DOWN:        ch2 = ESC('N');  break;
+        case K_F8:            ch2 = ESC(19);  break;
+        case K_F10:            ch2 = ESC(21);  break;
+        case K_F11:            ch2 = ESC(23);  break;
+    }
     }
     return ch2;
 
@@ -1725,7 +1740,8 @@ int             syGetch ( Int fid )
 
     /* return the character                                                */
     return ch;
-#endif
+
+#endif               // #ifdef WIN32
 }
 
 
@@ -1750,41 +1766,41 @@ void            syEchos ( char *str, Int fid )
         PUTCHAR( *s );
 }
 
-#endif
+#endif               //  #if WIN32
 
 
 /****************************************************************************
 **
-*F  SyFputs( <line>, <fid> )  . . . . . . . .  write a line to the file <fid>
+*F  SyFputs( <line>, <fhandle> )  . . . . . write a line to the file <fhandle>
 **
-**  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
+**  'SyFputs' is called to put the  <line>  to the file identified by <fhandle>.
 */
 #if SYS_BSD || SYS_USG
 
 static Int my_syNrchar = 0; 
 
-void            SyFputs (char line[], Int fid )
+void            SyFputs (char line[], FILE *file )
 {
     Int                i;
-
+    Int  fid = fileno ( file );
 
     /* if outputing to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {
         syNrchar = 0;
         for ( i = 0; line[i] != '\0'; i++ ) {
             if ( line[i] == '\n' )  
-				syNrchar = 0;
+                syNrchar = 0;
             else
-				syPrompt[syNrchar++] = line[i];
+                syPrompt[syNrchar++] = line[i];
         }
         syPrompt[syNrchar] = '\0';
-		if (syNrchar > my_syNrchar) {
-			/* track and optionally report the maximal value */
-			if (SyMsgsFlagBags > 0)
-				printf("SyFputs: High water mark for syNrchar = %d, syPrompt = \"%s\"\n",
-					   syNrchar, syPrompt);
-			my_syNrchar = syNrchar;
-		}
+        if (syNrchar > my_syNrchar) {
+            /* track and optionally report the maximal value */
+            if (SyMsgsFlagBags > 0)
+                printf("SyFputs: High water mark for syNrchar = %d, syPrompt = \"%s\"\n",
+                       syNrchar, syPrompt);
+            my_syNrchar = syNrchar;
+        }
     }
 
     /* otherwise compute only the length                                   */
@@ -1793,7 +1809,7 @@ void            SyFputs (char line[], Int fid )
             ;
     }
 
-    write( fileno(syBuf[fid].fp), line, i );
+    write ( fid /* fileno(syBuf[fid].fp) */ , line, i );
 }
 
 #endif
@@ -1802,9 +1818,9 @@ void            SyFputs (char line[], Int fid )
 
 void  SyFputs ( char line[], FILE *file )
 {
-        fputs( line, file );
-   		fflush( file );		// typically the GAP internal output buffer has just been flushed, so flush file buffer, too
-                                        // otherwise piped output gets delayed
+    fputs( line, file );
+    fflush( file );     // typically the GAP internal output buffer has just been flushed, so flush file buffer, too
+                        // otherwise piped output gets delayed
 }
 
 #endif
@@ -1957,13 +1973,13 @@ int             SyExec (char *cmd)
 
     status = system( cmd );
 #ifndef WIN32 // strange non-windows stuff.
-	result = WEXITSTATUS(status);
+    result = WEXITSTATUS(status);
     if (WIFSIGNALED(status)) 
-	result |= WTERMSIG(status) << 8;
+    result |= WTERMSIG(status) << 8;
 #else
-	result = status;
+    result = status;
 #endif
-	return result;
+    return result;
 }
 
 
@@ -2017,7 +2033,7 @@ extern  int             atoi ( const char * );
 
 void            InitSystem (int argc, char **argv)
 {
-    Int                fid;            /* file identifier                 */
+    FILE        *file;          //  file identifier
     Int                pre = 63*1024;  /* amount to pre'malloc'ate        */
     int                 gaprc = 1;      /* read the .gaprc file            */
     char *              ptr;            /* pointer to the pre'malloc'ated  */
@@ -2026,10 +2042,10 @@ void            InitSystem (int argc, char **argv)
 
     /* open the standard files                                             */
 #if SYS_BSD || SYS_USG
-    syBuf[0].fp = stdin;
-    if ( isatty( fileno(stdin) ) ) {
-        if ( isatty( fileno(stdout) )
-          && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stdout)) ) )
+    //  syBuf[0].fp = stdin;
+    if ( isatty ( fileno(stdin) ) ) {
+        if ( isatty ( fileno(stdout) )
+          && ! strcmp ( ttyname ( fileno(stdin) ), ttyname ( fileno(stdout) ) ) )
             syBuf[0].echo = stdout;
         else
             syBuf[0].echo = fopen( ttyname(fileno(stdin)), "w" );
@@ -2037,16 +2053,16 @@ void            InitSystem (int argc, char **argv)
     else {
         syBuf[0].echo = stdout;
     }
-    syBuf[1].fp = stdout;
-    if ( isatty( fileno(stderr) ) ) {
-        if ( isatty( fileno(stdin) )
-          && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
-            syBuf[2].fp = stdin;
-        else
-            syBuf[2].fp = fopen( ttyname(fileno(stderr)), "r" );
+    //  syBuf[1].fp = stdout;
+    if ( isatty ( fileno(stderr) ) ) {
+        /* if ( isatty ( fileno(stdin) ) */
+        /*      && ! strcmp ( ttyname ( fileno(stdin) ), ttyname ( fileno(stderr) ) ) ) */
+        /*     syBuf[2].fp = stdin; */
+        /* else */
+        /*     syBuf[2].fp = fopen( ttyname(fileno(stderr)), "r" ); */
         syBuf[2].echo = stderr;
     }
-    syBuf[3].fp = stderr;
+    //  syBuf[3].fp = stderr;
 #endif
 
     /* install the signal handler for '<ctr>-C'                            */
@@ -2194,21 +2210,22 @@ void            InitSystem (int argc, char **argv)
     InitLibName(progname, SyLibname, sizeof(SyLibname));
 
    /* try to find 'LIBNAME/init.g' to read it upon initialization         */
-    i = 0;  fid = -1;
-    while ( fid == -1 && i <= strlen(SyLibname) ) {
+    i = 0;
+    file = (FILE *)NULL;
+    while ( file == (FILE *)NULL && i <= strlen(SyLibname) ) {
         for ( k = i; SyLibname[k] != '\0' && SyLibname[k] != ';'; k++ )  ;
         SyInitfiles[0][0] = '\0';
-        if ( sizeof(SyInitfiles[0]) < k-i+6+1 ) {
-            fputs("gap: <libname> is too long\n",stderr);
+        if ( sizeof ( SyInitfiles[0]) < k-i+6+1 ) {
+            fputs ( "gap: <libname> is too long\n", stderr );
             goto usage;
         }
-        strncat( SyInitfiles[0], SyLibname+i, k-i );
-        strncat( SyInitfiles[0], "init.g", 6 );
-        if ( (fid = SyFopen( SyInitfiles[0], "r" )) != (FILE*)0)
-            SyFclose( fid );
+        strncat ( SyInitfiles[0], SyLibname+i, k-i );
+        strncat ( SyInitfiles[0], "init.g", 6 );
+        if ( ( file = SyFopen ( SyInitfiles[0], "r" )) != (FILE *)NULL)
+            SyFclose ( file );
         i = k + 1;
     }
-    if ( fid != -1 ) {
+    if ( file != (FILE *)NULL ) {
         i = 1;
     }
     else {
@@ -2223,14 +2240,14 @@ void            InitSystem (int argc, char **argv)
 
     if ( gaprc ) {
 #if SYS_BSD || SYS_USG
-      if ( getenv("HOME") != 0 ) {
+      if ( getenv ("HOME") != 0 ) {
           SyInitfiles[i][0] = '\0';
-          strncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
-          strncat( SyInitfiles[i], "/.gaprc",
-                  (Int)(sizeof(SyInitfiles[0])-1-strlen(SyInitfiles[i])));
-          if ( (fid = SyFopen( SyInitfiles[i], "r" )) != -1 ) {
+          strncat ( SyInitfiles[i], getenv("HOME"), sizeof (SyInitfiles[0]) - 1 );
+          strncat ( SyInitfiles[i], "/.gaprc",
+                  (Int) (sizeof (SyInitfiles[0]) - 1 - strlen(SyInitfiles[i]) ) );
+          if ( ( file = SyFopen ( SyInitfiles[i], "r" ) ) != (FILE *)NULL ) {
               ++i;
-              SyFclose( fid );
+              SyFclose( file );
           }
           else {
               SyInitfiles[i][0] = '\0';
@@ -2241,12 +2258,12 @@ void            InitSystem (int argc, char **argv)
 
     /* use the files from the command line                                 */
     while ( argc > 1 ) {
-        if ( i >= sizeof(SyInitfiles)/sizeof(SyInitfiles[0]) ) {
-            fputs("gap: sorry, cannot handle so many init files.\n",stderr);
+        if ( i >= sizeof (SyInitfiles) / sizeof (SyInitfiles[0]) ) {
+            fputs ( "gap: sorry, cannot handle so many init files.\n", stderr );
             goto usage;
         }
         SyInitfiles[i][0] = '\0';
-        strncat( SyInitfiles[i], argv[1], sizeof(SyInitfiles[0])-1 );
+        strncat ( SyInitfiles[i], argv[1], sizeof(SyInitfiles[0])-1 );
         ++i;
         ++argv;  --argc;
     }
@@ -2279,137 +2296,137 @@ void            InitSystem (int argc, char **argv)
 #ifdef WIN32
 static int SlashToBackslash(char *dst, char *src)
 {
-	// prepend the drive letter on windows machines -- mkdir seems
-	// incapable of creating directories using the "\\dirname" syntax
-	if(*src == '/')
-	{
-		*(dst++) = _getdrive() + 'a' - 1;
-		*(dst++) = ':';
-	}
+    // prepend the drive letter on windows machines -- mkdir seems
+    // incapable of creating directories using the "\\dirname" syntax
+    if(*src == '/')
+    {
+        *(dst++) = _getdrive() + 'a' - 1;
+        *(dst++) = ':';
+    }
 
-	for(;*src;src++)
-	{
-		if(*src == '/')
-		{
-			*(dst++) = '\\';
-		}
-		else
-			*(dst++) = *src;
-	}
-	*dst = 0;
+    for(;*src;src++)
+    {
+        if(*src == '/')
+        {
+            *(dst++) = '\\';
+        }
+        else
+            *(dst++) = *src;
+    }
+    *dst = 0;
 
-	return 0;
+    return 0;
 }
 
 
 int SuperMakeDir(char *dirname)
 {
-	const char delim = '\\';
-	struct stat buf;
-	int n;
-	int len;
-	char *s;
-	char backslash[1024];
+    const char delim = '\\';
+    struct stat buf;
+    int n;
+    int len;
+    char *s;
+    char backslash[1024];
 
-	// in Windows, all backslashes must be escaped
-	SlashToBackslash(backslash, dirname);
-	dirname = backslash;
+    // in Windows, all backslashes must be escaped
+    SlashToBackslash(backslash, dirname);
+    dirname = backslash;
 
-	// if dirname is null or emptystring
-	if(!dirname || (dirname && !dirname[0]))
-		return 0;
+    // if dirname is null or emptystring
+    if(!dirname || (dirname && !dirname[0]))
+        return 0;
 
-	// remove trailing slashes.
-	len = strlen(dirname)-1;
-	while(dirname[len] == delim)
-		dirname[len--] = 0;
+    // remove trailing slashes.
+    len = strlen(dirname)-1;
+    while(dirname[len] == delim)
+        dirname[len--] = 0;
 
-	// set all slashes to 0, and count the number set.
-	for(n=1, s=dirname; *s; s++)
-	{
-		if(*s == delim)
-		{
-			*(s++) = 0;
-			n++;
-		}
-	}
+    // set all slashes to 0, and count the number set.
+    for(n=1, s=dirname; *s; s++)
+    {
+        if(*s == delim)
+        {
+            *(s++) = 0;
+            n++;
+        }
+    }
 
-	// restore a leading slash 
-	if(!dirname[0])
-	{
-		dirname[0] = delim;
-		n--;
-	}
-	// if we have a path with a drive name followed by slashes, restore the slashes now
-	else if(dirname[1] == ':' && !dirname[2])
-	{
-		dirname[2] = delim;
-		n--;
-	}
+    // restore a leading slash 
+    if(!dirname[0])
+    {
+        dirname[0] = delim;
+        n--;
+    }
+    // if we have a path with a drive name followed by slashes, restore the slashes now
+    else if(dirname[1] == ':' && !dirname[2])
+    {
+        dirname[2] = delim;
+        n--;
+    }
 
-	// create some directories!
-	for(;n>0;n--)
-	{
-		if(-1 == stat(dirname, &buf) && -1 == mkdir(dirname))
-			return 0;
-		
-		dirname[strlen(dirname)] = delim;
-	}
-	
-	return 1;
+    // create some directories!
+    for(;n>0;n--)
+    {
+        if(-1 == stat(dirname, &buf) && -1 == mkdir(dirname))
+            return 0;
+        
+        dirname[strlen(dirname)] = delim;
+    }
+    
+    return 1;
 }
 #else
 int SuperMakeDir(char *dirname)
 {
-	struct stat buf;
-	int n = 0;
-	int len;
-	char *s;
-	char delim = '/';
-	#define PERM S_IRWXU|S_IRWXG|S_IRWXO
+    struct stat buf;
+    int n = 0;
+    int len;
+    char *s;
+    char delim = '/';
+    #define PERM S_IRWXU|S_IRWXG|S_IRWXO
 
-	mode_t m;
+    mode_t m;
 
-	// grab the umask
-	m = umask(0); umask(m);
+    // grab the umask
+    m = umask(0); umask(m);
 
-	// if dirname is null or emptystring
-	if(!dirname || (dirname && !dirname[0]))
-		return 0;
+    // if dirname is null or emptystring
+    if(!dirname || (dirname && !dirname[0]))
+        return 0;
 
-	// remove trailing slashes.
-	len = strlen(dirname)-1;
-	while(dirname[len] == delim)
-		dirname[len--] = 0;
+    // remove trailing slashes.
+    len = strlen(dirname)-1;
+    while(dirname[len] == delim)
+        dirname[len--] = 0;
 
-	// set all slashes to 0, and count the number set.
-	for(n=1; (s = strrchr(dirname, delim)); n++)
-		*s = 0;
+    // set all slashes to 0, and count the number set.
+    for(n=1; (s = strrchr(dirname, delim)); n++)
+        *s = 0;
 
-	// restore a leading slash 
-	if(!dirname[0])
-	{
-		dirname[0] = delim;
-		n--;
-	}
+    // restore a leading slash 
+    if(!dirname[0])
+    {
+        dirname[0] = delim;
+        n--;
+    }
 
-	// create some directories!
-	for(;n>0;n--)
-	{
-	        if(-1 == stat(dirname, &buf)) 
-		{
-	              if ( -1 == mkdir(dirname, PERM ^ m))
-	                    return 0;
-	              else
-			chmod(dirname,PERM);           //Force the permissions over the umask (Basically allow other 
-		                                       //write on created directories which is utterly useful for 
-		                                       //spiral temporaries)
-	        }
+    // create some directories!
+    for(;n>0;n--)
+    {
+            if(-1 == stat(dirname, &buf)) 
+        {
+                  if ( -1 == mkdir(dirname, PERM ^ m))
+                        return 0;
+                  else
+            chmod(dirname,PERM);           //Force the permissions over the umask (Basically allow other 
+                                               //write on created directories which is utterly useful for 
+                                               //spiral temporaries)
+            }
 
-		dirname[strlen(dirname)] = delim;
-	}
-	
-	return 1;
+        dirname[strlen(dirname)] = delim;
+    }
+    
+    return 1;
 }
 #endif
 

@@ -25,10 +25,8 @@
 static int HOOKS_INITIALIZED = 0;
 
 void RunHooks(Obj lst, Obj args) {
-    int i, j, nargs, nfunc;
+    int i, j, nargs;
     nargs = LEN_LIST(args);
-    nfunc = LEN_LIST ( lst );
-    if ( nfunc > 0 ) printf ( "RunHooks: func list len = %d, arg list len = %d\n", nfunc, nargs );
 
     for(i = 1; i <= LEN_LIST(lst); ++i) {
         Obj hdFun = ELM_LIST(lst, i);
@@ -38,7 +36,6 @@ void RunHooks(Obj lst, Obj args) {
             Obj elm = ELM_LIST(args, j);
             SET_BAG(hdCall, j,  elm );
         }
-        PrintObj ( stdout_stream, hdCall, 4 );
 
         EVAL(hdCall);
     }
@@ -57,8 +54,6 @@ void HookBeforeOpenInput(void) {
     if(HOOKS_INITIALIZED) {
         Obj var = FindIdent("HooksBeforeOpenInput");
         Obj val = PTR_BAG(var)[0];
-        int jlen = LEN_LIST ( val );
-        if ( jlen > 0 ) printf ( "HookBeforeOpenInput: length of functions list = %d\n", jlen );
         RunHooks(val, _mkArgs(Input, Input+1));
     }
 }
@@ -67,8 +62,6 @@ void HookAfterOpenInput(void) {
     if(HOOKS_INITIALIZED) {
         Obj var = FindIdent("HooksAfterOpenInput");
         Obj val = PTR_BAG(var)[0];
-        int jlen = LEN_LIST ( val );
-        if ( jlen > 0 ) printf ( "HookAfterOpenInput: length of functions list = %d\n", jlen );
         RunHooks(val, _mkArgs(Input-1, Input));
     }
 }
@@ -77,8 +70,6 @@ void HookBeforeCloseInput(void) {
     if(HOOKS_INITIALIZED) {
         Obj var = FindIdent("HooksBeforeCloseInput");
         Obj val = PTR_BAG(var)[0];
-        int jlen = LEN_LIST ( val );
-        if ( jlen > 0 ) printf ( "HookBeforeCloseInput: length of functions list = %d\n", jlen );
         RunHooks(val, _mkArgs(Input, Input-1));
     }
 }
@@ -87,8 +78,6 @@ void HookAfterCloseInput(void) {
     if(HOOKS_INITIALIZED) {
         Obj var = FindIdent("HooksAfterCloseInput");
         Obj val = PTR_BAG(var)[0];
-        int jlen = LEN_LIST ( val );
-        if ( jlen > 0 ) printf ( "HookAfterCloseInput: length of functions list = %d\n", jlen );
         RunHooks(val, _mkArgs(Input+1, Input));
     }
 }
@@ -97,8 +86,6 @@ void HookSessionStart(void) {
     if(HOOKS_INITIALIZED) {
         Obj var = FindIdent("HooksSessionStart");
         Obj val = PTR_BAG(var)[0];
-        int jlen = LEN_LIST ( val );
-        if ( jlen > 0 ) printf ( "HookSessionStart: length of functions list = %d\n", jlen );
         RunHooks(val, NewList(0));
     }
 }
@@ -107,8 +94,6 @@ void HookSessionEnd(void) {
     if(HOOKS_INITIALIZED) {
         Obj var = FindIdent("HooksSessionEnd");
         Obj val = PTR_BAG(var)[0];
-        int jlen = LEN_LIST ( val );
-        if ( jlen > 0 ) printf ( "HookSessionEnd: length of functions list = %d\n", jlen );
         RunHooks(val, NewList(0));
     }
 }
@@ -117,8 +102,6 @@ void HooksBrkHighlightStart(void) {
     if(HOOKS_INITIALIZED) {
         Obj var = FindIdent("HooksBrkHighlightStart");
         Obj val = PTR_BAG(var)[0];
-        int jlen = LEN_LIST ( val );
-        if ( jlen > 0 ) printf ( "HooksBrkHighlightStart: length of functions list = %d\n", jlen );
         RunHooks(val, NewList(0));
     }
 }
@@ -127,8 +110,6 @@ void HooksBrkHighlightEnd(void) {
     if(HOOKS_INITIALIZED) {
         Obj var = FindIdent("HooksBrkHighlightEnd");
         Obj val = PTR_BAG(var)[0];
-        int jlen = LEN_LIST ( val );
-        if ( jlen > 0 ) printf ( "HooksBrkHighlightEnd: length of functions list = %d\n", jlen );
         RunHooks(val, NewList(0));
     }
 }
@@ -142,8 +123,6 @@ void HooksEditFile(char* fileName, int lineNumber) {
         C_NEW_STRING(str, fileName);
         SET_ELM_PLIST(arg, 1, str);
         SET_ELM_PLIST(arg, 2, INT_TO_HD(lineNumber));
-        int jlen = LEN_LIST ( val );
-        if ( jlen > 0 ) printf ( "HooksEditFile: length of functions list = %d\n", jlen );
         RunHooks(val, arg);
     }
 }

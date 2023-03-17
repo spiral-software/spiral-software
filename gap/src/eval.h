@@ -17,9 +17,9 @@
 #define EV_TAB_SIZE T_NAMESPACE+1
 
 #define CHK(hdL, hdR, eval_tab_access) \
-                       (assert(GET_TYPE_BAG(hdL) < EV_TAB_SIZE && \
-		    	       GET_TYPE_BAG(hdR) < EV_TAB_SIZE), \
-                	(eval_tab_access))
+    ( assert ( GET_TYPE_BAG(hdL) < EV_TAB_SIZE &&           \
+               GET_TYPE_BAG(hdR) < EV_TAB_SIZE),            \
+      (eval_tab_access))
 
 /*N where should I place the declaration of 'Error' ?                      */
 extern  Bag       Error ( char * msg, Int arg1, Int arg2 );
@@ -70,12 +70,12 @@ extern  Bag       HdTrue,  HdFalse;
 **  EvalStackTop - index of the last plased element.
 */
 
-#define EVAL_STACK_COUNT	65536
+#define EVAL_STACK_COUNT    65536
 /* EVAL_STACK_CUSHION - just some extra space. Stack overflow check is in the 
 ** EvFunccall only and only EVAL_STACK_COUNT checked. So to make gap safer 
 ** buffer has some extra space
 */
-#define EVAL_STACK_CUSHION	1024
+#define EVAL_STACK_CUSHION    1024
 extern Bag         EvalStack[EVAL_STACK_COUNT+EVAL_STACK_CUSHION];
 extern UInt        EvalStackTop;
 
@@ -114,7 +114,7 @@ static inline Bag    EVAL(Bag hd) {
         func = EvTab[bagtype];
         Result = func(hd);
 #else
-		Result = (* EvTab[GET_TYPE_BAG( hd )])(hd);
+        Result = (* EvTab[GET_TYPE_BAG( hd )])(hd);
 #endif
         EVAL_STACK_POP;
         return Result;
@@ -786,7 +786,8 @@ extern  void            InstBinOp ( Bag  (* table [EV_TAB_SIZE][EV_TAB_SIZE]) ()
 **
 **  Installs the function <func> as printing function  for  bags  of  <type>.
 */
-extern  void            InstPrFunc ( unsigned int type, void (* func)(Bag) );
+extern  void            InstPrFunc ( unsigned int type,
+                                     void (* func)(STREAM stream, Obj hdWhile, int indent) );
 
 
 /****************************************************************************

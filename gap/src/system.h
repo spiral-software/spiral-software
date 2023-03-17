@@ -202,36 +202,38 @@ extern  char            SyInitfiles [16] [256];
 **
 *F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
 **
-**  The function 'SyFopen'  is called to open the file with the name  <name>.
+**  The function 'SyFopen'  is called to open the file called  <name>.
 **  If <mode> is "r" it is opened for reading, in this case  it  must  exist.
 **  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
 **  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
 **
-**  'SyFopen' returns an file pointer used by the scanner to  identify  the  file.
-**  'SyFopen' returns null if it cannot open the file.
+**  'SyFopen' returns a file handle used by the scanner to  identify  the  file.
+**  'SyFopen' returns NULL if it cannot open the file.
 **
 **  The following standard files names and file identifiers  are  guaranteed:
-**  'SyFopen( "*stdin*", "r")' returns 0 identifying the standard input file.
-**  'SyFopen( "*stdout*","w")' returns 1 identifying the standard outpt file.
-**  'SyFopen( "*errin*", "r")' returns 2 identifying the brk loop input file.
-**  'SyFopen( "*errout*","w")' returns 3 identifying the error messages file.
+**
+**  'SyFopen( "*stdin*", "r")' returns stdin  ==>  standard input file.
+**  'SyFopen( "*stdout*","w")' returns stdout ==>  standard outpt file.
+**  'SyFopen( "*errin*", "r")' returns stdin  ==>  brk loop input file.
+**  'SyFopen( "*errout*","w")' returns stderr ==>  error messages file.
 **
 **  If it is necessary to adjust the  filename  this  should  be  done  here.
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary  mode.
 */
-extern  FILE*            SyFopen ( char * name, char * mode );
+
+extern  FILE    *SyFopen ( char * name, char * mode );
 
 
 /****************************************************************************
 **
-*F  SyFclose( <file pointer> ) . . . . . . . . . . . . . . . . .  close the file
+*F  SyFclose( <file_handle> ) . . .. . . . . . . close the file <file_handle>
 **
-**  'SyFclose' closes the file with the identifier <file pointer>  which  is  obtained
-**  from 'SyFopen'.
+**  'SyFclose' closes the file with file handle <file_handle> (obtained
+**  from 'SyFopen').
 */
-extern  void            SyFclose (FILE* file);
 
+extern  void            SyFclose (FILE* file);
 
 
 /****************************************************************************

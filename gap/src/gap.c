@@ -1478,7 +1478,7 @@ Bag       FunPrint(Bag hdCall)
     for (i = 1; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i)
     {
         hd = EVAL( PTR_BAG(hdCall)[i] );
-        printOneBag(stdout_stream, hd);
+        printOneBag(global_stream, hd);
     }
     return HdVoid;
 }
@@ -1540,6 +1540,7 @@ Bag       FunPrintTo(Bag hdCall)
         return Error("PrintTo: can not open the file for writing", 0, 0);
     }
     SET_STREAM_FILE(stream, file);
+    global_stream = stream;
 
     /* print all the arguments, take care of strings and functions         */
     for (i = 2; i < (GET_SIZE_BAG(hdCall)/SIZE_HD); ++i) 
@@ -1548,6 +1549,7 @@ Bag       FunPrintTo(Bag hdCall)
         printOneBag(stream, hd);
     }
 
+    global_stream = stdout_stream;
     fclose(streamFile(stream));
 
     return HdVoid;
@@ -1599,6 +1601,7 @@ Bag       FunAppendTo(Bag hdCall)
         return Error("PrintTo: can not open the file for writing", 0, 0);
     }
     SET_STREAM_FILE(stream, file);
+    global_stream = stream;
 
     /* print all the arguments, take care of strings and functions         */
     for (i = 2; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
@@ -1607,6 +1610,7 @@ Bag       FunAppendTo(Bag hdCall)
         printOneBag(stream, hd);
     }
 
+    global_stream = stdout_stream;
     fclose(streamFile(stream));
 
     return HdVoid;
@@ -1623,12 +1627,15 @@ Bag FunPrintToString(Bag hdCall)
 
     stream.type = STREAM_TYPE_STRING;
     stream.U.string_ptr = &newstr;
+    global_stream = stream;
 
     for (i = 1; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
     {
         hd = EVAL(PTR_BAG(hdCall)[i]);
         printOneBag(stream, hd);
     }
+
+    global_stream = stdout_stream;
 
     if (newstr != 0) {
         Bag strBag;
@@ -2599,8 +2606,9 @@ Bag     FunTabToList(Bag hdCall)
 }
 
 STREAM stdout_stream;
-
 STREAM stderr_stream;
+STREAM global_stream;
+
 
 /****************************************************************************
 **
@@ -2622,6 +2630,8 @@ void            InitGap (int argc, char** argv, int* stackBase)
     SET_STREAM_FILE(stdout_stream, stdout);
     // init STREAM for stderr
     SET_STREAM_FILE(stderr_stream, stderr);
+
+    global_stream = stdout_stream;
 
 #ifdef DEBUG
 #ifndef WIN32

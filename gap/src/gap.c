@@ -1517,6 +1517,7 @@ Bag       FunPrintTo(Bag hdCall)
     Int     i;
     Int     type;
     STREAM  stream;
+    STREAM  save_stream;
     char   *filename;
     FILE   *file;
 
@@ -1540,6 +1541,7 @@ Bag       FunPrintTo(Bag hdCall)
         return Error("PrintTo: can not open the file for writing", 0, 0);
     }
     SET_STREAM_FILE(stream, file);
+    save_stream = global_stream;
     global_stream = stream;
 
     /* print all the arguments, take care of strings and functions         */
@@ -1549,7 +1551,7 @@ Bag       FunPrintTo(Bag hdCall)
         printOneBag(stream, hd);
     }
 
-    global_stream = stdout_stream;
+    global_stream = save_stream;
     fclose(streamFile(stream));
 
     return HdVoid;
@@ -1578,6 +1580,7 @@ Bag       FunAppendTo(Bag hdCall)
     Int     i;
     Int     type;
     STREAM  stream;
+    STREAM  save_stream;
     char* filename;
     FILE* file;
 
@@ -1601,6 +1604,7 @@ Bag       FunAppendTo(Bag hdCall)
         return Error("PrintTo: can not open the file for writing", 0, 0);
     }
     SET_STREAM_FILE(stream, file);
+    save_stream = global_stream;
     global_stream = stream;
 
     /* print all the arguments, take care of strings and functions         */
@@ -1610,7 +1614,7 @@ Bag       FunAppendTo(Bag hdCall)
         printOneBag(stream, hd);
     }
 
-    global_stream = stdout_stream;
+    global_stream = save_stream;
     fclose(streamFile(stream));
 
     return HdVoid;
@@ -1622,11 +1626,13 @@ Bag FunPrintToString(Bag hdCall)
     Bag     hd;
     Int     i;
     STREAM stream;
+    STREAM  save_stream;
     char* newstr = 0;
     newstr = 0;
 
     stream.type = STREAM_TYPE_STRING;
     stream.U.string_ptr = &newstr;
+    save_stream = global_stream;
     global_stream = stream;
 
     for (i = 1; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
@@ -1635,7 +1641,7 @@ Bag FunPrintToString(Bag hdCall)
         printOneBag(stream, hd);
     }
 
-    global_stream = stdout_stream;
+    global_stream = save_stream;
 
     if (newstr != 0) {
         Bag strBag;

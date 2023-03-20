@@ -665,6 +665,8 @@ extern STREAM stdout_stream;
 
 extern STREAM stderr_stream;
 
+extern STREAM global_stream;
+
 extern FILE* streamFile(STREAM stream);
 
 extern int SyFmtPrint(STREAM stream, const char* format, ...);

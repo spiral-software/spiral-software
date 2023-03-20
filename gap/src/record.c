@@ -1056,12 +1056,12 @@ Obj DefaultPrRec ( Obj hdRec ) {
     if (GET_TYPE_BAG(hdRec) == T_MAKETAB)
     {
         //**INDENT**  Pr("%2>tab(", 0, 0);
-        SyFmtPrint(stdout_stream, "tab(");
+        SyFmtPrint(global_stream, "tab(");
     }
     else
     {
         //**INDENT** Pr("%2>rec(",0,0);
-        SyFmtPrint(stdout_stream, "rec(");
+        SyFmtPrint(global_stream, "rec(");
     }
     for ( i = 0; i < GET_SIZE_BAG(hdRec)/(2*SIZE_HD); ++i ) {
         /* print an ordinary record name                                   */
@@ -1075,18 +1075,18 @@ Obj DefaultPrRec ( Obj hdRec ) {
             if (!pr_populated++) 
             {
                 //**INDENT** Pr("\n%2>", 0, 0); 
-                SyFmtPrint(stdout_stream, "\n");
+                SyFmtPrint(global_stream, "\n");
             }
 
             if (!is_first_printed)
             { 
                 //**INDENT** Pr("%2<,\n%2>", 0, 0);
-                SyFmtPrint(stdout_stream, ",\n");
+                SyFmtPrint(global_stream, ",\n");
             }
 
             is_first_printed = 0;
 
-            PrVarName(stdout_stream, name);
+            PrVarName(global_stream, name);
         }
         /* print an evaluating record name                                 */
         else
@@ -1094,31 +1094,31 @@ Obj DefaultPrRec ( Obj hdRec ) {
             if (!pr_populated++)
             {
                 //**INDENT** Pr("\n%2>", 0, 0); 
-                SyFmtPrint(stdout_stream, "\n");
+                SyFmtPrint(global_stream, "\n");
             }
             //Pr(" (",0,0);
-            SyFmtPrint(stdout_stream, " (");
+            SyFmtPrint(global_stream, " (");
             //Print( PTR_BAG(hdRec)[2*i] );
-            PrintObj(stdout_stream, PTR_BAG(hdRec)[2 * i], 0);
+            PrintObj(global_stream, PTR_BAG(hdRec)[2 * i], 0);
             //Pr(")",0,0);
-            SyFmtPrint(stdout_stream, ")");
+            SyFmtPrint(global_stream, ")");
         }
         /* print the component                                             */
         //**INDENT** Pr("%< := %>",0,0);
-        SyFmtPrint(stdout_stream, " := ");
+        SyFmtPrint(global_stream, " := ");
         //Print( PTR_BAG(hdRec)[2*i+1] );
-        PrintObj(stdout_stream, PTR_BAG(hdRec)[2 * i + 1], 0);
+        PrintObj(global_stream, PTR_BAG(hdRec)[2 * i + 1], 0);
     }
 
     if (pr_populated)
     {
         //**INDENT** Pr(" %4<)", 0, 0);
-        SyFmtPrint(stdout_stream, ")");
+        SyFmtPrint(global_stream, ")");
     }
     else
     {
         //**INDENT** Pr("%2<)", 0, 0);
-        SyFmtPrint(stdout_stream, ")");
+        SyFmtPrint(global_stream, ")");
     }
 
     return HdVoid;

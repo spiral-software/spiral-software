@@ -220,6 +220,25 @@ UInt   syStartTime;
 
 /****************************************************************************
 **
+*V  'syBuf' . . . . . . . . . . . . .  buffer and other info for files, local
+**
+**  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
+**  routines  from   allocating theis  buffers  using  'malloc',  which would
+**  otherwise confuse Gasman.
+*/
+#ifndef SYS_STDIO_H                     /* standard input/output functions */
+# include       <stdio.h>
+# define SYS_STDIO_H
+#endif
+
+struct {
+    //FILE *      fp;                     /* file pointer for this file      */
+    FILE *      echo;                   /* file pointer for the echo       */
+}       syBuf [16];
+
+
+/****************************************************************************
+**
 *F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
 **
 **  The function 'SyFopen'  is called to open the file called  <name>.
@@ -227,7 +246,7 @@ UInt   syStartTime;
 **  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
 **  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
 **
-**  'SyFopen' returns afile handle used by the scanner to  identify  the  file.
+**  'SyFopen' returns a file handle 
 **  'SyFopen' returns NULL if it cannot open the file.
 **
 **  The following standard files names and file identifiers  are  guaranteed:

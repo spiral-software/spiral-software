@@ -1261,7 +1261,7 @@ void  PrFF(STREAM stream, Bag hdField, unsigned int value, int indent)
 
         /* print the element                                               */
         //**INDENT** Pr("%>Z(%>%d%<",(Int)p,0);
-        SyFmtPrint(stream, "Z(%d");
+        SyFmtPrint(stream, "Z(%d", (Int)p);
 
         if (d == 1) 
         {

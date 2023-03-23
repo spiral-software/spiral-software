@@ -1537,7 +1537,7 @@ Bag       FunPrintTo(Bag hdCall)
     }
 
     filename = (char*)PTR_BAG(hd);
-    file = fopen(filename, "w");
+    file = SyFopen(filename, "w");
     if (file == 0)
     {
         return Error("PrintTo: can not open the file for writing", 0, 0);
@@ -1554,7 +1554,7 @@ Bag       FunPrintTo(Bag hdCall)
     }
 
     global_stream = save_stream;
-    fclose(streamFile(stream));
+    SyFclose(streamFile(stream));
 
     return HdVoid;
 }
@@ -1600,7 +1600,7 @@ Bag       FunAppendTo(Bag hdCall)
     }
 
     filename = (char*)PTR_BAG(hd);
-    file = fopen(filename, "a");
+    file = SyFopen(filename, "a");
     if (file == 0)
     {
         return Error("PrintTo: can not open the file for writing", 0, 0);
@@ -1617,7 +1617,7 @@ Bag       FunAppendTo(Bag hdCall)
     }
 
     global_stream = save_stream;
-    fclose(streamFile(stream));
+    SyFclose(streamFile(stream));
 
     return HdVoid;
 }

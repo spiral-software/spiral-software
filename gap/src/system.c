@@ -226,14 +226,12 @@ UInt   syStartTime;
 **  routines  from   allocating theis  buffers  using  'malloc',  which would
 **  otherwise confuse Gasman.
 */
-
 #ifndef SYS_STDIO_H                     /* standard input/output functions */
-  #include       <stdio.h>
-  #define SYS_STDIO_H
+# include       <stdio.h>
+# define SYS_STDIO_H
 #endif
 
 struct {
-    // File pointers for open files no longer tracked here ??
     //FILE *      fp;                     /* file pointer for this file      */
     FILE *      echo;                   /* file pointer for the echo       */
 }       syBuf [16];
@@ -248,7 +246,7 @@ struct {
 **  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
 **  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
 **
-**  'SyFopen' returns afile handle used by the scanner to  identify  the  file.
+**  'SyFopen' returns a file handle 
 **  'SyFopen' returns NULL if it cannot open the file.
 **
 **  The following standard files names and file identifiers  are  guaranteed:
@@ -269,20 +267,19 @@ FILE    *SyFopen ( char * name, char *mode )
 
     /* handle standard files                                               */
     if(strcmp(name, "*stdin*") == 0) {
-        if (strcmp(mode, "r") != 0)  return -1;
+        if (strcmp(mode, "r") != 0)  return 0;
         return stdin;
     }
     else if (strcmp(name, "*stdout*") == 0) {
-        if (strcmp(mode, "w") != 0)  return -1;
+        if (strcmp(mode, "w") != 0)  return 0;
         return stdout;
     }
     else if (strcmp(name, "*errin*") == 0) {
-        if (strcmp(mode, "r") != 0)  return -1;
-        //  if ( syBuf[2].fp == (FILE*)0 )  return -1;
+        if (strcmp(mode, "r") != 0)  return 0;
         return stdin;
     }
     else if (strcmp(name, "*errout*") == 0) {
-        if (strcmp(mode, "w") != 0)  return -1;
+        if (strcmp(mode, "w") != 0)  return 0;
         return stderr;
     }
 

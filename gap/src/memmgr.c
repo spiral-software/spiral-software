@@ -1626,6 +1626,78 @@ static UInt CountFreeChain ( ArenaBag_t *par )
 	return count;
 }
 
+//  WalkArenaBags() is intended to walk all the allocated bags in the pool area of the
+//  arena and outputs some simple statistical information.  If errors are found (they are
+//  ususally catastrophic) they are noted if possible.
+
+static void WalkArenaBags ( ArenaBag_t *par )
+{
+    BagPtr_t *      src;				/* source in sweeping              */
+    Int4            isz;
+    
+    src = par->OldBagStart;             //  Start at the beginning of bags data
+
+    UInt nLive, nRemnant, szLive, szRemnant;
+    nLive = nRemnant = szLive = szRemnant = 0;
+
+    // Walk all bags:  A bag must be either: alive, dead, or resize free
+    UInt nbagsCheck = 0;
+    while ( src < par->AllocBagStart ) {
+        nbagsCheck++;
+        if ( GET_TYPE_PTR(src) == T_RESIZE_FREE ) {
+            // leftover remnant of a resize of <n> bytes
+            // Move source pointer (dest stays put)
+            if ( TEST_FLAG_PTR ( src, BF_COPY ) ) {            // one-word remnant
+                src++;
+                nRemnant++; szRemnant += sizeof(BagPtr_t *);
+            }
+            else {
+                isz = WORDS_BAG ( GET_SIZE_PTR(src) );
+                if ( isz < 0 ) {
+                    // Some sort of invalid bag encountered
+                    printf ( "WalkArenaBags: Panic -- memory manager found -ve sized remnant (%p), size = %d\n", src, isz);
+                    src++;              //  walk forward word by word to try recovering...
+                }
+                else {
+                    src += 1 + WORDS_BAG( GET_SIZE_PTR(src) ); // multi-word remnant 
+                    nRemnant++; szRemnant += GET_SIZE_PTR(src) + sizeof(BagPtr_t *);
+                }
+            }
+        }
+
+        else if ( ((UInt)GET_LINK_PTR(src)) % sizeof(BagPtr_t) == 0 ) {
+            // Active bag (it's in the allocated chain; don't know until next GC if it's alive or dead)
+            nLive++; szLive += GET_SIZE_PTR(src) + HEADER_SIZE * sizeof(BagPtr_t *);
+
+            // Check the link points correctly back to a handle
+            BagPtr_t nfhead = GET_LINK_PTR(src);
+            if (nfhead < par->BagHandleStart || nfhead >= par->OldBagStart) {
+                // link is *NOT* valid
+                printf ( "WalkArenaBags:: Bad link from bag (%p), link (%p) \n", src, nfhead);
+            }
+
+            src += HEADER_SIZE + WORDS_BAG( GET_SIZE_PTR(src) ) ; // Advance src
+        }
+
+        else {
+            // Some sort of invalid header encountered
+            printf ( "WalkArenaBags: Panic -- memory manager found bogus header (%p)\n", src);
+            src++;              //  walk forward word by word to try recovering...
+        }
+    }
+
+    // Since doing full GC have now processed all bags 
+    printf ( "WalkArenaBags: Arena #%d: Walked all bags...found:\n", par->ArenaNumber);
+    printf ( "#     Live Bags = %10u, size     Live Bags = %10u (%uk / %uMb)\n",
+             nLive, szLive, szLive / 1024, szLive / (1024 * 1024));
+    printf ( "#  Remnant Bags = %10u, size  Remnant Bags = %10u (%uk / %uMb)\n",
+             nRemnant, szRemnant, szRemnant / 1024, szRemnant / (1024 * 1024));
+    fflush(stdout);
+
+    return;
+}
+
+
 static int  DumpMemArenaData ( int flag )
 {
     ArenaBag_t *par = &MemArena[0];
@@ -1657,6 +1729,9 @@ static int  DumpMemArenaData ( int flag )
 				   ((UInt)par->EndBags - (UInt)par->AllocBagStart) / 1024,
 				   (((UInt)par->EndBags - (UInt)par->AllocBagStart) / (1024 * 1024)),
 				   (100.0 * (float)freepool / (float)sizepool) );
+
+            WalkArenaBags ( par );
+            WalkBagPointers ( par->ArenaNumber );
 		}
 		else {
 			printf("    Free Chain = %p, Marked bags = %p, # on Marked chain = %u\n\n",
@@ -2000,6 +2075,8 @@ static void SweepArenaBags ( ArenaBag_t *par )
             // Some sort of invalid header encountered
             printf("Collectbags: Panic -- memory manager found bogus header (%p) -- exiting\n", src);
             // exit(1);
+            fflush ( stdout );
+            break;      //  PTB added, otherwise loop infinitely 
         }
     }
 

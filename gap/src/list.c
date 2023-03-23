@@ -1818,7 +1818,7 @@ void PrElmList(STREAM stream, Obj hdSel, int indent)
     //Print( PTR_BAG(hdSel)[0] );
     PrintObj(stream, PTR_BAG(hdSel)[0], indent);
     //**INDENT** Pr("%<[",0,0);
-    SyFmtPrint(stream, "([");
+    SyFmtPrint(stream, "[");
     //Print( PTR_BAG(hdSel)[1] );
     PrintObj(stream, PTR_BAG(hdSel)[1], indent);
     //**INDENT** Pr("%<]",0,0);

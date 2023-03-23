@@ -147,11 +147,11 @@ int     main(int argc, char **argv)
             while (HdExec != 0)
             {
                 ChangeEnv(PTR_BAG(HdExec)[4], CEF_CLEANUP);
+            }
 
-                while (EvalStackTop > 0)
-                {
-                    EVAL_STACK_POP; 
-                }
+            while (EvalStackTop > 0)
+            {
+                EVAL_STACK_POP; 
             }
 		}
     }
@@ -322,7 +322,7 @@ void PrintBacktraceExec(STREAM stream, Bag hdExec, UInt execDepth, UInt execStac
         else if (PTR_BAG(hdExec)[3] == HdCallLt)
         { 
             //Pr("<rec1> < <rec2>", 0, 0);
-            SyFmtPrint(stream, "<rec1> = <rec2>");
+            SyFmtPrint(stream, "<rec1> < <rec2>");
         }
         else if (PTR_BAG(hdExec)[3] == HdCallIn) 
         { 
@@ -592,14 +592,20 @@ Bag       FunBacktraceTo (Bag hdCall)
         return Error(usage, 0, 0); 
     }
 
+    /* /\* try to open the given output file, raise an error if you can not    *\/ */
+    /* what happens if we don't open the requested output file???  -- ptb */
+    /* if ( OpenOutput( (char*)PTR_BAG(hdName) ) == 0 ) */
+    /*     return Error("BacktraceTo: can not open '%s' for writing", */
+	/* 	     (Int)PTR_BAG(hdName), 0); */
+
     FunBacktrace(hdLevel);
 
     /* close the output file again, and return nothing                     */
 
-   /* if (!CloseOutput())
-    {
-        Error("BacktraceTo: can not close output, this should not happen", 0, 0);
-    }*/
+   /* if (!CloseOutput()) */
+   /* { */
+   /*     Error("BacktraceTo: can not close output, this should not happen", 0, 0); */
+   /* } */
 
     return HdVoid;
 }
@@ -894,14 +900,14 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			if ( strcmp( msg, "FunError" ) != 0 )
             {
 				//Pr("Error, ",0,0);  
-                SyFmtPrint(stderr_stream, "Breakpoint");
+                SyFmtPrint(stderr_stream, "Error, ");
                 //Pr( msg, arg1, arg2 );
                 SyFmtPrint(stderr_stream, msg, arg1, arg2); //GS4 - look into variables
 			} 
             else 
             {
 				//Pr("Error, ",0,0);  
-                SyFmtPrint(stderr_stream, "Error");
+                SyFmtPrint(stderr_stream, "Error, ");
                 FunPrint( (Bag)arg1 );
 			}
 		}
@@ -1087,7 +1093,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			while ( CloseInput() ) ;
 		} 
         else
-         { 
+        { 
             // if we are already in error loop just cleanup stack
             while (HdExec != DbgStackExec()) 
             {

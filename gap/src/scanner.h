@@ -344,19 +344,19 @@ void            Match ( UInt symbol, char * msg,
 #define SCANNER_INPUTS      16
 
 typedef struct {
-	Obj   package;
-	Obj   packages;
-	Obj   imports;
-	Obj   data;
-	Int   importTop;
-	Int   packageTop;
-	Int   global;
-	Int   fid;
-	Int   number;
-	FILE *file;
-	char  name[1024];
-	char  line[2048];
-	char *ptr;
+    Obj   package;
+    Obj   packages;
+    Obj   imports;
+    Obj   data;
+    Int   importTop;
+    Int   packageTop;
+    Int   global;
+    Int   fid;
+    Int   number;
+    FILE *file;
+    char  name[1024];
+    char  line[2048];
+    char *ptr;
 } TypInputFile;
 
 extern TypInputFile    InputFiles [SCANNER_INPUTS];
@@ -378,9 +378,9 @@ extern char            * In;
 **  If there is a logfile in use and the input file is '*stdin*' or '*errin*'
 **  'GetLine' echoes the new line to the logfile.
 */
-char            GetLine ();
+char    GetLine ();
 
-Bag		GReadFile ( void );
+Bag     GReadFile ( void );
 
 /****************************************************************************
 **
@@ -491,14 +491,15 @@ Int            OpenOutput ( char * filename );
 **  '*errout*' to the file with  name <filename>.  The  file is truncated  to
 **  size 0 if it existed, otherwise it is created.
 **
-**  'OpenLog' returns 1 if it could  successfully open <filename> for writing
-**  and 0  to indicate failure.   'OpenLog' will  fail if  you do  not   have
-**  permissions  to create the file or   write to  it.  'OpenOutput' may also
+**  'OpenLog' returns a file handle if it could  successfully open <filename> 
+**  for writing and NULL on failure.  'OpenLog' will fail if you do not  have
+**  permissions  to create the file or   write to  it.  'OpenLog' may also
 **  fail if you have too many files open at once.  It is system dependent how
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-Int            OpenLog ( char * filename );
+
+FILE    *OpenLog ( char * filename );
 
 
 /****************************************************************************
@@ -523,14 +524,15 @@ Int            CloseLog ( void );
 **  '*stdin*' and  '*errin*' to the file  with  name <filename>.  The file is
 **  truncated to size 0 if it existed, otherwise it is created.
 **
-**  'OpenInputLog' returns 1  if it  could successfully open  <filename>  for
-**  writing  and  0 to indicate failure.  'OpenInputLog' will fail  if you do
-**  not have  permissions to create the file  or write to it.  'OpenInputLog'
-**  may also fail  if you  have  too many  files open  at once.  It is system
-**  dependent  how many are too many,  but 16 files  should work  everywhere.
-**  Finally 'OpenInputLog' will fail if there is already a current logfile.
+**  'OpenInputLog' returns a file handle if it could  successfully open <filename> 
+**  for writing and NULL on failure.  'OpenInputLog' will fail if you do not
+**  have permissions to create the file or write to it.  'OpenInputLog' may also
+**  fail if you have too many files open at once.  It is system dependent how
+**  many   are too   many, but  16   files should  work everywhere.   Finally
+**  'OpenInputLog' will fail if there is already a current logfile.
 */
-Int            OpenInputLog ( char* );
+
+FILE    *OpenInputLog ( char* );
 
 
 

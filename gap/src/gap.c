@@ -1187,7 +1187,7 @@ Bag       FunREAD(Bag hdCall)
     exc_type_t    e;
 	UInt          processInclude;
 
-
+    //  printf ( "\nEnter FunREAD: " );
     /* check the number and type of arguments                              */
     if ((GET_SIZE_BAG(hdCall) != (2 * SIZE_HD)) && (GET_SIZE_BAG(hdCall) != (3 * SIZE_HD)))
     {
@@ -1200,6 +1200,7 @@ Bag       FunREAD(Bag hdCall)
     {
         return Error("usage: READ( <filename> )", 0, 0);
     }
+    //  printf ( "file = %s", (char*)PTR_BAG(hdName) );
 
     if (GET_SIZE_BAG(hdCall) == (3 * SIZE_HD))
     {
@@ -1273,6 +1274,7 @@ Bag       FunREAD(Bag hdCall)
     {
         Error("READ: can not close input, this should not happen", 0, 0);
     }
+    //  printf ( " ... done\n" );
 	
 	return HdTrue;
 }
@@ -1535,7 +1537,7 @@ Bag       FunPrintTo(Bag hdCall)
     }
 
     filename = (char*)PTR_BAG(hd);
-    file = fopen(filename, "w");
+    file = SyFopen(filename, "w");
     if (file == 0)
     {
         return Error("PrintTo: can not open the file for writing", 0, 0);
@@ -1552,7 +1554,7 @@ Bag       FunPrintTo(Bag hdCall)
     }
 
     global_stream = save_stream;
-    fclose(streamFile(stream));
+    SyFclose(streamFile(stream));
 
     return HdVoid;
 }
@@ -1598,7 +1600,7 @@ Bag       FunAppendTo(Bag hdCall)
     }
 
     filename = (char*)PTR_BAG(hd);
-    file = fopen(filename, "a");
+    file = SyFopen(filename, "a");
     if (file == 0)
     {
         return Error("PrintTo: can not open the file for writing", 0, 0);
@@ -1615,7 +1617,7 @@ Bag       FunAppendTo(Bag hdCall)
     }
 
     global_stream = save_stream;
-    fclose(streamFile(stream));
+    SyFclose(streamFile(stream));
 
     return HdVoid;
 }

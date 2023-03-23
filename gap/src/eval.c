@@ -48,12 +48,12 @@
 #include        "coding.h"              /* 'InitCoding'                    */
 
 #include        "spiral.h"              /* Try/Catch                       */
-/* #include        "flags.h" */			// defns & decls moved to memmgr.h
+/* #include        "flags.h" */            // defns & decls moved to memmgr.h
 #include        "tables.h"
 #include        "comments.h"            /* DocumentValue                   */
 #include        "namespaces.h"
 #include        "args.h"
-#include		"GapUtils.h"
+#include        "GapUtils.h"
 #include        "debug.h"
 #include        "objects.h"
 
@@ -330,7 +330,8 @@ Obj     Prod(Obj hd)
 
 Obj     CantProd(Obj hdL, Obj hdR)
 {
-    return Error("operations: product of %s and %s is not defined", (Int)InfoBags[GET_TYPE_BAG(hdL)].name, (Int)InfoBags[GET_TYPE_BAG(hdR)].name);
+    return Error ( "operations: product of %s and %s is not defined",
+                   (Int)InfoBags[GET_TYPE_BAG(hdL)].name, (Int)InfoBags[GET_TYPE_BAG(hdR)].name);
 }
 
 
@@ -2369,10 +2370,9 @@ void            InstBinOp(Bag(*table[EV_TAB_SIZE][EV_TAB_SIZE]) (), unsigned int
 **
 **  Installs the function <func> as printing function  for  bags  of  <type>.
 */
-void        InstPrFunc(unsigned int type, void (*func) (FILE, Bag, int))
+void        InstPrFunc ( unsigned int type,
+                         void (*func) (STREAM stream, Obj hdOp, int indent) )
 {
-    //GS4 - Going through these. InstPrFunc needs to accept stream, hd, indent
-
     PrTab[type] = func;
 }
 
@@ -2839,13 +2839,13 @@ void        InitEval(void)
     InstEvFunc( T_NOT,      EvNot      );
     InstEvFunc( T_AND,      EvAnd      );
     InstEvFunc( T_OR,       EvOr       );
-	InstEvFunc( T_IS,       EvIs       );
+    InstEvFunc( T_IS,       EvIs       );
     InstPrFunc( T_BOOL,     PrBool     );
     InstPrFunc( T_NOT,      PrNot      );
     InstPrFunc( T_AND,      PrBinop    );
     InstPrFunc( T_OR,       PrBinop    );
     InstPrFunc( T_CONCAT,   PrBinop    );
-	InstPrFunc( T_IS,       PrBinop    );
+    InstPrFunc( T_IS,       PrBinop    );
 
     TabEq[ T_BOOL ][ T_BOOL ] = EqBool;
     TabLt[ T_BOOL ][ T_BOOL ] = LtBool;

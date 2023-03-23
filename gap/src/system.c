@@ -220,27 +220,6 @@ UInt   syStartTime;
 
 /****************************************************************************
 **
-*V  'syBuf' . . . . . . . . . . . . .  buffer and other info for files, local
-**
-**  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
-**  routines  from   allocating theis  buffers  using  'malloc',  which would
-**  otherwise confuse Gasman.
-*/
-
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-  #include       <stdio.h>
-  #define SYS_STDIO_H
-#endif
-
-struct {
-    // File pointers for open files no longer tracked here ??
-    //FILE *      fp;                     /* file pointer for this file      */
-    FILE *      echo;                   /* file pointer for the echo       */
-}       syBuf [16];
-
-
-/****************************************************************************
-**
 *F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
 **
 **  The function 'SyFopen'  is called to open the file called  <name>.
@@ -269,20 +248,19 @@ FILE    *SyFopen ( char * name, char *mode )
 
     /* handle standard files                                               */
     if(strcmp(name, "*stdin*") == 0) {
-        if (strcmp(mode, "r") != 0)  return -1;
+        if (strcmp(mode, "r") != 0)  return 0;
         return stdin;
     }
     else if (strcmp(name, "*stdout*") == 0) {
-        if (strcmp(mode, "w") != 0)  return -1;
+        if (strcmp(mode, "w") != 0)  return 0;
         return stdout;
     }
     else if (strcmp(name, "*errin*") == 0) {
-        if (strcmp(mode, "r") != 0)  return -1;
-        //  if ( syBuf[2].fp == (FILE*)0 )  return -1;
+        if (strcmp(mode, "r") != 0)  return 0;
         return stdin;
     }
     else if (strcmp(name, "*errout*") == 0) {
-        if (strcmp(mode, "w") != 0)  return -1;
+        if (strcmp(mode, "w") != 0)  return 0;
         return stderr;
     }
 

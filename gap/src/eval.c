@@ -1996,33 +1996,28 @@ void    PrintObj(STREAM stream, Obj hd, int indent)
         index[0] = 0;
         cur = PTR_BAG(hdObj[len])[index[len]];
 
-        while (hd != cur) 
-        {
-            for (i = 0; i <= len && hdObj[i] != cur; i++)
+        while ( hd != cur ) {
+            for ( i = 0; i <= len && hdObj[i] != cur; i++ ) ;
+
+            if ( cur != 0 && 
+                 ( GET_TYPE_BAG(cur) == T_LIST || GET_TYPE_BAG(cur) == T_SET || GET_TYPE_BAG(cur) == T_REC ) &&
+                 GET_SIZE_BAG(cur) != 0 &&
+                 len < i )
             {
-                if (cur != 0 
-                    && len < i 
-                    && GET_SIZE_BAG(cur) != 0
-                    && (GET_TYPE_BAG(cur) == T_LIST || GET_TYPE_BAG(cur) == T_SET || GET_TYPE_BAG(cur) == T_REC)) 
-                {
-                    len++;
-                    hdObj[len] = cur;
-                    index[len] = 0;
-                    cur = PTR_BAG(hdObj[len])[index[len]];
-                }
-                else if (index[len] < (GET_SIZE_BAG(hdObj[len]) / (SIZE_HD - 1))) 
-                {
-                    index[len]++;
-                    cur = PTR_BAG(hdObj[len])[index[len]];
-                }
-                else 
-                {
-                    if (len != 0) 
-                    { 
-                        len--; 
-                    }
-                    cur = 0;
-                }
+                len++;
+                hdObj[len] = cur;
+                index[len] = 0;
+                cur = PTR_BAG ( hdObj[len] )[ index[len] ];
+            }
+            else if ( index[len] < ( GET_SIZE_BAG(hdObj[len]) / (SIZE_HD - 1) ) )
+            {
+                index[len]++;
+                cur = PTR_BAG ( hdObj[len] )[ index[len] ];
+            }
+            else
+            {
+                if (len != 0) len--; 
+                cur = 0;
             }
         }
 
@@ -2037,12 +2032,12 @@ void    PrintObj(STREAM stream, Obj hd, int indent)
             else if (GET_TYPE_BAG(hdObj[i]) == T_LIST || GET_TYPE_BAG(hdObj[i]) == T_SET)
             {
                 //Pr("[%d]", index[i], 0);
-                SyFmtPrint(stream, "[%d]");
+                SyFmtPrint ( stream, "[%d]", index[i] );
             }
             else
             {
                 //Pr(".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]), 0);
-                SyFmtPrint(stream, ".%s", (Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i] - 1]));
+                SyFmtPrint(stream, ".%s", PTR_BAG ( PTR_BAG ( hdObj[i] )[ index[i] - 1 ] ) );
             }
         }
 
@@ -2090,17 +2085,17 @@ void        PrVar(STREAM stream, Obj hdVar, int indent)
 */
 void        PrVarName(STREAM stream, char* name)
 {
-    if (!strcmp(name, "and") || !strcmp(name, "do")
-        || !strcmp(name, "elif") || !strcmp(name, "else")
-        || !strcmp(name, "end") || !strcmp(name, "fi")
-        || !strcmp(name, "for") || !strcmp(name, "function")
-        || !strcmp(name, "if") || !strcmp(name, "in")
-        || !strcmp(name, "local") || !strcmp(name, "mod")
-        || !strcmp(name, "not") || !strcmp(name, "od")
-        || !strcmp(name, "or") || !strcmp(name, "repeat")
-        || !strcmp(name, "return") || !strcmp(name, "then")
-        || !strcmp(name, "until") || !strcmp(name, "while")
-        || !strcmp(name, "quit")) 
+    if ( !strcmp(name, "and")     || !strcmp(name, "do")        ||
+         !strcmp(name, "elif")    || !strcmp(name, "else")      ||
+         !strcmp(name, "end")     || !strcmp(name, "fi")        ||
+         !strcmp(name, "for")     || !strcmp(name, "function")  ||
+         !strcmp(name, "if")      || !strcmp(name, "in")        ||
+         !strcmp(name, "local")   || !strcmp(name, "mod")       ||
+         !strcmp(name, "not")     || !strcmp(name, "od")        ||
+         !strcmp(name, "or")      || !strcmp(name, "repeat")    ||
+         !strcmp(name, "return")  || !strcmp(name, "then")      ||
+         !strcmp(name, "until")   || !strcmp(name, "while")     ||
+         !strcmp(name, "quit" ) )
     {
         //Pr("\\", 0, 0);
         SyFmtPrint(stream, "\\");
@@ -2194,80 +2189,25 @@ void        PrBinop(STREAM stream, Obj hdOp, int indent)
     char    *op;
     Int      oldPrec = prPrec;
 
-
-    switch (GET_TYPE_BAG(hdOp)) 
-    {
-        case T_AND:    
-            op = "and";  
-            prPrec = 2;   
-            break;
-        case T_OR:     
-            op = "or";   
-            prPrec = 2;  
-            break;
-        case T_EQ:     
-            op = "=";    
-            prPrec = 6;  
-            break;
-        case T_LT:     
-            op = "<";  
-            prPrec = 6; 
-            break;
-        case T_GT: 
-          op = ">"; 
-          prPrec = 6;  
-          break;
-        case T_NE:    
-            op = "<>";  
-            prPrec = 6;  
-            break;
-        case T_LE: 
-            op = "<="; 
-            prPrec = 6;
-            break;
-        case T_GE:
-            op = ">=";
-            prPrec = 6; 
-            break;
-        case T_IN:  
-            op = "in"; 
-            prPrec = 6; 
-            break;
-        case T_IS: 
-            op = "_is"; 
-            prPrec = 6; 
-            break;
-        case T_CONCAT: 
-            op = "::";
-            prPrec = 8;
-            break;
-        case T_SUM:
-            op = "+";  
-            prPrec = 8;
-            break;
-        case T_DIFF: 
-            op = "-";  
-            prPrec = 8;
-            break;
-        case T_PROD:
-            op = "*";   
-            prPrec = 10;
-            break;
-        case T_QUO:
-            op = "/";
-            prPrec = 10;
-            break;
-        case T_MOD:
-            op = "mod"; 
-            prPrec = 10;
-            break;
-        case T_POW:   
-            op = "^";   
-            prPrec = 12;
-            break;
-        default:    
-            op = "<bogus-operator>"; 
-            break;
+    switch ( GET_TYPE_BAG(hdOp) ) {
+    case T_AND:    op = "and";  prPrec = 2;   break;
+    case T_OR:     op = "or";   prPrec = 2;   break;
+    case T_EQ:     op = "=";    prPrec = 6;   break;
+    case T_LT:     op = "<";    prPrec = 6;   break;
+    case T_GT:     op = ">";    prPrec = 6;   break;
+    case T_NE:     op = "<>";   prPrec = 6;   break;
+    case T_LE:     op = "<=";   prPrec = 6;   break;
+    case T_GE:     op = ">=";   prPrec = 6;   break;
+    case T_IN:     op = "in";   prPrec = 6;   break;
+    case T_IS:     op = "_is";  prPrec = 6;   break;
+    case T_CONCAT: op = "::";   prPrec = 8;   break;
+    case T_SUM:    op = "+";    prPrec = 8;   break;
+    case T_DIFF:   op = "-";    prPrec = 8;   break;
+    case T_PROD:   op = "*";    prPrec = 10;  break;
+    case T_QUO:    op = "/";    prPrec = 10;  break;
+    case T_MOD:    op = "mod";  prPrec = 10;  break;
+    case T_POW:    op = "^";    prPrec = 12;  break;
+    default:       op = "<bogus-operator>";   break;
     }
 
     if (oldPrec > prPrec)

@@ -1731,16 +1731,17 @@ void InitPolynom (void)
         TabNormalizeCoeffs[type1] = CantNormalizeCoeffs;
         TabShrinkCoeffs   [type1] = CantShrinkCoeffs;
         TabShiftedCoeffs  [type1] = CantShiftedCoeffs;
-	for ( type2 = T_VOID;  type2 < T_VAR;  type2++ ) {
-	    TabAddCoeffs         [type1][type2] = CantAddCoeffs;
-	    TabMultiplyCoeffs    [type1][type2] = CantMultiplyCoeffs;
-	    TabProductCoeffs     [type1][type2] = CantProductCoeffs;
-	    TabProductCoeffsMod  [type1][type2] = CantProductCoeffsMod;
-	    TabReduceCoeffs      [type1][type2] = CantReduceCoeffs;
-	    TabReduceCoeffsMod   [type1][type2] = CantReduceCoeffsMod;
-	    TabPowerModCoeffsInt [type1][type2] = CantPowerModCoeffs;
-	    TabPowerModCoeffsLInt[type1][type2] = CantPowerModCoeffs;
-	}
+
+        for ( type2 = T_VOID;  type2 < T_VAR;  type2++ ) {
+            TabAddCoeffs         [type1][type2] = CantAddCoeffs;
+            TabMultiplyCoeffs    [type1][type2] = CantMultiplyCoeffs;
+            TabProductCoeffs     [type1][type2] = CantProductCoeffs;
+            TabProductCoeffsMod  [type1][type2] = CantProductCoeffsMod;
+            TabReduceCoeffs      [type1][type2] = CantReduceCoeffs;
+            TabReduceCoeffsMod   [type1][type2] = CantReduceCoeffsMod;
+            TabPowerModCoeffsInt [type1][type2] = CantPowerModCoeffs;
+            TabPowerModCoeffsLInt[type1][type2] = CantPowerModCoeffs;
+        }
     }
 
     TabNormalizeCoeffs[T_LISTX ] = NormalizeCoeffsListx;

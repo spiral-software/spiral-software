@@ -21,7 +21,7 @@ Obj  FuncLocalsLookup(Obj hdFunc, char * name, int* ptr_index) {
     for ( k = 1; k <= nrEntries; ++k ) {
         if ( ! strcmp( name, (char*)(PTR_BAG((Bag)PTR_BAG(hdFunc)[k])+OFS_IDENT) ) ) {
             if (ptr_index) *ptr_index = k;
-	    return (Bag)PTR_BAG(hdFunc)[k];
+            return (Bag)PTR_BAG(hdFunc)[k];
         }
     }
     return 0;
@@ -51,12 +51,12 @@ Obj  TableCreateT(UInt type, UInt size) {
 
 static inline int __hash(Obj hdTable, char * name) {    
     if ( GET_TYPE_BAG(hdTable) == T_MAKELET )
-	return 0;
+        return 0;
     else {
-	int k; char *p;
-	for ( k = 0, p = name; *p != '\0'; ++p )  k = 65599 * k + *p;
-	k = k % TableSize(hdTable);
-	return k;
+        int k; char *p;
+        for ( k = 0, p = name; *p != '\0'; ++p )  k = 65599 * k + *p;
+        k = k % TableSize(hdTable);
+        return k;
     }
 }
 
@@ -66,7 +66,7 @@ UInt TableLookup(Obj hdTable, char * name, UInt name_ofs) {
 
     /* Look through the table, until you find a free slot or our name      */
     while ( PTR_BAG(hdTable)[k] != 0
-         && strcmp( (char*)(PTR_BAG((Bag)PTR_BAG(hdTable)[k])+name_ofs), name ) ) {
+            && strcmp( (char*)(PTR_BAG((Bag)PTR_BAG(hdTable)[k])+name_ofs), name ) ) {
         k = (k + 1) % TableSize(hdTable);
     }
     return k;
@@ -89,9 +89,9 @@ Obj  TableResize(Obj hdTable, UInt new_size, UInt name_ofs) {
     /* NULL out and copy everything (including TableNumEnt and TableId) */
     for ( i = 0; i < GET_SIZE_BAG(hdTable)/SIZE_HD-2; ++i ) {
         if (*pHdTab) {
-	    *pHdSav++ = *pHdTab;
-	}
-	*pHdTab++ = 0;
+            *pHdSav++ = *pHdTab;
+        }
+        *pHdTab++ = 0;
     }
     *pHdTab++ = 0;
     *pHdTab++ = 0;
@@ -103,14 +103,14 @@ Obj  TableResize(Obj hdTable, UInt new_size, UInt name_ofs) {
     Resize( hdTable, TableBytes(new_size) );
     
     for ( i = 0; i < nument; ++i ) {
-	hd = (Bag)PTR_BAG(hdSav)[i];
-	if ( hd == 0 )  continue;
+        hd = (Bag)PTR_BAG(hdSav)[i];
+        if ( hd == 0 )  continue;
 
-	k = __hash(hdTable, (char*)(PTR_BAG(hd) + name_ofs));
-	while ( PTR_BAG(hdTable)[k] != 0 )
-	    k = (k + 1) % TableSize(hdTable);
+        k = __hash(hdTable, (char*)(PTR_BAG(hd) + name_ofs));
+        while ( PTR_BAG(hdTable)[k] != 0 )
+            k = (k + 1) % TableSize(hdTable);
 
-	SET_BAG(hdTable, k,  hd );
+        SET_BAG(hdTable, k,  hd );
     }
     SetTableNumEnt(hdTable, nument);
     SetTableId(hdTable, hdTableId);
@@ -173,10 +173,10 @@ void TableRehash(Obj hdTable) {
     /* figuring out name offset from objects type */
     Int i, name_offs = OFS_IDENT;
     for (i=0; i<TableSize(hdTable); i++) {
-	if (PTR_BAG(hdTable)[i]) {
-	    if (GET_TYPE_BAG(PTR_BAG(hdTable)[i])==T_RECNAM) name_offs = OFS_RECNAM;
-	    break;
-	}
+        if (PTR_BAG(hdTable)[i]) {
+            if (GET_TYPE_BAG(PTR_BAG(hdTable)[i])==T_RECNAM) name_offs = OFS_RECNAM;
+            break;
+        }
     }
     TableResize(hdTable, TableSize(hdTable), name_offs);
 }

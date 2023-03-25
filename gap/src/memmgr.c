@@ -611,7 +611,6 @@ extern TNumAbortFuncBags   AbortFuncBags;
 
 void    InitGlobalBag ( BagPtr_t *addr, const Char *cookie )
 {
-
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
         (*AbortFuncBags)( "Panic: Gasman cannot handle so many global variables" );
     }
@@ -1423,17 +1422,18 @@ static void CheckMptrHandles ( int arenanr )
     return;
 }
 
-// Walk the actual bags -- assumptions is we're called after GC, so everything
-// should cleanly setup with no holes from OldBagStart to AllocBagStart; at this
-// point AllocBagStart should = YoungBagStart (i.e., no new bags have been
-// created since GC done).
+// Walk the actual bags -- if "clean" is true then the assumption is we're called
+// after GC, so everything should cleanly setup with no holes from OldBagStart to
+// AllocBagStart; at this point AllocBagStart should = YoungBagStart (i.e., no new bags
+// have been created since GC done).  If "clean" is false there may be 'holes' left because
+// bags have been moved or resized.
 
-static void WalkBagPointers ( int arenanr )
+static void WalkBagPointers ( int arenanr, int clean )
 {
     BagPtr_t start, end, foo;
     BagStruct_t *ptr;
-    UInt type, nbad = 0, szbad = 0;
-    UInt nFound = 0, szFound = 0, sizeCurr;
+    UInt type, nbad = 0, oldbad = 0, szbad = 0;
+    UInt nFound = 0, szFound = 0, nRemnant = 0, szRemnant = 0, sizeCurr;
     ArenaBag_t *par = &MemArena[arenanr];
     
     start = par->OldBagStart; end = par->AllocBagStart;
@@ -1449,24 +1449,39 @@ static void WalkBagPointers ( int arenanr )
     while (start < (end - 1)) {            /* last mptr in list is 0 */
         ptr = (BagStruct_t *)start;
         type = ptr->bagFlagsType & TYPE_BIT_MASK;
-        if (type < T_INT || type > T_FREEBAG) {
-            sizeCurr = ptr->bagSize + sizeof(BagStruct_t) - sizeof(BagPtr_t);
-            nbad++; szbad += sizeCurr;
-            PrintBagInfo(ptr);
-        }
+
         nFound++;
-        sizeCurr = ptr->bagSize + sizeof(BagStruct_t) - sizeof(BagPtr_t);
-        szFound += sizeCurr;
-        start += (sizeCurr + sizeof(BagPtr_t) - 1) / sizeof(BagPtr_t);
-        // link pointer should point to the bag handle, bag handle should
-        // point back to the data pointer
-        if (ptr->bagLinkPtr && par->BagHandleStart <= ptr->bagLinkPtr && ptr->bagLinkPtr < par->OldBagStart) {
-            BagPtr_t foo = ptr->bagLinkPtr, bar = *ptr->bagLinkPtr;
-            if (bar != &ptr->bagData) {
-                // we're foobar'd
-                printf("        Suspect misaligned handle/link pointer: link = %p, handle = %p, *handle = %p, data ptr = %p\n",
-                       foo, bar, *bar, &ptr->bagData);
+        if ( clean == 0 && type == T_RESIZE_FREE ) {
+            // should only have remnants when clean is false (i.e., GC not run prior)
+            sizeCurr = ptr->bagSize + sizeof(BagPtr_t);  // calc is different for remnant
+            nRemnant++; szRemnant += sizeCurr;
+            start += WORDS_BAG(sizeCurr);
+        }
+        else if (type < T_VOID || type > T_FREEBAG) {
+            PrintBagInfo(ptr);
+            sizeCurr = sizeof(BagPtr_t);        // walk forward 1 word at a time -- try to recover
+                                                // sizeCurr = ptr->bagSize + sizeof(BagStruct_t) - sizeof(BagPtr_t);
+            nbad++; szbad += sizeCurr;
+            start++;
+        }
+        else {
+            sizeCurr = ptr->bagSize + sizeof(BagStruct_t) - sizeof(BagPtr_t);
+            szFound += sizeCurr;
+            start += (sizeCurr + sizeof(BagPtr_t) - 1) / sizeof(BagPtr_t);
+            // link pointer should point to the bag handle, bag handle should
+            // point back to the data pointer
+            if (ptr->bagLinkPtr && par->BagHandleStart <= ptr->bagLinkPtr && ptr->bagLinkPtr < par->OldBagStart) {
+                BagPtr_t foo = ptr->bagLinkPtr, bar = *ptr->bagLinkPtr;
+                if (bar != &ptr->bagData) {
+                    // we're foobar'd
+                    printf("        Suspect misaligned handle/link pointer: link = %p, handle = %p, *handle = %p, data ptr = %p\n",
+                           foo, bar, *bar, &ptr->bagData);
+                }
             }
+        }
+        if ( clean == 0 && nbad > 0 && nbad != oldbad ) {
+            printf ( "Bag ptr = %p (Bag # %d), Type = %d, Size = %u\n", ptr, nFound, type, sizeCurr );
+            oldbad = nbad;
         }
     }
 
@@ -1475,6 +1490,9 @@ static void WalkBagPointers ( int arenanr )
 	if (nbad > 0)
 		printf("    Found %u suspect bags, total size = %uk (%uMb)\n",
 			   nbad, szbad / 1024, szbad / (1024 * 1024));
+    if ( clean == 0 )
+        printf ( "    Found %u remnants, total size = %uk (%uMb)\n",
+                 nRemnant, szRemnant / 1024, szRemnant / (1024 * 1024));
 
     // Walk the remaining memory, which should be the free pool.  It should all
     // have been initialized to zeros... Things appear to be all messed up if
@@ -1640,7 +1658,7 @@ static void WalkArenaBags ( ArenaBag_t *par )
     UInt nLive, nRemnant, szLive, szRemnant;
     nLive = nRemnant = szLive = szRemnant = 0;
 
-    // Walk all bags:  A bag must be either: alive, dead, or resize free
+    // Walk all bags:  A bag must be either: in use (alive or dead), or resize free
     UInt nbagsCheck = 0;
     while ( src < par->AllocBagStart ) {
         nbagsCheck++;
@@ -1731,7 +1749,7 @@ static int  DumpMemArenaData ( int flag )
 				   (100.0 * (float)freepool / (float)sizepool) );
 
             WalkArenaBags ( par );
-            WalkBagPointers ( par->ArenaNumber );
+            WalkBagPointers ( par->ArenaNumber, 0 );
 		}
 		else {
 			printf("    Free Chain = %p, Marked bags = %p, # on Marked chain = %u\n\n",
@@ -2115,7 +2133,7 @@ static void CheckArenaBags ( ArenaBag_t *par )
     if (SyMemMgrTrace > 0)   {
         printf("Collectbags: Start checking phase ...\n");
         
-        WalkBagPointers(par->ArenaNumber);
+        WalkBagPointers ( par->ArenaNumber, 1 );
 
         printf("CollectBags: After looping Master pointers...\n");
         PrintArenaInfo(par, 0);

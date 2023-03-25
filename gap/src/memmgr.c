@@ -623,17 +623,17 @@ void    InitGlobalBag ( BagPtr_t *addr, const Char *cookie )
 				if ( 0 == strcmp(GlobalBags.cookie[i], cookie) ) {
 					if (GlobalBags.addr[i] == addr)
 					    //Pr("Duplicate global bag entry %s\n", (Int)cookie, 0);
-                        SyFmtPrint(stdout_stream, "Duplicate global bag entry %s\n", cookie, 0);
+                        printf("Duplicate global bag entry %s\n", cookie, 0);
 					else
 						//Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0);
-                        SyFmtPrint(stdout_stream, ("Duplicate global bag cookie %s\n", cookie, 0);
+                        printf("Duplicate global bag cookie %s\n", cookie, 0);
 				}
     }
 #endif
 
     if ( WarnInitGlobalBag ) {
         //Pr( "#W  global bag '%s' initialized\n", (Int)cookie, 0 );
-        SyFmtPrint(stdout_stream, "#W  global bag '%s' initialized\n", cookie);
+        printf("#W  global bag '%s' initialized\n", cookie);
     } 
     GlobalBags.addr[GlobalBags.nr] = addr;
     GlobalBags.cookie[GlobalBags.nr] = cookie;

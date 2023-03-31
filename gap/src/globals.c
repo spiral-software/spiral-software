@@ -102,15 +102,17 @@ extern Bag HdChars[];
 void InitAllGlobals(void) {
     /* added by hand */
     Int i=0;
-    for(i=0; i < 256; ++i)
-	InitGlobalBag(& HdChars[i], GuMakeMessage("HdChars[%d]",i));
-    for(i=0; i < SCANNER_INPUTS; ++i) {
-	InitGlobalBag(& (InputFiles[i].packages), GuMakeMessage("InputFiles[%d].packages",i));
-	InitGlobalBag(& (InputFiles[i].package), GuMakeMessage("InputFiles[%d].package",i));
-	InitGlobalBag(& (InputFiles[i].data),    GuMakeMessage("InputFiles[%d].data",i));
-	InitGlobalBag(& (InputFiles[i].imports), GuMakeMessage("InputFiles[%d].imports",i));
+    for ( i = 0; i < 256; ++i )
+        InitGlobalBag(& HdChars[i], GuMakeMessage("HdChars[%d]",i));
+
+    for ( i = 0; i < SCANNER_INPUTS; ++i ) {
+        InitGlobalBag(& (InputFiles[i].packages), GuMakeMessage("InputFiles[%d].packages",i));
+        InitGlobalBag(& (InputFiles[i].package), GuMakeMessage("InputFiles[%d].package",i));
+        InitGlobalBag(& (InputFiles[i].data),    GuMakeMessage("InputFiles[%d].data",i));
+        InitGlobalBag(& (InputFiles[i].imports), GuMakeMessage("InputFiles[%d].imports",i));
     }
     /* end of by hand */
+
     InitGlobalBag(&HdLastErrorMsg, "HdLastErrorMsg");    
     InitGlobalBag(&HdBases, "HdBases");    
     InitGlobalBag(&HdCall1, "HdCall1");

@@ -629,7 +629,9 @@ void BagInfo (STREAM stream, Obj hd ) {
         //Pr("Flags   : %d\n", (Int)GET_FLAGS_BAG(hd), 0);
         SyFmtPrint(stream, "Flags   : %d\n", (Int)GET_FLAGS_BAG(hd));
         //Pr("Value   : %g\n", (Int)hd, 0);
-        SyFmtPrint(stream, "Value   : %g\n", (Int)hd);
+        SyFmtPrint(stream, "Value   : ");
+        PrintObj(stream, hd, 0);
+        SyFmtPrint(stream, "\n");
     }
 }
 

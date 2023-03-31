@@ -31,13 +31,15 @@ endif()
 ##  message (STATUS "Processor is 64 bit = ${PROCIS64BIT}")
 ##  Could be 64 bit system but building for 32 bit; test sizeof(void_p) instead
 
+set ( SPIRAL_COMPILE_DEFNS -DBESPOKE_IO=0 )             ## Identify old, now obsolete, I/O code
+
 if (${CMAKE_SIZEOF_VOID_P} EQUAL "8")
     set(SPIRAL_COMPILE_DEFNS SYS_IS_64_BIT )
     if ( WIN32 )
 	list ( APPEND SPIRAL_COMPILE_DEFNS WIN64 )
     endif ()
-else()
-    set(SPIRAL_COMPILE_DEFNS )
+##  else()
+##      set(SPIRAL_COMPILE_DEFNS )
 endif()
 
 if (WIN32)

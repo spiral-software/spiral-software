@@ -837,6 +837,7 @@ BagPtr_t NewBag4 ( UInt type, UInt size )
     BagPtr_t *               dst;		/* destination of the new bag      */
     ArenaBag_t *par = &MemArena[actAR];	// ptr to current (active) memory Arena
     
+    assert(type < T_ILLEGAL);
     /* check that a masterpointer and enough storage are available         */
     if ( ( ((par->FreeHandleChain < par->BagHandleStart) ||
             (par->FreeHandleChain >= par->OldBagStart)) ||
@@ -1011,6 +1012,8 @@ void            RetypeBag ( BagPtr_t bag, UInt new_type )
 **  also updates the information in 'InfoBags' (see "InfoBags").
 */
 
+#define BEEF_WORD 0x00DEAD00BAD0BEEF
+
 static UInt nrResizeBags = 0;
 
 UInt ResizeBag ( BagPtr_t bag, UInt new_size )
@@ -1064,6 +1067,11 @@ UInt ResizeBag ( BagPtr_t bag, UInt new_size )
             *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = T_RESIZE_FREE;
             *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size) + 1) =
                 (WORDS_BAG(old_size)-WORDS_BAG(new_size)-1)*sizeof(BagPtr_t);
+            //  Mark the remainder of the old bag 
+            int iloop, imax = WORDS_BAG(old_size) - WORDS_BAG(new_size);
+            for ( iloop = 2; iloop < imax; iloop++ ) {
+                *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size) + iloop) = BEEF_WORD;
+            }
         }
 
         /* change the size- word                                       */
@@ -1107,6 +1115,8 @@ UInt ResizeBag ( BagPtr_t bag, UInt new_size )
         SET_TYPE_BAG(bag, T_RESIZE_FREE);
         BLANK_FLAGS_BAG(bag);
         SET_SIZE_BAG(bag, (((WORDS_BAG(old_size) + HEADER_SIZE - 1) * sizeof(BagPtr_t))));
+        SET_COPY_BAG ( bag, BEEF_WORD );
+        //  SET_LINK_BAG ( bag, BEEF_WORD );  don't do this - complains link ptr is outside arena memory
     
         // set the new size, flags, & type
         SET_TYPE_PTR(dst,type);
@@ -1119,8 +1129,10 @@ UInt ResizeBag ( BagPtr_t bag, UInt new_size )
         /* copy the contents of the bag                                    */
         src = PTR_BAG(bag);
         end = src + WORDS_BAG(old_size);
-        while ( src < end )
-            *dst2++ = *src++;
+        while ( src < end ) {
+            *dst2++ = *src;
+            *src++  = BEEF_WORD;
+        }
 
         SET_LINK_PTR(dst, bag);
 
@@ -1448,14 +1460,21 @@ static void WalkBagPointers ( int arenanr, int clean )
     
     while (start < (end - 1)) {            /* last mptr in list is 0 */
         ptr = (BagStruct_t *)start;
-        type = ptr->bagFlagsType & TYPE_BIT_MASK;
-
+        type = GET_TYPE_PTR (start);
         nFound++;
+
         if ( clean == 0 && type == T_RESIZE_FREE ) {
             // should only have remnants when clean is false (i.e., GC not run prior)
-            sizeCurr = ptr->bagSize + sizeof(BagPtr_t);  // calc is different for remnant
-            nRemnant++; szRemnant += sizeCurr;
-            start += WORDS_BAG(sizeCurr);
+            if ( TEST_FLAG_PTR ( start, BF_COPY ) ) {            // one-word remnant
+                sizeCurr = sizeof(BagPtr_t);
+                nRemnant++; szRemnant += sizeof(BagPtr_t *);
+                start++;
+            }
+            else {
+                sizeCurr = ptr->bagSize + sizeof(BagPtr_t);  // calc is different for remnant
+                nRemnant++; szRemnant += sizeCurr;
+                start += WORDS_BAG(sizeCurr);
+            }
         }
         else if (type < T_VOID || type > T_FREEBAG) {
             PrintBagInfo(ptr);
@@ -1479,6 +1498,13 @@ static void WalkBagPointers ( int arenanr, int clean )
                 }
             }
         }
+
+        if ( sizeCurr > 1024 * 1024 ) {
+            // very large bag encountered -- suspect it's bad -- output it
+            PrintBagInfo(ptr);
+            nbad++;
+        }
+
         if ( clean == 0 && nbad > 0 && nbad != oldbad ) {
             printf ( "Bag ptr = %p (Bag # %d), Type = %d, Size = %u\n", ptr, nFound, type, sizeCurr );
             oldbad = nbad;
@@ -1555,7 +1581,7 @@ typedef enum {
 static BagHistogram_t BagSizeCount[SIZE_HIST]; /* index by WORDS_BAG */
 static Int4 countHistOn = 0;    
 
-static void IncrementBagHistogram ( Int4 size_w, countType_t typ, BagPtr_t * bagp )
+static void IncrementBagHistogram ( UInt size_w, countType_t typ, BagPtr_t * bagp )
 {
     // increment stats for this bag size; print info for bags >= SIZE_HIST words
     BagStruct_t *ptr = (BagStruct_t *)bagp;
@@ -1651,7 +1677,7 @@ static UInt CountFreeChain ( ArenaBag_t *par )
 static void WalkArenaBags ( ArenaBag_t *par )
 {
     BagPtr_t *      src;				/* source in sweeping              */
-    Int4            isz;
+    UInt            isz;
     
     src = par->OldBagStart;             //  Start at the beginning of bags data
 
@@ -1671,15 +1697,15 @@ static void WalkArenaBags ( ArenaBag_t *par )
             }
             else {
                 isz = WORDS_BAG ( GET_SIZE_PTR(src) );
-                if ( isz < 0 ) {
-                    // Some sort of invalid bag encountered
-                    printf ( "WalkArenaBags: Panic -- memory manager found -ve sized remnant (%p), size = %d\n", src, isz);
-                    src++;              //  walk forward word by word to try recovering...
-                }
-                else {
-                    src += 1 + WORDS_BAG( GET_SIZE_PTR(src) ); // multi-word remnant 
-                    nRemnant++; szRemnant += GET_SIZE_PTR(src) + sizeof(BagPtr_t *);
-                }
+                //  if ( isz < 0 ) {
+                //      // Some sort of invalid bag encountered
+                //      printf ( "WalkArenaBags: Panic -- memory manager found -ve sized remnant (%p), size = %d\n", src, isz);
+                //      src++;              //  walk forward word by word to try recovering...
+                //  }
+                //  else {
+                src += ( WORDS_BAG( GET_SIZE_PTR(src) ) + 1 ); // multi-word remnant 
+                nRemnant++; szRemnant += GET_SIZE_PTR(src) + sizeof(BagPtr_t *);
+                //  }
             }
         }
 
@@ -1707,9 +1733,9 @@ static void WalkArenaBags ( ArenaBag_t *par )
     // Since doing full GC have now processed all bags 
     printf ( "WalkArenaBags: Arena #%d: Walked all bags...found:\n", par->ArenaNumber);
     printf ( "#     Live Bags = %10u, size     Live Bags = %10u (%uk / %uMb)\n",
-             nLive, szLive, szLive / 1024, szLive / (1024 * 1024));
+             nLive, szLive, ( szLive / 1024 ), ( szLive / (1024 * 1024) ) );
     printf ( "#  Remnant Bags = %10u, size  Remnant Bags = %10u (%uk / %uMb)\n",
-             nRemnant, szRemnant, szRemnant / 1024, szRemnant / (1024 * 1024));
+             nRemnant, szRemnant, ( szRemnant / 1024 ), ( szRemnant / (1024 * 1024) ) );
     fflush(stdout);
 
     return;
@@ -1998,7 +2024,7 @@ static void SweepArenaBags ( ArenaBag_t *par )
     BagPtr_t *      dst;				/* destination in sweeping         */
     BagPtr_t *      src;				/* source in sweeping              */
     BagPtr_t *      end;				/* end of a bag in sweeping        */
-    Int4            isz;
+    UInt            isz;
     
     dst = par->YoungBagStart;
     src = par->YoungBagStart;
@@ -2701,9 +2727,18 @@ ObjType GET_TYPE_BAG ( BagPtr_t bag )
     else {
         BagPtr_t *p = (*(BagPtr_t **)(bag));            // bag data pointer
         BagStruct_t *ptr = (BagStruct_t *)(p - HEADER_SIZE);
-
-        return (ObjType)( ptr->bagFlagsType & TYPE_BIT_MASK );
+        ObjType type = ptr->bagFlagsType & TYPE_BIT_MASK;
+        assert ( type < T_ILLEGAL );
+        return type;
+        //  return (ObjType)( ptr->bagFlagsType & TYPE_BIT_MASK );
     }
+}
+
+ObjType GET_TYPE_PTR ( BagPtr_t ptr )
+{
+    ObjType type = ( ( (BagStruct_t *)(ptr) )->bagFlagsType ) & TYPE_BIT_MASK;
+    assert ( type < T_ILLEGAL || type == T_RESIZE_FREE );
+    return type;
 }
 
 // Set the type for the bag

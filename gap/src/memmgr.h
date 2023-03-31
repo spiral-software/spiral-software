@@ -345,7 +345,10 @@ extern  UInt        bagCodeMarker;
 
 #define GET_COPY_PTR(ptr)          (COPY_PTR(ptr))
 #define GET_SIZE_PTR(ptr)          (SIZE_PTR(ptr))
-#define GET_TYPE_PTR(ptr)          (FLAGS_TYPE_PTR(ptr) & TYPE_BIT_MASK)
+//  #define GET_TYPE_PTR(ptr)          (FLAGS_TYPE_PTR(ptr) & TYPE_BIT_MASK)
+
+extern ObjType GET_TYPE_PTR ( BagPtr_t ptr );
+
 #define TEST_FLAG_PTR(ptr,flag)     (FLAGS_TYPE_PTR(ptr) & (flag))
 
 #define DEBUG_POINTERS    True

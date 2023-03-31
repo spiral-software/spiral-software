@@ -1498,11 +1498,13 @@ static void WalkBagPointers ( int arenanr, int clean )
                 }
             }
         }
+
         if ( sizeCurr > 1024 * 1024 ) {
             // very large bag encountered -- suspect it's bad -- output it
             PrintBagInfo(ptr);
             nbad++;
         }
+
         if ( clean == 0 && nbad > 0 && nbad != oldbad ) {
             printf ( "Bag ptr = %p (Bag # %d), Type = %d, Size = %u\n", ptr, nFound, type, sizeCurr );
             oldbad = nbad;

@@ -1205,19 +1205,19 @@ Bag       LtFFE (Bag hdL, Bag hdR)
 
 /****************************************************************************
 **
-*F  PrFFE( <hdFFE> )  . . . . . . . . . . . . .  print a finite field element
+*F  PrFFE( stream, <hdFFE>, indent )  . . . . .  print a finite field element
 **
 **  'PrFFE' prints the finite field element <hdFFE>.
 */
-void            PrFFE (Bag hdFFE)
+void    PrFFE ( STREAM stream, Bag hdFFE, int indent )
 {
-    PrFF( FLD_FFE(hdFFE), VAL_FFE(hdFFE) );
+    PrFF ( stream, FLD_FFE(hdFFE), VAL_FFE(hdFFE), indent );
 }
 
 
 /****************************************************************************
 **
-*F  PrFF( <hdField>, <value> )  . . . . . . . . .  print a finite field value
+*F  PrFF( stream, <hdField>, <value>, indent )  .  print a finite field value
 **
 **  'PrFF' prints the value <value> from the finite field <hdField>.
 **

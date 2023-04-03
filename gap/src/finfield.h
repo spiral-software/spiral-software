@@ -396,17 +396,16 @@ extern  Bag       LtFFE (
 
 /****************************************************************************
 **
-*F  PrFFE( <hdFFE> )  . . . . . . . . . . . . .  print a finite field element
+*F  PrFFE( stream, <hdFFE>, indent )  . . . . .  print a finite field element
 **
 **  'PrFFE' prints the finite field element <hdFFE>.
 */
-extern  void            PrFFE (
-            Bag           hdFFE );
+extern void     PrFFE ( STREAM stream, Bag hdFFE, int indent );
 
 
 /****************************************************************************
 **
-*F  PrFF( <hdField>, <value> )  . . . . . . . . .  print a finite field value
+*F  PrFF( stream, <hdField>, <value>, indent )  .  print a finite field value
 **
 **  'PrFF' prints the value <value> from the finite field <hdField>.
 **
@@ -414,9 +413,7 @@ extern  void            PrFFE (
 **  not call 'PrFFE' because it would have to create  finite  field  elements
 **  to do so and calling 'NewBag' from a printing procedure is forbidden.
 */
-extern  void            PrFF (
-            Bag           hdField,
-            unsigned int        value );
+extern void     PrFF ( STREAM stream, Bag hdField, unsigned int value, int indent );
 
 
 /****************************************************************************

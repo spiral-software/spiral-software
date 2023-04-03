@@ -158,7 +158,7 @@ Obj  FunStringComplex ( Obj hdCall ) {
 *F  CplxAnyPow(<hdL>,<hdR>)  . . . . . . . power of scalar and double
 **
 *F  EvCplx(<hd>)  . . . . . . . . . . . . . . . . . . evaluate double
-*F  PrCplx(<hd>) . . . . . . . . . . . . . . . . . . . print a double
+*F  PrCplx(<stream, hd>, indent) . . . . . . . . . . . print a double
 **
 */
 Obj  CplxSum  (Obj l, Obj r) { return ObjCplx(RE(l) + RE(r),
@@ -233,12 +233,12 @@ Obj  LtCplxAny (Obj l, Obj r) { return LtCplx(CplxAny(l), CplxAny(r)); }
 
 Obj  EvCplx ( Obj hd ) { return hd; }
 
-void PrCplx ( Obj hd ) {
+void    PrCplx ( STREAM stream, Obj hd, int indent ) {
     char buf[64];
     /* using snprintf prevents any buffer overflowing */
     snprintf(buf, sizeof(buf)/sizeof(char), "Cplx(%.17g, %.17g)", RE(hd), IM(hd));
     // Pr( "%s", (Int)buf, 0);
-    SyFmtPrint ( stdout_stream, "%s", buf );
+    SyFmtPrint ( stream, "%s", buf );
 }
 
 /****************************************************************************

@@ -90,12 +90,11 @@ extern  Bag       LtChar (
 
 /****************************************************************************
 **
-*F  PrChar( <hdChr> ) . . . . . . . . . . . . . . . . . . . print a character
+*F  PrChar( stream, <hdChr>, indent ) . . . . . . . . . . . print a character
 **
 **  'PrChar' prints the character <hdChr>.
 */
-extern  void            PrChar (
-            Bag           hdChr );
+extern void     PrChar ( STREAM stream, Bag hdChr, int indent );
 
 
 /****************************************************************************
@@ -316,26 +315,24 @@ extern  Bag       LtString (
 
 /****************************************************************************
 **
-*F  PrString( <hdStr> ) . . . . . . . . . . . . . . . . . . .  print a string
+*F  PrString( stream, <hdStr>, indent ) . . . . . . . . . . .  print a string
 **
 **  'PrString' prints the string with the handle <hdStr>.
 **
 **  No linebreaks are allowed, if one must be inserted  anyhow,  it  must  be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-extern  void            PrString (
-            Bag           hdStr );
+extern void     PrString ( STREAM stream, Bag hdStr, int indent );
 
 
 /****************************************************************************
 **
-*F  PrintString( <hdStr> )  . . . . . . . . . . .  print a string for 'Print'
+*F  PrintString( stream, <hdStr>, indent )  . . .  print a string for 'Print'
 **
 **  'PrintString' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-extern  void            PrintString (
-            Bag           hdStr );
+extern void     PrintString ( STREAM stream, Bag hdStr, int indent );
 
 
 /****************************************************************************

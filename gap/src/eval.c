@@ -1810,7 +1810,8 @@ void    PrBinop ( STREAM stream, Obj hdOp, int indent )
         || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG) )
         // Pr( "(",0,0 );
         SyFmtPrint ( stream, "(" );
-    Print( PTR_BAG(hdOp)[0] );
+    // Print( PTR_BAG(hdOp)[0] );
+    PrintObj ( stream, PTR_BAG(hdOp)[0], 0 );
     if ( GET_TYPE_BAG(hdOp) == T_POW
       && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
         || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG) )

@@ -384,8 +384,8 @@ typedef struct {
     Int        importTop;
     Int        packageTop;
     Int        global;
-
-    Int        file;
+    Int        fid;
+    FILE       *file;
     char        name [1024];
     char        line [2048];
     char        * ptr;
@@ -598,14 +598,15 @@ Int            CloseMemory(Obj* hdStr);
 **  '*errout*' to the file with  name <filename>.  The  file is truncated  to
 **  size 0 if it existed, otherwise it is created.
 **
-**  'OpenLog' returns 1 if it could  successfully open <filename> for writing
-**  and 0  to indicate failure.   'OpenLog' will  fail if  you do  not   have
-**  permissions  to create the file or   write to  it.  'OpenOutput' may also
+**  'OpenLog' returns a file handle if it could  successfully open <filename> 
+**  for writing and NULL on failure.  'OpenLog' will fail if you do not  have
+**  permissions  to create the file or   write to  it.  'OpenLog' may also
 **  fail if you have too many files open at once.  It is system dependent how
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-Int            OpenLog ( char * filename );
+
+FILE    *OpenLog ( char * filename );
 
 
 /****************************************************************************
@@ -630,14 +631,15 @@ Int            CloseLog ( void );
 **  '*stdin*' and  '*errin*' to the file  with  name <filename>.  The file is
 **  truncated to size 0 if it existed, otherwise it is created.
 **
-**  'OpenInputLog' returns 1  if it  could successfully open  <filename>  for
-**  writing  and  0 to indicate failure.  'OpenInputLog' will fail  if you do
-**  not have  permissions to create the file  or write to it.  'OpenInputLog'
-**  may also fail  if you  have  too many  files open  at once.  It is system
-**  dependent  how many are too many,  but 16 files  should work  everywhere.
-**  Finally 'OpenInputLog' will fail if there is already a current logfile.
+**  'OpenInputLog' returns a file handle if it could  successfully open <filename> 
+**  for writing and NULL on failure.  'OpenInputLog' will fail if you do not
+**  have permissions to create the file or write to it.  'OpenInputLog' may also
+**  fail if you have too many files open at once.  It is system dependent how
+**  many   are too   many, but  16   files should  work everywhere.   Finally
+**  'OpenInputLog' will fail if there is already a current logfile.
 */
-Int            OpenInputLog ( char* );
+
+FILE    *OpenInputLog ( char* );
 
 
 

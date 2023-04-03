@@ -572,7 +572,7 @@ void    PrString ( STREAM stream, Bag hdStr, int indent )
         else if ( *p == '\b'  )  // Pr( "\\b",0,0 );
             SyFmtPrint ( stream, "\\b" );
         else if ( *p == '\03' )  // Pr( "\\c",0,0 );
-            SyFmtPrint ( stream, "\\c", );
+            SyFmtPrint ( stream, "\\c" );
         else if ( *p == '"'   )  // Pr( "\\\"",0,0 );
             SyFmtPrint ( stream, "\\\"" );
         else if ( *p == '\\'  )  // Pr( "\\\\",0,0 );

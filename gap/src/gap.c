@@ -457,16 +457,17 @@ Bag       FunBacktraceTo (Bag hdCall)
     if ( ! IsString(hdName) ) return Error(usage,0,0);
     if ( GET_TYPE_BAG(hdLevel)!=T_INT) return Error(usage,0,0);
 
+    /* Not doing output files ?? */
     /* try to open the given output file, raise an error if you can not    */
-    if ( OpenOutput( (char*)PTR_BAG(hdName) ) == 0 )
-        return Error("BacktraceTo: can not open '%s' for writing",
-		     (Int)PTR_BAG(hdName), 0);
+    /* if ( OpenOutput( (char*)PTR_BAG(hdName) ) == 0 ) */
+    /*     return Error("BacktraceTo: can not open '%s' for writing", */
+	/* 	     (Int)PTR_BAG(hdName), 0); */
 
     FunBacktrace(hdLevel);
 
     /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() )
-        Error("BacktraceTo: can not close output, this should not happen",0,0);
+    /* if ( ! CloseOutput() ) */
+    /*     Error("BacktraceTo: can not close output, this should not happen",0,0); */
     return HdVoid;
 }
 
@@ -658,7 +659,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 		if (strcmp(msg, "GapBreakpointRd")==0) isBreakpoint = 2;
 		if (strcmp(msg, "GapBreakpointWr")==0) isBreakpoint = 3;
 		if ( DbgInBreakLoop==0 ) {
-			ignore = OpenOutput( "*errout*" );
+			// GONE ignore = OpenOutput( "*errout*" );
 			if (!isBreakpoint)
 				// Pr( "[[ while reading %s:%d ]]\n", (Int)Input->name, (Int)Input->number );
                 SyFmtPrint ( stderr_stream, "[[ while reading %s:%d ]]\n", Input->name, Input->number );
@@ -772,7 +773,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 							LeaveDbgStack(); 
 							SET_BAG(HdTilde, 0,  hdTilde ); /* restore ~ */
 							ignore = CloseInput();
-							ignore = CloseOutput();
+							// GONE ignore = CloseOutput();
 							/*InError = 0;*/
 							return PTR_BAG(hd)[0];
 						}
@@ -786,7 +787,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 							SET_BAG(HdLast, 0,  hd );
 							if ( *In != ';' ) {
 								Try {
-									Print( hd );
+									// Print( hd );
+                                    PrintObj ( stderr_stream, hd, 0 );
 									// Pr( "\n",0,0 );
                                     SyFmtPrint ( stderr_stream, "\n" );
 								} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }
@@ -803,7 +805,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			while ( EvalStackTop > 0 ) EVAL_STACK_POP;
 
 			/* close "*errout*" and return to the main read-eval-print loop        */
-			while ( CloseOutput() ) ;
+			// GONE while ( CloseOutput() ) ;
 			while ( CloseInput() ) ;
 		} else { // if we are already in error loop just cleanup stack
 			while ( HdExec != DbgStackExec() )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
@@ -1127,7 +1129,7 @@ Bag       FunPrint (Bag hdCall)
 	Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
 #if NEWFUNC_ADDED
-        printOneBag ( stdout_stream, hd );
+        printOneBag ( global_stream, hd );
 #else
         type = GET_TYPE_BAG( hd );
         if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
@@ -1438,6 +1440,7 @@ Bag     FunPrintToString ( Bag hdCall )
 
     for (i = 1; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
     {
+        Int type;
         hd = EVAL(PTR_BAG(hdCall)[i]);
 #if NEWFUNC_ADDED
         printOneBag ( stream, hd );
@@ -2255,6 +2258,8 @@ Bag     FunTabToList(Bag hdCall) {
 }
 
 STREAM stdout_stream;
+STREAM stderr_stream;
+STREAM global_stream;
 
 STREAM stderr_stream;
 
@@ -2277,6 +2282,8 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     SET_STREAM_FILE(stdout_stream, stdout);
     // init STREAM for stderr
     SET_STREAM_FILE(stderr_stream, stderr);
+
+    global_stream = stdout_stream;
 
 #ifdef DEBUG
 #ifndef WIN32

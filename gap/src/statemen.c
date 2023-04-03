@@ -387,7 +387,7 @@ void            PrStatseq (STREAM stream, Bag hdSSeq, int indent)
     /* print the <statements> one after another, separated by linebreaks   */
     for ( k = 0; k < GET_SIZE_BAG(hdSSeq)/SIZE_HD; ++k ) {
         //Print( PTR_BAG(hdSSeq)[k] );
-        PrintObj(stream, PTR_BAG(hdSSeq)[k]);
+        PrintObj ( stream, PTR_BAG(hdSSeq)[k], 0 );
         if ( k < GET_SIZE_BAG(hdSSeq)/SIZE_HD-1 )
             //Pr(";\n",0,0);
             SyFmtPrint(stream,";\n");
@@ -421,9 +421,9 @@ void            PrIf (STREAM stream, Bag hdIf, int indent)
         //Print( PTR_BAG(hdIf)[2*i+1] );
         //**INDENT** Pr(";%4<\n",0,0);
 
-        PrintObj(stream, PTR_BAG(hdIf)[2 * i]);
+        PrintObj ( stream, PTR_BAG(hdIf)[2 * i], 0 );
         SyFmtPrint(stream, "  then\n");
-        PrintObj(stream, PTR_BAG(hdIf)[2 * i + 1]);
+        PrintObj ( stream, PTR_BAG(hdIf)[2 * i + 1], 0 );
         SyFmtPrint(stream, ";\n");
     }
 
@@ -434,7 +434,7 @@ void            PrIf (STREAM stream, Bag hdIf, int indent)
         //**INDENT** Pr(";%4<\n",0,0);
 
         SyFmtPrint(stream, "else\n");
-        PrintObj(stream, PTR_BAG(hdIf)[GET_SIZE_BAG(hdIf) / SIZE_HD - 1]);
+        PrintObj ( stream, PTR_BAG(hdIf)[GET_SIZE_BAG(hdIf) / SIZE_HD - 1], 0 );
         SyFmtPrint(stream, ";\n");
     }
 
@@ -464,11 +464,11 @@ void            PrFor (STREAM stream, Bag hdFor, int indent)
     //**INDENT** Pr(";%4<\nod",0,0);
 
     SyFmtPrint(stream, "for ");
-    PrintObj(stream, PTR_BAG(hdFor)[0]);
+    PrintObj ( stream, PTR_BAG(hdFor)[0], 0 );
     SyFmtPrint(stream, "  in ");
-    PrintObj(stream, PTR_BAG(hdFor)[1]);
+    PrintObj ( stream, PTR_BAG(hdFor)[1], 0 );
     SyFmtPrint(stream, "  do\n");
-    PrintObj(stream, PTR_BAG(hdFor)[2]);
+    PrintObj ( stream, PTR_BAG(hdFor)[2], 0 );
     SyFmtPrint(stream, ";\nod");
 }
 
@@ -491,9 +491,9 @@ void            PrWhile (STREAM stream, Bag hdWhile, int indent)
     //**INDENT** Pr(";%4<\nod",0,0);
 
     SyFmtPrint(stream, "while%4> ");
-    PrintObj(stream, PTR_BAG(hdWhile)[0]);
+    PrintObj ( stream, PTR_BAG(hdWhile)[0], 0 );
     SyFmtPrint(stream, "  do\n");
-    PrintObj(stream, PTR_BAG(hdWhile)[1]);
+    PrintObj ( stream, PTR_BAG(hdWhile)[1], 0 );
     SyFmtPrint(stream, ";\nod");
 }
 
@@ -515,9 +515,9 @@ void            PrRepeat (STREAM stream, Bag hdRep, int indent)
     //**INDENT**  Pr("%2<",0,0);
 
     SyFmtPrint(stream, "repeat\n");
-    PrintObj(stream, PTR_BAG(hdRep)[1]);
+    PrintObj ( stream, PTR_BAG(hdRep)[1], 0 );
     SyFmtPrint(stream, ";\nuntil ");
-    PrintObj(stream, PTR_BAG(hdRep)[0]);
+    PrintObj ( stream, PTR_BAG(hdRep)[0], 0 );
    
 }
 

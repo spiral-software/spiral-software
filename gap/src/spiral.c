@@ -934,7 +934,7 @@ Obj  FunTry ( Obj hdCall ) {
     volatile UInt stack, evalStack;
     volatile Obj exec;
 	volatile TypInputFile  * inputStackTop;
-	volatile TypOutputFile * outputStackTop;
+	// GONE volatile TypOutputFile * outputStackTop;
     exc_type_t e;
 
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
@@ -948,7 +948,7 @@ Obj  FunTry ( Obj hdCall ) {
     stack = TopStack;
     evalStack = EvalStackTop;
 	inputStackTop  = Input;
-	outputStackTop = Output;
+	// GONE outputStackTop = Output;
 
     Try {
         hd = EVAL(hd);
@@ -973,9 +973,9 @@ Obj  FunTry ( Obj hdCall ) {
 
 		// close files opened during context of Try()
 
-		ok = 1;
-		while ( ( Output > outputStackTop) && ok )
-			ok = CloseOutput();
+        // GONE ok = 1;
+        // GONE while ( ( Output > outputStackTop) && ok )
+            // GONE ok = CloseOutput();
 		ok = 1;
 		while ( ( Input > inputStackTop) && ok )
 			ok = CloseInput();
@@ -1438,15 +1438,15 @@ void            InitSPIRAL (void) {
     InstIntFunc( "When",             FunWhen);
     InstIntFunc( "Cond",             FunCond);
     InstIntFunc( "Same",             FunSame);
-    InstIntFunc( "MD5File",          FunMD5File);
-    InstIntFunc( "MD5String",        FunMD5String);
-    InstIntFunc( "FileTime",         FunFileMTime);
+    /* InstIntFunc( "MD5File",          FunMD5File); */
+    /* InstIntFunc( "MD5String",        FunMD5String); */
+    /* InstIntFunc( "FileTime",         FunFileMTime); */
     InstIntFunc( "GetPid",           FunGetPid);
     InstIntFunc( "MakeDir",          FunMakeDir);
 
-    InstIntFunc( "WinGetValue",      FunWinGetValue);
-    InstIntFunc( "WinPathFixSpaces", FunWinPathFixSpaces);
-	InstIntFunc( "WinShortPathName", FunWinShortPathName);
+    /* InstIntFunc( "WinGetValue",      FunWinGetValue); */
+    /* InstIntFunc( "WinPathFixSpaces", FunWinPathFixSpaces); */
+	/* InstIntFunc( "WinShortPathName", FunWinShortPathName); */
 
     InstIntFunc( "GetEnv",  FunGetEnv );
 

@@ -1207,7 +1207,7 @@ Bag       LtCyc (Bag hdL, Bag hdR)
 **  In principle this is very easy, but it is complicated because we  do  not
 **  want to print stuff like '+1*', '-1*', 'E(<n>)^0', 'E(<n>)^1, etc.
 */
-void            PrCyc (Bag hdCyc)
+void  PrCyc ( STREAM stream, Obj hdCyc, int indent )
 {
     Int                n;              /* order of the field              */
     Int                len;            /* number of terms                 */
@@ -1219,45 +1219,84 @@ void            PrCyc (Bag hdCyc)
     len = GET_SIZE_BAG(hdCyc)/(SIZE_HD+sizeof(unsigned short));
     cfs = PTR_BAG(hdCyc);
     exs = (unsigned short*)(PTR_BAG(hdCyc)+len);
-    Pr("%>",0,0);
+    //**INDENT** Pr("%>",0,0);
     for ( i = 1; i < len; i++ ) {
         if (      cfs[i]==INT_TO_HD(1)            && exs[i]==0 )
-            Pr("1",0,0);
+            // Pr( "1",0,0);
+            SyFmtPrint ( stream, "1" );
         else if ( cfs[i]==INT_TO_HD(1)            && exs[i]==1 && i==1 )
-            Pr("%>E(%d%<)",n,0);
+            //**INDENT** Pr( "%>E(%d%<)",n,0 );
+            SyFmtPrint ( stream, "E(%d)", n );
         else if ( cfs[i]==INT_TO_HD(1)            && exs[i]==1 )
-            Pr("%>+E(%d%<)",n,0);
+            //**INDENT** Pr( "%>+E(%d%<)",n,0 );
+            SyFmtPrint ( stream, "+E(%d)", n );
         else if ( cfs[i]==INT_TO_HD(1)                         && i==1 )
-            Pr("%>E(%d)%>^%2<%d",n,(Int)exs[i]);
+            //**INDENT** Pr( "%>E(%d)%>^%2<%d",n,(Int)exs[i] );
+            SyFmtPrint ( stream, "E(%d)^%d", n, exs[i] );
         else if ( cfs[i]==INT_TO_HD(1) )
-            Pr("%>+E(%d)%>^%2<%d",n,(Int)exs[i]);
+            //**INDENT** Pr( "%>+E(%d)%>^%2<%d",n,(Int)exs[i]);
+            SyFmtPrint ( stream, "+E(%d)^%d", n, exs[i] );
         else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==0 )
-            Print(cfs[i]);
+            // Print(cfs[i]);
+            PrintObj ( stream, cfs[i], 0 );
         else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==1 && i==1 ) {
-            Pr("%>",0,0); Print(cfs[i]); Pr("%>*%<E(%d%<)",n,0); }
+            //**INDENT** Pr( "%>",0,0);
+            // Print(cfs[i] );
+            //**INDENT** Pr( "%>*%<E(%d%<)",n,0 );
+            PrintObj ( stream, cfs[i], 0 );
+            SyFmtPrint ( stream, "*E(%d)", n );
+        }
         else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue && exs[i]==1 ) {
-            Pr("%>+",0,0); Print(cfs[i]); Pr("%>*%<E(%d%<)",n,0); }
+            //**INDENT** Pr( "%>+",0,0 );
+            SyFmtPrint ( stream, "+" );
+            // Print(cfs[i]);
+            PrintObj ( stream, cfs[i], 0 );
+            // Pr( "%>*%<E(%d%<)",n,0 );
+            SyFmtPrint ( stream, "*E(%d)", n );
+        }
         else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue              && i==1 ) {
-            Pr("%>",0,0); Print(cfs[i]);
-            Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); }
+            //**INDENT** Pr( "%>",0,0 );
+            // Print(cfs[i]);
+            PrintObj ( stream, cfs[i], 0 );
+            //**INDENT** Pr( "%>*%<E(%d)%>^%2<%d",n,(Int)exs[i] );
+            SyFmtPrint ( stream, "*E(%d)^%d", n, exs[i] );
+        }
         else if ( LT(INT_TO_HD(0),cfs[i])==HdTrue ) {
-            Pr("%>+",0,0); Print(cfs[i]);
-            Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); }
+            //**INDENT** Pr( "%>+",0,0);
+            // Print(cfs[i] );
+            //**INDENT** Pr( "%>*%<E(%d)%>^%2<%d",n,(Int)exs[i] );
+            SyFmtPrint ( stream, "+" );
+            PrintObj ( stream, cfs[i], 0 );
+            SyFmtPrint ( stream, "*E(%d)^%d", n, exs[i] );
+        }
         else if ( cfs[i]==INT_TO_HD(-1)           && exs[i]==0 )
-            Pr("%>-%<1",0,0);
+            //**INDENT** Pr( "%>-%<1",0,0 );
+            SyFmtPrint ( stream, "-1" );
         else if ( cfs[i]==INT_TO_HD(-1)           && exs[i]==1 )
-            Pr("%>-E(%d%<)",n,0);
+            //**INDENT** Pr( "%>-E(%d%<)",n,0 );
+            SyFmtPrint ( stream, "-E(%d)", n );
         else if ( cfs[i]==INT_TO_HD(-1) )
-            Pr("%>-E(%d)%>^%2<%d",n,(Int)exs[i]);
+            //**INDENT** Pr( "%>-E(%d)%>^%2<%d",n,(Int)exs[i] );
+            SyFmtPrint ( stream, "-E(%d)^%d", n, exs[i] );
         else if (                                    exs[i]==0 )
-            Print(cfs[i]);
+            // Print(cfs[i]);
+            PrintObj ( stream, cfs[i], 0 );
         else if (                                    exs[i]==1 ) {
-            Pr("%>",0,0); Print(cfs[i]); Pr("%>*%<E(%d%<)",n,0); }
+            //**INDENT** Pr( "%>",0,0);
+            // Print(cfs[i] );
+            //**INDENT** Pr( "%>*%<E(%d%<)",n,0 );
+            PrintObj ( stream, cfs[i], 0 );
+            SyFmtPrint ( stream, "*E(%d)", n );
+        }
         else {
-            Pr("%>",0,0); Print(cfs[i]);
-            Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); }
+            //**INDENT** Pr( "%>",0,0);
+            // Print(cfs[i]);
+            PrintObj ( stream, cfs[i], 0 );
+            //**INDENT** Pr( "%>*%<E(%d)%>^%2<%d",n,(Int)exs[i] );
+            SyFmtPrint ( stream, "*E(%d)^%d", n, exs[i] );
+        }
     }
-    Pr("%<",0,0);
+    //**INDENT** Pr( "%<",0,0);
 }
 
 

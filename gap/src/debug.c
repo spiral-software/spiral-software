@@ -87,13 +87,15 @@ static UInt evalCondition(Obj* recHdCond, Obj hdExec) {
                         SET_ELM_PLIST(hdCall, i, PTR_BAG(hdExec)[EXEC_ARGS_START+i-1] );
                     return EVAL(hdCall)==HdTrue;
                 } else {
-                    Pr("Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i);
+                    // Pr( "Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i );
+                    SyFmtPrint ( stdout_stream, "Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i );
                 }
             }
         }
         return 0;
     }
-    Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    // Pr( "Breakpoint condition must have boolean value or must be a function.\n", 0, 0 );
+    SyFmtPrint ( stdout_stream, "Breakpoint condition must have boolean value or must be a function.\n" );
     return 1;
 }
 
@@ -119,13 +121,15 @@ static UInt evalMemCondition(Obj* recHdCond, Obj hdObj, Obj hdField, Obj hdValue
                 SET_ELM_PLIST(hdCall, 2, hdField );
                 SET_ELM_PLIST(hdCall, 3, hdValue );
             } else {
-                Pr("Breakpoint condition function has unexpected number of arguments.\n", 0, 0);
+                // Pr( "Breakpoint condition function has unexpected number of arguments.\n", 0, 0 );
+                SyFmtPrint ( stdout_stream, "Breakpoint condition function has unexpected number of arguments.\n" );
                 return 0;
             }
             return EVAL(hdCall)==HdTrue;
         }
     }
-    Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    // Pr( "Breakpoint condition must have boolean value or must be a function.\n", 0, 0 );
+    SyFmtPrint ( stdout_stream, "Breakpoint condition must have boolean value or must be a function.\n" );
     return 1;
 }
 
@@ -176,29 +180,30 @@ void    CheckBreakpoints(Obj hdE, Obj hdExec) {
             Bag hdBrk = 0;
             Bag	hdLst = VAR_VALUE(HdEvalBreakpoints);
             if (GET_TYPE_BAG(hdLst)==T_LIST) {
-		UInt cnt = LEN_PLIST(hdLst);
-		UInt i = 0;
-		for (i=1; i<=cnt; i++) {
-		    hdBrk = ELM_PLIST(hdLst, i);
-		    if (evalBreakPoint( hdBrk, hdE, hdExec))
-			break;
-		    hdBrk = 0;
-		}
-		if (hdBrk != 0 || (EvalStackBreakLevel>0 
-		    && EvalStackBreakLevel>EvalStackTop
-		    && hdExec == 0 ) ) 
-		{
-		    if (HdExec==0) {
-			// cannot break in the main loop
-		    } else {
-			EvalStackBreakLevel = 0;
-			DbgBreak("GapBreakpoint", 0, 0);
-		    }
-		}
-	    } else {
-		Pr("Breakpoints is not a list", 0, 0);
-	    }
-	    InBreakpoint = 0;
+                UInt cnt = LEN_PLIST(hdLst);
+                UInt i = 0;
+                for (i=1; i<=cnt; i++) {
+                    hdBrk = ELM_PLIST(hdLst, i);
+                    if (evalBreakPoint( hdBrk, hdE, hdExec))
+                        break;
+                    hdBrk = 0;
+                }
+                if (hdBrk != 0 || (EvalStackBreakLevel>0 
+                                   && EvalStackBreakLevel>EvalStackTop
+                                   && hdExec == 0 ) ) 
+                {
+                    if (HdExec==0) {
+                        // cannot break in the main loop
+                    } else {
+                        EvalStackBreakLevel = 0;
+                        DbgBreak("GapBreakpoint", 0, 0);
+                    }
+                }
+            } else {
+                // Pr( "Breakpoints is not a list", 0, 0 );
+                SyFmtPrint ( stdout_stream, "Breakpoints is not a list" );
+            }
+            InBreakpoint = 0;
         } Catch(e) {
             InBreakpoint = 0;
             Throw(e);
@@ -326,7 +331,8 @@ StepOver() - F10; StepInto() - F11; StepOut() - F8.\n";
 void    EnterDebugMode() {
     int t;
     if (InDebugMode == 0) {
-        Pr(EnteringDbgMode, 0, 0);
+        // Pr( EnteringDbgMode, 0, 0 );
+        SyFmtPrint ( stdout_stream, EnteringDbgMode );
         for(t=0; t<T_ILLEGAL; ++t) {
             OrigEvTab[t] = EvTab[t];
             EvTab[t] = DebugEVAL;
@@ -434,7 +440,8 @@ is matched, even if condition function returns false.\n\
     
     
 Obj FunDebugHelp ( Obj hdCall ) {
-    Pr(HelpText, 0, 0);
+    // Pr( HelpText, 0, 0 );
+    SyFmtPrint ( stdout_stream, HelpText );
     return HdVoid;
 }
 
@@ -680,9 +687,11 @@ Obj  FunTop ( Obj hdCall ) {
     top = PTR_BAG(top)[2];
     doc = FindDocString(top);
     if(doc != 0 && GET_TYPE_BAG(doc)==T_STRING)
-        Pr("%s", (Int)CSTR_STRING(doc), 0);
+        // Pr( "%s", (Int)CSTR_STRING(doc), 0 );
+        SyFmtPrint ( stdout_stream, "%s", CSTR_STRING(doc) );
     else
-        Pr("--no documentation--\n", 0, 0);
+        // Pr( "--no documentation--\n", 0, 0 );
+        SyFmtPrint ( stdout_stream, "--no documentation--\n" );
     prFull = 1;
     HookPrTab();
     Try {
@@ -698,7 +707,8 @@ Obj  FunTop ( Obj hdCall ) {
         TopPr_MaxDepth = 0; // maximal tree depth (in marked bags)
         Try {
             TopPr_Printing = 0; // we are going to calculate  max depth first
-            Pr("%g\n", (Int)top, 0);
+            // Pr( "%g\n", (Int)top, 0 );
+            SyFmtPrint ( stdout_stream, "%g\n", top );
             // closing /dev/null and return to previous output
             CloseOutput();
         } Catch(e) {
@@ -709,7 +719,8 @@ Obj  FunTop ( Obj hdCall ) {
         TopPr_CurDepth = 0; // reset tree depth, all what marked by BF_ON_EVAL_STACK
                             // flag and has TopPr_MaxDepth will be highlighted (with 
                             // children).
-        Pr("%g\n", (Int)top, 0);
+        // Pr( "%g\n", (Int)top, 0 );
+        SyFmtPrint ( stdout_stream, "%g\n", top );
     } Catch(e) {
         UnhookPrTab();
         Throw(e);
@@ -732,8 +743,16 @@ Obj  FunEditTopFunc ( Obj hdCall ) {
     if ( GET_SIZE_BAG(hdCall) != 1 * SIZE_HD || !inBreakLoop())  return Error(usage, 0,0);
     
     switch(FindDocAndExtractLoc(PTR_BAG(DbgStackExec())[2], fileName, &line)) {
-        case  0: { Pr("--no documentation--\n", 0, 0); break; }
-        case -1: { Pr("--definition not found--\n", 0, 0); break; }
+        case  0: {
+            // Pr( "--no documentation--\n", 0, 0 );
+            SyFmtPrint ( stdout_stream, "--no documentation--\n" );
+            break;
+        }
+        case -1: {
+            // Pr( "--definition not found--\n", 0, 0 );
+            SyFmtPrint ( stdout_stream, "--definition not found--\n" );
+            break;
+        }
         case  1: { HooksEditFile(fileName, line); break; }
     }
     return HdVoid;
@@ -760,7 +779,8 @@ Obj  FunDown ( Obj hdCall ) {
         || !inBreakLoop()) return Error(usage, 0,0);
     while (levels-->0) {
         if ( !DbgDown() ) { 
-            Pr(errText, 0, 0);
+            // Pr( errText, 0, 0 );
+            SyFmtPrint ( stdout_stream, errText );
             break;
         }
     }
@@ -777,7 +797,8 @@ Obj  FunUp ( Obj hdCall ) {
         || !inBreakLoop()) return Error(usage, 0,0);
     while (levels-->0) {
         if ( !DbgUp() ) { 
-            Pr(errText, 0, 0);
+            // Pr( errText, 0, 0 );
+            SyFmtPrint ( stdout_stream, errText );
             break;
         }
     }
@@ -809,7 +830,8 @@ Bag       FunDbgBreak (Obj hdCall)
 {
 #ifndef _DEBUG
     if (InDebugMode == 0) {
-        Pr("Use Debug(true) to enable debugging\n", 0, 0);
+        // Pr( "Use Debug(true) to enable debugging\n", 0, 0 );
+        SyFmtPrint ( stdout_stream, "Use Debug(true) to enable debugging\n" );
         return HdVoid;
     }
 #endif

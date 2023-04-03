@@ -313,7 +313,7 @@ void            SyntaxError ( char * msg );
 void            Match ( UInt symbol, char * msg,
                         TypSymbolSet skipto );
 
-
+#if BESPOKE_IO
 /****************************************************************************
 **
 *F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
@@ -343,7 +343,7 @@ void            Match ( UInt symbol, char * msg,
 **  must pass 0L if you don't make use of an argument to please lint.
 */
 void            Pr ( char * format, Int arg1, Int arg2 );
-
+#endif      // BESPOKE_IO
 
 
 /****************************************************************************
@@ -396,7 +396,7 @@ extern TypInputFile    InputFiles [SCANNER_INPUTS];
 extern TypInputFile    * Input;
 extern char            * In;
 
-
+#if BESPOKE_IO
 typedef struct {
     Int        file;
     char        *line;
@@ -414,6 +414,7 @@ typedef struct {
 }       TypOutputFile;
 
 extern TypOutputFile   * Output;
+#endif      // BESPOKE_IO
 
 /****************************************************************************
 **
@@ -501,7 +502,7 @@ Int            OpenInput ( char * filename );
 */
 Int            CloseInput ( void );
 
-
+#if BESPOKE_IO
 /****************************************************************************
 **
 *F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
@@ -550,7 +551,7 @@ Int            OpenOutput ( char * filename );
 **  'PrintTo' call or an error will not yield much better results.
 */
 Int            CloseOutput ( void );
-
+#endif      // BESPOKE_IO
 
 /****************************************************************************
 **

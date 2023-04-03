@@ -31,6 +31,7 @@
 #define USE_FLEX
 
 #include        <string.h>
+#include        <stdio.h> 
 #include        <stdlib.h>
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"
@@ -260,7 +261,7 @@ TypInputFile    InputFiles [SCANNER_INPUTS];
 TypInputFile    * Input;
 char            * In;
 
-
+#if BESPOKE_IO
 /****************************************************************************
 **
 *T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
@@ -300,6 +301,8 @@ Int OutputLineLen;
 
 TypOutputFile   OutputFiles [SCANNER_OUTPUTS];
 TypOutputFile   * Output;
+#endif      // BESPOKE_IO
+
 
 /* INITIAL_MEM_SIZE - initial memory buffer size for OpenMemory() */
 #define INITIAL_MEM_SIZE    2048
@@ -312,7 +315,7 @@ TypOutputFile   * Output;
 **  -1 the  scanner echoes all  input from the  files '*stdin*' and '*errin*'
 **  and all output to the files '*stdout*' and '*errout*' to this file.
 */
-Int            Logfile = -1;
+FILE* Logfile = (FILE*)NULL;
 
 
 /****************************************************************************
@@ -323,7 +326,7 @@ Int            Logfile = -1;
 **  not -1 the scanner echoes  input from the files  '*stdin*' and  '*errin*'
 **  to this file.
 */
-Int            InputLogfile = -1;
+FILE* InputLogfile = (FILE*)NULL;
 
 
 
@@ -346,11 +349,16 @@ char            GetLine (void)
 {
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     if ( Input->file == 0 ) {
-        if ( ! SyQuiet ) Pr( "%s%c", (Int)Prompt, (Int)'\03' );
-        else             Pr( "%c", (Int)'\03', 0 );
+        if ( ! SyQuiet ) 
+            //Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+            SyFmtPrint(stdout_stream, "%s", Prompt); //GS4 - Should be global probably 
+        else            
+            //Pr( "%c", (Int)'\03', 0 );
+            SyFmtPrint(stdout_stream, "%c", '\03');
     }
     else if ( Input->file == 2 ) {
-        Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+        //Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+        SyFmtPrint(stdout_stream, "%s%c", Prompt, '\03');
     }
 
     /* bump the line number                                                */
@@ -369,9 +377,9 @@ char            GetLine (void)
     }
 
     /* if neccessary echo the line to the logfile                          */
-    if ( Logfile != -1 && (Input->file == 0 || Input->file == 2) )
+    if ( Logfile != (FILE*)NULL && (Input->file == stdin))
         SyFputs( In, Logfile );
-    if ( InputLogfile != -1 && (Input->file == 0 || Input->file == 2) )
+    if ( InputLogfile != (FILE*)NULL && (Input->file == stdin))
         SyFputs( In, InputLogfile );
 
         /* return the current character                                        */
@@ -694,26 +702,35 @@ void            SyntaxError (char *msg)
         return;
 
     /* print the message and the filename, unless it is '*stdin*'          */
-    Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
+    //Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
+    SyFmtPrint(stderr_stream, "Syntax error: %s (symbol: '%s')", msg, Value);
+
     if ( !isStdIn ) {
-        Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+        //Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+        SyFmtPrint(stderr_stream, " in %s line %d", Input->name, Input->number);
 	if(!launchedEdit) {
 	    launchedEdit = 1;
 	    HooksEditFile(Input->name, (int)Input->number);
 	}
     }
-    Pr( "\n", 0, 0 );
+    //Pr( "\n", 0, 0 );
+    SyFmtPrint(stderr_stream, "\n", 0, 0);
 
     /* print the current line                                              */
-    Pr( "%s", (Int)Input->line, 0 );
+    //Pr( "%s", (Int)Input->line, 0 );
+    SyFmtPrint(stderr_stream, "%s", (Int)Input->line, 0);
 
     /* print a '^' pointing to the current position                        */
     for ( i = 0; i < In - Input->line - 1; i++ ) {
-        if ( Input->line[i] == '\t' )  Pr("\t",0,0);
-        else  Pr(" ",0,0);
+        if ( Input->line[i] == '\t' )  
+            //Pr("\t",0,0);
+            SyFmtPrint(stderr_stream, "\t");
+        else  
+            //Pr(" ", 0, 0);
+            SyFmtPrint(stderr_stream, " ");
     }
-    Pr( "^\n", 0, 0 );
-
+    //Pr( "^\n", 0, 0 );
+    SyFmtPrint(stderr_stream, "^\n");
 }
 
 
@@ -783,6 +800,7 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
 }
 
 
+#if BESPOKE_IO
 /****************************************************************************
 **
 *F  PutLine() . . . . . . . . . . . . . . . . . . . . . . print a line, local
@@ -856,7 +874,8 @@ void            PutLine(void)
 	if (Logfile != -1 && (Output->file == 1 || Output->file == 3))
 		SyFputs(Output->line, Logfile);
 }
-
+#endif      // BESPOKE_IO
+#if BESPOKE_IO
 
 /****************************************************************************
 **
@@ -1018,7 +1037,8 @@ void            PutChr (char ch)
     }
 
 }
-
+#endif      // BESPOKE_IO
+#if BESPOKE_IO
 
 /****************************************************************************
 **
@@ -1145,6 +1165,7 @@ void            Pr (char *format, Int arg1, Int arg2)
 
     }
 }
+#endif      // BESPOKE_IO
 
 
 Int	ChDir(const char* filename)
@@ -1271,7 +1292,7 @@ Int            CloseInput (void)
     return 1;
 }
 
-
+#if BESPOKE_IO
 extern Int            OpenStringOutput ()
 {
     Int                file;
@@ -1298,7 +1319,7 @@ extern Int            OpenStringOutput ()
     /* indicate success                                                    */
     return 1;
 }
-
+#endif      // BESPOKE_IO
 
 Bag		GReadFile()
 {
@@ -1325,7 +1346,7 @@ Bag		GReadFile()
 	return hdList;
 }
 
-
+#if BESPOKE_IO
 /****************************************************************************
 **
 *F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
@@ -1590,6 +1611,7 @@ Int            OpenAppend (char *filename)
     /* indicate success                                                    */
     return 1;
 }
+#endif      // BESPOKE_IO
 
 
 /****************************************************************************
@@ -1608,12 +1630,11 @@ Int            OpenAppend (char *filename)
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-Int            OpenLog (char *filename)
+FILE *OpenLog (char *filename)
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( Logfile != -1 )
-        return 0;
+    if (Logfile != (FILE *)NULL) return Logfile;
 
     /* try to open the file                                                */
     Logfile = SyFopen( filename, "w" );
@@ -1639,12 +1660,12 @@ Int            OpenLog (char *filename)
 Int            CloseLog (void)
 {
     /* refuse to close a non existent logfile                              */
-    if ( Logfile == -1 )
+    if ( Logfile == (FILE *)NULL)
         return 0;
 
     /* close the logfile                                                   */
     SyFclose( Logfile );
-    Logfile = -1;
+    Logfile = (FILE *)NULL;
 
     /* indicate success                                                    */
     return 1;
@@ -1666,20 +1687,16 @@ Int            CloseLog (void)
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-Int            OpenInputLog (char *filename)
+FILE *OpenInputLog (char *filename)
 {
 
     /* refuse to open a logfile if we already log to one                   */
-    if ( InputLogfile != -1 )
-        return 0;
+    if (InputLogfile != (FILE*)NULL) return InputLogfile;
 
     /* try to open the file                                                */
     InputLogfile = SyFopen( filename, "w" );
-    if ( InputLogfile == -1 )
-        return 0;
-
-    /* otherwise indicate success                                          */
-    return 1;
+    
+    return InputLogfile;
 }
 
 
@@ -1697,12 +1714,12 @@ Int            OpenInputLog (char *filename)
 Int            CloseInputLog (void)
 {
     /* refuse to close a non existent logfile                              */
-    if ( InputLogfile == -1 )
+    if ( InputLogfile == (FILE *)NULL )
         return 0;
 
     /* close the logfile                                                   */
     SyFclose( InputLogfile );
-    InputLogfile = -1;
+    InputLogfile = (FILE *)NULL;
 
     /* indicate success                                                    */
     return 1;
@@ -1720,7 +1737,7 @@ Int            CloseInputLog (void)
 void            InitScanner (void)
 {
     Int                ignore, i;
-
+#if BESPOKE_IO
     OutputLineLen = SyNrCols < 1000 ? 1000 : SyNrCols + 1;
     for(i = 0; i < SCANNER_OUTPUTS; ++i) {
         /* OutputFiles[i].line = (char*) xmalloc(sizeof(char)*OutputLineLen); */
@@ -1732,9 +1749,12 @@ void            InitScanner (void)
         OutputFiles[i].spos = 0;
         OutputFiles[i].mem = 0;
     }
+#endif      // BESPOKE_IO
 
     Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
+#if BESPOKE_IO
     Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
+#endif      // BESPOKE_IO
 
     Logfile = -1;  
     InputLogfile = -1;

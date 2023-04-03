@@ -189,25 +189,25 @@ extern  Bag       LtPerm ( Bag hdL, Bag hdR );
 
 /****************************************************************************
 **
-*F  PrPerm( <hdPerm> )  . . . . . . . . . . . . . . . . . print a permutation
+*F  PrPerm( stream, <hdPerm>, indent )  . . . . . . . . . print a permutation
 **
 **  'PrPerm' prints the permutation <hdPerm> in the usual cycle notation.  It
 **  uses the degree to print all points with same width, which  looks  nicer.
 **  Linebreaks are prefered most after cycles and  next  most  after  commas.
 */
-extern  void            PrPerm ( Bag hdPerm );
+extern void     PrPerm ( STREAM stream, Bag hdPerm, int indent );
 
 
 /****************************************************************************
 **
-*F  PrMakeperm( <hdPerm> )  . . . . . . . . . .  print a variable permutation
+*F  PrMakeperm( stream, <hdPerm>, indent )  . .  print a variable permutation
 **
 **  'PrMakeperm' prints the variable permutation <hdPerm>  in the usual cycle
 **  notation.
 **
 **  Linebreaks are prefered most after cycles and  next  most  after  commas.
 */
-extern  void            PrMakeperm ( Bag hdPerm );
+extern void     PrMakeperm ( STREAM stream, Bag hdPerm, int indent );
 
 
 /****************************************************************************

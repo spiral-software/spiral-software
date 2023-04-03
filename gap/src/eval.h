@@ -571,11 +571,11 @@ extern  Bag       LtBool ( Bag hdL, Bag hdR );
 
 /****************************************************************************
 **
-*F  PrBool( <hdBool> )  . . . . . . . . . . . . . . . . print a boolean value
+*F  PrBool( stream, <hdBool>, indent )  . . . . . . . . print a boolean value
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-extern  void            PrBool ( Bag hd );
+extern void     PrBool ( STREAM stream, Bag hd, int indent );
 
 
 /****************************************************************************
@@ -675,17 +675,17 @@ extern  Bag       FunIsBound ( Bag hdCall );
 **  is the main dispatching table that contains for every type a  pointer  to
 **  the function that should be executed if a bag  of  that  type  is  found.
 */
-extern  void            (* PrTab[ T_ILLEGAL ] ) ( Bag hd );
+extern void     ( *PrTab[ T_ILLEGAL ] ) ( STREAM stream, Obj hd, int indent );
 
 
 /****************************************************************************
 **
-*F  Print( <hd> ) . . . . . . . . . . . . . . . . . . . . . . print an object
+*F  PrintObj( stream, <hd>, indent )  . . . . . . . . . . . . print an object
 **
-**  'Print'  prints  the  object  with  handle  <hd>.  It dispatches   to the
+**  'PrintObj' prints the object  with  handle  <hd>.  It dispatches   to the
 **  appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
 */
-extern  void            Print ( Bag hd );
+extern void     PrintObj ( STREAM stream, Obj hd, int indent );
 
 
 /****************************************************************************
@@ -701,57 +701,57 @@ extern  void            CantPrint ( Bag hd );
 
 /****************************************************************************
 **
-*F  PrVarName( <string> )  . . prints identifier, escaping special characters
+*F  PrVarName( stream, <string> ) . . prints identifier, escape special chars
 **
 */
-extern  void            PrVarName ( char * name );
+extern void     PrVarName ( STREAM stream, char *name );
   
 /****************************************************************************
 **
-*F  PrVar( <hdVar> )  . . . . . . . . . . . . . . . . . . .  print a variable
+*F  PrVar( stream, <hdVar>, indent )  . . . . . . . . . . .  print a variable
 **
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
 */
-extern  void            PrVar ( Bag hdVar );
+extern void     PrVar ( STREAM stream, Bag hdVar, int indent );
 
 
 /****************************************************************************
 **
-*F  PrVarAss( <hdAss> ) . . . . . . . . . . . . . . . . . print an assignment
+*F  PrVarAss( stream, <hdAss>, indent ) . . . . . . . . . print an assignment
 **
 **  'PrVarAss' prints an assignment to a variable: '<Var> := <Expr>;'
 **
 **  Linebreaks are preffered before the ':='.
 */
-extern  void            PrVarAss ( Bag hdAss );
+extern void     PrVarAss ( STREAM stream, Bag hdAss, int indent );
 
 
 /****************************************************************************
 **
-*F  PrNot( <hdNot> )  . . . . . . . . . . . . .  print a boolean not operator
+*F  PrNot( stream, <hdNot>, indent )  . . . . .  print a boolean not operator
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
-extern  void            PrNot ( Bag hdNot );
+extern void     PrNot ( STREAM stream, Bag hdNot, int indent );
 
 
 /****************************************************************************
 **
-*F  PrBinop( <hdOp> ) . . . . . . . . . . . . . . .  prints a binary operator
+*F  PrBinop( stream, <hdOp>, indent ) . . . . . . .  prints a binary operator
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */
-extern  void            PrBinop ( Bag hdOp );
+extern void     PrBinop ( STREAM stream, Bag hdOp, int indent );
 
 
 /****************************************************************************
 **
-*F  PrComm( <hdComm> )  . . . . . . . . . . . . . . . . .  print a commutator
+*F  PrComm( stream, <hdComm>, indent )  . . . . . . . . .  print a commutator
 **
 **  This prints a commutator.
 */
-extern  void            PrComm ( Bag hd );
+extern void     PrComm ( STREAM stream, Bag hd, int indent );
 
 
 /****************************************************************************
@@ -783,7 +783,8 @@ extern  void            InstBinOp ( Bag  (* table [EV_TAB_SIZE][EV_TAB_SIZE]) ()
 **
 **  Installs the function <func> as printing function  for  bags  of  <type>.
 */
-extern  void            InstPrFunc ( unsigned int type, void (* func)(Bag) );
+extern void     InstPrFunc ( unsigned int type,
+                             void (* func)( STREAM stream, Obj hdWhile, int indent ) );
 
 
 /****************************************************************************

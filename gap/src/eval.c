@@ -1087,7 +1087,7 @@ Obj       LtPtr (Obj hdL, Obj hdR)
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-void    PrBool(STREAM stream, Obj hd, int indent)
+void    PrBool ( STREAM stream, Obj hd, int indent )
 {
     if ( hd == HdTrue )  // Pr( "true",0,0 );
         SyFmtPrint ( stream, "true" );
@@ -1666,7 +1666,7 @@ void    PrintBagType ( STREAM stream, Obj hd, int indent )
 
 /****************************************************************************
 **
-*F  PrVar( <hdVar> )  . . . . . . . . . . . . . . . . . . .  print a variable
+*F  PrVar( stream, <hdVar>, indent )  . . . . . . . . . . .  print a variable
 **
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
@@ -1712,7 +1712,7 @@ void    PrVarName ( STREAM stream, char *name )
 
 /****************************************************************************
 **
-*F  PrVarAss( <hdAss> ) . . . . . . . . . . . . . . . . . print an assignment
+*F  PrVarAss( stream, <hdAss>, indent ) . . . . . . . . . print an assignment
 **
 **  'PrVarAss' prints an assignment to a variable: '<Var> := <Expr>;'
 **
@@ -1749,7 +1749,7 @@ Int            prPrec;
 
 /****************************************************************************
 **
-*F  PrNot( <hdNot> )  . . . . . . . . . . . . .  print a boolean not operator
+*F  PrNot( stream, <hdNot>, indent )  . . . . .  print a boolean not operator
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
@@ -1769,7 +1769,7 @@ void    PrNot ( STREAM stream, Obj hdNot, int indent )
 
 /****************************************************************************
 **
-*F  PrBinop( <hdOp> ) . . . . . . . . . . . . . . .  prints a binary operator
+*F  PrBinop( stream, <hdOp>, indent ) . . . . . . .  prints a binary operator
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */

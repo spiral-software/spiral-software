@@ -1200,7 +1200,7 @@ Bag       LtCyc (Bag hdL, Bag hdR)
 
 /****************************************************************************
 **
-*F  PrCyc( <hdCyc> )  . . . . . . . . . . . . . . . . . .  print a cyclotomic
+*F  PrCyc( stream, <hdCyc>, indent )  . . . . . . . . . .  print a cyclotomic
 **
 **  'PrCyc' prints the cyclotomic <hdCyc> in the standard form.
 **

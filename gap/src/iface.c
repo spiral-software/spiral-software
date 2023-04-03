@@ -97,8 +97,10 @@ int execute(char *input, char *output)
 	    SET_BAG(HdLast, 0,  hd );
 	    if ( ! GAP_SILENT ) {
 	        IsString( hd );
-	        Print( hd );
-	        Pr("\n",0,0);
+	        // Print( hd );
+            PrintObj ( stdout_stream, hd, 0 );
+	        // Pr( "\n",0,0 );
+            SyFmtPrint ( stdout_stream, "\n" );
 	    }
       }
     }

@@ -34,12 +34,12 @@ typedef UInt2           TypDigit;
 
 /****************************************************************************
 **
-*F  PrInteger( <hdInt> )  . . . . . . . . . . . . . print an integer constant
+*F  PrInteger( stream, <hdInt>, indent )  . . . . . print an integer constant
 **
 **  'PrInteger' prints the integer <hdInt> in  the  usual  decimal  notation.
 **  'PrInteger' handles objects of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
 */
-extern  void            PrInteger ( Obj op );
+extern void     PrInteger ( STREAM stream, Obj op, int indent );
 
 
 /****************************************************************************

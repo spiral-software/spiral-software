@@ -477,19 +477,24 @@ Obj FunIsNamespace ( Obj hdCall ) {
 
 Obj  EvNS ( Obj hd ) { return hd; }
 
-void PrNS ( Obj hd ) {
+void    PrNS ( STREAM stream, Obj hd, int indent ) {
     int i, first = 1;
     if ( TableId(hd) != 0 )
-        Pr("%g", (Int)TableId(hd), 0);
+        // Pr("%g", (Int)TableId(hd), 0);
+        PrintObj ( stream, TableId(hd), indent );
     else {
-        Pr("%2>UnnamedNS(",0,0);
+        //**INDENT** Pr( "%2, 0>UnnamedNS(",0,0 );
+        SyFmtPrint ( stream, ", UnnamedNS(" );
         for ( i = 0; i < TableSize(hd); i++ ) {
             if ( PTR_BAG(hd)[i] == 0 || VAR_VALUE(PTR_BAG(hd)[i]) == 0 )  continue;
-            if ( ! first ) Pr(", ", 0, 0);
+            if ( ! first ) // Pr( ", ", 0, 0 );
+                SyFmtPrint ( stream, ", " );
             first = 0;
-            Pr("%g", (Int)PTR_BAG(hd)[i], 0);
+            // Pr("%g", (Int)PTR_BAG(hd)[i], 0);
+            PrintObj ( stream, PTR_BAG(hd)[i], indent );
         }
-        Pr(")%2<",0,0);
+        //**INDENT** Pr( ")%2<",0,0 );
+        SyFmtPrint ( stream, ")" );
     }
 }
 

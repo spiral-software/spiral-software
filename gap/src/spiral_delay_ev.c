@@ -49,20 +49,17 @@ Obj  HdBackquote;
  * functions.  It prints <hd> on a separate line. Print can't print T_RECNAM 
  * bags, thus we have a check for this type.
  */
-#if BESPOKE_IO
-#define TRACE(hd) if(hd) { Pr("->%d| ",GET_TYPE_BAG(hd),0); \
-                           if(GET_TYPE_BAG(hd)==T_RECNAM) \
-                                Pr("recnam",0,0); \
-			                else \
-                               Print(hd); \
-	                        Pr("\n",0,0); }
-#endif      // BESPOKE_IO
-#define TRACE(hd) if(hd) { SyFmtPrint ( global_stream, "->%d| ", GET_TYPE_BAG(hd) ); \
-                           if(GET_TYPE_BAG(hd)==T_RECNAM) \
-                                SyFmtPrint ( global_stream, "recnam" ); \
-			                else \
-                               PrintObj ( global_stream, hd, 0 ); \
-	                        SyFmtPrint(global_stream,"\n"); }
+#define TRACE(hd) if(hd) { /*Pr("->%d| ",GET_TYPE_BAG(hd),0);*/                         \
+                           SyFmtPrint ( global_stream, "->%d| ", GET_TYPE_BAG(hd) );    \
+                           if ( GET_TYPE_BAG(hd) == T_RECNAM )                          \
+                               /*Pr("recnam",0,0);*/                                    \
+                               SyFmtPrint ( global_stream, "recnam" );                  \
+                           else                                                         \
+                               /*Print(hd);*/                                           \
+                               PrintObj ( global_stream, hd, 0 );                       \
+                           /*Pr("\n",0,0);*/                                            \
+                           SyFmtPrint(global_stream,"\n");                              \
+                         }
 
 
 /* returns list{[head..Length(list)]} for a 0-indexed function argument list */
@@ -754,30 +751,32 @@ Obj  EvDelay ( Obj hd ) { return hd; }
 Obj  EvVarMap( Obj hd ) { return hd; } 
 
 extern Int prFull;
-void PrDelay (STREAM stream, Obj hd, int indent) {
+void    PrDelay(STREAM stream, Obj hd, int indent)
+{
     /* print function bags in the full form, so that output is reparseable */
     prFull = 1; 
     //**INDENT**Pr("%2>D(",0,0);
     //Print(ExprFromDelay(hd));
     //**INDENT**Pr(")%2<",0,0);
 
-    SyFmtPrint(stream, "D(");
-    PrintObj(stream, ExprFromDelay(hd));
-    SyFmtPrint(stream, ")");
+    SyFmtPrint ( stream, "D(" );
+    PrintObj ( stream, ExprFromDelay(hd), indent );
+    SyFmtPrint ( stream, ")" );
 
     prFull = 0;
 }
 
-void PrVarMap (STREAM stream, Obj hd, int indent) {
+void    PrVarMap ( STREAM stream, Obj hd, int indent )
+{
     //**INDENT**Pr("%2>",0,0);
-    Print(PTR_BAG(hd)[0]);
+    // Print(PTR_BAG(hd)[0]);
     //**INDENT**Pr("%< %>=> ",0,0);
-    Print(PTR_BAG(hd)[1]);
+    // Print(PTR_BAG(hd)[1]);
     //**INDENT**Pr("%2<",0,0);
 
-    PrintObj(stream, PTR_BAG(hd)[0], 0);
-    SyFmtPrint(stream, " => ");
-    PrintObj(stream, PTR_BAG(hd)[1], 0);
+    PrintObj ( stream, PTR_BAG(hd)[0], 0 );
+    SyFmtPrint ( stream, " => " );
+    PrintObj ( stream, PTR_BAG(hd)[1], 0 );
 
 }
 

@@ -16,6 +16,7 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
+#include <stdio.h>
 #include		"system_types.h"
 
 /****************************************************************************
@@ -659,6 +660,31 @@ typedef void            (*TNumAbortFuncBags) (
     Char* msg);
 
 extern  TNumAbortFuncBags       AbortFuncBags;
+
+
+#define STREAM_TYPE_FILE	1
+#define STREAM_TYPE_STRING	2
+
+typedef struct stream_struct {
+    int   type;
+    union {
+        FILE* file;
+        char** string_ptr;
+    } U;
+} STREAM;
+
+#define SET_STREAM_FILE(s,f) {(s).type = STREAM_TYPE_FILE; (s).U.file = (f);}
+
+extern STREAM stdout_stream;
+
+extern STREAM stderr_stream;
+
+extern STREAM global_stream;
+
+extern FILE* streamFile(STREAM stream);
+
+extern int SyFmtPrint(STREAM stream, const char* format, ...);
+
 
 #endif // _SYSTEM_H
 

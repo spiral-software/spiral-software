@@ -2824,3 +2824,80 @@ fullusage:
     SyExit(1);
 }
 
+#ifdef WIN32
+int vasprintf(char** strp, const char* fmt, va_list ap) {
+    // find required size of buffer and allocate
+    int len = _vscprintf(fmt, ap);
+    if (len == -1) {
+        return -1;
+    }
+    char* str = malloc(len + 1);
+    if (!str) {
+        return -1;
+    }
+
+    // print into new buffer
+    int r = vsprintf(str, fmt, ap);
+    if (r == -1) {
+        free(str);
+        return -1;
+    }
+    *strp = str;
+    return r;
+}
+#endif
+
+
+
+FILE* streamFile(STREAM stream)
+{
+    if (stream.type == STREAM_TYPE_FILE) {
+        return stream.U.file;
+    }
+    else {
+        return 0;
+    }
+}
+
+int SyFmtPrint(STREAM stream, const char* format, ...)
+{
+    int result = 0;
+    va_list arglist;
+    va_start(arglist, format);
+
+    if (stream.type == STREAM_TYPE_FILE)
+    {
+        result = vfprintf(streamFile(stream), format, arglist);
+        fflush(streamFile(stream));
+    }
+    else if (stream.type == STREAM_TYPE_STRING)
+    {
+        char* str1;
+
+        result = vasprintf(&str1, format, arglist);
+
+        if (result >= 0) {
+            if (*stream.U.string_ptr == 0) {
+                *stream.U.string_ptr = str1;
+            }
+            else {
+                char* bigstr;
+                bigstr = malloc(strlen(*stream.U.string_ptr) + strlen(str1) + 1);
+                if (bigstr != 0) {
+                    strcpy(bigstr, *stream.U.string_ptr);
+                    strcat(bigstr, str1);
+                    free(*stream.U.string_ptr);
+                    *stream.U.string_ptr = bigstr;
+                }
+                else {
+                    result = -1;
+                }
+                free(str1);
+            }
+        }
+    }
+
+    va_end(arglist);
+    return result;
+}
+

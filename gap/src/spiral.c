@@ -89,7 +89,7 @@ void            InitSPIRAL_Paths (void)
 **       KernelARep
 **       ...
 */
-void Apropos(Obj hdSubStr, Obj tab, int recursive);
+void Apropos(STREAM stream, Obj hdSubStr, Obj tab, int recursive, int indent);
 
 Bag       FunApropos (Bag hdCall)
 {
@@ -103,12 +103,12 @@ Bag       FunApropos (Bag hdCall)
     if ( GET_TYPE_BAG(hdSubStr)!=T_STRING)
         return Error("usage: Apropos( <sub_string> )", 0,0);
 
-    Apropos(hdSubStr, HdIdenttab, 1);
+    Apropos(stdout_stream, hdSubStr, HdIdenttab, 1, 0);
     RecursiveClearFlag(HdIdenttab, BF_VISITED);
     return HdVoid;
 }
 
-void Apropos(Obj hdSubStr, Obj tab, int recursive) {
+void Apropos(STREAM stream, Obj hdSubStr, Obj tab, int recursive, int indent) {
     char * sub_str = (char*) PTR_BAG(hdSubStr);
     UInt i, printed_header = 0;
 
@@ -123,10 +123,14 @@ void Apropos(Obj hdSubStr, Obj tab, int recursive) {
 
         if(val != 0 && strstr(VAR_NAME(ent), sub_str) != NULL) { /* found something */
             if(! printed_header) {
-                Pr("**** %g ****\n", (Int)tab, (Int)tab);
+                //Pr("**** %g ****\n", (Int)tab, (Int)tab);
+                SyFmtPrint(stream, "**** ");
+                PrintObj(stream, tab, 0);
+                SyFmtPrint(stream, " ****\n");
             }
             printed_header = 1;
-            Pr("%s\n", (Int)VAR_NAME(ent), 0);
+            //Pr("%s\n", (Int)VAR_NAME(ent), 0);
+            SyFmtPrint(stream, "%s\n", VAR_NAME(ent));
         }
     }
     for ( i = 0; i < TableSize(tab); i++ ) {
@@ -137,7 +141,7 @@ void Apropos(Obj hdSubStr, Obj tab, int recursive) {
 
         if ( recursive && val != 0 && val != tab && val != HdIdenttab && GET_TYPE_BAG(val) == T_NAMESPACE ) {
             SET_FLAG_BAG(ent, BF_VISITED);
-            Apropos(hdSubStr, val, 1);
+            Apropos(stream, hdSubStr, val, 1, indent); //GS4 - how does indent and recursion work? 
         }
     }
 }
@@ -591,32 +595,52 @@ Obj  FunCond( Obj hdCall ) {
 **
 *F  BagInfo() . . . . . . . . . . . . . . . . . . . . display bag information
 */
-void BagInfo ( Obj hd ) {
-    if(hd == NULL)
-        Pr("NULL bag\n", 0, 0);
-    else if(! IS_BAG(hd))
-        Pr("INVALID bag\n", 0, 0);
+void BagInfo (STREAM stream, Obj hd) {
+    if (hd == NULL)
+        //Pr("NULL bag\n", 0, 0);
+        SyFmtPrint(stream, "NULL bag\n");
+    else if (!IS_BAG(hd))
+        //Pr("INVALID bag\n", 0, 0);
+        SyFmtPrint(stream, "INVALID bag\n");
     else {
-        Pr("Type    : %d ( %s )\n", (Int)GET_TYPE_BAG(hd),  (Int)NameType[GET_TYPE_BAG(hd)]);
+        //Pr("Type    : %d ( %s )\n", (Int)GET_TYPE_BAG(hd),  (Int)NameType[GET_TYPE_BAG(hd)]);
+        SyFmtPrint(stream, "Type    : %d ( %s )\n", GET_TYPE_BAG(hd), NameType[GET_TYPE_BAG(hd)]);
+
         if(GET_TYPE_BAG(hd)==T_INT) {
-            Pr("Value   : %g\n", (Int)hd, 0);
+            //Pr("Value   : %g\n", (Int)hd, 0);
+            SyFmtPrint(stream, "Value   : ");
+            PrintObj(stream, hd, 0);
+            SyFmtPrint(stream, "\n");
             return;
         }
-        Pr("Size    : %d \t Addr : 0x%s \n",
-           (Int) GET_SIZE_BAG(hd),
-           (Int) PTR_BAG(HexStringInt(INT_TO_HD(hd))));
-        Pr("Handles : %d \t PTR_BAG  : 0x%s \n",
-           (Int) NrHandles(GET_TYPE_BAG(hd), GET_SIZE_BAG(hd)),
-           (Int) PTR_BAG(HexStringInt(INT_TO_HD(PTR_BAG(hd)))));
-        Pr("Flags   : %d\n", (Int)GET_FLAGS_BAG(hd), 0);
-        Pr("Value   : %g\n", (Int)hd, 0);
+        //Pr("Size    : %d \t Addr : 0x%s \n",
+        //   (Int) GET_SIZE_BAG(hd),
+        //   (Int) PTR_BAG(HexStringInt(INT_TO_HD(hd))));
+        SyFmtPrint(stream, "Size    : %d \t Addr : 0x%s \n",
+            GET_SIZE_BAG(hd),
+            PTR_BAG(HexStringInt(INT_TO_HD(hd))));
+
+        //Pr("Handles : %d \t PTR_BAG  : 0x%s \n",
+        //   (Int) NrHandles(GET_TYPE_BAG(hd), GET_SIZE_BAG(hd)),
+        //   (Int) PTR_BAG(HexStringInt(INT_TO_HD(PTR_BAG(hd)))));
+        SyFmtPrint(stream, "Handles : %d \t PTR_BAG  : 0x%s \n",
+            NrHandles(GET_TYPE_BAG(hd), GET_SIZE_BAG(hd)),
+            PTR_BAG(HexStringInt(INT_TO_HD(PTR_BAG(hd)))));
+
+        //Pr("Flags   : %d\n", (Int)GET_FLAGS_BAG(hd), 0);
+        SyFmtPrint(stream, "Flags   : %d\n", GET_FLAGS_BAG(hd));
+
+        //Pr("Value   : %g\n", (Int)hd, 0);
+        SyFmtPrint(stream, "Value   : ");
+        PrintObj(stream, hd, 0);
+        SyFmtPrint(stream, "\n");
     }
 }
 
 Obj  FunBagInfo ( Obj hdCall ) {
     char * usage = "usage: BagInfo( <obj> )";
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
-    BagInfo(EVAL(PTR_BAG(hdCall)[1]));
+    BagInfo(stdout_stream, EVAL(PTR_BAG(hdCall)[1]));
     return HdVoid;
 }
 
@@ -808,7 +832,7 @@ Obj  FunPkg ( Obj hdCall ) {
 }
 
 
-int  reachableFrom ( Obj root, Obj hd ) {
+int  reachableFrom (STREAM stream, Obj root, Obj hd ) {
     if ( ! IS_BAG(root) || (! IS_INTOBJ(root) && GET_FLAG_BAG(root, BF_VISITED)) )
         return 0;
     else if ( root == hd )
@@ -822,12 +846,15 @@ int  reachableFrom ( Obj root, Obj hd ) {
         for(i = 0; i < nhandles; ++i) {
             Obj child = PTR_BAG(root)[i];
             if(! IS_BAG(child)) continue;
-            if(reachableFrom(child, hd)) {
-                Pr("%d %s ", (Int)child, (Int)NameType[GET_TYPE_BAG(child)]);
+            if(reachableFrom(stream, child, hd)) {
+                //Pr("%d %s ", (Int)child, (Int)NameType[GET_TYPE_BAG(child)]);
+                SyFmtPrint(stream, "%d %s ", child, NameType[GET_TYPE_BAG(child)]);
                 if ( GET_TYPE_BAG(child) == T_VAR || GET_TYPE_BAG(child) == T_VARAUTO || GET_TYPE_BAG(child) < T_MUTABLE ||
                      (GET_TYPE_BAG(child) > T_DELAY && GET_TYPE_BAG(child) < T_STATSEQ) || GET_TYPE_BAG(child) >= T_RETURN)
-                    Pr("%g", (Int)child, 0);
-                Pr("\n", 0, 0);
+                    //Pr("%g", (Int)child, 0);
+                    PrintObj(stream, child, 0);
+                //Pr("\n", 0, 0);
+                SyFmtPrint(stream, "\n");
                 return 1;
             }
         }
@@ -835,12 +862,14 @@ int  reachableFrom ( Obj root, Obj hd ) {
     }
 }
 
-int  reachable ( Obj hd ) {
+int  reachable (STREAM stream, Obj hd ) {
     UInt i, j, found = 0;
     for (i = 0; i < GlobalBags.nr && !found; i++) {
-        if(reachableFrom(*GlobalBags.addr[i], hd)) {
-            Pr("global : %d : %s\n", (Int)*GlobalBags.addr[i],
-                                     (Int) GlobalBags.cookie[i] );
+        if(reachableFrom(stream, *GlobalBags.addr[i], hd)) {
+            //Pr("global : %d : %s\n", (Int)*GlobalBags.addr[i],
+            //                         (Int) GlobalBags.cookie[i] );
+            SyFmtPrint(stream, "global : %d : %s\n", *GlobalBags.addr[i],
+                GlobalBags.cookie[i]);
             found = 1;
         }
     }
@@ -862,10 +891,12 @@ Obj  FunReachability ( Obj hdCall ) {
     hd = EVAL(PTR_BAG(hdCall)[1]);
     hd = INJECTION_D(hd); /* strip T_DELAY, if needed */
 
+    //GS4 -- streamio -- reachable streams start here
+
     if ( hdRoot == 0 )
-        return reachable(hd) ? HdTrue : HdFalse;
+        return reachable(stdout_stream, hd) ? HdTrue : HdFalse;
     else {
-        Obj res = reachableFrom(hdRoot, hd) ? HdTrue : HdFalse;
+        Obj res = reachableFrom(stdout_stream, hdRoot, hd) ? HdTrue : HdFalse;
         RecursiveClearFlag(hdRoot, BF_VISITED);
         return res;
     }
@@ -1083,9 +1114,23 @@ Bag  FunEditDef ( Bag hdCall ) {
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
 
     switch(FindDocAndExtractLoc(PTR_BAG(hdCall)[1], fileName, &line)) {
-        case  0: { Pr("--no documentation--\n", 0, 0); break; }
-        case -1: { Pr("--defnition not found--\n", 0, 0); break; }
-        case  1: { HooksEditFile(fileName, line); break; }
+        case  0: 
+        {
+            //Pr("--no documentation--\n", 0, 0); 
+            SyFmtPrint(stdout_stream, "--no documentation--\n");
+            break; 
+        }
+        case -1: 
+        {
+            //Pr("--defnition not found--\n", 0, 0);
+            SyFmtPrint(stdout_stream, "--defnition not found--\n");
+            break;
+        }
+        case  1: 
+        { 
+            HooksEditFile(fileName, line);
+            break;
+        }
     }
     return HdVoid;
 }
@@ -1147,7 +1192,7 @@ int  findrefs_recursion ( Obj root, Obj hd, refs_search_t* result ) {
     return 0;
 }
 
-Bag  findrefs_global( Obj hd ) {
+Bag  findrefs_global(STREAM stream, Obj hd ) {
     char* mem_err = "Cannot allocate enough memory.\n";
     UInt i;
     Bag list;
@@ -1159,14 +1204,16 @@ Bag  findrefs_global( Obj hd ) {
     result.list = malloc(result.list_capacity*SIZE_HD);
     
     if (result.list==0) {
-        Pr(mem_err, 0, 0);
+        //Pr(mem_err, 0, 0);
+        SyFmtPrint(stream, mem_err);
         return NewList(0);
     }
     
     for (i = 0; i < GlobalBags.nr; i++) {
         if(findrefs_recursion(*GlobalBags.addr[i], hd, &result)) {
             if (result.mem_err) {
-                Pr(mem_err, 0, 0);
+                //Pr(mem_err, 0, 0);
+                SyFmtPrint(stream, mem_err);
                 free(result.list);
                 return NewList(0);
             }
@@ -1197,7 +1244,7 @@ Bag  FunFindRefs( Bag hdCall ) {
             by_value = EVAL(PTR_BAG(hdCall)[2]) == HdTrue;
         case 2 * SIZE_HD: {
             hd = (by_value) ? EVAL(PTR_BAG(hdCall)[1]) : PTR_BAG(hdCall)[1];
-            return findrefs_global(hd);
+            return findrefs_global(stdout_stream, hd);
             break;
         }
     }   

@@ -989,7 +989,7 @@ Bag       LtWord (Bag hdL, Bag hdR)
 **  'PrSword' prints a sparse word in generators/exponent form. The empty word
 **  is printed as "IdAgWord".
 */
-void        PrSword (Bag hdWrd)
+void        PrSword (STREAM stream, Bag hdWrd, int indent)
 {
     Bag       * ptLst;
     TypSword        * ptWrd;
@@ -997,7 +997,8 @@ void        PrSword (Bag hdWrd)
     ptWrd = (TypSword*)( PTR_BAG( hdWrd ) + 1 );
     if ( ptWrd[ 0 ] == -1 )
     {
-        Pr( "IdWord",  0,  0 );
+        //Pr( "IdWord",  0,  0 );
+        SyFmtPrint(stream, "IdWord");
     }
     else
     {
@@ -1008,18 +1009,24 @@ void        PrSword (Bag hdWrd)
             ptLst = PTR_BAG( *PTR_BAG( hdWrd ) ) + 1;
 
         if ( ptWrd[ 1 ] == 1 )
-            Pr( "%s", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]])+1)+1),  0 );
+            //Pr( "%s", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]])+1)+1),  0 );
+            SyFmtPrint(stream, "%s", ((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1));
         else
-            Pr( "%s^%d",(Int)((char*)(PTR_BAG(ptLst[ptWrd[0]])+1)+1),ptWrd[1] );
+            //Pr( "%s^%d",(Int)((char*)(PTR_BAG(ptLst[ptWrd[0]])+1)+1),ptWrd[1] );
+            SyFmtPrint(stream, "%s^%d",((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1), ptWrd[1]); //-GS4
         ptWrd += 2;
         while ( ptWrd[ 0 ] != -1 )
         {
             if ( ptWrd[ 1 ] != 1 )
-                Pr( "*%s^%d",
-                    (Int)((char*)(PTR_BAG(ptLst[ ptWrd[0] ])+1)+1),
-                    ptWrd[ 1 ] );
+               // Pr( "*%s^%d",
+               //     (Int)((char*)(PTR_BAG(ptLst[ ptWrd[0] ])+1)+1),
+               //     ptWrd[ 1 ] );
+               SyFmtPrint(stream, "*%s^%d",
+                   ((char*)(PTR_BAG(ptLst[ ptWrd[0] ])+1)+1),
+                   ptWrd[ 1 ] );
             else
-                Pr( "*%s", (Int)((char*)(PTR_BAG(ptLst[ ptWrd[0] ])+1)+1),  0 );
+              //  Pr( "*%s", (Int)((char*)(PTR_BAG(ptLst[ ptWrd[0] ])+1)+1),  0 );
+               SyFmtPrint(stream, "*%s", (Int)((char*)(PTR_BAG(ptLst[ptWrd[0]]) + 1) + 1));
             ptWrd += 2;
         }
     }
@@ -1034,14 +1041,15 @@ void        PrSword (Bag hdWrd)
 **  words are printed  in  generators/exponent  form,  ie,  "a^-1*a^-1*b"  is
 **  printed as "a^-2 * b".
 */
-void            PrWord (Bag hdWrd)
+void   PrWord(STREAM stream, Bag hdWrd, int indent)
 {
     Int            nr, i, exp;
 
     nr = GET_SIZE_BAG( hdWrd ) / SIZE_HD;
     if ( nr == 0 )
     {
-        Pr( "IdWord",  0,  0 );
+        //Pr( "IdWord",  0,  0 );
+        SyFmtPrint(stream, "IdWord");
     }
     else
     {
@@ -1049,7 +1057,8 @@ void            PrWord (Bag hdWrd)
         while ( i < nr )
         {
             if ( PTR_BAG( hdWrd )[ i ] == 0 )
-               Pr( "~",  0,  0 );
+               //Pr( "~",  0,  0 );
+                SyFmtPrint(stream, "~");
             else
             {
                exp = 1;
@@ -1061,16 +1070,21 @@ void            PrWord (Bag hdWrd)
                if ( *( (char*) ( PTR_BAG( PTR_BAG( hdWrd )[ i ] ) + 1 ) ) == '-' )
                    exp *= -1;
                if ( exp == 1 )
-                   Pr( "%s",
-                       (Int) ( (char*)( PTR_BAG( PTR_BAG( hdWrd )[i] ) + 1 ) + 1 ),
-                        0 );
+                  // Pr( "%s",
+                  //     (Int) ( (char*)( PTR_BAG( PTR_BAG( hdWrd )[i] ) + 1 ) + 1 ),
+                  //      0 );
+                   SyFmtPrint(stream, "%s", ((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1));
                else
-                   Pr( "%s^%d",
-                       (Int) ( (char*)( PTR_BAG( PTR_BAG( hdWrd )[i] ) + 1 ) + 1 ),
-                       (Int) exp );
+                  // Pr( "%s^%d",
+                  //     (Int) ( (char*)( PTR_BAG( PTR_BAG( hdWrd )[i] ) + 1 ) + 1 ),
+                  //     (Int) exp );
+                   SyFmtPrint(stream,
+                       ((char*)(PTR_BAG(PTR_BAG(hdWrd)[i]) + 1) + 1),
+                       exp);
             }
             if ( i != nr - 1 )
-                Pr( "*",  0,  0 );
+                //Pr( "*",  0,  0 );
+                SyFmtPrint(stream, "*");
             i++;
         }
     }

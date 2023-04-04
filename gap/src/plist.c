@@ -779,7 +779,7 @@ Bag       MakeList (Bag hdDst, Int ind, Bag hdLiteral)
 **
 **  'PrMakeList' prints the list literal <hdMake>.
 */
-void            PrMakeList (Bag hdMake)
+void    PrMakeList ( STREAM stream, Bag hdMake, int indent )
 {
     Int                lenList;        /* logical length of <list>        */
     Bag           hdElm;          /* one element from <list>         */
@@ -789,18 +789,23 @@ void            PrMakeList (Bag hdMake)
     lenList = LEN_PLIST( hdMake );
 
     /* loop over the entries                                               */
-    Pr("%2>[ %2>",0,0);
+    //**INDENT** Pr( "%2>[ %2>",0,0 );
+    SyFmtPrint ( stream, "[ " );
     for ( i = 1;  i <= lenList;  i++ ) {
         hdElm = ELM_PLIST( hdMake, i );
         if ( hdElm != 0 ) {
-            if ( 1 < i )  Pr("%<,%< %2>",0,0);
-            Print( hdElm );
+            if ( 1 < i )  //**INDENT** Pr( "%<,%< %2>",0,0 );
+                SyFmtPrint ( stream, ", " );
+            // Print( hdElm );
+            PrintObj ( stream, hdElm, indent );
         }
         else {
-            if ( 1 < i )  Pr("%2<,%2>",0,0);
+            if ( 1 < i )  //**INDENT** Pr( "%2<,%2>",0,0 );
+                SyFmtPrint ( stdout_stream, "," );
         }
     }
-    Pr(" %4<]",0,0);
+    //**INDENT** Pr( " %4<]",0,0 );
+    SyFmtPrint ( stream, " ]" );
 }
 
 

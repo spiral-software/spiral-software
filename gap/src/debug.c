@@ -29,7 +29,7 @@ extern Obj  DbgStackExec();
 extern Int  DbgDown();
 extern Int  DbgUp();
 extern Int  inBreakLoop();
-extern void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt printValues );
+extern void PrintBacktraceExec ( STREAM stream, Bag hdExec, UInt execDepth, UInt execStackDepth, UInt printValues );
 extern UInt DbgExecStackDepth();
 
 static char brkField_statement[] = "statement";
@@ -331,8 +331,8 @@ StepOver() - F10; StepInto() - F11; StepOut() - F8.\n";
 void    EnterDebugMode() {
     int t;
     if (InDebugMode == 0) {
-        // Pr( EnteringDbgMode, 0, 0 );
-        SyFmtPrint ( stdout_stream, EnteringDbgMode );
+        //Pr(EnteringDbgMode, 0, 0);
+        SyFmtPrint(stdout_stream, "%s", EnteringDbgMode);
         for(t=0; t<T_ILLEGAL; ++t) {
             OrigEvTab[t] = EvTab[t];
             EvTab[t] = DebugEVAL;
@@ -440,8 +440,9 @@ is matched, even if condition function returns false.\n\
     
     
 Obj FunDebugHelp ( Obj hdCall ) {
-    // Pr( HelpText, 0, 0 );
-    SyFmtPrint ( stdout_stream, HelpText );
+
+    //Pr(HelpText, 0, 0);
+    SyFmtPrint(stdout_stream, "%s", HelpText);
     return HdVoid;
 }
 
@@ -616,7 +617,8 @@ Int     TopPr_Printing;
 UInt    TopPr_CurDepth;
 UInt    TopPr_MaxDepth;
 
-static void TopPr ( Obj hd ) {
+static void     TopPr ( STREAM stream, Obj hd, int indent )
+{
     UInt hasFlag, highlight = 0; 
     if (hd==0 || IS_INTOBJ(hd)) {
         (*OrigPrTab[GET_TYPE_BAG(hd)])(hd);
@@ -698,29 +700,33 @@ Obj  FunTop ( Obj hdCall ) {
         // first time figure out what to highlight, this is not precise
         // but better than nothing. Redirect output to /dev/null and traverse
         // bags that will be printed.
+#if BESPOKE_IO
 #ifdef WIN32
         OpenOutput("NUL");
 #else
         OpenOutput("/dev/null");
 #endif
+#endif                  // BESPOKE_IO
         TopPr_CurDepth = 0; // current tree depth (in marked bags)
         TopPr_MaxDepth = 0; // maximal tree depth (in marked bags)
         Try {
             TopPr_Printing = 0; // we are going to calculate  max depth first
             // Pr( "%g\n", (Int)top, 0 );
-            SyFmtPrint ( stdout_stream, "%g\n", top );
+            PrintObj ( stdout_stream, top, 0 );
+            SyFmtPrint ( stdout_stream, "\n" );
             // closing /dev/null and return to previous output
-            CloseOutput();
+            // CloseOutput();
         } Catch(e) {
-            CloseOutput();
+            // CloseOutput();
             Throw(e);
         }
         TopPr_Printing = 1; // now we are going to print function
         TopPr_CurDepth = 0; // reset tree depth, all what marked by BF_ON_EVAL_STACK
                             // flag and has TopPr_MaxDepth will be highlighted (with 
                             // children).
-        // Pr( "%g\n", (Int)top, 0 );
-        SyFmtPrint ( stdout_stream, "%g\n", top );
+        //Pr ( "%g\n", (Int)top, 0 );
+        PrintObj ( stdout_stream, top, 0 );
+        SyFmtPrint ( stdout_stream, "\n" );
     } Catch(e) {
         UnhookPrTab();
         Throw(e);
@@ -780,12 +786,12 @@ Obj  FunDown ( Obj hdCall ) {
     while (levels-->0) {
         if ( !DbgDown() ) { 
             // Pr( errText, 0, 0 );
-            SyFmtPrint ( stdout_stream, errText );
+            SyFmtPrint ( stdout_stream, "%s", errText );
             break;
         }
     }
     levels = DbgExecStackDepth();
-    PrintBacktraceExec(HdExec, levels-DbgStackTop, levels, 0);
+    PrintBacktraceExec ( stdout_stream, HdExec, levels-DbgStackTop, levels, 0 );
     return HdVoid;
 }
 
@@ -798,12 +804,12 @@ Obj  FunUp ( Obj hdCall ) {
     while (levels-->0) {
         if ( !DbgUp() ) { 
             // Pr( errText, 0, 0 );
-            SyFmtPrint ( stdout_stream, errText );
+            SyFmtPrint ( stdout_stream, "%s", errText );
             break;
         }
     }
     levels = DbgExecStackDepth();
-    PrintBacktraceExec(HdExec, levels-DbgStackTop, levels, 0);
+    PrintBacktraceExec ( stdout_stream, HdExec, levels-DbgStackTop, levels, 0);
     return HdVoid;
 }
 

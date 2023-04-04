@@ -566,7 +566,7 @@ Bag       EvFunccall (Bag hdCall)
         //**INDENT** Pr( "%< returns ",0,0 );
         SyFmtPrint ( stdout_stream, "\n" );
         PrintObj ( stdout_stream, PTR_BAG(hdCall)[0], 0 );
-        SyFmtPrint ( stdout_stream, " returns ",0,0 );
+        SyFmtPrint ( stdout_stream, " returns " );
         if ( hdRes != HdVoid )  // Print( hdRes );
             PrintObj ( stdout_stream, hdRes, 0 );
         //**INDENT** Pr( "%< ",0,0 );
@@ -980,7 +980,7 @@ Bag FunApplyFunc (Bag hdCall)
 
 /****************************************************************************
 **
-*F  PrFuncint( <hdFun> )  . . . . . . . . . . . .  print an internal function
+*F  PrFuncint( stream, <hdFun>, indent )  . . . .  print an internal function
 **
 **  'PrFuncint' prints the internal function with the handle  <hdFun> in  the
 **  short form: 'function (...) internal; end'.
@@ -998,8 +998,8 @@ void    PrFuncint ( STREAM stream, Obj hdFun, int indent )
 
 /****************************************************************************
 **
-*F  PrFunction( <hdFun> ) . . . . . . . . . . . . . . . . .  print a function
-*F  PrMethod( <hdFun> ) . . . . . . . . . . . . . . . . . . .  print a method
+*F  PrFunction( stream, <hdFun>, indent ) . . . . . . . . .  print a function
+*F  PrMethod( stream, <hdFun>, indent ) . . . . . . . . . . .  print a method
 **
 **  'PrFunction' prints the function with the handle <hdFun>  either  in  the
 **  short format:
@@ -1102,7 +1102,7 @@ void    PrMethod ( STREAM stream, Bag hdFun, int indent )
 
 /****************************************************************************
 **
-*F  PrintFunction( <hdFun> )  . . . . . . . print a function in the full form
+*F  PrintFunction( stream, <hdFun>, indent ) . . Print a function (full form)
 **
 **  'PrintFunction' prints the function with the handle <hdFun> in  the  full
 **  form, i.e., with the statement sequence.  It is called from main read-eval
@@ -1117,7 +1117,7 @@ void    PrintFunction ( STREAM stream, Bag hdFun, int indent )
 
 /****************************************************************************
 **
-*F  PrintMethod( <hdFun> )  . . . . . . . . . print a method in the full form
+*F  PrintMethod( stream, <hdFun>, indent ) . . . . print a method (full form)
 **
 **  Same as 'PrintFunction' but for a method.
 */
@@ -1130,7 +1130,7 @@ void    PrintMethod ( STREAM stream, Bag hdFun, int indent )
 
 /****************************************************************************
 **
-*F  PrFunccall( <hdCall> )  . . . . . . . . . . . . . . print a function call
+*F  PrFunccall( stream, <hdCall>, indent )  . . . . . . print a function call
 **
 **  'PrFunccall' prints the function call with the  handle  <hdCall>  in  the
 **  usual form:  '<function>( <args> )'.
@@ -1162,7 +1162,7 @@ void    PrFunccall ( STREAM stream, Bag hdCall, int indent )
 
 /****************************************************************************
 **
-**  PrReturn( <hdRet> ) . . . . . . . . . . . . . .  print a return statement
+**  PrReturn( stream, <hdRet>, indent ) . . . . . .  print a return statement
 **
 **  'PrReturn' prints the return statement with the  handle  <hdRet>  in  the
 **  usual form 'return;' or 'return <expr>;'.

@@ -127,23 +127,31 @@ Bag       LtChar (Bag hdL, Bag hdR)
 
 /****************************************************************************
 **
-*F  PrChar( <hdChr> ) . . . . . . . . . . . . . . . . . . . print a character
+*F  PrChar( stream, <hdChr>, indent ) . . . . . . . . . . . print a character
 **
 **  'PrChar' prints the character <hdChr>.
 */
-void            PrChar (Bag hdChr)
+void    PrChar ( STREAM stream, Bag hdChr, int indent )
 {
     unsigned char       chr;
 
     chr = *(unsigned char*)PTR_BAG(hdChr);
-    if      ( chr == '\n'  )  Pr("'\\n'",0,0);
-    else if ( chr == '\t'  )  Pr("'\\t'",0,0);
-    else if ( chr == '\r'  )  Pr("'\\r'",0,0);
-    else if ( chr == '\b'  )  Pr("'\\b'",0,0);
-    else if ( chr == '\03' )  Pr("'\\c'",0,0);
-    else if ( chr == '\''  )  Pr("'\\''",0,0);
-    else if ( chr == '\\'  )  Pr("'\\\\'",0,0);
-    else                      Pr("'%c'",(Int)chr,0);
+    if      ( chr == '\n'  )  // Pr( "'\\n'",0,0 );
+        SyFmtPrint ( stream, "'\\n'" );
+    else if ( chr == '\t'  )  // Pr( "'\\t'",0,0 );
+        SyFmtPrint ( stream, "'\\t'" );
+    else if ( chr == '\r'  )  // Pr( "'\\r'",0,0 );
+        SyFmtPrint ( stream, "'\\r'" );
+    else if ( chr == '\b'  )  // Pr( "'\\b'",0,0 );
+        SyFmtPrint ( stream, "'\\b'" );
+    else if ( chr == '\03' )  // Pr( "'\\c'",0,0 );
+        SyFmtPrint ( stream, "'\\c'" );
+    else if ( chr == '\''  )  // Pr( "'\\''",0,0 );
+        SyFmtPrint ( stream, "'\\''" );
+    else if ( chr == '\\'  )  // Pr( "'\\\\'",0,0 );
+        SyFmtPrint ( stream, "'\\\\'" );
+    else                      // Pr( "'%c'",(Int)chr,0 );
+        SyFmtPrint ( stream, "'%c'", chr );
 
 }
 
@@ -541,42 +549,53 @@ Bag       LtString (Bag hdL, Bag hdR)
 
 /****************************************************************************
 **
-*F  PrString( <hdStr> ) . . . . . . . . . . . . . . . . . . .  print a string
+*F  PrString( stream, <hdStr>, indent ) . . . . . . . . . . .  print a string
 **
 **  'PrString' prints the string with the handle <hdStr>.
 **
 **  No linebreaks are allowed, if one must be inserted  anyhow,  it  must  be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-void            PrString (Bag hdStr)
+void    PrString ( STREAM stream, Bag hdStr, int indent )
 {
     char                * p;
 
-    Pr("\"",0,0);
+    // Pr( "\"",0,0 );
+    SyFmtPrint ( stream, "\"" );
     for ( p = (char*)PTR_BAG(hdStr); *p != '\0'; ++p ) {
-        if      ( *p == '\n'  )  Pr("\\n",0,0);
-        else if ( *p == '\t'  )  Pr("\\t",0,0);
-        else if ( *p == '\r'  )  Pr("\\r",0,0);
-        else if ( *p == '\b'  )  Pr("\\b",0,0);
-        else if ( *p == '\03' )  Pr("\\c",0,0);
-        else if ( *p == '"'   )  Pr("\\\"",0,0);
-        else if ( *p == '\\'  )  Pr("\\\\",0,0);
-        else                     Pr("%c",(Int)*p,0);
+        if      ( *p == '\n'  )  // Pr( "\\n",0,0 );
+            SyFmtPrint ( stream, "\\n" );
+        else if ( *p == '\t'  )  // Pr( "\\t",0,0 );
+            SyFmtPrint ( stream, "\\t" );
+        else if ( *p == '\r'  )  // Pr( "\\r",0,0 );
+            SyFmtPrint ( stream, "\\r" );
+        else if ( *p == '\b'  )  // Pr( "\\b",0,0 );
+            SyFmtPrint ( stream, "\\b" );
+        else if ( *p == '\03' )  // Pr( "\\c",0,0 );
+            SyFmtPrint ( stream, "\\c" );
+        else if ( *p == '"'   )  // Pr( "\\\"",0,0 );
+            SyFmtPrint ( stream, "\\\"" );
+        else if ( *p == '\\'  )  // Pr( "\\\\",0,0 );
+            SyFmtPrint ( stream, "\\\\" );
+        else                     // Pr( "%c",(Int)*p,0 );
+            SyFmtPrint ( stream, "%c", *p );
     }
-    Pr("\"",0,0);
+    // Pr( "\"",0,0 );
+    SyFmtPrint ( stream, "\"" );
 }
 
 
 /****************************************************************************
 **
-*F  PrintString( <hdStr> )  . . . . . . . . . . .  print a string for 'Print'
+*F  PrintString( stream, <hdStr>, indent )  . . .  print a string for 'Print'
 **
 **  'PrintString' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-void            PrintString (Bag hdStr)
+void    PrintString ( STREAM stream, Bag hdStr, int indent )
 {
-    Pr( "%s", (Int)(char*)PTR_BAG(hdStr), 0 );
+    // Pr(  "%s", (Int)(char*)PTR_BAG(hdStr), 0  );
+    SyFmtPrint ( stream,  "%s", PTR_BAG(hdStr) );
 }
 
 

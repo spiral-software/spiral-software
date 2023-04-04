@@ -1090,7 +1090,7 @@ Obj DefaultPrRec ( Obj hdRec ) { //GS4 -- this needs to be changed to STREAM str
         //**INDENT**Pr("%< := %>",0,0);
         //Print( PTR_BAG(hdRec)[2*i+1] );
         SyFmtPrint(global_stream, " := ");
-        PrintObj(global_stream, PTR_BAG(hdRec)[2 * i + 1]);
+        PrintObj ( global_stream, PTR_BAG(hdRec)[2 * i + 1], 0 );
     }
     if (pr_populated)
         //**INDENT** Pr(" %4<)",0,0);
@@ -1158,9 +1158,9 @@ void            PrRecElm (STREAM stream, Bag hdElm, int indent)
 void            PrRecAss (STREAM stream, Bag hdAss, int indent)
 {
     //**INDENT**Pr( "%2>", 0, 0 );
-    Print( PTR_BAG(hdAss)[0] );
+    // Print( PTR_BAG(hdAss)[0] );
     //**INDENT**Pr( "%< %>:= ", 0, 0 );
-    Print( PTR_BAG(hdAss)[1] );
+    // Print( PTR_BAG(hdAss)[1] );
     //**INDENT**Pr( "%2<", 0, 0 );
     
     SyFmtPrint(stream, ">");

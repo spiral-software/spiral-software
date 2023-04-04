@@ -1173,19 +1173,16 @@ void            PrRecAss (STREAM stream, Bag hdAss, int indent)
 
 /****************************************************************************
 **
-*F  PrRecName( <hdName> ) . . . . . . . . . . . . . print a record field name
+*F  PrRecName( stream, <hdName>, indent )   . . . . print a record field name
 **
 */
-void            PrRecName (STREAM stream, Bag hdNam, int indent)
+void    PrRecName ( STREAM stream, Bag hdNam, int indent )
 {
     //Pr("RecName(\"", 0, 0);
-    SyFmtPrint(stream, "RecName(\"");
-
-    PrVarName(stream, RECNAM_NAME(hdNam), 0);
-
+    SyFmtPrint ( stream, "RecName(\"" );
+    PrVarName ( stream, RECNAM_NAME(hdNam) );
     //Pr("\")", 0, 0);
-    SyFmtPrint(stream, "\")");
-
+    SyFmtPrint ( stream, "\")" );
 }
 
 

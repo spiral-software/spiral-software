@@ -221,6 +221,14 @@ extern  char            SyInitfiles [16] [256];
 */
 extern  Int            SyFopen ( char * name, char * mode );
 
+// SyFileOpen is an analog of SyFopen that returns a file pointer rather than a
+// file id.
+// SyFileClose is an analog of SyFclose that accepts a file pointer instead of
+// file id.
+
+extern  FILE *SyFileOpen ( char *name, char *mode );
+extern  void SyFileClose ( FILE *file );
+
 
 /****************************************************************************
 **

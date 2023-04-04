@@ -44,7 +44,7 @@
 #include 	"plist.h"
 #include	"integer.h"
 
-extern void Print(Bag);
+// extern void Print(Bag);
 #ifdef __INTEL_COMPILER
 #pragma warning( disable : 170 )
 #endif
@@ -348,7 +348,7 @@ FILE* InputLogfile = (FILE*)NULL;
 char            GetLine (void)
 {
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
-    if ( Input->file == 0 ) {
+    if ( Input->fid /* file */ == 0 ) {
         if ( ! SyQuiet ) 
             //Pr( "%s%c", (Int)Prompt, (Int)'\03' );
             SyFmtPrint(stdout_stream, "%s", Prompt); //GS4 - Should be global probably 
@@ -356,7 +356,7 @@ char            GetLine (void)
             //Pr( "%c", (Int)'\03', 0 );
             SyFmtPrint(stdout_stream, "%c", '\03');
     }
-    else if ( Input->file == 2 ) {
+    else if ( Input->fid /* file */ == 2 ) {
         //Pr( "%s%c", (Int)Prompt, (Int)'\03' );
         SyFmtPrint(stdout_stream, "%s%c", Prompt, '\03');
     }
@@ -371,16 +371,16 @@ char            GetLine (void)
 
  
     /* try to read a line                                        */
-   if ( ! SyFgets( In, sizeof(Input->line), Input->file ) ) {
+    if ( ! SyFgets( In, sizeof(Input->line), Input->fid /* file */ ) ) {
         In[0] = '\377';  In[1] = '\0';
         return *In;
     }
 
     /* if neccessary echo the line to the logfile                          */
-    if ( Logfile != (FILE*)NULL && (Input->file == stdin))
-        SyFputs( In, Logfile );
-    if ( InputLogfile != (FILE*)NULL && (Input->file == stdin))
-        SyFputs( In, InputLogfile );
+    if ( Logfile != (FILE*)NULL && (Input->fid == 0))
+        SyFputs( In, fileno(Logfile) );
+    if ( InputLogfile != (FILE*)NULL && (Input->fid == 2))
+        SyFputs( In, fileno(InputLogfile) );
 
         /* return the current character                                        */
     return *In;
@@ -1228,7 +1228,8 @@ Int            OpenInput (char *filename)
 
     /* enter the file identifier and the file name                         */
     Input++;
-    Input->file = file;
+    Input->fid = file;
+    //  Input->file = (FILE *)NULL;         // unknown
     Input->name[0] = '\0';
     strncat( Input->name, filename, sizeof(Input->name) );
 
@@ -1277,7 +1278,7 @@ Int            CloseInput (void)
     /**/HookBeforeCloseInput();/**/
 
     /* close the input file                                                */
-    SyFclose( Input->file );
+    SyFclose( Input->fid /* file */ );
 
     /* revert to last file                                                 */
     Input--;
@@ -1328,7 +1329,7 @@ Bag		GReadFile()
 
 	hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
 
-	while(SyFgets(Input->line, 2048, Input->file)) {
+	while(SyFgets(Input->line, 2048, Input->fid /* file */)) {
 		slen = strlen(Input->line);
 		Input->line[slen-1] = '\0';
 		hd = NewBag( T_STRING, slen );
@@ -1623,26 +1624,19 @@ Int            OpenAppend (char *filename)
 **  '*errout*' to the file with  name <filename>.  The  file is truncated  to
 **  size 0 if it existed, otherwise it is created.
 **
-**  'OpenLog' returns 1 if it could  successfully open <filename> for writing
-**  and 0  to indicate failure.   'OpenLog' will  fail if  you do  not   have
-**  permissions  to create the file or   write to  it.  'OpenOutput' may also
-**  fail if you have too many files open at once.  It is system dependent how
-**  many   are too   many, but  16   files should  work everywhere.   Finally
-**  'OpenLog' will fail if there is already a current logfile.
+**  'OpenLog' returns the file handle if it successfully opened <filename> for
+**  writing and NULL to indicate failure.  'OpenLog' will fail if you do not
+**  have permissions to create the file or write to  it.  If there is already
+**  a current logfile, then the handle of that file is returned.
 */
-FILE *OpenLog (char *filename)
+FILE    *OpenLog (char *filename)
 {
-
-    /* refuse to open a logfile if we already log to one                   */
-    if (Logfile != (FILE *)NULL) return Logfile;
+    /* Return the handle of the existing open file is there is one         */
+    if ( Logfile != (FILE *)NULL ) return Logfile;
 
     /* try to open the file                                                */
-    Logfile = SyFopen( filename, "w" );
-    if ( Logfile == -1 )
-        return 0;
-
-    /* otherwise indicate success                                          */
-    return 1;
+    Logfile = SyFileOpen ( filename, "w" );
+    return Logfile;
 }
 
 
@@ -1657,14 +1651,14 @@ FILE *OpenLog (char *filename)
 **  'CloseLog' will fail if there is no logfile active and will return  0  in
 **  this case.
 */
-Int            CloseLog (void)
+Int     CloseLog ( void )
 {
     /* refuse to close a non existent logfile                              */
     if ( Logfile == (FILE *)NULL)
         return 0;
 
     /* close the logfile                                                   */
-    SyFclose( Logfile );
+    SyFileClose ( Logfile );
     Logfile = (FILE *)NULL;
 
     /* indicate success                                                    */
@@ -1680,22 +1674,19 @@ Int            CloseLog (void)
 **  '*stdin*' and  '*errin*' to the file  with  name <filename>.  The file is
 **  truncated to size 0 if it existed, otherwise it is created.
 **
-**  'OpenInputLog' returns 1  if it  could successfully open  <filename>  for
-**  writing  and  0 to indicate failure.  'OpenInputLog' will fail  if you do
-**  not have  permissions to create the file  or write to it.  'OpenInputLog'
-**  may also fail  if you  have  too many  files open  at once.  It is system
-**  dependent  how many are too many,  but 16 files  should work  everywhere.
-**  Finally 'OpenInputLog' will fail if there is already a current logfile.
+**  'OpenInputLog' returns the handle to <filename> upon success and returns
+**  NULL to indicate failure.  'OpenInputLog' will fail  if you do  not have
+**  permissions to create the file  or write to it.  If there is already a 
+**  current logfile, then its handle is returned.
 */
-FILE *OpenInputLog (char *filename)
-{
 
-    /* refuse to open a logfile if we already log to one                   */
-    if (InputLogfile != (FILE*)NULL) return InputLogfile;
+FILE    *OpenInputLog ( char *filename )
+{
+    /* Return the handle of the existing open file is there is one         */
+    if ( InputLogfile != (FILE *)NULL ) return InputLogfile;
 
     /* try to open the file                                                */
-    InputLogfile = SyFopen( filename, "w" );
-    
+    InputLogfile = SyFileOpen ( filename, "w" );
     return InputLogfile;
 }
 
@@ -1711,14 +1702,14 @@ FILE *OpenInputLog (char *filename)
 **  'CloseInputLog' will fail if there is no logfile active and will return 0
 **  in this case.
 */
-Int            CloseInputLog (void)
+Int     CloseInputLog ( void )
 {
     /* refuse to close a non existent logfile                              */
     if ( InputLogfile == (FILE *)NULL )
         return 0;
 
     /* close the logfile                                                   */
-    SyFclose( InputLogfile );
+    SyFileClose ( InputLogfile );
     InputLogfile = (FILE *)NULL;
 
     /* indicate success                                                    */
@@ -1756,8 +1747,8 @@ void            InitScanner (void)
     Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
 #endif      // BESPOKE_IO
 
-    Logfile = -1;  
-    InputLogfile = -1;
+    Logfile = (FILE *)NULL;  
+    InputLogfile = (FILE *)NULL;
 }
 
 

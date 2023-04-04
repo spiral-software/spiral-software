@@ -1045,7 +1045,7 @@ Bag       FunAUTO (Bag hdCall)
     return HdVoid;
 }
 
-#if NEWFUNC_ADDED
+//  #if NEWFUNC_ADDED
 
 /****************************************************************************
 **
@@ -1087,7 +1087,7 @@ void printOneBag ( STREAM stream, Bag hd )
     }
 }
 
-#endif          // NEWFUNC_ADDED
+//  #endif          // NEWFUNC_ADDED
 
 
 /****************************************************************************
@@ -1129,8 +1129,6 @@ Bag       FunPrint (Bag hdCall)
 	Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
 #if NEWFUNC_ADDED
-        printOneBag ( global_stream, hd );
-#else
         type = GET_TYPE_BAG( hd );
         if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
             PrintString ( stdout_stream, hd, 0 );
@@ -1146,6 +1144,8 @@ Bag       FunPrint (Bag hdCall)
             PrintObj ( stdout_stream, hd, 0 );
         else  /*hd = Error("function must return a value",0,0);*/
             ;
+#else
+        printOneBag ( global_stream, hd );
 #endif          // NEWFUNC_ADDED
     }
 
@@ -1228,7 +1228,7 @@ Bag       FunPrintTo(Bag hdCall)
 
     /* try to open the given output file, raise an error if you can not    */
     filename = (char *)PTR_BAG(hd);
-    file = SyFopen ( filename, "w" );
+    file = SyFileOpen ( filename, "w" );
     if ( file == (FILE *)NULL )
         return Error ( "PrintTo: can not open the file for writing", 0, 0 );
 
@@ -1241,8 +1241,6 @@ Bag       FunPrintTo(Bag hdCall)
         Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
 #if NEWFUNC_ADDED
-        printOneBag ( stream, hd );
-#else
         type = GET_TYPE_BAG( hd );
         if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
             PrintString ( stream, hd, 0 );
@@ -1258,12 +1256,14 @@ Bag       FunPrintTo(Bag hdCall)
             PrintObj ( stream, hd, 0 );
         else  /*hd = Error("function must return a value",0,0);*/
             ;
+#else
+        printOneBag ( stream, hd );
 #endif          // NEWFUNC_ADDED
     }
 
     /* close the output file again, and return nothing                     */
     global_stream = save_stream;
-    SyFclose(streamFile(stream));
+    SyFileClose ( streamFile(stream) );
 
     return HdVoid;
 }
@@ -1293,8 +1293,6 @@ Bag       FunPrntToString (Bag hdCall)
         Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
 #if NEWFUNC_ADDED
-        printOneBag ( stream, hd );
-#else
         type = GET_TYPE_BAG( hd );
         if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
             PrintString ( stream, hd, 0 );
@@ -1310,6 +1308,8 @@ Bag       FunPrntToString (Bag hdCall)
             PrintObj ( stream, hd, 0 );
         else  /*hd = Error("function must return a value",0,0);*/
             ;
+#else
+        printOneBag ( stream, hd );
 #endif          // NEWFUNC_ADDED
     }
 
@@ -1382,7 +1382,7 @@ Bag       FunAppendTo (Bag hdCall)
 
     /* try to open the given output file, raise an error if you can not    */
     filename = (char *)PTR_BAG(hd);
-    file = SyFopen ( filename, "a" );
+    file = SyFileOpen ( filename, "a" );
     if ( file == (FILE *)NULL )
         return Error("PrintTo: can not open the file for writing", 0, 0);
 
@@ -1395,8 +1395,6 @@ Bag       FunAppendTo (Bag hdCall)
         Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
 #if NEWFUNC_ADDED
-        printOneBag ( stream, hd );
-#else
         type = GET_TYPE_BAG( hd );
         if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
             PrintString ( stream, hd, 0 );
@@ -1412,12 +1410,14 @@ Bag       FunAppendTo (Bag hdCall)
             PrintObj ( stream, hd, 0 );
         else  /*hd = Error("function must return a value",0,0);*/
             ;
+#else
+        printOneBag ( stream, hd );
 #endif          // NEWFUNC_ADDED
     }
 
     /* close the output file again, and return nothing                     */
     global_stream = save_stream;
-    SyFclose(streamFile(stream));
+    SyFileClose ( streamFile(stream) );
 
     return HdVoid;
 }
@@ -1443,8 +1443,6 @@ Bag     FunPrintToString ( Bag hdCall )
         Int type;
         hd = EVAL(PTR_BAG(hdCall)[i]);
 #if NEWFUNC_ADDED
-        printOneBag ( stream, hd );
-#else
         type = GET_TYPE_BAG( hd );
         if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
             PrintString ( stream, hd, 0 );
@@ -1460,6 +1458,8 @@ Bag     FunPrintToString ( Bag hdCall )
             PrintObj ( stream, hd, 0 );
         else  /*hd = Error("function must return a value",0,0);*/
             ;
+#else
+        printOneBag ( stream, hd );
 #endif          // NEWFUNC_ADDED
     }
 

@@ -532,7 +532,7 @@ void InitSweepFuncBags ( UInt type, TNumSweepFuncBags sweep_func )
         str[35] = '0' + ((type/  1) % 10);
         str[36] = 0;
         strncat( str, " already installed\n", 19 );
-        SyFputs( str, 0 );
+        SyFputs( str, fileno(stdout) /* 0 */ );
     }
 #endif
     TabSweepFuncBags[type] = sweep_func;
@@ -566,7 +566,7 @@ void InitMarkFuncBags ( UInt type, TNumMarkFuncBags mark_func )
         str[34] = '0' + ((type/  1) % 10);
         str[35] = 0;
         strncat( str, " already installed\n", 19 );
-        SyFputs( str, 0 );
+        SyFputs( str, fileno(stdout) /* 0 */ );
     }
 #endif
     TabMarkFuncBags[type] = mark_func;

@@ -100,13 +100,13 @@ Class(ISA_Bridge, rec(
 
     add := (self, class) >> class(),
 
-    printAvailableBridges := meth(self)
-        local all;
-        all := Flat(List(UserRecValues(self._table), r -> UserRecValues(r)));
-        Sort(all, (a,b) -> let(a1 := StringPrint(a.isa_from), b1 := StringPrint(b.isa_from), When(a1=b1, StringPrint(a.isa_to)<StringPrint(b.isa_to), a1<b1)));
-        Print(PrintPad("From", 27), PrintPad("To", 27), "Props\n", Replicate(60, '-'), "\n");
-        DoForAll(all, e -> Print(PrintPad(StringPrint(e.isa_from), 26), " ", PrintPad(StringPrint(e.isa_to), 26), " ", e.props, "\n"));
-    end,
+    # printAvailableBridges := meth(self)
+    #     local all;
+    #     all := Flat(List(UserRecValues(self._table), r -> UserRecValues(r)));
+    #     Sort(all, (a,b) -> let(a1 := StringPrint(a.isa_from), b1 := StringPrint(b.isa_from), When(a1=b1, StringPrint(a.isa_to)<StringPrint(b.isa_to), a1<b1)));
+    #     Print(PrintPad("From", 27), PrintPad("To", 27), "Props\n", Replicate(60, '-'), "\n");
+    #     DoForAll(all, e -> Print(PrintPad(StringPrint(e.isa_from), 26), " ", PrintPad(StringPrint(e.isa_to), 26), " ", e.props, "\n"));
+    # end,
 
     _applicable_cvt := (props, min_range, range_in, bridge) -> let(
         range_from  := bridge.isa_from.t.range(),

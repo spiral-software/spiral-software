@@ -103,7 +103,7 @@ Bag       FunApropos (Bag hdCall)
     if ( GET_TYPE_BAG(hdSubStr)!=T_STRING)
         return Error("usage: Apropos( <sub_string> )", 0,0);
 
-    Apropos(stdout_stream, hdSubStr, HdIdenttab, 1, 0);
+    Apropos( global_stream, hdSubStr, HdIdenttab, 1, 0);
     RecursiveClearFlag(HdIdenttab, BF_VISITED);
     return HdVoid;
 }
@@ -640,7 +640,7 @@ void BagInfo (STREAM stream, Obj hd) {
 Obj  FunBagInfo ( Obj hdCall ) {
     char * usage = "usage: BagInfo( <obj> )";
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
-    BagInfo(stdout_stream, EVAL(PTR_BAG(hdCall)[1]));
+    BagInfo( global_stream, EVAL(PTR_BAG(hdCall)[1]));
     return HdVoid;
 }
 
@@ -894,9 +894,9 @@ Obj  FunReachability ( Obj hdCall ) {
     //GS4 -- streamio -- reachable streams start here
 
     if ( hdRoot == 0 )
-        return reachable(stdout_stream, hd) ? HdTrue : HdFalse;
+        return reachable( global_stream, hd) ? HdTrue : HdFalse;
     else {
-        Obj res = reachableFrom(stdout_stream, hdRoot, hd) ? HdTrue : HdFalse;
+        Obj res = reachableFrom( global_stream, hdRoot, hd) ? HdTrue : HdFalse;
         RecursiveClearFlag(hdRoot, BF_VISITED);
         return res;
     }
@@ -1117,13 +1117,13 @@ Bag  FunEditDef ( Bag hdCall ) {
         case  0: 
         {
             //Pr("--no documentation--\n", 0, 0); 
-            SyFmtPrint(stdout_stream, "--no documentation--\n");
+            SyFmtPrint( global_stream, "--no documentation--\n");
             break; 
         }
         case -1: 
         {
             //Pr("--defnition not found--\n", 0, 0);
-            SyFmtPrint(stdout_stream, "--defnition not found--\n");
+            SyFmtPrint( global_stream, "--defnition not found--\n");
             break;
         }
         case  1: 
@@ -1244,7 +1244,7 @@ Bag  FunFindRefs( Bag hdCall ) {
             by_value = EVAL(PTR_BAG(hdCall)[2]) == HdTrue;
         case 2 * SIZE_HD: {
             hd = (by_value) ? EVAL(PTR_BAG(hdCall)[1]) : PTR_BAG(hdCall)[1];
-            return findrefs_global(stdout_stream, hd);
+            return findrefs_global( global_stream, hd);
             break;
         }
     }   

@@ -98,9 +98,9 @@ int execute(char *input, char *output)
 	    if ( ! GAP_SILENT ) {
 	        IsString( hd );
 	        // Print( hd );
-            PrintObj ( stdout_stream, hd, 0 );
+            PrintObj (  global_stream, hd, 0 );
 	        // Pr( "\n",0,0 );
-            SyFmtPrint ( stdout_stream, "\n" );
+            SyFmtPrint (  global_stream, "\n" );
 	    }
       }
     }

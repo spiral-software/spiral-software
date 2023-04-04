@@ -801,7 +801,7 @@ void    PrMakeList ( STREAM stream, Bag hdMake, int indent )
         }
         else {
             if ( 1 < i )  //**INDENT** Pr( "%2<,%2>",0,0 );
-                SyFmtPrint ( stdout_stream, "," );
+                SyFmtPrint (  global_stream, "," );
         }
     }
     //**INDENT** Pr( " %4<]",0,0 );

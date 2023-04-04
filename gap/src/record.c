@@ -248,7 +248,7 @@ Obj  EvBinaryRecOperator ( Obj hdOperField, char *fldString, Obj hdL, Obj hdR,
 
 /* Evaluate an operator on one record by looking up an entry in .operations.<xxx> */
 Obj  EvUnaryRecOperator ( Obj hdOperField, char *fldString, Obj hdRec,
-                          Obj (*default_op)(Obj) ) {
+                          Obj (*default_op)(STREAM, Obj, int) ) {
     Bag           hdResult;
     Bag           hdOper;
 
@@ -257,7 +257,7 @@ Obj  EvUnaryRecOperator ( Obj hdOperField, char *fldString, Obj hdRec,
         if ( default_op == 0 )
             return Error("Record: operand must have '%g'",(Int)fldString,0);
         else
-            return default_op(hdRec);
+            return default_op ( global_stream, hdRec, 0 );
     }
 
     hdResult = NewBag(T_FUNCCALL, 2*SIZE_HD);
@@ -1043,7 +1043,8 @@ Bag       HdRnPrint;
 Bag       HdStrPrint;
 Bag       HdCallPrint;
 
-Obj DefaultPrRec ( Obj hdRec ) { //GS4 -- this needs to be changed to STREAM stream  int indent
+Obj     DefaultPrRec ( STREAM stream, Obj hdRec, int indent )
+{
     UInt i;
     int  is_first_printed = 1;
     int  pr_populated = 0;
@@ -1051,10 +1052,10 @@ Obj DefaultPrRec ( Obj hdRec ) { //GS4 -- this needs to be changed to STREAM str
     /*N 05-Jun-90 martin 'PrRec' should support '~.<path>'                 */
     if (GET_TYPE_BAG(hdRec) == T_MAKETAB)
         //**INDENT** Pr("%2>tab(",0,0);
-        SyFmtPrint(global_stream, "tab(");
+        SyFmtPrint ( /* global_ */ stream, "tab(" );
     else
         //**INDENT** Pr("%2>rec(",0,0);
-        SyFmtPrint(global_stream, "rec(");
+        SyFmtPrint ( /* global_ */ stream, "rec(" );
     for ( i = 0; i < GET_SIZE_BAG(hdRec)/(2*SIZE_HD); ++i ) {
         /* print an ordinary record name                                   */
         if ( GET_TYPE_BAG( PTR_BAG(hdRec)[2*i] ) == T_RECNAM ) {
@@ -1066,38 +1067,38 @@ Obj DefaultPrRec ( Obj hdRec ) { //GS4 -- this needs to be changed to STREAM str
 
             if (!pr_populated++)
                 //**INDENT** Pr("\n%2>",0,0);
-                SyFmtPrint(global_stream, "\n");
+                SyFmtPrint ( /* global_ */ stream, "\n" );
             if (!is_first_printed)
                 //**INDENT** Pr("%2<,\n%2>",0,0);
-                SyFmtPrint(global_stream, ",\n");
+                SyFmtPrint ( /* global_ */ stream, ",\n" );
             is_first_printed = 0;
 
-            PrVarName(global_stream, name);
+            PrVarName ( /* global_ */ stream, name );
         }
         /* print an evaluating record name                                 */
         else {
             if (! pr_populated++) 
                 //**INDENT**Pr("\n%2>",0,0);
-                SyFmtPrint(global_stream, "\n");
+                SyFmtPrint ( /* global_ */ stream, "\n" );
             //Pr(" (",0,0);
             // Print( PTR_BAG(hdRec)[2*i] );
             //Pr(")",0,0);
-            SyFmtPrint(global_stream, " (");
-            PrintObj(global_stream, PTR_BAG(hdRec)[2 * i], 0);
-            SyFmtPrint(global_stream, ")");
+            SyFmtPrint ( /* global_ */ stream, " (" );
+            PrintObj ( /* global_ */ stream, PTR_BAG(hdRec)[2 * i], 0 );
+            SyFmtPrint ( /* global_ */ stream, ")" );
         }
         /* print the component                                             */
         //**INDENT**Pr("%< := %>",0,0);
         //Print( PTR_BAG(hdRec)[2*i+1] );
-        SyFmtPrint(global_stream, " := ");
-        PrintObj ( global_stream, PTR_BAG(hdRec)[2 * i + 1], 0 );
+        SyFmtPrint ( /* global_ */ stream, " := " );
+        PrintObj (   /* global_ */ stream, PTR_BAG(hdRec)[2 * i + 1], 0 );
     }
     if (pr_populated)
         //**INDENT** Pr(" %4<)",0,0);
-        SyFmtPrint(global_stream, " )");
+        SyFmtPrint ( /* global_ */ stream, " )" );
     else
         //**INDENT** Pr("%2<)",0,0);
-        SyFmtPrint(global_stream, ")");
+        SyFmtPrint ( /* global_ */ stream, ")" );
     return HdVoid;
 }
 

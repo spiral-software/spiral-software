@@ -2261,7 +2261,6 @@ STREAM stdout_stream;
 STREAM stderr_stream;
 STREAM global_stream;
 
-STREAM stderr_stream;
 
 /****************************************************************************
 **

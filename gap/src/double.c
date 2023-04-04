@@ -306,7 +306,7 @@ Obj  FunStringDouble ( Obj hdCall ) {
 *F  DblAnyPow(<hdL>,<hdR>)  . . . . . . . power of scalar and double
 **
 *F  EvDbl(<hd>)  . . . . . . . . . . . . . . . . . . evaluate double
-*F  PrDbl(<hd>) . . . . . . . . . . . . . . . . . . . print a double
+*F  PrDbl(stream, <hd>, indent) . . . . . . . . . . . print a double
 **
 */
 Obj  DblSum  (Obj l, Obj r) { return ObjDbl(DBL_OBJ(l) + DBL_OBJ(r)); }
@@ -331,7 +331,8 @@ Obj  EvDbl ( Obj hd ) { return hd; }
 
 
 
-void PrDbl ( Obj hd ) {
+void    PrDbl ( STREAM stream, Obj hd, int indent )
+{
     char buf[30];
     double n = DBL_OBJ(hd);
     double intpart;
@@ -349,7 +350,7 @@ void PrDbl ( Obj hd ) {
     else
         snprintf(buf, sizeof(buf)/sizeof(char), "%.17g", DBL_OBJ(hd));
     // Pr( "%s", (Int)buf, 0 );
-    SyFmtPrint ( stdout_stream, "%s", (Int)buf );
+    SyFmtPrint ( stdout_stream, "%s", buf );
 }
 
 /****************************************************************************

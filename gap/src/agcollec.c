@@ -2018,7 +2018,8 @@ void        InitCombinatorial (Bag hdCall, Int nr)
     if ( ! SetCWeightsAgGroup( hdGrp, HdVoid ) )
     {
         // Pr( "SetCollectorAgWord: leaves collector unchanged.\n", 0, 0 );
-        SyFmtPrint(stdout_stream, "SetCollectorAgWord: leaves collector unchanged.\n");
+
+        SyFmtPrint( global_stream, "SetCollectorAgWord: leaves collector unchanged.\n");
         RestoreCollector( hdGrp, hdOld );
         return;
     }
@@ -3095,7 +3096,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if ( LEN_LIST( hdLst ) != nrGens )
         {
             // Pr( str, (Int) "too few/many weights", 0 );
-            SyFmtPrint ( stdout_stream, str, "too few/many weights" );
+            SyFmtPrint (  global_stream, str, "too few/many weights" );
             return FALSE;
         }
         for ( i = nrGens - 1; i >= 0; i-- )
@@ -3103,7 +3104,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
             if ( GET_TYPE_BAG( PTR_BAG( hdLst )[ i + 1 ] ) != T_INT )
             {
                 // Pr( str, (Int) "weights must integers", 0 );
-                SyFmtPrint ( stdout_stream, str, "weights must integers" );
+                SyFmtPrint (  global_stream, str, "weights must integers" );
                 return FALSE;
             }
             ptWeights[ i ] = HD_TO_INT( PTR_BAG( hdLst )[ i + 1 ] );
@@ -3164,7 +3165,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
               && ptWeights[ i ] != ( ptWeights[ i-1 ] + 1 ) )
         {
             // Pr( str, (Int) "incorrect central weights", 0 );
-            SyFmtPrint ( stdout_stream, str, "incorrect central weights" );
+            SyFmtPrint (  global_stream, str, "incorrect central weights" );
             return FALSE;
         }
     }
@@ -3182,7 +3183,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if ( prime != ptIndices[ i ] )
         {
             // Pr( str, (Int) "different indices", 0 );
-            SyFmtPrint ( stdout_stream, str, "different indices" );
+            SyFmtPrint (  global_stream, str, "different indices" );
             return FALSE;
         }
 
@@ -3192,7 +3193,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if ( prime % i == 0 )
         {
             // Pr( str, (Int) "no p-group", 0 );
-            SyFmtPrint ( stdout_stream, str, "no p-group" );
+            SyFmtPrint (  global_stream, str, "no p-group" );
             return FALSE;
         }
 
@@ -3208,7 +3209,7 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         else if ( ptWeights[ i ] < ptSeries[ 0 ] )
         {
             // Pr( str, (Int) "incorrect central weights", 0 );
-            SyFmtPrint ( stdout_stream, str, "incorrect central weights" );
+            SyFmtPrint (  global_stream, str, "incorrect central weights" );
             return FALSE;
         }
     }
@@ -3227,11 +3228,11 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
                 if ( ptWeights[ *PTR_AW(hd) ] < ptWeights[i]+ptWeights[j] )
                 {
                     // Pr( str, (Int) "commutator weights do not add.", 0 );
-                    SyFmtPrint ( stdout_stream, str, "commutator weights do not add." );
+                    SyFmtPrint (  global_stream, str, "commutator weights do not add." );
                     // Pr( "#W  commutator [ %s, %s ] failed.\n",
                     //     (Int) NAME_AW( hdGrp, i ),
                     //     (Int) NAME_AW( hdGrp, j ) );
-                    SyFmtPrint ( stdout_stream, "#W  commutator [ %s, %s ].\n",
+                    SyFmtPrint (  global_stream, "#W  commutator [ %s, %s ].\n",
                                  NAME_AW( hdGrp, i ), NAME_AW( hdGrp, j ) );
                     return FALSE;
                 }
@@ -3243,10 +3244,10 @@ boolean     SetCWeightsAgGroup (Bag hdGrp, Bag hdLst)
         if ( ptWeights[ *PTR_AW( hd )] < ptWeights[ i ] + 1  )
         {
             // Pr( str, (Int) "power weight does not change", 0 );
-            SyFmtPrint ( stdout_stream, str, "power weight does not change" );
+            SyFmtPrint (  global_stream, str, "power weight does not change" );
             // Pr( "#W  power %s ^ %d failed.\n",
             //     (Int) NAME_AW( hdGrp, i ), prime );
-            SyFmtPrint ( stdout_stream, "#W  power %s ^ %d failed.\n",
+            SyFmtPrint (  global_stream, "#W  power %s ^ %d failed.\n",
                          NAME_AW( hdGrp, i ), prime );
             return FALSE;
         }

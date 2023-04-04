@@ -385,7 +385,7 @@ typedef struct {
     Int        packageTop;
     Int        global;
     Int        fid;
-    FILE       *file;
+//    FILE       *file;
     char        name [1024];
     char        line [2048];
     char        * ptr;

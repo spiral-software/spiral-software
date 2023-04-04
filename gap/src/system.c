@@ -316,6 +316,57 @@ Int            SyFopen (char * name, char *mode )
 
 /****************************************************************************
 **
+*F  SyFileOpen( <name>, <mode> ) . . . . . . . open the file with name <name>
+**
+**  The function 'SyFileOpen'  is called to open the file called  <name>.
+**  If <mode> is "r" it is opened for reading, in this case  it  must  exist.
+**  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
+**  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
+**
+**  'SyFileOpen' returns a file handle (pointer) 
+**  'SyFileOpen' returns NULL if it cannot open the file.
+**
+**  The following standard files names and file identifiers  are  guaranteed:
+**
+**  'SyFileOpen( "*stdin*", "r")' returns stdin  ==>  standard input file.
+**  'SyFileOpen( "*stdout*","w")' returns stdout ==>  standard outpt file.
+**  'SyFileOpen( "*errin*", "r")' returns stdin  ==>  brk loop input file.
+**  'SyFileOpen( "*errout*","w")' returns stderr ==>  error messages file.
+**
+*/
+
+FILE    *SyFileOpen ( char *name, char *mode )
+{
+    FILE *file;
+
+    /* handle standard files                                               */
+    if(strcmp(name, "*stdin*") == 0) {
+        if (strcmp(mode, "r") != 0)  return (FILE *)NULL;
+        return stdin;
+    }
+    else if (strcmp(name, "*stdout*") == 0) {
+        if (strcmp(mode, "w") != 0)  return (FILE *)NULL;
+        return stdout;
+    }
+    else if (strcmp(name, "*errin*") == 0) {
+        if (strcmp(mode, "r") != 0)  return (FILE *)NULL;
+        return stdin;
+    }
+    else if (strcmp(name, "*errout*") == 0) {
+        if (strcmp(mode, "w") != 0)  return (FILE *)NULL;
+        return stderr;
+    }
+
+    /* open the file: will be either NULL (failure) or valid FILE pointer */
+    file = fopen( name, mode );
+
+    /* return file                                              */
+    return file;
+}
+
+
+/****************************************************************************
+**
 *F  SyFclose( <fid> ) . . . . . . . . . . . . . . . . .  close the file <fid>
 **
 **  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
@@ -345,6 +396,39 @@ void            SyFclose (Int fid )
 
 	syBuf[fid].buf[0] = '\0';
 }
+
+
+/****************************************************************************
+**
+*F  SyFileClose( <file> ) . . . . . . . .  close the file with pointer <file>
+**
+**  'SyFileClose' closes the file using the file pointer identifier
+**  <file> which is obtained from 'SyFileOpen'.
+*/
+
+void    SyFileClose ( FILE *file )
+{
+    /* check file identifier, emit a warning if file == NULL */
+    if ( file == NULL ) {
+        printf ( "SyFileClose: Asked to close file NULL pointer ... ignored\n" );
+        return;
+    }
+
+    /* refuse to close the standard files                                  */
+    if ( fileno ( file ) == 0 || fileno ( file ) == 1 ||
+         fileno ( file ) == 2 || fileno ( file ) == 3 ) {
+        return;
+    }
+
+    /* try to close the file                                               */
+    if ( fclose( file ) == EOF ) {
+        fputs("gap: 'SyFclose' cannot close file, ",stderr);
+        fputs("maybe your file system is full?\n",stderr);
+    }
+
+    return;
+}
+
 
 Int	SyChDir(const char* filename)
 {
@@ -1801,7 +1885,6 @@ static Int my_syNrchar = 0;
 void            SyFputs (char line[], Int fid )
 {
     Int                i;
-
 
     /* if outputing to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {

@@ -1727,7 +1727,7 @@ void    PrVarAss ( STREAM stream, Obj hdAss, int indent )
     //**INDENT** Pr( "%2<",0,0 );
     PrintObj ( stream, PTR_BAG(hdAss)[0], 0 );
     SyFmtPrint ( stream, " := " );
-    PrintObj ( stream, PTR_BAG(hdAss)[0], 0 );
+    PrintObj ( stream, PTR_BAG(hdAss)[1], 0 );
 }
 
 

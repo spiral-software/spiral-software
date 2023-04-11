@@ -53,9 +53,13 @@ UInt    InBreakpoint = 0;
 
 static Obj (* OrigEvTab[ T_ILLEGAL ]) ( Obj hd );
 
-/* PrTab hooked by FunTop function in order to be able to highlight
-current statement while printing top function */
-static void (* OrigPrTab[ T_ILLEGAL ]) ( Obj hd );
+/*
+ **  PrTab hooked by FunTop function in order to be able to highlight current statement
+ **  while printing top function.  Declaration for OrigPrTab must match the definition of
+ **  PrTab (see eval.[ch]).
+ */
+
+static void (* OrigPrTab[ T_ILLEGAL ]) (STREAM stream, Obj hd, int indent);
 
 static inline UInt isRetTrueFunc(Obj hdFunc) {
     Obj hdStat = PTR_BAG(hdFunc)[0];
@@ -621,7 +625,7 @@ static void     TopPr ( STREAM stream, Obj hd, int indent )
 {
     UInt hasFlag, highlight = 0; 
     if (hd==0 || IS_INTOBJ(hd)) {
-        (*OrigPrTab[GET_TYPE_BAG(hd)])(hd);
+        ( *OrigPrTab[GET_TYPE_BAG(hd)]) ( stream, hd, indent );
         return;
     }
     hasFlag = GET_FLAG_BAG(hd, BF_ON_EVAL_STACK);
@@ -642,7 +646,7 @@ static void     TopPr ( STREAM stream, Obj hd, int indent )
     }
     if (highlight) HooksBrkHighlightStart();
     // call original Pr function
-    (*OrigPrTab[GET_TYPE_BAG(hd)])(hd);
+    ( *OrigPrTab[GET_TYPE_BAG(hd)]) ( stream, hd, indent );
     if (highlight) HooksBrkHighlightEnd();
     if ( hasFlag )
         TopPr_CurDepth--;
@@ -650,23 +654,23 @@ static void     TopPr ( STREAM stream, Obj hd, int indent )
 
 static void HookPrTab()
 {
-    int t;
+    int tindx;
     PrTabHooked++;
-    if (PrTabHooked==1) {
-        for(t=0; t<T_ILLEGAL; ++t) {
-	    OrigPrTab[t] = PrTab[t];
-	    PrTab[t] = TopPr;
+    if ( PrTabHooked == 1 ) {
+        for ( tindx = 0; tindx < T_ILLEGAL; ++tindx ) {
+            OrigPrTab[tindx] = PrTab[tindx];
+            PrTab[tindx] = TopPr;
         }
     }
 }
 static void UnhookPrTab()
 {
-    int t;
-    if (PrTabHooked>0) {
+    int tindx;
+    if ( PrTabHooked > 0 ) {
         PrTabHooked--;
-        if (PrTabHooked==0) {
-            for(t=0; t<T_ILLEGAL; ++t) {
-	        PrTab[t] = OrigPrTab[t];
+        if ( PrTabHooked == 0 ) {
+            for ( tindx = 0; tindx < T_ILLEGAL; ++tindx ) {
+                PrTab[tindx] = OrigPrTab[tindx];
             }
         }
     }
@@ -700,13 +704,20 @@ Obj  FunTop ( Obj hdCall ) {
         // first time figure out what to highlight, this is not precise
         // but better than nothing. Redirect output to /dev/null and traverse
         // bags that will be printed.
-#if BESPOKE_IO
+        STREAM nulldev;
+        STREAM save_stream;
+
 #ifdef WIN32
-        OpenOutput("NUL");
+        // OpenOutput("NUL");
+        SET_STREAM_FILE ( nulldev, SyFopen ( "NUL", "w" ) );
 #else
-        OpenOutput("/dev/null");
+        // OpenOutput("/dev/null");
+        SET_STREAM_FILE ( nulldev, SyFopen ( "/dev/null", "w" ) );
 #endif
-#endif                  // BESPOKE_IO
+
+        save_stream = global_stream;
+        global_stream = nulldev;
+        
         TopPr_CurDepth = 0; // current tree depth (in marked bags)
         TopPr_MaxDepth = 0; // maximal tree depth (in marked bags)
         Try {
@@ -716,8 +727,14 @@ Obj  FunTop ( Obj hdCall ) {
             SyFmtPrint (  global_stream, "\n" );
             // closing /dev/null and return to previous output
             // CloseOutput();
+            global_stream = save_stream;
+            SyFclose ( streamFile ( nulldev ) );
+            
         } Catch(e) {
             // CloseOutput();
+            global_stream = save_stream;
+            SyFclose ( streamFile ( nulldev ) );
+            
             Throw(e);
         }
         TopPr_Printing = 1; // now we are going to print function

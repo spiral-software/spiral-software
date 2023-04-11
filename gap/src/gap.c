@@ -1427,7 +1427,7 @@ Bag     FunPrintToString ( Bag hdCall )
 {
     Bag     hd;
     Int     i;
-    STREAM  stream;
+    STREAM  stream, save_stream;
     char    *newstr = NULL;
 
     /* check the number and type of the arguments, nothing special         */
@@ -1437,6 +1437,8 @@ Bag     FunPrintToString ( Bag hdCall )
 
     stream.type = STREAM_TYPE_STRING;
     stream.U.string_ptr = &newstr;
+    save_stream = global_stream;
+    global_stream = stream;
 
     for (i = 1; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
     {
@@ -1462,6 +1464,8 @@ Bag     FunPrintToString ( Bag hdCall )
         printOneBag ( stream, hd );
 #endif          // NEWFUNC_ADDED
     }
+
+    global_stream = save_stream;
 
     if (newstr != 0) {
         Bag strBag;

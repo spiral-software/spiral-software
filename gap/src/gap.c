@@ -683,7 +683,20 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			if ( strcmp( msg, "FunError" ) != 0 ) {
 				// Pr( "Error, ",0,0 );  Pr( msg, arg1, arg2 );
                 SyFmtPrint ( stderr_stream, "Error, " );
-                SyFmtPrint ( stderr_stream,  msg, arg1, arg2  );
+                char *locn = strstr ( msg, "%g" );
+                if ( locn != NULL ) {
+                    char *copy = malloc ( strlen(msg) + 1);
+                    strcpy ( copy, msg );
+                    locn = copy + (locn - msg);
+                    *locn = 0;
+                    SyFmtPrint ( stderr_stream, copy, arg1, arg2 );
+                    PrintObj ( stderr_stream, arg1, 0 );
+                    locn += 2;
+                    SyFmtPrint ( stderr_stream, locn, arg2, 0 );
+                    free ( copy );
+                }
+                else
+                    SyFmtPrint ( stderr_stream,  msg, arg1, arg2  );
 			} else {
 				// Pr( "Error, ",0,0 );  FunPrint( (Bag)arg1 );
                 SyFmtPrint ( stderr_stream, "Error, " );
@@ -1045,8 +1058,6 @@ Bag       FunAUTO (Bag hdCall)
     return HdVoid;
 }
 
-//  #if NEWFUNC_ADDED
-
 /****************************************************************************
 **
 **  printOneBag( stream, <hd> )   . . . . . . . . . internal function 'Print'
@@ -1059,8 +1070,9 @@ void printOneBag ( STREAM stream, Bag hd )
 {
     Int     type;
 
-    type = GET_TYPE_BAG(hd);
+    IsString ( hd );            // Must call this -- converts packed char lists to strings
 
+    type = GET_TYPE_BAG(hd);
     switch (type) {
     case T_MAKEFUNC:
         PrintFunction ( stream, hd, 0 );
@@ -1077,17 +1089,13 @@ void printOneBag ( STREAM stream, Bag hd )
     case T_VOID:
         break;
     case T_STRING:
-        if ( IsString(hd) ) {
-            PrintString ( stream, hd, 0 );
-            break;
-        }
+        PrintString ( stream, hd, 0 );
+        break;
     default:
         PrintObj ( stream, hd, 0 );
         break;
     }
 }
-
-//  #endif          // NEWFUNC_ADDED
 
 
 /****************************************************************************
@@ -1211,6 +1219,7 @@ Bag       Fun_Pr (Bag hdCall)
 **
 **  See the note about empty string literals and empty lists in 'Print'.
 */
+
 Bag       FunPrintTo(Bag hdCall)
 {
     Bag     hd;
@@ -1476,7 +1485,15 @@ Bag     FunPrintToString ( Bag hdCall )
         *((char*)PTR_BAG(strBag)) = '\0';
         strncpy((char*)PTR_BAG(strBag), newstr, slen);
         free(newstr);
-        return strBag;
+
+        /* hd = NewBag ( T_LIST, 1 * SIZE_HD ); */
+        /* slen = PLEN_SIZE_PLIST ( GET_SIZE_BAG ( hd ) ); */
+        /* printf ( "PrintToString: slen = %d\n", slen ); */
+        /* Resize ( hd, SIZE_PLEN_PLIST( slen + 1 ) ); */
+        /* SET_LEN_PLIST ( hd, slen + 1 ); */
+        /* printf ( "PrintToString: list resized to: %d\n", (slen + 1) ); */
+        /* SET_BAG ( hd,  slen + 1, strBag ); */
+        return strBag;              //  hd;
     }
     else {
         printf("New String Null\n");

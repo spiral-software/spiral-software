@@ -1534,6 +1534,45 @@ void    (*PrTab[T_ILLEGAL]) (STREAM stream, Obj hd, int indent);
 */
 Obj       HdTildePr;
 
+static char    *NamePrFunc [] = {
+    "PrintBagType","PrInteger", "PrInteger",    "PrInteger",    "PrRat",        "PrCyc",
+    "PrDbl",    "PrCplx",       "PrUnknown",    "PrFFE",        "PrPermP",      "PrPermQ",
+    "PrWord",   "PrSword",      "PrAgWord",     "PrBool",       "PrChar",       "PrFunction",
+    "PrMethod", "PrFuncint",    "PrList",       "PrSet",        "PrList",       "PrVecFFE",
+    "PrList",   "PrString",     "PrRange",      "PrRec",        "PrintBagType", "PrintBagType",
+    "PrintBagType","PrDelay",   "PrVar",        "PrVar",        "PrVarAss",     "PrVarMap",
+    "PrElmList","PrElmList",    "PrElmsList",   "PrElmsList",   "PrAssList",    "PrAssList",
+    "PrAssList","PrAssList",    "PrRecElm",     "PrRecAss",     "PrVarAss",     "PrBinop",
+    "PrBinop",  "PrBinop",      "PrBinop",      "PrBinop",      "PrBinop",      "PrComm",
+    "PrNot",    "PrBinop",      "PrBinop",      "PrBinop",      "PrBinop",      "PrBinop",
+    "PrBinop",  "PrBinop",      "PrBinop",      "PrBinop",      "PrBinop",      "PrFunccall",
+    "PrintBagType","PrStatseq", "PrIf",         "PrFor",        "PrWhile",      "PrRepeat",
+    "PrReturn", "PrMakeperm",   "PrFunction",   "PrMethod",     "PrMakeList",   "PrString",
+    "PrMakeRange","PrRec",      "PrRec",        "PrMakeLet",    "PrintBagType", "PrintBagType",
+    "PrAgen",   "PrintBagType", "PrPcPres",     "PrAgExp",      "PrAgList",     "PrRecName",
+    "PrNS",     "PrintBagType", "PrBinop",      "PrintBagType", "PrintBagType"
+};
+
+char    *NameEvalFunc [] = {
+    "NoEval",   "EvInt",        "EvInt",        "EvInt",        "EvRat",        "EvCyc",
+    "EvDbl",    "EvCplx",       "EvUnknown",    "EvFFE",        "EvPerm",       "EvPerm",
+    "EvWord",   "EvWord",       "EvAg",         "EvBool",       "EvChar",       "EvFunction",
+    "EvFunction","EvFunction",  "EvList",       "EvList",       "EvList",       "EvList",
+    "EvList",   "EvList",       "EvList",       "EvRec",        "NoEval",       "NoEval",
+    "NoEval",   "EvDelay",      "EvVar",        "EvVarAuto",    "EvVarAss",     "EvVarMap",
+    "EvElmList","EvElmListLevel","EvElmsList",  "EvElmsListLevel","EvAssList",  "EvAssListLevel",
+    "EvAssList","EvAssListLevel","EvRecElm",    "EvRecAss",     "EvMultiAss",   "EvSum",
+    "EvDiff",   "EvProd",       "EvQuo",        "EvMod",        "EvPow",        "NoEval",
+    "EvNot",    "EvAnd",        "EvOr",         "EvEq",         "EvNe",         "EvLt",
+    "EvGe",     "EvLe",         "EvGt",         "EvIn",         "Concat",       "EvFunccall",
+    "NoEval",   "EvStatseq",    "EvIf",         "EvFor",        "EvWhile",      "EvRepeat",
+    "EvReturn", "EvMakeperm",   "EvFunction",   "EvMethod",     "EvMakeList",   "EvMakeString",
+    "EvMakeRange","EvMakeRec",  "EvMakeTab",    "EvMakeLet",    "NoEval",       "NoEval",
+    "NoEval",   "NoEval",       "NoEval",       "NoEval",       "NoEval",       "NoEval",
+    "EvNS",     "NoEval",       "EvIs",         "NoEval",       "NoEval"
+};
+
+
 void    PrintObj ( STREAM stream, Obj hd, int indent )
 {
     UInt       len;            /* hdObj[1..<len>] are a path from */
@@ -1542,6 +1581,7 @@ void    PrintObj ( STREAM stream, Obj hd, int indent )
     Obj           cur;            /* current object along that path  */
     UInt       i;              /* loop variable                   */
     exc_type_t          e;
+    int bagtype;
 
     /* check for interrupts                                                */
     if ( SyIsIntr() ) {
@@ -1572,6 +1612,8 @@ void    PrintObj ( STREAM stream, Obj hd, int indent )
                 SET_FLAG_BAG(hd, BF_PRINT);
 
             /* dispatch to the appropriate method                          */
+            /* bagtype = GET_TYPE_BAG(hd); */
+            /* fprintf ( stderr, "bag type = %s (%d), print function (%s)\n", NameType[bagtype], bagtype, NamePrFunc[bagtype] ); */
             ( *PrTab[ GET_TYPE_BAG(hd) ] ) ( stream, hd, indent );
 
             /* unmark object again                                         */
@@ -1661,7 +1703,7 @@ void            CantPrint (Obj hd)
 void    PrintBagType ( STREAM stream, Obj hd, int indent )
 {
     // Pr( "_bag_%d_", GET_TYPE_BAG(hd), 0 );
-    SyFmtPrint ( stream, "_bag_%d_", GET_TYPE_BAG(hd) );
+    SyFmtPrint ( stream, "_bag_%d_(%s)_\n", GET_TYPE_BAG(hd), NameType[GET_TYPE_BAG(hd)] );
 }
 
 /****************************************************************************
@@ -2112,6 +2154,7 @@ Obj       FunInherited (Obj hdCall)
     /* find method on the call stack and count how many times Inherited() was called */
     Int     top = EvalStackTop;
     Int     inherited = 0, i = 0;
+
     while (top>0) {
         if (GET_TYPE_BAG(EvalStack[top]) == T_EXEC && GET_TYPE_BAG(PTR_BAG(EvalStack[top])[2]) == T_METHOD) {
             if (GET_FLAG_BAG(PTR_BAG(EvalStack[top])[3], BF_INHERITED_CALL)) {
@@ -2127,6 +2170,7 @@ Obj       FunInherited (Obj hdCall)
     }
     if (top<=0)
         return Error("Inherited: method not found", 0, 0);
+
     if (GET_TYPE_BAG(hdRecElm) != T_RECELM)
         return Error("Inherited: ambiguity, method called in non-standard way.", 0, 0);
 

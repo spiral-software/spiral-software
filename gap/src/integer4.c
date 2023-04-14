@@ -226,7 +226,7 @@ void    PrInteger ( STREAM stream, Obj op, int indent )
 	/* print a small integer                                               */
 	if (IS_INTOBJ(op)) {
 		//**INDENT** Pr( "%>%d%<", INT_INTOBJ(op), 0 );
-        SyFmtPrint ( stream, "%d", INT_INTOBJ(op) );
+        SyFmtPrint ( stream, "%lld", INT_INTOBJ(op) );
 	}
 
 	/* print a large integer                                               */

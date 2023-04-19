@@ -41,8 +41,10 @@
 **  convention, the bag size *excludes* the header area reserved for Memmgr.  
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include        <stdio.h>
+#include        <stdlib.h>
+#include        <string.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "scanner.h"             /* Pr()                            */
 #include        "memmgr.h"              /* declaration part of the package */
@@ -1012,7 +1014,7 @@ void            RetypeBag ( BagPtr_t bag, UInt new_type )
 **  also updates the information in 'InfoBags' (see "InfoBags").
 */
 
-#define BEEF_WORD 0x00DEAD00BAD0BEEF
+#define BEEF_WORD 0x00DEAD00BAD0BEEFL
 
 static UInt nrResizeBags = 0;
 
@@ -1035,7 +1037,7 @@ UInt ResizeBag ( BagPtr_t bag, UInt new_size )
     BagPtr_t *p = (*(BagPtr_t **)(bag));
     if (p < par->OldBagStart || p >= par->EndBags) {
         // bag data is not in the allocated area of this arena
-        printf("ResizeBag: bag = %llx, Arena #%d, **issue** bag data %p is not in allocated area of arena\n",
+        printf("ResizeBag: bag = %lx, Arena #%d, **issue** bag data %p is not in allocated area of arena\n",
                bag, par->ArenaNumber, p);
     }
     
@@ -1070,7 +1072,7 @@ UInt ResizeBag ( BagPtr_t bag, UInt new_size )
             //  Mark the remainder of the old bag 
             int iloop, imax = WORDS_BAG(old_size) - WORDS_BAG(new_size);
             for ( iloop = 2; iloop < imax; iloop++ ) {
-                *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size) + iloop) = BEEF_WORD;
+                *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size) + iloop) = (UInt)BEEF_WORD;
             }
         }
 
@@ -1115,7 +1117,7 @@ UInt ResizeBag ( BagPtr_t bag, UInt new_size )
         SET_TYPE_BAG(bag, T_RESIZE_FREE);
         BLANK_FLAGS_BAG(bag);
         SET_SIZE_BAG(bag, (((WORDS_BAG(old_size) + HEADER_SIZE - 1) * sizeof(BagPtr_t))));
-        SET_COPY_BAG ( bag, BEEF_WORD );
+        SET_COPY_BAG ( bag, (BagPtr_t)BEEF_WORD );
         //  SET_LINK_BAG ( bag, BEEF_WORD );  don't do this - complains link ptr is outside arena memory
     
         // set the new size, flags, & type
@@ -1131,7 +1133,7 @@ UInt ResizeBag ( BagPtr_t bag, UInt new_size )
         end = src + WORDS_BAG(old_size);
         while ( src < end ) {
             *dst2++ = *src;
-            *src++  = BEEF_WORD;
+            *src++  = (BagPtr_t)BEEF_WORD;
         }
 
         SET_LINK_PTR(dst, bag);
@@ -1328,7 +1330,7 @@ void GenStackFuncBags (void)
 
 static void PrintBagInfo ( BagStruct_t *ps )
 {
-    printf("PrintBagInfo: ptr = %p, Type = %d, size = %u, link = %p, # sub bags = %u\n",
+    printf("PrintBagInfo: ptr = %p, Type = %ld, size = %lu, link = %p, # sub bags = %lu\n",
            ps, (ps->bagFlagsType & TYPE_BIT_MASK), ps->bagSize, ps->bagLinkPtr, 
            NrHandles((ps->bagFlagsType & TYPE_BIT_MASK), ps->bagSize));
     return;
@@ -1379,8 +1381,8 @@ static void CheckFreeMptrList ( int arenanr )
 	end   = par->OldBagStart;
 
 	char msgb[100];
-	sprintf(msgb, ", and %u suspect Handle/Bag linkages", nBad);
-    printf("CheckFreeMptrList: Walked Arena #%d, FreeHandleChain: Found links to %u bags (%s), %u (%.1f%%) handles free%s\n",
+	sprintf(msgb, ", and %lu suspect Handle/Bag linkages", nBad);
+    printf("CheckFreeMptrList: Walked Arena #%d, FreeHandleChain: Found links to %lu bags (%s), %lu (%.1f%%) handles free%s\n",
            par->ArenaNumber, nFound, ((nFound == 0)? "GOOD" : "BAD"), nFree, 
            (100.0 * (float)nFree / (float)(((UInt)end - (UInt)beg) / sizeof(BagPtr_t *))),
 		   (nBad > 0) ? msgb : "");
@@ -1425,8 +1427,8 @@ static void CheckMptrHandles ( int arenanr )
 	end   = par->OldBagStart;
 
 	char msgb[100];
-	sprintf(msgb, ", and %u suspect Handle/Bag linkages (%s)", nBad, ((nBad == 0)? "GOOD" : "BAD") );
-    printf("CheckMptrHandles: Walked master pointers for Arena #%d: Found links to %u (%.1f%%) bags%s\n",
+	sprintf(msgb, ", and %lu suspect Handle/Bag linkages (%s)", nBad, ((nBad == 0)? "GOOD" : "BAD") );
+    printf("CheckMptrHandles: Walked master pointers for Arena #%d: Found links to %lu (%.1f%%) bags%s\n",
            par->ArenaNumber, nFound,
            (100.0 * (float)nFound / (float)(((UInt)end - (UInt)beg) / sizeof(BagPtr_t))),
            (nBad > 0) ? msgb : "" );
@@ -1451,9 +1453,9 @@ static void WalkBagPointers ( int arenanr, int clean )
     start = par->OldBagStart; end = par->AllocBagStart;
     printf("WalkBagPointers: Arena #%d, BagHandleStart = %p, EndBags = %p\n",
 		   par->ArenaNumber, par->BagHandleStart, par->EndBags);
-	printf("    Walk OldBagStart   = %p to AllocBagStart = %p, used pool = %uk (%uMb)\n", 
+	printf("    Walk OldBagStart   = %p to AllocBagStart = %p, used pool = %luk (%luMb)\n", 
            start, end, ((UInt)end - (UInt)start) / 1024, ((UInt)end - (UInt)start) / (1024 * 1024) );
-    printf("         YoungBagStart = %p,   AllocBagStart = %p, free pool = %uk (%uMb)\n",
+    printf("         YoungBagStart = %p,   AllocBagStart = %p, free pool = %luk (%luMb)\n",
            par->YoungBagStart, par->AllocBagStart,
            ((UInt)par->EndBags - (UInt)par->AllocBagStart) / 1024,
            ((UInt)par->EndBags - (UInt)par->AllocBagStart) / (1024 * 1024) );
@@ -1506,18 +1508,18 @@ static void WalkBagPointers ( int arenanr, int clean )
         }
 
         if ( clean == 0 && nbad > 0 && nbad != oldbad ) {
-            printf ( "Bag ptr = %p (Bag # %d), Type = %d, Size = %u\n", ptr, nFound, type, sizeCurr );
+            printf ( "Bag ptr = %p (Bag # %ld), Type = %ld, Size = %lu\n", ptr, nFound, type, sizeCurr );
             oldbad = nbad;
         }
     }
 
-    printf("    Walked the bags, found %u bags, size = %uk (%uMb)\n",
+    printf("    Walked the bags, found %lu bags, size = %luk (%luMb)\n",
            nFound, szFound / 1024, szFound / (1024 * 1024));
 	if (nbad > 0)
-		printf("    Found %u suspect bags, total size = %uk (%uMb)\n",
+		printf("    Found %lu suspect bags, total size = %luk (%luMb)\n",
 			   nbad, szbad / 1024, szbad / (1024 * 1024));
     if ( clean == 0 )
-        printf ( "    Found %u remnants, total size = %uk (%uMb)\n",
+        printf ( "    Found %lu remnants, total size = %luk (%luMb)\n",
                  nRemnant, szRemnant / 1024, szRemnant / (1024 * 1024));
 
     // Walk the remaining memory, which should be the free pool.  It should all
@@ -1532,7 +1534,7 @@ static void WalkBagPointers ( int arenanr, int clean )
     }
     
     if (nbad)
-        printf("    Walked the free area, %u non-zero values -- pool is dirty!\n", nbad);
+        printf("    Walked the free area, %lu non-zero values -- pool is dirty!\n", nbad);
     
     float ptrpc = 100.0 * (float)((UInt)par->OldBagStart - (UInt)par->BagHandleStart)  /
                           (float)((UInt)par->EndBags - (UInt)par->BagHandleStart),
@@ -1541,13 +1543,13 @@ static void WalkBagPointers ( int arenanr, int clean )
         freepc  = 100.0 * (float)((UInt)par->EndBags - (UInt)par->AllocBagStart) /
                           (float)((UInt)par->EndBags - (UInt)par->BagHandleStart);
     
-    printf("WalkBagPointers:  Total pool = %uMb (%.1f%%)\n",
+    printf("WalkBagPointers:  Total pool = %luMb (%.1f%%)\n",
            (((UInt)par->EndBags - (UInt)par->BagHandleStart) / (1024 * 1024)), 100.0);
-	printf("             Master pointers = %uMb (%.1f%%)\n",
+	printf("             Master pointers = %luMb (%.1f%%)\n",
            (((UInt)par->OldBagStart - (UInt)par->BagHandleStart) / (1024 * 1024)), ptrpc);
-	printf("                   Live Bags = %uMb (%.1f%%)\n",
+	printf("                   Live Bags = %luMb (%.1f%%)\n",
            (((UInt)par->YoungBagStart - (UInt)par->OldBagStart) / (1024 * 1024)), usedpc);
-    printf("                   Free pool = %uMb (%.1f%%)\n",
+    printf("                   Free pool = %luMb (%.1f%%)\n",
            (((UInt)par->EndBags - (UInt)par->AllocBagStart) / (1024 * 1024)), freepc);
     
     CheckMptrHandles(par->ArenaNumber);	// Check the used master pointers -- bag handles
@@ -1643,7 +1645,7 @@ static void DumpBagsHistogram ( void )
             if (InfoBags[T_RESIZE_FREE].name == (char *)NULL)  {
                 InfoBags[T_RESIZE_FREE].name = "Resize remnant (free)";
             }
-            printf("%7d\t%7d\t%7d\t%7d\t%7d\t%9u\t%s\n",
+            printf("%7d\t%7ld\t%7ld\t%7ld\t%7ld\t%9lu\t%s\n",
                    ii, InfoBags[ii].nrAll, InfoBags[ii].nrLive, InfoBags[ii].nrDead,
                    InfoBags[ii].nrRemnant, InfoBags[ii].sizeLive, InfoBags[ii].name);
         }
@@ -1732,9 +1734,9 @@ static void WalkArenaBags ( ArenaBag_t *par )
 
     // Since doing full GC have now processed all bags 
     printf ( "WalkArenaBags: Arena #%d: Walked all bags...found:\n", par->ArenaNumber);
-    printf ( "#     Live Bags = %10u, size     Live Bags = %10u (%uk / %uMb)\n",
+    printf ( "#     Live Bags = %10lu, size     Live Bags = %10lu (%luk / %luMb)\n",
              nLive, szLive, ( szLive / 1024 ), ( szLive / (1024 * 1024) ) );
-    printf ( "#  Remnant Bags = %10u, size  Remnant Bags = %10u (%uk / %uMb)\n",
+    printf ( "#  Remnant Bags = %10lu, size  Remnant Bags = %10lu (%luk / %luMb)\n",
              nRemnant, szRemnant, ( szRemnant / 1024 ), ( szRemnant / (1024 * 1024) ) );
     fflush(stdout);
 
@@ -1750,7 +1752,7 @@ static int  DumpMemArenaData ( int flag )
     printf("\nDumpMemArenaData: Information about allocated memory arenas\n");
     
     for (par = &MemArena[0], nrArenas = 0; par->ActiveArenaFlag; par++, nrArenas++) {
-        printf("Arena: # %d, Size = %u (MB), Active = %s, Full = %s, Free ratio threshold = %.2f\n",
+        printf("Arena: # %d, Size = %lu (MB), Active = %s, Full = %s, Free ratio threshold = %.2f\n",
                par->ArenaNumber, (par->SizeArena / (1024 * 1024)),
                (par->ActiveArenaFlag ? "True" : "False"),
 			   (par->ArenaFullFlag ? "True" : "False"), par->FreeRatio);
@@ -1764,12 +1766,12 @@ static int  DumpMemArenaData ( int flag )
 			UInt  sizepool = (UInt)par->EndBags - (UInt)par->OldBagStart;
 			UInt  freepool = (UInt)par->EndBags - (UInt)par->AllocBagStart;
 			
-			printf("    Free Chain = %p, Entries avail = %u (of %u max) = %.1f%% free\n",
+            printf("    Free Chain = %p, Entries avail = %lu (of %lu max) = %.1f%% free\n",
 				   par->FreeHandleChain, nFree, nMax, (100.0 * (float)nFree / (float)nMax));
-			printf("Allocated bags = %u, Size = %u Kbytes (%u Mbytes)\n",
+            printf("Allocated bags = %lu, Size = %lu Kbytes (%lu Mbytes)\n",
 				   (nMax - nFree), ((UInt)par->AllocBagStart - (UInt)par->OldBagStart) / 1024,
 				   (((UInt)par->AllocBagStart - (UInt)par->OldBagStart) / (1024 * 1024)) );
-			printf("Size Free pool = %u Kbytes (%u Mbytes), -- %.1f%% free\n",
+            printf("Size Free pool = %lu Kbytes (%lu Mbytes), -- %.1f%% free\n",
 				   ((UInt)par->EndBags - (UInt)par->AllocBagStart) / 1024,
 				   (((UInt)par->EndBags - (UInt)par->AllocBagStart) / (1024 * 1024)),
 				   (100.0 * (float)freepool / (float)sizepool) );
@@ -1778,7 +1780,7 @@ static int  DumpMemArenaData ( int flag )
             WalkBagPointers ( par->ArenaNumber, 0 );
 		}
 		else {
-			printf("    Free Chain = %p, Marked bags = %p, # on Marked chain = %u\n\n",
+			printf("    Free Chain = %p, Marked bags = %p, # on Marked chain = %lu\n\n",
                    par->FreeHandleChain, par->MarkedBagChain, par->nrMarkedBags);
 		}
     }
@@ -1791,20 +1793,20 @@ static void PrintArenaInfo ( ArenaBag_t *par, int eflg )
 {
     if (SyMemMgrTrace > 0) {
         printf("PrintArenaInfo%s: Memory Arena #%d\n", (eflg ? ":On Entry" : ""), par->ArenaNumber);
-        printf("    BagHandleStart = %p, OldBagStart   = %p, size Mptr area  = %uk (%uMb), # mptrs = %u\n",
+        printf("    BagHandleStart = %p, OldBagStart   = %p, size Mptr area  = %luk (%luMb), # mptrs = %lu\n",
                par->BagHandleStart, par->OldBagStart, 
                ((UInt)par->OldBagStart - (UInt)par->BagHandleStart) / 1024,
                (((UInt)par->OldBagStart - (UInt)par->BagHandleStart) / (1024 * 1024)),
                ((UInt)par->OldBagStart - (UInt)par->BagHandleStart)/  sizeof(BagPtr_t));
-        printf("    OldBagStart    = %p, YoungBagStart = %p, size Old Bags   = %uk (%uMb)\n",
+        printf("    OldBagStart    = %p, YoungBagStart = %p, size Old Bags   = %luk (%luMb)\n",
                par->OldBagStart, par->YoungBagStart,
                ((UInt)par->YoungBagStart - (UInt)par->OldBagStart) / 1024,
                (((UInt)par->YoungBagStart - (UInt)par->OldBagStart) / (1024 * 1024)));
-        printf("    YoungBagStart  = %p, AllocBagStart = %p, size Young Bags = %uk (%uMb)\n",
+        printf("    YoungBagStart  = %p, AllocBagStart = %p, size Young Bags = %luk (%luMb)\n",
                par->YoungBagStart, par->AllocBagStart,
                ((UInt)par->AllocBagStart - (UInt)par->YoungBagStart) / 1024,
                (((UInt)par->AllocBagStart - (UInt)par->YoungBagStart) / (1024 * 1024)));
-        printf("    AllocBagStart  = %p, StopBags      = %p, EndBags = %p, Alloc pool area = %uk (%uMb)\n",
+        printf("    AllocBagStart  = %p, StopBags      = %p, EndBags = %p, Alloc pool area = %luk (%luMb)\n",
                par->AllocBagStart, par->StopBags, par->EndBags,
 			   (   (UInt)par->EndBags - (UInt)par->AllocBagStart) / 1024,
                ( ( (UInt)par->EndBags - (UInt)par->AllocBagStart) / (1024 * 1024) ) );
@@ -1923,7 +1925,7 @@ static void MarkAllLiveBags ( ArenaBag_t *par )
     int          nrgbags;				// number of global bags found this run
 
     if (par->MarkedBagChain != 0) {		// sanity check
-        printf("Collectbags: MarkedBagChain (%p) for Arena #%d is non-zero, claims %d links\n",
+        printf("Collectbags: MarkedBagChain (%p) for Arena #%d is non-zero, claims %ld links\n",
                par->MarkedBagChain, par->ArenaNumber, par->nrMarkedBags);
     }
     
@@ -1934,7 +1936,7 @@ static void MarkAllLiveBags ( ArenaBag_t *par )
         MARK_BAG( *GlobalBags.addr[i] );
         
     if (SyMemMgrTrace > 0)
-        printf("CollectBags: Building Marked bags list: MARK_BAG marked %d global bags\n",
+        printf("CollectBags: Building Marked bags list: MARK_BAG marked %ld global bags\n",
                par->nrMarkedBags);
         
     /* mark from the stack */
@@ -1942,7 +1944,7 @@ static void MarkAllLiveBags ( ArenaBag_t *par )
     GenStackFuncBags();
 
     if (SyMemMgrTrace > 0) {
-        printf("Collectbags: Marked bags: After stack search, MARK_BAG total = %d bags\n",
+        printf("Collectbags: Marked bags: After stack search, MARK_BAG total = %ld bags\n",
                par->nrMarkedBags);
         printf("Collectbags: Check Changed bags, mark subbags of all Bags\n");
 
@@ -1953,7 +1955,7 @@ static void MarkAllLiveBags ( ArenaBag_t *par )
             float delt = (float)drun / (float)nrGlobalBagsFound;
             if (delt > 0.05) {
                 // print warning if delta is > 5% (just a guess)
-                printf("Collectbags: delta on number globals found > 5%%, current run = %d, prior = %d\n",
+                printf("Collectbags: delta on number globals found > 5%%, current run = %ld, prior = %d\n",
                        par->nrMarkedBags, nrGlobalBagsFound);
             }
         }
@@ -1965,7 +1967,7 @@ static void MarkAllLiveBags ( ArenaBag_t *par )
 
     /* we've now found [or should have] all live bags... */
     if (SyMemMgrTrace > 0) {
-        printf("Collectbags: Have list of all global live bags, found = %d\n", par->nrMarkedBags);
+        printf("Collectbags: Have list of all global live bags, found = %ld\n", par->nrMarkedBags);
         printf("Collectbags: Start tagging the live bags...\n");
     }
 
@@ -1974,9 +1976,9 @@ static void MarkAllLiveBags ( ArenaBag_t *par )
     MarkBagsByArena( &nrBags, &szBags );
     
     if (SyMemMgrTrace > 0) {
-        printf("CollectBags: After searching subbags, all live bags now = %d\n",
+        printf("CollectBags: After searching subbags, all live bags now = %ld\n",
                par->nrMarkedBags);
-        printf("CollectBags: marked alive = %d, size of alive bags = %d\n", nrBags, szBags);
+        printf("CollectBags: marked alive = %ld, size of alive bags = %ld\n", nrBags, szBags);
         fflush(stdout);
     }
 
@@ -1984,7 +1986,7 @@ static void MarkAllLiveBags ( ArenaBag_t *par )
     SizeLiveBags += szBags;
 	SizeAllArenas = GetTotalArenaSize();
     if (SyMsgsFlagBags > 0)
-        sprintf((gcMsgBuff + strlen(gcMsgBuff)), "%9u /%8ukb (live)  ", nrBags, szBags/1024);
+        sprintf((gcMsgBuff + strlen(gcMsgBuff)), "%9lu /%8lukb (live)  ", nrBags, szBags/1024);
 
     return;
 }
@@ -2005,7 +2007,7 @@ static void ClearFreePoolArea ( ArenaBag_t *par, BagPtr_t *src )
     if ( ! DirtyBags ) {
         dst = par->EndBags;
         if (SyMemMgrTrace > 0)
-            printf("Collectbags: Clear from = %p, to = %p; clear %u (%uk / %uMb) bytes\n",
+            printf("Collectbags: Clear from = %p, to = %p; clear %lu (%luk / %luMb) bytes\n",
                    src, dst, ((UInt)dst - (UInt)src), ((UInt)dst - (UInt)src) / 1024,
                    (((UInt)dst - (UInt)src) / (1024 * 1024)));
         while ( src < dst )
@@ -2125,7 +2127,7 @@ static void SweepArenaBags ( ArenaBag_t *par )
     }
 
     if (SyMemMgrTrace > 0)
-        printf("CollectBags: Swept all bags, checked %u bags\n", nbagsCheck);
+        printf("CollectBags: Swept all bags, checked %lu bags\n", nbagsCheck);
 
     ClearFreePoolArea(par, dst);
     par->SweepNeeded  = 0;				// Arena has been swept
@@ -2134,18 +2136,18 @@ static void SweepArenaBags ( ArenaBag_t *par )
     // Since doing full GC have now processed all bags 
     if (SyMemMgrTrace > 0)  {
         printf("CollectBags: Arena #%d: Processed all bags...found:\n", par->ArenaNumber);
-		printf("#     Live Bags = %10u, size     Live Bags = %10u (%uk / %uMb)\n",
+        printf("#     Live Bags = %10lu, size     Live Bags = %10lu (%luk / %luMb)\n",
                nLive, szLive, szLive / 1024, szLive / (1024 * 1024));
-        printf("#     Dead Bags = %10u, size     Dead Bags = %10u (%uk / %uMb)\n",
+        printf("#     Dead Bags = %10lu, size     Dead Bags = %10lu (%luk / %luMb)\n",
                nDead, szDead, szDead / 1024, szDead / (1024 * 1024));
-        printf("#  Remnant Bags = %10u, size  Remnant Bags = %10u (%uk / %uMb)\n",
+        printf("#  Remnant Bags = %10lu, size  Remnant Bags = %10lu (%luk / %luMb)\n",
                nRemnant, szRemnant, szRemnant / 1024, szRemnant / (1024 * 1024));
         fflush(stdout);
     }
 
     // Information after the sweep phase (print # dead bags & size of dead bags in kBytes)
     if (SyMsgsFlagBags > 0)
-        sprintf((gcMsgBuff + strlen(gcMsgBuff)), "%9u /%8ukb (dead)  ", nDead, szDead/1024);
+        sprintf((gcMsgBuff + strlen(gcMsgBuff)), "%9lu /%8lukb (dead)  ", nDead, szDead/1024);
 
     return;
 }
@@ -2172,8 +2174,8 @@ static void CheckArenaBags ( ArenaBag_t *par )
         pfr = ((char*)par->EndBags - (char*)par->StopBags) / 1024;
         pwh = ((char*)par->EndBags - (char*)par->BagHandleStart) / 1024;
         frpc = (float)(100.0 * (float)pfr / (float)pwh);
-        sprintf((gcMsgBuff + strlen(gcMsgBuff)), "%8ukb / %8ukb (%.1f%%%%) free\n", pfr, pwh, frpc);
-        fprintf(stderr, gcMsgBuff);
+        sprintf((gcMsgBuff + strlen(gcMsgBuff)), "%8lukb / %8lukb (%.1f%%%%) free\n", pfr, pwh, frpc);
+        fprintf(stderr, (const char *)gcMsgBuff);
         fflush(stderr);
     }
 
@@ -2181,7 +2183,7 @@ static void CheckArenaBags ( ArenaBag_t *par )
         printf("CollectBags: Arena #%d: EndBags < StopBags: %s, EndBags = %p, StopBags = %p\n",
                par->ArenaNumber, ((par->EndBags < par->StopBags)? "Yes" : "No"),
                par->EndBags, par->StopBags);
-        printf("Number of times ResizeBag() called since last GC: %u\n", nrResizeBags);
+        printf("Number of times ResizeBag() called since last GC: %lu\n", nrResizeBags);
         nrResizeBags = 0;
     }
 
@@ -2342,7 +2344,7 @@ UInt CollectBags ( UInt size, int spec_arena, char *caller_id )
             if ((par->EndBags - par->StopBags) < ((par->EndBags - par->OldBagStart) * par->FreeRatio)) {
 				if (SyMemMgrTrace > 0) {
 					printf("GAP - CollectBags: After GC and free pool to allocate bags is too small.\n");
-					printf("MemArena[%d]: Pool size = %uk, Used = %uk, Free = %uk\n",
+                    printf("MemArena[%d]: Pool size = %luk, Used = %luk, Free = %luk\n",
 						   par->ArenaNumber, ((UInt)par->EndBags - (UInt)par->OldBagStart) / 1024,
 						   ((UInt)par->StopBags - (UInt)par->OldBagStart) / 1024,
 						   ((UInt)par->EndBags - (UInt)par->StopBags) / 1024);
@@ -2408,7 +2410,7 @@ void    PrintRuntimeStats ( TimeAnalyze_t *ptim)
 	if (ptim->nrGCRuns > 0) {
 		printf("              GC time = %.1f seconds (avg time per iteration = %.4f)\n",
 			   gctime, gctime / ptim->nrGCRuns);
-		printf("   GC # of iterations = %d and consumed %.1f%% of the total time\n",
+        printf("   GC # of iterations = %ld and consumed %.1f%% of the total time\n",
 			   ptim->nrGCRuns, 100 * gctime / dtime);
 	}
 	else

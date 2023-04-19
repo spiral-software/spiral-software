@@ -8,7 +8,11 @@
 **
 */
 
+#include		<stdio.h>
 #include		<stdlib.h>
+#include		<string.h>
+#include        <stdarg.h>
+
 #include        "system.h"              /* declaration part of the package */
 #include        "spiral.h"              /* InitLibName() */
 #include        "iface.h"
@@ -430,7 +434,7 @@ void    SyFileClose ( FILE *file )
 }
 
 
-Int	SyChDir(const char* filename)
+int	SyChDir(const char* filename)
 {
 	if (!chdir(filename)) {
 		return 1;
@@ -1899,7 +1903,7 @@ void            SyFputs (char line[], Int fid )
 		if (syNrchar > my_syNrchar) {
 			/* track and optionally report the maximal value */
 			if (SyMsgsFlagBags > 0)
-				printf("SyFputs: High water mark for syNrchar = %d, syPrompt = \"%s\"\n",
+				printf("SyFputs: High water mark for syNrchar = %ld, syPrompt = \"%s\"\n",
 					   syNrchar, syPrompt);
 			my_syNrchar = syNrchar;
 		}

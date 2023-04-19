@@ -60,13 +60,13 @@ int execute(char *input, char *output)
   }
   if (hd) {
     prompt = HD_TO_STRING(hd);
-    if (strlen(prompt)<sizeof(spiralPrompt))
-	strncpy(spiralPrompt, prompt, strlen(prompt)+1);
+    if ( strlen(prompt) < sizeof(spiralPrompt) )
+        strcpy ( spiralPrompt, prompt );                //  strncpy(spiralPrompt, prompt, strlen(prompt)+1);
   }
   /* read prompts from environment */
   prompt = getenv("SPIRAL_PROMPT");
-  if (prompt != NULL && strlen(prompt)<sizeof(spiralPrompt)) {
-     strncpy(spiralPrompt, prompt, strlen(prompt)+1);
+  if ( prompt != NULL && strlen(prompt) < sizeof(spiralPrompt) ) {
+      strcpy ( spiralPrompt, prompt );                  //  strncpy(spiralPrompt, prompt, strlen(prompt)+1);
   }
 	
   /* repeat the read-eval-print cycle until end of input                 */

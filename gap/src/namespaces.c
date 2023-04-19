@@ -6,6 +6,10 @@
 **
 **  A namespace is a table of name->value bindings.
 */
+#include        <stdio.h>
+#include        <stdlib.h>
+#include        <string.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* Bag, NewBag, T_STRING, .. */
 #include        "idents.h"
@@ -385,7 +389,7 @@ Obj  FunCurrentDir ( Obj hdCall )
 
     else {
         Int pos;
-		char path_sep = PathSep();
+		char *path_sep = PathSep();
 		Obj hd = StringToHd(file);
 
 		pos = strlen(file);

@@ -14,6 +14,10 @@
 **
 */
 
+#include		<stdio.h>
+#include		<stdlib.h>
+#include		<string.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* dynamic storage manager         */
 #include        "scanner.h"             /* reading of tokens and printing  */
@@ -1177,14 +1181,14 @@ Bag       Words (Bag hdStr, Int n)
         strncat( (char*) ( PTR_BAG( hdAgn ) + 1 ),
                    (char*) PTR_BAG( hdStr ),
                    GET_SIZE_BAG( hdStr ) - 1 );
-        strncat( (char*) ( PTR_BAG( hdAgn ) + 1 ), p, j );
+        strcat ( (char*) ( PTR_BAG( hdAgn ) + 1 ), p );         //  strncat( (char*) ( PTR_BAG( hdAgn ) + 1 ), p, j );
         hdInv = NewBag( T_AGEN, SIZE_HD + GET_SIZE_BAG( hdStr ) + j + 1 );
         *(char*)( PTR_BAG( hdInv ) + 1 ) = '\0';
         strncat( (char*) ( PTR_BAG( hdInv ) + 1 ), "-", 1 );
         strncat( (char*) ( PTR_BAG( hdInv ) + 1 ),
                    (char*) PTR_BAG( hdStr ),
                    GET_SIZE_BAG( hdStr ) - 1 );
-        strncat( (char*) ( PTR_BAG( hdInv ) + 1 ), p, j );
+        strcat ( (char*) ( PTR_BAG( hdAgn ) + 1 ), p );         //  strncat( (char*) ( PTR_BAG( hdInv ) + 1 ), p, j );
         SET_BAG( hdAgn ,  0 ,  hdInv );
         SET_BAG( hdInv ,  0 ,  hdAgn );
         SET_BAG( hdLst ,  i ,  hdAgn );

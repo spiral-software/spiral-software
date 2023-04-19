@@ -30,6 +30,8 @@ void GuFatalMsgExit(int exit_code, const char *err_msg, ...);
 void GuSysStderr(const char *err_msg, ...);
 void GuSysDebug(const char *msg, ...);
 
+char *PathSep();
+
 
 /* Exceptions support is built on-top of CExcept library by by Adam
  * M. Costello and Cosmin Truta (cexcept@sourceforge.net).  

@@ -60,4 +60,14 @@ Bag GetPromptString(char* RecFieldName);
 
 Bag  _ObjId ( Bag hd );
 
+
+/****************************************************************************
+**
+*F  FunBuildInfo (<bag>) . . . . . . .  Gather name/value pairs of build info
+**
+*/
+
+Obj FunBuildInfo(Obj hdCall);
+
+
 #endif

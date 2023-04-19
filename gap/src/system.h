@@ -670,6 +670,15 @@ typedef void            (*TNumAbortFuncBags) (
 extern  TNumAbortFuncBags       AbortFuncBags;
 
 
+/***************************************************************************
+**
+**  Conversion of I/O to standard library versus older bespoke system.
+**  I/O will be from/to a stream; a stream may be a file or a memory (strings).
+**
+**  STREAM type contains a type ientifier and a union holding either the FILE
+**  pointer or a pointer to the address on the memory (string).
+*/
+
 #define STREAM_TYPE_FILE	1
 #define STREAM_TYPE_STRING	2
 
@@ -693,6 +702,7 @@ extern FILE* streamFile(STREAM stream);
 
 extern int SyFmtPrint(STREAM stream, const char* format, ...);
 
+extern int SyChDir ( const char *filename );
 
 #endif // _SYSTEM_H
 

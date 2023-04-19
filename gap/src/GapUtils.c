@@ -26,6 +26,7 @@
 #include "memmgr.h" 
 #include "integer.h"
 #include "args.h"
+#include "eval.h"
 
 
 struct gu_msg_utils {
@@ -274,7 +275,7 @@ int sys_rm(const char * name) {
 }
 
 
-char* PathSep()
+char *PathSep()
 {
 #ifdef _WIN32
     return "\\";
@@ -303,6 +304,8 @@ Bag FunFileExists(Bag argv) {
     return INT_TO_HD(_result);
 }
 
+
+extern  Bag Error (char *msg, Int arg1, Int arg2);
 
 Bag FunSysRm(Bag argv) {
     char* usage = "sys_rm (const char *name)";

@@ -13,6 +13,10 @@
 **
 */
 
+#include		<stdio.h>
+#include		<stdlib.h>
+#include		<string.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* dynamic storage manager         */
 #include        "scanner.h"             /* reading of tokens and printing  */

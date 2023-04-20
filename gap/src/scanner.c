@@ -1168,12 +1168,6 @@ void            Pr (char *format, Int arg1, Int arg2)
 #endif      // BESPOKE_IO
 
 
-Int	ChDir(const char* filename)
-{
-	return (int)SyChDir(filename);
-}
-
-
 /****************************************************************************
 **
 *F  OpenInput( <filename> ) . . . . . . . . . .  open a file as current input
@@ -1231,7 +1225,8 @@ Int            OpenInput (char *filename)
     Input->fid = file;
     //  Input->file = (FILE *)NULL;         // unknown
     Input->name[0] = '\0';
-    strncat( Input->name, filename, sizeof(Input->name) );
+    //  strncat( Input->name, filename, sizeof(Input->name) );
+    strcpy ( Input->name, filename );
 
     /* start with an empty line and no symbol                              */
     In = Input->line;

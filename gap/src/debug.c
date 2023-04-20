@@ -709,10 +709,10 @@ Obj  FunTop ( Obj hdCall ) {
 
 #ifdef WIN32
         // OpenOutput("NUL");
-        SET_STREAM_FILE ( nulldev, SyFopen ( "NUL", "w" ) );
+        SET_STREAM_FILE ( nulldev, SyFileOpen ( "NUL", "w" ) );
 #else
         // OpenOutput("/dev/null");
-        SET_STREAM_FILE ( nulldev, SyFopen ( "/dev/null", "w" ) );
+        SET_STREAM_FILE ( nulldev, SyFileOpen ( "/dev/null", "w" ) );
 #endif
 
         save_stream = global_stream;
@@ -728,12 +728,12 @@ Obj  FunTop ( Obj hdCall ) {
             // closing /dev/null and return to previous output
             // CloseOutput();
             global_stream = save_stream;
-            SyFclose ( streamFile ( nulldev ) );
+            SyFileClose ( streamFile ( nulldev ) );
             
         } Catch(e) {
             // CloseOutput();
             global_stream = save_stream;
-            SyFclose ( streamFile ( nulldev ) );
+            SyFileClose ( streamFile ( nulldev ) );
             
             Throw(e);
         }

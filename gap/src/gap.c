@@ -17,8 +17,10 @@
 **
 */
 
-#include	<stdio.h>
-#include	<stdlib.h>
+#include        <stdio.h>
+#include        <stdlib.h>
+#include        <string.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* dynamic storage manager         */
 #include        "scanner.h"             /* reading of single tokens        */
@@ -690,7 +692,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
                     locn = copy + (locn - msg);
                     *locn = 0;
                     SyFmtPrint ( stderr_stream, copy, arg1, arg2 );
-                    PrintObj ( stderr_stream, arg1, 0 );
+                    PrintObj ( stderr_stream, (Obj) arg1, 0 );
                     locn += 2;
                     SyFmtPrint ( stderr_stream, locn, arg2, 0 );
                     free ( copy );
@@ -971,7 +973,7 @@ Bag     FunChangeDir (Bag hdCall)
     hdName = EVAL( PTR_BAG(hdCall)[1] );
     if ( ! IsString(hdName) ) return Error("usage: CHANGEDIR( <filename> )",0,0);
 
-    if ( ! (int)ChDir( (const char*)PTR_BAG(hdName) ) )
+    if ( ! SyChDir ( (const char *)PTR_BAG(hdName) ) )
         return HdFalse;
 
     return HdTrue;
@@ -1867,7 +1869,7 @@ Bag       FunTYPE (Bag hdCall)
         strncat( (char*)PTR_BAG(hdType), "null", 4 );
     }
     else {
-		char *objtyp = InfoBags[GET_TYPE_BAG(hdObj)].name;
+		char *objtyp = (char *)InfoBags[GET_TYPE_BAG(hdObj)].name;
         hdType = NewBag( T_STRING, strlen( objtyp ) + 1 );
         strncat( (char*)PTR_BAG(hdType), objtyp,
                    strlen( objtyp ) + 1 );
@@ -2096,7 +2098,7 @@ Bag       FunGASMAN (Bag hdCall)
             CollectGarb();
 			usedpc = (float)(100 * SizeLiveBags) / SizeAllArenas;
 			if (SyMsgsFlagBags) {
-				fprintf(stderr, "%dk live bags, %.1f%% of total Memory Arenas (%dk)\n",
+				fprintf(stderr, "%ldk live bags, %.1f%% of total Memory Arenas (%ldk)\n",
 						SizeLiveBags / 1024, usedpc, SizeAllArenas / 1024);
 				fflush(stderr);
 			}
@@ -2391,10 +2393,10 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     /* read all init files, stop doing so after quiting from Error         */
     Try {
         for ( i=0; i<sizeof(SyInitfiles)/sizeof(SyInitfiles[0]); ++i ) {
-	    char * file = SyInitfiles[i];
-	    Obj pkg;
+            char * file = SyInitfiles[i];
+            Obj pkg;
             if ( file[0] != '\0' ) {
-		/*Pr("Reading %s...\n", file, 0);*/
+                /*Pr("Reading %s...\n", file, 0);*/
                 if ( OpenInput( file ) ) {
                     while ( Symbol != S_EOF ) {
                         hd = ReadIt();
@@ -2402,12 +2404,12 @@ void            InitGap (int argc, char** argv, int* stackBase) {
                         if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
                             Error("Read: 'return' must not be used",0,0);
                         else if ( hd == HdReturn )
-                             Error("Read: 'quit' must not be used",0,0);
-		    }		    
-		    pkg = Input->package;
+                            Error("Read: 'quit' must not be used",0,0);
+                    }		    
+                    pkg = Input->package;
                     ignore = CloseInput();
-		    if(pkg != 0) /* pkg is 0 if no variables were defined */
-		      PushNamespace(pkg);
+                    if(pkg != 0) /* pkg is 0 if no variables were defined */
+                        PushNamespace(pkg);
                 }
                 else {
                     Error("can't read from \"%s\"",(Int)file,0);
@@ -2415,36 +2417,39 @@ void            InitGap (int argc, char** argv, int* stackBase) {
             }
         }
         /* read prompts from GAPInfo.prompts */
-	hd = GetPromptString(PROMPT_FIELD_DBG);
-	if (hd) {
-	    prompt = HD_TO_STRING(hd);
-	    if (strlen(prompt)<sizeof(DbgPrompt))
-		strncpy(DbgPrompt, prompt, strlen(prompt)+1);
-	}
-	hd = GetPromptString(PROMPT_FIELD_BRK);
-	if (hd) {
-	    prompt = HD_TO_STRING(hd);
-	    if (strlen(prompt)<sizeof(BrkPrompt))
-		strncpy(BrkPrompt, prompt, strlen(prompt)+1);
-	}
+        hd = GetPromptString(PROMPT_FIELD_DBG);
+        if (hd) {
+            prompt = HD_TO_STRING(hd);
+            if ( strlen(prompt) < sizeof(DbgPrompt) )
+                // strncpy ( DbgPrompt, prompt, strlen(prompt)+1); // prompt smaller, just copy
+                strcpy ( DbgPrompt, prompt );       
+        }
+        hd = GetPromptString(PROMPT_FIELD_BRK);
+        if (hd) {
+            prompt = HD_TO_STRING(hd);
+            if ( strlen(prompt) < sizeof(BrkPrompt) )
+                //	strncpy(BrkPrompt, prompt, strlen(prompt)+1);	// prompt smaller, just copy
+                strcpy ( BrkPrompt, prompt );
+        }
         /* read prompts from environment */
-	prompt = getenv("SPIRAL_DBG_PROMPT");
-	if (prompt != NULL && strlen(prompt)<sizeof(DbgPrompt)) {
-	    strncpy(DbgPrompt, prompt, strlen(prompt)+1);
-	}
-	prompt = getenv("SPIRAL_BRK_PROMPT");
-	if (prompt != NULL && strlen(prompt)<sizeof(BrkPrompt)) {
-	    strncpy(BrkPrompt, prompt, strlen(prompt)+1);
-	}
+        prompt = getenv ("SPIRAL_DBG_PROMPT");
+        if ( prompt != NULL && strlen(prompt) < sizeof(DbgPrompt) ) {
+            strcpy ( DbgPrompt, prompt );           // strncpy(DbgPrompt, prompt, strlen(prompt)+1);
+        }
+        prompt = getenv ("SPIRAL_BRK_PROMPT");
+        if ( prompt != NULL && strlen(prompt) < sizeof(BrkPrompt) ) {
+            strcpy ( BrkPrompt, prompt );           // strncpy(BrkPrompt, prompt, strlen(prompt)+1);
+        }
 
     }
+
     Catch(e) {
-      /* exceptions raised using Error() are already printed at this point */
-      if(e!=ERR_GAP) {
-	while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
-	while ( EvalStackTop>0 ) EVAL_STACK_POP;
-	exc_show();
-      }
+        /* exceptions raised using Error() are already printed at this point */
+        if(e!=ERR_GAP) {
+            while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
+            while ( EvalStackTop>0 ) EVAL_STACK_POP;
+            exc_show();
+        }
     }
 
 }

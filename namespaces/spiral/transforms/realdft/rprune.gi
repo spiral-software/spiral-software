@@ -223,7 +223,7 @@ NewRulesFor(IOPrunedConv, rec(
        apply := (nt, C, cnt) -> Cond(ObjId(nt.params[2]) = var, # a variable is frequency domain data -> FData
                                     Checked(nt.params[7], C[1] * Diag(FData(nt.params[2])) * C[2]), # if data is provided it needs to be frequency domain
                                     ObjId(nt.params[2]) = Lambda,  # data is inside a larger array
-                                    Checked(nt.params[7], C[1] * Diag(nt.params[2]) * C[2]),
+                                    Checked(nt.params[7], C[1] * Diag(Copy(nt.params[2])) * C[2]),
                                     nt.params[7],   # if params[7] is true then data is frequency domain data
                                     C[1] * Diag(When(IsList(nt.params[2]), FList(TComplex, nt.params[2]), nt.params[2])) * C[2],
                                     let(cxfftdiag := 1/nt.params[1]*ComplexFFT(List(nt.params[2].tolist(), i->ComplexAny(_unwrap(i)))),
@@ -341,7 +341,7 @@ NewRulesFor(IOPrunedMDRConv, rec(
     ## 2-trip, 5-step, ZYX ====================================================
     IOPrunedMDRConv_3D_2trip_zyx_freqdata := rec(
        forTransposition := false,
-       applicable :=  (self, nt) >> not nt.hasTags() and Length(nt.params[1]) = 3 and nt.params[7],
+       applicable :=  (self, nt) >> not nt.hasTags() and Length(nt.params[1]) = 3 and When(IsBool(nt.params[7]), nt.params[7], nt.params[7]()),
        children := nt -> let(nlist := nt.params[1],
                             diag := nt.params[2],
                             oblk := nt.params[3],

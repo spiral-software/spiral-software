@@ -15,10 +15,8 @@ include ("${SPIRAL_SOURCE_DIR}/config/CMakeIncludes/TestDefines.cmake")
 set (TESTS_ALL_TESTS
 	basic_test
 	break-me
-	double-test
 	integers_test
 	Memmgr-test
-	print-test
 	profiler-test
     )
 

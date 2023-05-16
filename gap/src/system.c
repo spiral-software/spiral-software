@@ -1887,9 +1887,10 @@ void            syEchos ( char *str, Int fid )
 
 static Int my_syNrchar = 0; 
 
-void            SyFputs (char line[], Int fid )
+void            SyFputs (char line[], FILE* file)
 {
     Int                i;
+    Int  fid = fileno(file);
 
     /* if outputing to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {
@@ -1916,7 +1917,7 @@ void            SyFputs (char line[], Int fid )
             ;
     }
 
-    write( fileno(syBuf[fid].fp), line, i );
+    write(fid /* fileno(syBuf[fid].fp) */, line, i );
 }
 
 #endif

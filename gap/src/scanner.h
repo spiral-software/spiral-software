@@ -660,6 +660,16 @@ Int            CloseInputLog ( void );
 
 /****************************************************************************
 **
+
+*V  Logfile . . . . . . . . . . . . . . . . file identifier of logfile, global
+**
+**  This is the external(global) so that system can print to log file when SyFmtPrint is called.
+** 
+*/
+extern FILE* Logfile;
+
+/****************************************************************************
+**
 *F  InitScanner() . . . . . . . . . . . . . .  initialize the scanner package
 **
 **  'InitScanner' initializes  the  scanner  package.  This  justs  sets  the

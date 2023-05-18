@@ -927,7 +927,8 @@ AUTO( ReadLib( "sqstuff" ),
   intmatdiagSQ, InitEpimorphismSQ, MakePreImagesSQ, LiftEpimorphismSQ );
 
 AUTO( ReadLib( "string" ),
-  StringInt, StringRat, StringCyc, StringFFE, StringPerm, StringAgWord,
+##  StringInt, StringRat, StringCyc, StringFFE, StringPerm, StringAgWord,
+  StringRat, StringCyc, StringFFE, StringPerm, StringAgWord,
   StringBool, StringList, StringRec, String, PrintArray, PrintRecIgnore,
   PrintRecIndent, RecordOps, PrintRec, DaysInYear, DaysInMonth, DMYDay,
   DayDMY, NameWeekDay, WeekDay, NameMonth, StringDate, HMSMSec, SecHMSM,

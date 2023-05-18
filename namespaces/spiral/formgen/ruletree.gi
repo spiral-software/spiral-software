@@ -668,7 +668,7 @@ AllRuleTreesCutoff := (S, cutoff_func, opts) -> _AllRuleTrees(S, cutoff_func, Ha
 
 
 _NofRuleTrees := function ( S, cutoff, memohash, opts, level, trace )
-    local p, Cs, n, lkup, indentstr, i;
+    local p, Cs, n, lkup, indentstr, i, L1, L2, r1, sumL1, sumL2, prodL;
     Constraint(IsSPL(S));
     Constraint(IsRec(opts));
 
@@ -684,20 +684,20 @@ _NofRuleTrees := function ( S, cutoff, memohash, opts, level, trace )
     # check cutoff, baseHashes, and our memoization hash
     if cutoff(S) then
         if trace then
-            Print(indentstr, "<< (cutoff) 1\n");
+            Print(indentstr, "<< (cutoff) *** 1\n");
         fi;
         return 1; 
     fi;
     if MultiHashLookup(opts.baseHashes, S) <> false then
         if trace then
-            Print(indentstr, "<< (MultiHashLookup) 1\n");
+            Print(indentstr, "<< (MultiHashLookup) *** 1 ***\n");
         fi;
         return 1; 
     fi;
     lkup := HashLookup(memohash, S);
     if lkup <> false then
         if trace then
-            Print(indentstr, "<< hashed: ", lkup, "\n");
+            Print(indentstr, "<< hashed: *** ", lkup, " ***\n");
         fi;
         return lkup; 
     fi;
@@ -711,13 +711,41 @@ _NofRuleTrees := function ( S, cutoff, memohash, opts, level, trace )
     if Cs = [ [ ] ] then
         n := 1;
     else
-        n := Sum(Cs, c -> Sum(c, l -> Product(l, x -> _NofRuleTrees(x, cutoff, memohash, opts, level+1, trace))));
+		# This single line is made explicit in the following sequence in order to break out the sections for
+		# tracing
+		#
+        # n := Sum(Cs, c -> Sum(c, l -> Product(l, x -> _NofRuleTrees(x, cutoff, memohash, opts, level+1, trace))));
+		#
+		sumL1 := [];
+		sumL2 := [];
+		prodL := [];
+		for L1 in Cs do
+			sumL2 := [];
+			for L2 in L1 do
+				prodL := [];
+				for r1 in L2 do
+					Add(prodL, _NofRuleTrees(r1, cutoff, memohash, opts, level+1, trace));
+				od;
+				if prodL = [] then 
+					prodL := [1]; 
+				fi;
+				Add(sumL2, prodL);
+			od;
+			Add(sumL1, sumL2);
+		od;
+		n := Sum(sumL1, c -> Sum(c, l -> Product(l)));
     fi;
 
     HashAdd(memohash, S, n);
   
     if trace then
-        Print(indentstr, "<< (", S, ") ", n, "\n");
+		Print(indentstr, "  return Sum of Products of:\n");
+		for L1 in sumL1 do
+			for L2 in L1 do
+				Print(indentstr, "    ", L2, "\n");
+			od;
+		od;
+        Print(indentstr, "<< (", S, ") *** ", n, " ***\n");
     fi;
   
     return n;

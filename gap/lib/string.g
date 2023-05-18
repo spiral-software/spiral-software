@@ -22,26 +22,26 @@ Concat := ConcatenationString;
 ##
 #F  StringInt( <n> )  . . . . . . . . . . . convert integer <n> into a string
 ##
-StringInt := function ( n )
-    local  str,  num,  digits;
+# StringInt := function ( n )
+#     local  str,  num,  digits;
 
-    # construct the string without sign
-    num := AbsInt( n );
-    digits := [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
-    str := "";
-    repeat
-	Add( str, digits[num mod 10 + 1] );
-        num := QuoInt( num, 10 );
-    until num = 0;
+#     # construct the string without sign
+#     num := AbsInt( n );
+#     digits := [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
+#     str := "";
+#     repeat
+# 	Add( str, digits[num mod 10 + 1] );
+#         num := QuoInt( num, 10 );
+#     until num = 0;
 
-    # add the sign and return
-    if n < 0  then
-	Add( str, '-' );
-    fi;
-    str := str{[Length(str),Length(str)-1 .. 1]};
-    IsString(str);
-    return str;
-end;
+#     # add the sign and return
+#     if n < 0  then
+# 	Add( str, '-' );
+#     fi;
+#     str := str{[Length(str),Length(str)-1 .. 1]};
+#     IsString(str);
+#     return str;
+# end;
 
 
 #############################################################################

@@ -307,7 +307,7 @@ extern  char *          SyFgets ( char * line,  Int length,  Int fid );
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
-extern  void            SyFputs ( char * line, Int fid );
+extern  void            SyFputs ( char * line, FILE* file);
 
 
 /****************************************************************************

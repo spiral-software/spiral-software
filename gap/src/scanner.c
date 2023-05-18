@@ -378,9 +378,9 @@ char            GetLine (void)
 
     /* if neccessary echo the line to the logfile                          */
     if ( Logfile != (FILE*)NULL && (Input->fid == 0))
-        SyFputs( In, fileno(Logfile) );
-    if ( InputLogfile != (FILE*)NULL && (Input->fid == 2))
-        SyFputs( In, fileno(InputLogfile) );
+        SyFputs( In, Logfile );
+    if ( InputLogfile != (FILE*)NULL && (Input->fid == 0))
+        SyFputs( In, InputLogfile );
 
         /* return the current character                                        */
     return *In;

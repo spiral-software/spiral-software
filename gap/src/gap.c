@@ -1577,7 +1577,7 @@ Bag       FunLogInputTo (Bag hdCall)
     else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD ) {
         hdName = EVAL( PTR_BAG(hdCall)[1] );
         if ( ! IsString(hdName) )
-           return Error("usage: LogInputTo() or LogTo( <string> )",0,0);
+           return Error("usage: LogInputTo() or LogInputTo( <string> )",0,0);
         if ( ! OpenInputLog( (char*)PTR_BAG(hdName) ) )
            return Error("LogInputTo: cannot log to %s",(Int)PTR_BAG(hdName),0);
     }

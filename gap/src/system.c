@@ -14,6 +14,7 @@
 #include        <stdarg.h>
 
 #include        "system.h"              /* declaration part of the package */
+#include        "scanner.h"             /* reading of single tokens        */
 #include        "spiral.h"              /* InitLibName() */
 #include        "iface.h"
 #include		"GapUtils.h"
@@ -1886,9 +1887,10 @@ void            syEchos ( char *str, Int fid )
 
 static Int my_syNrchar = 0; 
 
-void            SyFputs (char line[], Int fid )
+void            SyFputs (char line[], FILE* file)
 {
     Int                i;
+    Int  fid = fileno(file);
 
     /* if outputing to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {
@@ -1915,17 +1917,17 @@ void            SyFputs (char line[], Int fid )
             ;
     }
 
-    write( fileno(syBuf[fid].fp), line, i );
+    write(fid /* fileno(syBuf[fid].fp) */, line, i );
 }
 
 #endif
 
 #if WIN32
 
-void  SyFputs ( char line[], Int fid )
+void  SyFputs ( char line[], FILE* file )
 {
-        fputs( line, syBuf[fid].fp );
-   		fflush( syBuf[fid].fp );		// typically the GAP internal output buffer has just been flushed, so flush file buffer, too
+        fputs( line, file );
+   		fflush( file );		// typically the GAP internal output buffer has just been flushed, so flush file buffer, too
                                         // otherwise piped output gets delayed
 }
 
@@ -2780,7 +2782,7 @@ UInt*** SyAllocBags(Int size)
 void SyAbortBags(
     Char* msg)
 {
-    SyFputs(msg, 3);
+    SyFputs(msg, stderr); 
     abort();
     /*SyExit( 2 );*/
 }
@@ -2984,6 +2986,11 @@ int SyFmtPrint(STREAM stream, const char* format, ...)
         }
     }
 
+    if (Logfile != (FILE*)NULL)
+    {
+        vfprintf(Logfile, format, arglist);
+        fflush(Logfile);
+    }
     va_end(arglist);
     return result;
 }

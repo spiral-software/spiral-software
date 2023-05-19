@@ -379,6 +379,23 @@ Bag       FunBacktrace (Bag hdCall)
 }
 
 
+/****************************************************************************
+**
+*F  FunBacktrace2( <hdCall> )  . . . . . . . . internal function 'Backtrace2'
+**
+**  'FunBacktrace2' implements the internal function 'Backtrace2'.
+**
+**  'Backtrace2()' \\
+**  'Backtrace2( <level> )'
+**
+**  'Backtrace2' is identical to 'Backtrace' with the addition it prints the
+**  statements to be evaluated at each nesting level.  'Backtrace2' prints a list
+**  of all active functions, most recent first, up to maximal <level> nestings.
+**  If <level> is positive the names of the formal arguments of the functions
+**  calls are printed, otherwise the values of the actual arguments are printed
+**  instead.  <level>, if not specified, defaults to 5.
+**
+*/
 Bag       FunBacktrace2 (Bag hdCall)
 {
     Int	    level;

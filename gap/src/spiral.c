@@ -78,7 +78,7 @@ void            InitSPIRAL_Paths (void)
 
 /****************************************************************************
 **
-*F  Apropos( <sub_string> ) . . .  Print identifiers that contain a substring
+*F  FunApropos( <sub_string> ) . . .  Print identifiers that contain a substring
 **
 **  'Apropos' prints a list of all defined identifiers that contain a given
 **  substring in their name. It is useful  to  find related  functions. For
@@ -394,7 +394,7 @@ Bag       FunNameOf (Bag hdCall)
 
 /****************************************************************************
 **
-*F  Assign(<name>, <value>) . . assigns a value to a variable with given name
+*F  FunAssign(<name>, <value>) . . assigns a value to a variable with given name
 **
 ** This function makes possible to create variables automatically:
 **
@@ -1047,7 +1047,7 @@ Obj FunVersion(Obj hdCall) {
 
 /****************************************************************************
 **
-*F  BuildInfo()
+*F  FunBuildInfo()
 **
 ** Prints name:value pairs of build info
 */

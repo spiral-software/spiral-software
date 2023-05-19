@@ -501,7 +501,7 @@ Obj             Log2Int(Obj integer)
 **
 *F  StringInt( <self>, <int> ) . . . . . . . . convert an integer to a string
 **
-**  `StringInt' returns an immutable string representing the integer <int>
+**  'StringInt' returns an immutable string representing the integer <int>
 **
 */
 Obj             StringInt(Obj integer)

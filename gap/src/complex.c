@@ -244,8 +244,6 @@ void    PrCplx ( STREAM stream, Obj hd, int indent ) {
 /****************************************************************************
 **
 *F  FunComplex() . . . . . . . . . . . . implements internal function Complex()
-*F  FunIsComplex() . . . . . . . . . . implements internal function IsComplex()
-**
 */
 Obj FunComplex ( Obj hdCall ) {
     char * usage = "usage: Complex( <num> )";
@@ -262,6 +260,10 @@ Obj FunComplex ( Obj hdCall ) {
     else return Error(usage, 0,0);
 }
 
+/****************************************************************************
+**
+*F  FunIsComplex() . . . . . . . . . . implements internal function IsComplex()
+*/
 Obj FunIsComplex ( Obj hdCall ) {
     char * usage = "usage: IsComplex( <obj> )";
     Obj hd;
@@ -270,6 +272,10 @@ Obj FunIsComplex ( Obj hdCall ) {
     return GET_TYPE_BAG(hd)==T_CPLX ? HdTrue : HdFalse;
 }
 
+/****************************************************************************
+**
+*F  FunReComplex() . . . . . . . .  returns the real part of a Complex number
+*/
 Obj FunReComplex ( Obj hdCall ) {
     char * usage = "usage: ReComplex( <complex> )";
     Obj hd; UInt t;
@@ -281,6 +287,10 @@ Obj FunReComplex ( Obj hdCall ) {
     else return Error(usage, 0, 0);
 }
 
+/****************************************************************************
+**
+*F  FunImComplex() . . . . . . returns the imaginary part of a Complex number
+*/
 Obj FunImComplex ( Obj hdCall ) {
     char * usage = "usage: ImComplex( <complex> )";
     Obj hd; UInt t;
@@ -292,6 +302,10 @@ Obj FunImComplex ( Obj hdCall ) {
     else return Error(usage, 0, 0);
 }
 
+/****************************************************************************
+**
+*F  FunAbsComplex() . . . . .  returns the absolute value of a Complex number
+*/
 Obj FunAbsComplex ( Obj hdCall ) {
     char * usage = "usage: AbsComplex( <complex> )";
     Obj hd; UInt t;
@@ -313,7 +327,7 @@ Obj FunAbsComplex ( Obj hdCall ) {
 
 /****************************************************************************
 **
-*F  ComplexW( <n>, <pow> )  . . . . . . . . . . . . . . complex root of unity
+*F  FunComplexW( <n>, <pow> )  . . . . . . . . . . . . . . complex root of unity
 **
 ** Implements internal function 'ComplexW' which returns a complex root of
 ** unity of order <n>, raised to the power <pow>.

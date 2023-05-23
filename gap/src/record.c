@@ -1335,10 +1335,10 @@ Bag       FunNumRecFields (Bag hdCall)
 
     /* get and check the arguments                                         */
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: RecFields( <rec> )",0,0);
+        return Error("usage: NumRecFields( <rec> )",0,0);
     hdRec = EVAL( PTR_BAG(hdCall)[1] );
     if ( GET_TYPE_BAG(hdRec) != T_REC )
-        return Error("RecFields: <rec> must be a record",0,0);
+        return Error("NumRecFields: <rec> must be a record",0,0);
 
     return INT_TO_HD( GET_SIZE_BAG(hdRec) / SIZE_HD / 2 );
 }

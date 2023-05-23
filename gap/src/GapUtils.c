@@ -286,7 +286,7 @@ char *PathSep()
 
 
 Bag FunFileExists(Bag argv) {
-    char* usage = "sys_exists (const char *fname)";
+    char* usage = "FileExists(<filename>)";
     int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
 
     int  _result;
@@ -297,7 +297,7 @@ Bag FunFileExists(Bag argv) {
     }
     
     _arg0 = (char*)HdToString(ELM_ARGLIST(argv, 1),
-            "<fname> must be a String.\nUsage: %s", (Int)usage, 0);
+            "<filename> must be a String.\nUsage: %s", (Int)usage, 0);
 
     _result = (int)sys_exists(_arg0);
 

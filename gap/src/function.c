@@ -750,7 +750,7 @@ Bag       FunIsMeth (Bag hdCall)
 
     /* evaluate and check the argument                                     */
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: IsFunc( <obj> )",0,0);
+        return Error("usage: IsMeth( <obj> )",0,0);
     hdObj = EVAL( PTR_BAG(hdCall)[1] );
     if ( hdObj == HdVoid )
         return Error("IsMeth: function must return a value",0,0);

@@ -813,6 +813,14 @@ Obj  FunChildren ( Obj hdCall ) {
     return children;
 }
 
+/****************************************************************************
+**
+*F  FunChild( <Obj>, <childNum> ) . . . . . . . . . . .  returns child at position childNum of given obj
+**
+**  Child( <Obj>, <childNum> )
+**
+**  The childNum array list starts at 0.
+**/
 Obj  FunChild ( Obj hdCall ) {
    char * usage = "usage: Child( <Obj>, <childNum> )";
     Obj   hd, hdChildNum;
@@ -842,6 +850,14 @@ Obj  FunChild ( Obj hdCall ) {
 	return hd;
 }
 
+/****************************************************************************
+**
+*F  FunSetChild( <Obj>, <childNum>, <newChildObj> ) . . . . . . . . . . .  replaces a child obj at position childNum of given obj
+**
+**  Child( <Obj>, <childNum>, <newChildObj> )
+**
+**  The childNum must be in the children array list. 
+**/
 Obj  FunSetChild ( Obj hdCall ) {
     char * usage = "usage: SetChild( <Obj>, <childNum>, <newChildObj> )";
     Obj   hd, hdNewChild, hdChildNum;
@@ -881,6 +897,7 @@ Obj  FunNumArgsLocals ( Obj hdCall ) {
     SET_BAG(res, 2,  INT_TO_HD( NUM_LOCALS_FUNC(hd) ) );
     return res;
 }
+
 Obj  FunNumArgs ( Obj hdCall ) {
     char * usage = "usage: NumArgs( <func> )";
     Obj hd;
@@ -890,8 +907,9 @@ Obj  FunNumArgs ( Obj hdCall ) {
     if ( GET_TYPE_BAG(hd) != T_FUNCTION && GET_TYPE_BAG(hd) != T_METHOD ) return Error(usage, 0, 0);
     return INT_TO_HD( NUM_ARGS_FUNC(hd) );
 }
+
 Obj  FunNumLocals ( Obj hdCall ) {
-    char * usage = "usage: NumArgs( <func> )";
+    char * usage = "usage: NumLocals( <func> )";
     Obj hd;
     /* get and check the argument                                          */
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
@@ -1083,6 +1101,15 @@ void ConstraintD(Obj cond) {
     }
 }
 
+/****************************************************************************
+**
+*F  FunConstraintD( <cond> ) ...... implements internal function ConstraintD
+**
+*       ConstraintD( <cond> )
+*   if <cond> is good will return true. else it will return error 
+*           [[ while reading *stdin*:<linenumber> ]]
+            Error, Condition <cond> doesn't hold
+*/
 Bag       FunConstraintD (Bag hdCall)
 {
     char * usage = "usage: ConstraintD( <cond> )";

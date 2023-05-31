@@ -961,7 +961,16 @@ Bag       FunREAD (Bag hdCall)
 	return HdTrue;
 }
 
-
+/****************************************************************************
+**
+*F  FunChangeDir( <hdCall> ) . . . . . . . . . . . . . .  internal function 'SyChDir'
+**
+**  'FunChangeDir' implements the internal function 'SyChDir'.
+**
+**  Change dir takes in a path string and attempts to change to that working directory.
+**
+**  'CHANGEDIR( <string> )'
+**/
 Bag     FunChangeDir (Bag hdCall)
 {
     Bag           hd,  hdName,  hdPkg;
@@ -979,7 +988,14 @@ Bag     FunChangeDir (Bag hdCall)
     return HdTrue;
 }
 
-
+/****************************************************************************
+**
+*F  FunReadString( <hdCall> ) . . . . . . . . . . . . . .  internal function 'GReadFile'
+**
+**  'FunReadString' implements the internal function 'GReadFile'.
+**
+**  'READSTR( <filename> );'
+**/
 Bag       FunReadString (Bag hdCall)
 {
     Bag           hdList,  hdName;
@@ -1432,8 +1448,18 @@ Bag       FunAppendTo (Bag hdCall)
 
     return HdVoid;
 }
-
-
+/****************************************************************************
+**
+*F  FunPrintToString( <obj>, <obj>, <obj> ) . . . . . . . . . .  internal function 'PrintToString'
+**
+**  'FunPrintToString' implements the internal function 'PrintToString'.
+**
+**  'PrintToString( <obj>, <obj>, <obj>... )'
+** 
+**  Print To String takes in <obj1>, <obj2>, etc. and will combine them into one <string> element
+** 
+**  See the note about empty string literals and empty lists in 'Print'.
+*/
 Bag     FunPrintToString ( Bag hdCall )
 {
     Bag     hd;

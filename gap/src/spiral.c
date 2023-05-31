@@ -644,6 +644,11 @@ Obj  FunBagInfo ( Obj hdCall ) {
     return HdVoid;
 }
 
+/**
+** 
+*F FunBagAddr (<obj>) ...... returns the memory address of the obj passed in
+** 
+*/
 Obj  FunBagAddr ( Obj hdCall ) {
     char * usage = "usage: BagAddr( <obj> )";
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);

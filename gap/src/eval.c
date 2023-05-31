@@ -777,6 +777,12 @@ Obj        FunProtectVar(Obj hdCall) {
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  FunProtectRec( <record> ) . . . . . . . . . internal function ProtectRec()
+**
+**  ProtectRec(<record>) forbids record overwriting from GAP session.
+**/
 Obj        FunProtectRec(Obj hdCall) {
     Obj hdRec;
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error("Usage: ProtectRec(<variable>)", 0, 0);
@@ -787,6 +793,12 @@ Obj        FunProtectRec(Obj hdCall) {
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  FunProtectNamespace( <namespace> ) . . . . . . . . . internal function ProtectNamespace()
+**
+**  ProtectNamespace(<namespace>) forbids namespace overwriting from GAP session.
+**/
 Obj        FunProtectNamespace(Obj hdCall) {
     Obj hdNS;
     UInt size, i;
@@ -813,6 +825,12 @@ Obj        FunProtectNamespace(Obj hdCall) {
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  Fun_UnprotectVar( <var> ) . . . . . . . . . internal function _UnprotectVar()
+**
+**  _UnprotectVar(<var>) allows variable overwriting from GAP session.
+**/
 Obj        Fun_UnprotectVar(Obj hdCall) {
     Obj hdVar = PTR_BAG(hdCall)[1];
     if ( GET_TYPE_BAG(hdVar) != T_VAR && GET_TYPE_BAG(hdVar) != T_VARAUTO )
@@ -1128,7 +1146,6 @@ Obj       FunIsBool (Obj hdCall)
 /****************************************************************************
 **
 *F  ShallowCopy( <hdOld> )  . . . . . . . .  make a shallow copy of an object
-*F  FullShallowCopy( <hdOld> )  . . . . make a full shallow copy of an object
 **
 **  'ShallowCopy' makes a copy of the object  <obj>.  If <obj> is not a  list
 **  or a record, 'ShallowCopy' simply returns <obj>, since those objects  can
@@ -1137,8 +1154,6 @@ Obj       FunIsBool (Obj hdCall)
 **  record 'ShallowCopy' makes a copy of this object,  but does not copy  the
 **  subobjects.
 **
-**  'FullShallowCopy' is identical to ShallowCopy,  except  that  ShallowCopy
-**  does not copy objects with type > T_VARAUTO, while FullShalloCopy does.
 **/
 Obj       ShallowCopy (Obj hdOld)
 {
@@ -1169,7 +1184,14 @@ Obj       ShallowCopy (Obj hdOld)
 
     return hdNew;
 }
-
+/****************************************************************************
+**
+*F  FullShallowCopy( <hdOld> )  . . . . make a full shallow copy of an object
+* 
+* 
+**  'FullShallowCopy' is identical to ShallowCopy,  except  that  ShallowCopy
+**  does not copy objects with type > T_VARAUTO, while FullShalloCopy does.
+**/
 Obj       FullShallowCopy (Obj hdOld)
 {
     Obj hdResult;
@@ -1331,10 +1353,8 @@ Obj       CopyFunc (Obj hdOld)
 /****************************************************************************
 **
 *F  FunCopy( <hdCall> ) . . . . . . . . . . . . . .  make a copy of an object
-*F  FunCopyFunc( <hdCall> ) . . . . . . . . . . . . make a copy of a function
 **
 **  'FunCopy' implements the internal function 'Copy( <obj> )'.
-**  'FunCopyFunc' implements the internal function 'CopyFunc( <obj> )'.
 **
 **  'Copy' makes a copy of the  object <hdObj>.  If <obj>  is not a list or a
 **  record, 'Copy' simply  returns  <obj>, since those  objects can  never be
@@ -1343,8 +1363,6 @@ Obj       CopyFunc (Obj hdOld)
 **  'Copy' makes a copy of this object,  and calls itself recursively to copy
 **  the subobjects.
 **
-**  'CopyFunc' copies a function, it is necessary when function bags are to be
-**  modified from within the interpreter (using Child/SetChild functions).
 */
 Obj       FunCopy (Obj hdCall)
 {
@@ -1356,6 +1374,16 @@ Obj       FunCopy (Obj hdCall)
     return Copy( EVAL( PTR_BAG(hdCall)[1] ) );
 }
 
+/****************************************************************************
+**
+*F  FunCopyFunc( <hdCall> ) . . . . . . . . . . . . make a copy of a function
+**
+**  'FunCopyFunc' implements the internal function 'CopyFunc( <obj> )'.
+**
+**  'CopyFunc' copies a function, it is necessary when function bags are to be
+**  modified from within the interpreter (using Child/SetChild functions).
+**
+*/
 Obj       FunCopyFunc (Obj hdCall)
 {
     char * usage = "usage: CopyFunc( <func> )";

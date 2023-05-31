@@ -244,8 +244,8 @@ void    PrCplx ( STREAM stream, Obj hd, int indent ) {
 /****************************************************************************
 **
 *F  FunComplex() . . . . . . . . . . . . implements internal function Complex()
-*F  FunIsComplex() . . . . . . . . . . implements internal function IsComplex()
 **
+**  Can be implemented with Complex(<num>) or Cplx(<num>);
 */
 Obj FunComplex ( Obj hdCall ) {
     char * usage = "usage: Complex( <num> )";
@@ -262,6 +262,12 @@ Obj FunComplex ( Obj hdCall ) {
     else return Error(usage, 0,0);
 }
 
+/****************************************************************************
+**
+*F  FunIsComplex() . . . . . . . . . . test if an object is a Complex
+**
+**  IsComplex( <obj> );
+*/
 Obj FunIsComplex ( Obj hdCall ) {
     char * usage = "usage: IsComplex( <obj> )";
     Obj hd;
@@ -270,6 +276,14 @@ Obj FunIsComplex ( Obj hdCall ) {
     return GET_TYPE_BAG(hd)==T_CPLX ? HdTrue : HdFalse;
 }
 
+/****************************************************************************
+**
+*F  FunReComplex() . . . . . . . . . . implements internal function ReComplex()
+**
+**  Implements internal function for Real Part Complex 
+**
+**  ReComplex( <complex> ); 
+*/
 Obj FunReComplex ( Obj hdCall ) {
     char * usage = "usage: ReComplex( <complex> )";
     Obj hd; UInt t;
@@ -281,6 +295,14 @@ Obj FunReComplex ( Obj hdCall ) {
     else return Error(usage, 0, 0);
 }
 
+/****************************************************************************
+**
+*F  FunImComplex() . . . . . . . . . . implements internal function ImComplex()
+**
+**  Implements internal function for Imaginary Part Complex 
+**
+**  ImComplex( <complex> );
+*/
 Obj FunImComplex ( Obj hdCall ) {
     char * usage = "usage: ImComplex( <complex> )";
     Obj hd; UInt t;
@@ -292,6 +314,14 @@ Obj FunImComplex ( Obj hdCall ) {
     else return Error(usage, 0, 0);
 }
 
+/****************************************************************************
+**
+*F  FunAbsComplex() . . . . . . . . . . implements internal function AbsComplex()
+**
+**  Implements internal function for Absolute Value Complex 
+**
+**  AbsComplex( <complex> );
+*/
 Obj FunAbsComplex ( Obj hdCall ) {
     char * usage = "usage: AbsComplex( <complex> )";
     Obj hd; UInt t;

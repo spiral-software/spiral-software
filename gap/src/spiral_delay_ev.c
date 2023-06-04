@@ -883,7 +883,24 @@ Obj  FunSetChild ( Obj hdCall ) {
     SET_BAG(hd, num-1,  hdNewChild ); 
     return HdVoid;
 }
-
+/*
+*F FunNumArgsLocals( <func> ) ......... given a Function returns how many arguments and how many local declared variables are in it.
+** 
+** NumArgsLocals(<func>);
+** 
+** 
+** returns array with where 1st argument is the number of args and the 2nd argument is the number of locals declared. 
+**
+** Example:> xFunc := function ( a, b, c )
+                      local y;
+                      y := 3;
+                      return a + b+ c + y;
+                     end;
+            >NumArgsLocals(xFunc);
+            [ 3, 1 ]
+**
+**
+*/
 Obj  FunNumArgsLocals ( Obj hdCall ) {
     char * usage = "usage: NumArgsLocals( <func> )";
     Obj hd;
@@ -898,6 +915,14 @@ Obj  FunNumArgsLocals ( Obj hdCall ) {
     return res;
 }
 
+/*
+*F FunNumArgs( <func> ) ......... given a function returns how many arguments 
+**
+** NumArgs(<func>);
+**
+**
+** returns the number of arguments 
+*/
 Obj  FunNumArgs ( Obj hdCall ) {
     char * usage = "usage: NumArgs( <func> )";
     Obj hd;
@@ -908,6 +933,14 @@ Obj  FunNumArgs ( Obj hdCall ) {
     return INT_TO_HD( NUM_ARGS_FUNC(hd) );
 }
 
+/*
+*F FunNumLocals( <func> ) ......... given a function returns how many local declared variables are in it
+**
+** NumLocals(<func>);
+**
+**
+** returns the number of declared local variables are in the function. 
+*/
 Obj  FunNumLocals ( Obj hdCall ) {
     char * usage = "usage: NumLocals( <func> )";
     Obj hd;
@@ -968,7 +1001,19 @@ int  CanBeFullyEvaluated ( Obj hd ) {
     RecursiveClearFlagFullMutable(hd, BF_DELAY_EV0);
     return res;
 }
-
+/*
+*F FunCanBeFullyEvaluated( <expr> ) ....... returns true/false if a given expression can be evaluated 
+**
+** CanBeFullyEvaluated( <expr> )
+**
+** Example:
+            > CanBeFullyEvaluated(2+2);
+            true;
+            > CanBeFullyEvaluated(y+2+2);
+            false;
+** 
+**  returns true/false if an expression often delay expressions can be evaluated or not. 
+**/
 Obj  FunCanBeFullyEvaluated ( Obj hdCall ) {
     char * usage = "usage: CanBeFullyEvaluated( <expr> )";
     Obj hd;    /* get and check the argument                                          */
@@ -1081,7 +1126,7 @@ Bag       FunDelayedValueOf (Bag hdCall)
 
 /****************************************************************************
 **
-*F  ConstraintD( <cond> ) . .make sure condition holds if it can be evaluated
+*F  ConstraintD( <cond> ) ..... make sure condition holds if it can be evaluated
 **
 */
 void ConstraintD(Obj cond) {

@@ -777,8 +777,9 @@ Obj  FunBagsOfType ( Obj hdCall ) {
 
 /****************************************************************************
 **
-*F  GetEnv( <name> ) . . . . . . . . . . . . . . get the environment variable
+*F  FunGetEnv( <name> ) . . . . . . . . . . . . . . get the environment variable
 **
+**  GetEnv( <name> )
 */
 Bag       FunGetEnv (Bag hdCall)
 {

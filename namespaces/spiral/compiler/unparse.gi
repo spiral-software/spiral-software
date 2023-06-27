@@ -953,6 +953,7 @@ Class(CUnparser, CUnparserBase, rec(
         self.opts := CopyFields(opts, rec(subName := subname));
         oo := self.preprocess(o);
 		self.checkPrintRuleTree(o, opts);
+		self.checkPrintSums(o, opts);
 		self.checkPrintICode(o, opts);
         Print(self.header(subname, oo), Unparse(oo, self, 0, 4), self.footer(subname, oo));
     end,
@@ -972,6 +973,14 @@ Class(CUnparser, CUnparserBase, rec(
 		if IsBound(opts.printRuleTree) and opts.printRuleTree and IsBound(o.ruletree) then
 			Print("/* RuleTree:\nrt :=\n");
 			Print(o.ruletree);
+			Print("\n;\n*/\n\n");
+		fi;
+	end,
+	
+	checkPrintSums := meth(self, o, opts)
+		if IsBound(opts.printSums) and opts.printSums and IsBound(o.sums) then
+			Print("/* Sums:\nsums :=\n");
+			Print(o.sums);
 			Print("\n;\n*/\n\n");
 		fi;
 	end,

@@ -44,6 +44,7 @@ Class( 2DI, SumsBase, RewritableObject, AttrMixin, rec(
    dmn := self >> [ TArray(TUnknown, Product(self.rChildren()))],
    children := self >> [],
    arity := ClassSPL.arity,
+   matElem := ClassSPL.matElem,
    updateParams := meth(self)
        self.func := fId(Product(self.params));
        Inherited();

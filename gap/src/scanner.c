@@ -351,14 +351,14 @@ char            GetLine (void)
     if ( Input->fid /* file */ == 0 ) {
         if ( ! SyQuiet ) 
             //Pr( "%s%c", (Int)Prompt, (Int)'\03' );
-            SyFmtPrint( global_stream, "%s", Prompt); //GS4 - Should be global probably 
+            SyFmtPrint( global_stream, "%s", Prompt); 
         else            
             //Pr( "%c", (Int)'\03', 0 );
             SyFmtPrint( global_stream, "%c", '\03');
     }
     else if ( Input->fid /* file */ == 2 ) {
         //Pr( "%s%c", (Int)Prompt, (Int)'\03' );
-        SyFmtPrint( global_stream, "%s%c", Prompt, '\03');
+        SyFmtPrint( global_stream, "%s", Prompt);
     }
 
     /* bump the line number                                                */

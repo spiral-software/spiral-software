@@ -1460,7 +1460,7 @@ Bag     FunPrintToString ( Bag hdCall )
 
     /* check the number and type of the arguments, nothing special         */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
-        return Error("usage: PrintTo( <file>, <obj>, <obj>... )",0,0);
+        return Error("usage: PrintToString( <obj>, <obj>, <obj>... )",0,0);
     //hd = EVAL( PTR_BAG(hdCall)[1] );
 
     stream.type = STREAM_TYPE_STRING;
@@ -1879,7 +1879,7 @@ Bag       FunTYPE (Bag hdCall)
     Bag           hdObj;
 
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: GET_TYPE_BAG( <obj> )",0,0);
+        return Error("usage: TYPE( <obj> )",0,0);
     hdObj  = EVAL( PTR_BAG(hdCall)[1] );
     if ( hdObj == 0 ) {
         hdType = NewBag( T_STRING, 5 );
@@ -1966,7 +1966,7 @@ Bag       FunSIZE (Bag hdCall)
     Bag           hdObj;
 
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: GET_SIZE_BAG( <obj> )",0,0);
+        return Error("usage: SIZE( <obj> )",0,0);
     hdObj  = EVAL( PTR_BAG(hdCall)[1] );
     MarkObj( hdObj );
     size = SizeObj( hdObj );

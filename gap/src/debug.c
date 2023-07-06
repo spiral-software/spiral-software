@@ -675,7 +675,12 @@ static void UnhookPrTab()
         }
     }
 }
-	
+
+/****************************************************************************
+**
+*F  Top() . . . . . . . . . . . . . . . .  print function on top of the stack
+**
+**/
 Obj  FunTop ( Obj hdCall ) {
     char *      usage = "usage (in brk or dbg modes only): Top()";
     Obj         top, doc;
@@ -794,6 +799,11 @@ static Int GetLevels( Obj hdCall ) {
     return levels;
 }
 
+/****************************************************************************
+**
+*F  Down() . . . . . . . . . . . . . . . . . . . . .  go one stack frame down
+**
+**/
 Obj  FunDown ( Obj hdCall ) {
     char * usage = "usage  (in brk or dbg modes only): Down( [<levels>] )";
     char * errText = "--initial frame selected (can't go down)--\n";
@@ -812,6 +822,11 @@ Obj  FunDown ( Obj hdCall ) {
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  Up() . . . . . . . . . . . . . . . . . . . . . . .  go one stack frame up
+**
+**/
 Obj  FunUp ( Obj hdCall ) {
     char * usage = "usage (in brk or dbg modes only): Up( [<levels>] )";
     char * errText = "--topmost frame selected (can't go up)--\n";

@@ -237,6 +237,10 @@ Int FindDocAndExtractLoc(Bag obj, char* fileName, Int* line) {
 *F  Doc( <func> ) . . . . . . . . . .  print documentation for given function
 **
 **  FunDoc implements internal function 'Doc'.
+** 
+**  Prints documentation string (if found) and the location of the
+**  information ( file & line #)
+** 
 */
 
 Obj  FunDoc( Obj hdCall ) {
@@ -259,6 +263,13 @@ Obj  FunDoc( Obj hdCall ) {
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  DocLoc( <func> ) . . . .  print documentation location for given function
+**
+**  prints the documentation location as: [ <file>, <line #> ]
+**
+*/
 Bag FunDocLoc(Bag hdCall) {
     char * usage = "usage: DocLoc( <obj> )";
     Obj hd;

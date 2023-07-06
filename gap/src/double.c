@@ -95,16 +95,6 @@ long double LongDblAny(Obj hd) {
     }
 }
 
-/****************************************************************************
-**
-*F  FunRatDouble() . . . . . . . . . . . converts double to an exact rational
-**
-**  Implements internal function 'RatDouble'. Note that no precision is lost,
-**  since GAP allows infinite-precision integers in numerator/denominator.
-**
-**  RatDouble(<double>)
-*/
-
 Obj RatDouble ( double d ) {
     union ieee754_double dbl;
     Int mantissa0;
@@ -141,6 +131,16 @@ Obj RatDouble ( double d ) {
     hdResult = ProdRat(hdMantissa, POW(INT_TO_HD(2), hdExponent));
     return hdResult;
 }
+
+/****************************************************************************
+**
+*F  FunRatDouble() . . . . . . . . . . . converts double to an exact rational
+**
+**  Implements internal function 'RatDouble'. Note that no precision is lost,
+**  since GAP allows infinite-precision integers in numerator/denominator.
+**
+**  RatDouble(<double>)
+*/
 
 Obj  FunRatDouble ( Obj hdCall ) {
     char * usage = "usage: RatDouble( <double> )";
@@ -356,8 +356,7 @@ void    PrDbl ( STREAM stream, Obj hd, int indent )
 /****************************************************************************
 **
 *F  FunDouble() . . . . . . . . . . . . implements internal function Double()
-*F  FunIsDouble() . . . . . . . . . . implements internal function IsDouble()
-**
+** 
 */
 Obj FunDouble ( Obj hdCall ) {
     char * usage = "usage: Double( <rational> )";
@@ -367,6 +366,12 @@ Obj FunDouble ( Obj hdCall ) {
     return ObjDbl( DblAny(hd) );
 }
 
+/****************************************************************************
+**
+*F  IsDouble( <obj> ) . . . . . . . . . . . . tests if object is a double
+**
+**  IsDouble( <obj> ) 
+*/
 Obj FunIsDouble ( Obj hdCall ) {
     char * usage = "usage: IsDouble( <obj> )";
     Obj hd;
@@ -389,6 +394,12 @@ Obj Func1Dbl ( char * name, double (*fPtr)(double), Obj hdCall ) {
     return ObjDbl( fPtr(DblAny(hd)) );
 }
 
+/****************************************************************************
+**
+*F  Func2Dbl(<name>, <fPtr>, <hdCall>) . .  C function with 2 arg wrapper
+**
+**  'Func2Dbl' is a  wrapper for C  math functions  with 2 arguments.
+*/
 Obj Func2Dbl ( char * name, double (*fPtr)(double,double), Obj hdCall ) {
     char * usage = "usage: Func2Dbl( <double>, <double> )";
     Obj  hd1, hd2;

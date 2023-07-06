@@ -110,18 +110,17 @@ Obj  CplxAny2(Obj re, Obj im) {
 }
 /****************************************************************************
 **
-*F  FunStringComplex(<hdCall>)  . . . . . . . . . convert a double to a string
+*F  FunStringComplex(<hdCall>) . . . . . convert a Complex number to a string
 **
 **  Implements internal function 'StringComplex'
 **
 **  'StringComplex( <format_string>, <int_pair> )'
 **
-**  'StringComplex' returns a formatted string created with sprintf called
-**  with a format string and a double.
+**  'StringComplex' returns a formatted string representing the Complex
+**  number (may also be called with a Double argument)
 **
-**  <format_string> must contain exactly two %.
-**  Example: StringComplex("%f", cplx(1.0)) returns "1.000000",
-**           since %f defaults to 6 digits of precision.
+**  Examples: StringComplex("%f", Cplx(1.0)) returns "1.000000",
+**  Examples: StringComplex("%f %f", Cplx(4.2, 1.776)) returns "4.200000 1.776000"
 */
 Obj  FunStringComplex ( Obj hdCall ) {
     Obj  hdFmt, hdResult, hdCplx;
@@ -243,9 +242,10 @@ void    PrCplx ( STREAM stream, Obj hd, int indent ) {
 
 /****************************************************************************
 **
-*F  FunComplex() . . . . . . . . . . . . implements internal function Complex()
-*F  FunIsComplex() . . . . . . . . . . implements internal function IsComplex()
+*F  FunComplex() . . . . . . . . . . . implements internal function Complex()
 **
+**  May be called using either Complex(<num>) or Cplx(<num>)
+**  returns a complex number object.
 */
 Obj FunComplex ( Obj hdCall ) {
     char * usage = "usage: Complex( <num> )";
@@ -262,6 +262,15 @@ Obj FunComplex ( Obj hdCall ) {
     else return Error(usage, 0,0);
 }
 
+/****************************************************************************
+**
+*F  FunIsComplex() . . . . . . . . . .  test if an object is a Complex number
+**
+**  IsComplex( <obj> );
+**
+**  returns True or False according to whether the object is Complex
+**
+*/
 Obj FunIsComplex ( Obj hdCall ) {
     char * usage = "usage: IsComplex( <obj> )";
     Obj hd;
@@ -270,6 +279,15 @@ Obj FunIsComplex ( Obj hdCall ) {
     return GET_TYPE_BAG(hd)==T_CPLX ? HdTrue : HdFalse;
 }
 
+/****************************************************************************
+**
+*F  FunReComplex() . . . . . . . .  returns the real part of a Complex number
+**
+**  ReComplex( <complex> ); 
+**
+**  returns the real portion of a Complex number argument (returns the
+**  number if passed a Double; otherwise, returns an error)
+*/
 Obj FunReComplex ( Obj hdCall ) {
     char * usage = "usage: ReComplex( <complex> )";
     Obj hd; UInt t;
@@ -281,6 +299,15 @@ Obj FunReComplex ( Obj hdCall ) {
     else return Error(usage, 0, 0);
 }
 
+/****************************************************************************
+**
+*F  FunImComplex()  . . . . .  returns the imaginary part of a Complex number
+**
+**  ImComplex( <complex> );
+**
+**  returns the imaginary portion of a Complex number argument (returns zero
+**  if passed a Double; otherwise, returns an error)
+*/
 Obj FunImComplex ( Obj hdCall ) {
     char * usage = "usage: ImComplex( <complex> )";
     Obj hd; UInt t;
@@ -292,6 +319,15 @@ Obj FunImComplex ( Obj hdCall ) {
     else return Error(usage, 0, 0);
 }
 
+/****************************************************************************
+**
+*F  FunAbsComplex() . . . . .  returns the absolute value of a Complex number
+**
+**  AbsComplex( <complex> );
+**
+**  returns theabsolute value of a Complex number argument (returns
+**  abs<number> if passed a Double; otherwise, returns an error)
+*/
 Obj FunAbsComplex ( Obj hdCall ) {
     char * usage = "usage: AbsComplex( <complex> )";
     Obj hd; UInt t;

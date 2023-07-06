@@ -286,13 +286,13 @@ char *PathSep()
 
 /****************************************************************************
 **
-*F  FunFileExists( <hdCall> ) . . . . . . . . . . . . calls internal function 'sys_rm'
+*F  FunFileExists( <hdCall> ) . . . . .  calls internal function 'sys_exists'
 **
 **  FunFileExists takes in a file name and checks if it exists
 **
 **  'FileExists( <fileName> )'
 **
-**   returns a 1 if found and a 0 if not found
+**  returns a 1 if found and a 0 if not found
 */
 Bag FunFileExists(Bag argv) {
     char* usage = "FileExists(<filename>)";
@@ -318,13 +318,13 @@ extern  Bag Error (char *msg, Int arg1, Int arg2);
 
 /****************************************************************************
 **
-*F  FunSysRm( <hdCall> ) . . . . . . . . . . . . calls internal function 'sys_rm'
+*F  FunSysRm( <hdCall> ) . . . . . . . . . . calls internal function 'sys_rm'
 **
 **  FunSysRm takes in a file name and attempts to remove it from file system. 
 **
 **  'sys_rm( <fileName> )' 
 **  
-**   returns a 0 if no error. 
+**  returns a 0 if no error. 
 */
 Bag FunSysRm(Bag argv) {
     char* usage = "sys_rm (const char *name)";
@@ -347,11 +347,11 @@ Bag FunSysRm(Bag argv) {
 
 /****************************************************************************
 **
-*F  FunPathSep( <hdCall> ) . . . . . . . . . . . . calls internal function 'PathSep'
+*F  FunPathSep( <hdCall> ) . . . . . . . .  calls internal function 'PathSep'
 **
-**  The argument are uneeded never checks them.
-* 
-*   Will return the path separator of what system spiral is running on. 
+**  No argument is required
+** 
+**  returns the path separator for the current system
 */
 Bag FunPathSep(Bag hdCall) {
     char* sep = PathSep();

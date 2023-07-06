@@ -356,7 +356,6 @@ void    PrDbl ( STREAM stream, Obj hd, int indent )
 /****************************************************************************
 **
 *F  FunDouble() . . . . . . . . . . . . implements internal function Double()
-**
 ** 
 */
 Obj FunDouble ( Obj hdCall ) {

@@ -379,6 +379,23 @@ Bag       FunBacktrace (Bag hdCall)
 }
 
 
+/****************************************************************************
+**
+*F  FunBacktrace2( <hdCall> )  . . . . . . . . internal function 'Backtrace2'
+**
+**  'FunBacktrace2' implements the internal function 'Backtrace2'.
+**
+**  'Backtrace2()' \\
+**  'Backtrace2( <level> )'
+**
+**  'Backtrace2' is identical to 'Backtrace' with the addition it prints the
+**  statements to be evaluated at each nesting level.  'Backtrace2' prints a list
+**  of all active functions, most recent first, up to maximal <level> nestings.
+**  If <level> is positive the names of the formal arguments of the functions
+**  calls are printed, otherwise the values of the actual arguments are printed
+**  instead.  <level>, if not specified, defaults to 5.
+**
+*/
 Bag       FunBacktrace2 (Bag hdCall)
 {
     Int	    level;
@@ -961,6 +978,7 @@ Bag       FunREAD (Bag hdCall)
 	return HdTrue;
 }
 
+
 /****************************************************************************
 **
 *F  FunChangeDir( <hdCall> ) . . . . . . . . . . . . . .  internal function 'SyChDir'
@@ -970,7 +988,7 @@ Bag       FunREAD (Bag hdCall)
 **  Change dir takes in a path string and attempts to change to that working directory.
 **
 **  'CHANGEDIR( <string> )'
-**/
+*/
 Bag     FunChangeDir (Bag hdCall)
 {
     Bag           hd,  hdName,  hdPkg;
@@ -988,6 +1006,7 @@ Bag     FunChangeDir (Bag hdCall)
     return HdTrue;
 }
 
+
 /****************************************************************************
 **
 *F  FunReadString( <hdCall> ) . . . . . . . . . . . . . .  internal function 'GReadFile'
@@ -995,7 +1014,7 @@ Bag     FunChangeDir (Bag hdCall)
 **  'FunReadString' implements the internal function 'GReadFile'.
 **
 **  'READSTR( <filename> );'
-**/
+*/
 Bag       FunReadString (Bag hdCall)
 {
     Bag           hdList,  hdName;
@@ -1448,15 +1467,18 @@ Bag       FunAppendTo (Bag hdCall)
 
     return HdVoid;
 }
+
+
 /****************************************************************************
 **
-*F  FunPrintToString( <obj>, <obj>, <obj> ) . . . . . . . . . .  internal function 'PrintToString'
+*F  FunPrintToString( <obj>, <obj>... ) . . . internal function PrintToString
 **
 **  'FunPrintToString' implements the internal function 'PrintToString'.
 **
 **  'PrintToString( <obj>, <obj>, <obj>... )'
 ** 
-**  Print To String takes in <obj1>, <obj2>, etc. and will combine them into one <string> element
+**  Print To String takes in <obj1>, <obj2>, etc. and will combine
+**  them into one <string> element
 ** 
 **  See the note about empty string literals and empty lists in 'Print'.
 */

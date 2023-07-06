@@ -766,7 +766,7 @@ void       UnprotectVar(Obj hdVar) {
 *F  FunProtectVar( <hdVar> ) . . . . . . . . . internal function ProtectVar()
 **
 **  ProtectVar(var) forbids variable overwriting from GAP session.
-**/
+*/
 Obj        FunProtectVar(Obj hdCall) {
     Obj hdVar;
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error("Usage: ProtectVar(<variable>)", 0, 0);
@@ -782,7 +782,7 @@ Obj        FunProtectVar(Obj hdCall) {
 *F  FunProtectRec( <record> ) . . . . . . . . . internal function ProtectRec()
 **
 **  ProtectRec(<record>) forbids record overwriting from GAP session.
-**/
+*/
 Obj        FunProtectRec(Obj hdCall) {
     Obj hdRec;
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error("Usage: ProtectRec(<variable>)", 0, 0);
@@ -795,10 +795,11 @@ Obj        FunProtectRec(Obj hdCall) {
 
 /****************************************************************************
 **
-*F  FunProtectNamespace( <namespace> ) . . . . . . . . . internal function ProtectNamespace()
+*F  FunProtectNamespace( <namespace> ) . . internal function ProtectNamespace()
 **
-**  ProtectNamespace(<namespace>) forbids namespace overwriting from GAP session.
-**/
+**  ProtectNamespace(<namespace>) forbids namespace overwriting from GAP
+**  session.
+*/
 Obj        FunProtectNamespace(Obj hdCall) {
     Obj hdNS;
     UInt size, i;
@@ -827,10 +828,10 @@ Obj        FunProtectNamespace(Obj hdCall) {
 
 /****************************************************************************
 **
-*F  Fun_UnprotectVar( <var> ) . . . . . . . . . internal function _UnprotectVar()
+*F  Fun_UnprotectVar( <var> ) . . . . . . . internal function _UnprotectVar()
 **
 **  _UnprotectVar(<var>) allows variable overwriting from GAP session.
-**/
+*/
 Obj        Fun_UnprotectVar(Obj hdCall) {
     Obj hdVar = PTR_BAG(hdCall)[1];
     if ( GET_TYPE_BAG(hdVar) != T_VAR && GET_TYPE_BAG(hdVar) != T_VARAUTO )
@@ -1154,7 +1155,7 @@ Obj       FunIsBool (Obj hdCall)
 **  record 'ShallowCopy' makes a copy of this object,  but does not copy  the
 **  subobjects.
 **
-**/
+*/
 Obj       ShallowCopy (Obj hdOld)
 {
     Obj           * ptOld;        /* pointer to the old object       */
@@ -1191,7 +1192,7 @@ Obj       ShallowCopy (Obj hdOld)
 * 
 **  'FullShallowCopy' is identical to ShallowCopy,  except  that  ShallowCopy
 **  does not copy objects with type > T_VARAUTO, while FullShalloCopy does.
-**/
+*/
 Obj       FullShallowCopy (Obj hdOld)
 {
     Obj hdResult;

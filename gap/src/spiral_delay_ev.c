@@ -27,7 +27,7 @@
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* Bag, NewBag, T_STRING, .. */
 #include        "objects.h"
-#include		"string4.h"
+#include        "string4.h"
 #include        "integer.h"             /* arbitrary size integers         */
 #include        "eval.h"
 #include	"idents.h"
@@ -815,12 +815,12 @@ Obj  FunChildren ( Obj hdCall ) {
 
 /****************************************************************************
 **
-*F  FunChild( <Obj>, <childNum> ) . . . . . . . . . . .  returns child at position childNum of given obj
+*F  FunChild( <Obj>, <childNum> ) . . . .  returns child at position childNum
 **
 **  Child( <Obj>, <childNum> )
 **
 **  The childNum array list starts at 0.
-**/
+*/
 Obj  FunChild ( Obj hdCall ) {
    char * usage = "usage: Child( <Obj>, <childNum> )";
     Obj   hd, hdChildNum;
@@ -850,14 +850,16 @@ Obj  FunChild ( Obj hdCall ) {
 	return hd;
 }
 
+
 /****************************************************************************
 **
-*F  FunSetChild( <Obj>, <childNum>, <newChildObj> ) . . . . . . . . . . .  replaces a child obj at position childNum of given obj
+*F  FunSetChild( <Obj>, <childNum>, <newChildObj> ) . . . replace a child obj
+*F  at position <childNum> with the new object <newChildObj>
 **
 **  Child( <Obj>, <childNum>, <newChildObj> )
 **
-**  The childNum must be in the children array list. 
-**/
+**  The childNum must exist in the children array list. 
+*/
 Obj  FunSetChild ( Obj hdCall ) {
     char * usage = "usage: SetChild( <Obj>, <childNum>, <newChildObj> )";
     Obj   hd, hdNewChild, hdChildNum;
@@ -883,21 +885,24 @@ Obj  FunSetChild ( Obj hdCall ) {
     SET_BAG(hd, num-1,  hdNewChild ); 
     return HdVoid;
 }
-/*
-*F FunNumArgsLocals( <func> ) ......... given a Function returns how many arguments and how many local declared variables are in it.
+
+
+/*****************************************************************************
+*F  FunNumArgsLocals( <func> ) . . .  given a Function returns how many
+*F  arguments and how many local declared variables are in it.
 ** 
-** NumArgsLocals(<func>);
+**  NumArgsLocals(<func>);
 ** 
-** 
-** returns array with where 1st argument is the number of args and the 2nd argument is the number of locals declared. 
+**  returns array with where 1st argument is the number of args and the 2nd
+**  argument is the number of locals declared.
 **
-** Example:> xFunc := function ( a, b, c )
-                      local y;
-                      y := 3;
-                      return a + b+ c + y;
-                     end;
-            >NumArgsLocals(xFunc);
-            [ 3, 1 ]
+**  Example:> xFunc := function ( a, b, c )
+**                     local y;
+**                     y := 3;
+**                     return a + b+ c + y;
+**                     end;
+**          > NumArgsLocals(xFunc);
+**           [ 3, 1 ]
 **
 **
 */
@@ -915,13 +920,13 @@ Obj  FunNumArgsLocals ( Obj hdCall ) {
     return res;
 }
 
-/*
-*F FunNumArgs( <func> ) ......... given a function returns how many arguments 
+
+/*****************************************************************************
+*F  FunNumArgs( <func> ) . . .  returns number of arguments a function accepts
 **
-** NumArgs(<func>);
+**  NumArgs(<func>);
 **
-**
-** returns the number of arguments 
+**  returns the number of arguments 
 */
 Obj  FunNumArgs ( Obj hdCall ) {
     char * usage = "usage: NumArgs( <func> )";
@@ -933,13 +938,13 @@ Obj  FunNumArgs ( Obj hdCall ) {
     return INT_TO_HD( NUM_ARGS_FUNC(hd) );
 }
 
-/*
-*F FunNumLocals( <func> ) ......... given a function returns how many local declared variables are in it
+
+/*****************************************************************************
+*F  FunNumLocals( <func> ) . . . .  return number of local variables in <func>
 **
-** NumLocals(<func>);
+**  NumLocals(<func>);
 **
-**
-** returns the number of declared local variables are in the function. 
+**  returns the number of declared local variables are in the function. 
 */
 Obj  FunNumLocals ( Obj hdCall ) {
     char * usage = "usage: NumLocals( <func> )";
@@ -1001,19 +1006,22 @@ int  CanBeFullyEvaluated ( Obj hd ) {
     RecursiveClearFlagFullMutable(hd, BF_DELAY_EV0);
     return res;
 }
-/*
-*F FunCanBeFullyEvaluated( <expr> ) ....... returns true/false if a given expression can be evaluated 
+
+
+/*****************************************************************************
+*F  FunCanBeFullyEvaluated( <expr> ) . . . . . returns true/false if a given
+*F  expression can be evaluated
 **
-** CanBeFullyEvaluated( <expr> )
+**  CanBeFullyEvaluated( <expr> )
 **
-** Example:
-            > CanBeFullyEvaluated(2+2);
-            true;
-            > CanBeFullyEvaluated(y+2+2);
-            false;
+**  Example:
+**            > CanBeFullyEvaluated(2+2);
+**            true;
+**            > CanBeFullyEvaluated(y+2+2);
+**            false;
 ** 
-**  returns true/false if an expression often delay expressions can be evaluated or not. 
-**/
+**  returns true/false if an expression can be evaluated or not. 
+*/
 Obj  FunCanBeFullyEvaluated ( Obj hdCall ) {
     char * usage = "usage: CanBeFullyEvaluated( <expr> )";
     Obj hd;    /* get and check the argument                                          */
@@ -1126,7 +1134,7 @@ Bag       FunDelayedValueOf (Bag hdCall)
 
 /****************************************************************************
 **
-*F  ConstraintD( <cond> ) ..... make sure condition holds if it can be evaluated
+*F  ConstraintD( <cond> )  . make sure condition holds if it can be evaluated
 **
 */
 void ConstraintD(Obj cond) {
@@ -1146,14 +1154,13 @@ void ConstraintD(Obj cond) {
     }
 }
 
+
 /****************************************************************************
 **
-*F  FunConstraintD( <cond> ) ...... implements internal function ConstraintD
+*F  FunConstraintD( <cond> ) . . . . implements internal function ConstraintD
 **
-*       ConstraintD( <cond> )
-*   if <cond> is good will return true. else it will return error 
-*           [[ while reading *stdin*:<linenumber> ]]
-            Error, Condition <cond> doesn't hold
+**  if <cond> is True will return true, otherwise returns an error
+**
 */
 Bag       FunConstraintD (Bag hdCall)
 {

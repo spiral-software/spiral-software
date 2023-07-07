@@ -359,16 +359,6 @@ RewriteRules(RulesDFTSymmetry, rec(
                 [IterDirectSum(i,k/2,Mat([[-2*cospi((2*i+1)/k),-1-2*cospi((2*i+1)/(k/2))],[1,-2*cospi((2*((k/2)-i)-1)/k)]]))*BRDFT3(k)]))
 ));
 
-   
-#z := L(15,3) * GathExtend(15, Odd0);; zz := RulesDFTSymmetry(z);; PrintMat(MatSPL(z)-MatSPL(zz));
-#z := L(16,4) * GathExtend(16, Odd0);; zz := RulesDFTSymmetry(z);; PrintMat(MatSPL(z)-MatSPL(zz));
-
-#z := L(15,3) * GathExtend(15, Even00);; zz := RulesDFTSymmetry(z);; PrintMat(MatSPL(z)-MatSPL(zz));
-#z := L(16,4) * GathExtend(16, Odd1);; zz := RulesDFTSymmetry(z);; PrintMat(MatSPL(z)-MatSPL(zz));
-
-#RulesDFTSymmetry(Tensor(I(3), DFT(5))*L(15,3)*GathExtend(15, Even0));
-#RulesDFTSymmetry(Tensor(I(2), DFT3(8))*L(16,2)*GathExtend(16, Even0));
-
 
 dft1 := (N, k) -> Tensor(DFT1(k), I(N/k)) * Diag(Tw1(N, N/k, 1)) * Tensor(I(k), DFT1(N/k)) * L(N, k);
 dft2 := (N, k) -> Tensor(DFT2(k), I(N/k)) * Diag(Tw2(N, N/k, 1)) * Tensor(I(k), DFT1(N/k)) * L(N, k);
@@ -380,49 +370,6 @@ pdft2 := (N, k, lsym, rsym) -> GathExtend(N, lsym).transpose() * dft2(N, k) * Ga
 pdft3 := (N, k, lsym, rsym) -> GathExtend(N, lsym).transpose() * dft3(N, k) * GathExtend(N, rsym);
 pdft4 := (N, k, lsym, rsym) -> GathExtend(N, lsym).transpose() * dft4(N, k) * GathExtend(N, rsym);
 
-# DCT6(8)
-f := L(15, 3) * Tensor(I(5), DFT2(3, 1)) * L(15, 5) * 
-     Diag(Tw2(15, 5, 1)) * 
-     Tensor(I(3), DFT(5, 1)) * L(15, 3);
-ff := GathExtend(Rows(f), Odd0).transpose() * f * GathExtend(Cols(f), Even1);
-
-# f := L(16,4) * Tensor(I(4), DFT(4)) * L(16,4) * Diag(Tw1(16,4,1)) * Tensor(I(4), DFT(4)) * L(16,4);
-# ff := GathExtend(Rows(f), Odd00).transpose() * f * GathExtend(Cols(f), Odd00);
-
-# DCT2/DCT6
-# f := L(16,4) * Tensor(I(4), DFT2(4)) * L(16,4) * Diag(Tw2(16,4)) * Tensor(I(4), DFT(4)) * L(16,4);
-#ff := GathExtend(Rows(f), Odd0).transpose() * f * GathExtend(Cols(f), Even1);
-
-# f4 := L(16,4) * Tensor(I(4), DFT2(4)) * L(16,4) * Diag(Tw4(16,4)) * Tensor(I(4), DFT3(4)) * L(16,4);
-# ff := GathExtend(Rows(f), Odd1).transpose() * f4 * GathExtend(Cols(f), Odd1);
-
-#  fo := L(21,3) * Tensor(I(7), DFT2(3)) * L(21,7) * Diag(Tw4(21,7)) * Tensor(I(3), DFT3(7)) * L(21,3);
-# ffo := GathExtend(Rows(fo), Odd1).transpose() * fo * GathExtend(Cols(fo), Odd1);
-
-# fr1 := GathExtend(16, CE0_R2Cpx(W_RFT, 1).invertW()).transpose() * f * GathExtend(16, Real);
-
- fr2 := GathExtend(21, CE0_R2Cpx(W_RFT, 1).invertW()).transpose() * 
-        L(21,3) * Tensor(I(7), DFT(3)) * L(21,7) * Diag(Tw1(21,7,1)) * Tensor(I(3), DFT(7)) * L(21,3) *
-	GathExtend(21, Real);
-
- fr4 := GathExtend(21, CO1_R2Cpx(W_RFT, -E(4)).invertW()).transpose() * 
-        L(21,3) * Tensor(I(7), DFT2(3)) * L(21,7) * Diag(Tw4(21,7,1)) * Tensor(I(3), DFT3(7)) * L(21,3) *
-	GathExtend(21, Real);
-
-# fr4 := GathExtend(16, CO1_R2Cpx).transpose() * L(16,4) * Tensor(I(4), DFT2(4)) * L(16,4) * Diag(Tw4(16,4)) * Tensor(I(4), DFT3(4)) * L(16,4) * GathExtend(16, Real);
-
-#p  := Mat(1/2*[[1,  E(4)]]);
-#pp := Mat(1/2*[[1, -E(4)]]);
-
-#them := MatSPL(DFT(4) * Tensor(I(4), 2*pp));;
-#me   := MatSPL(Tensor(I(4), 2*pp) * RC(DFT(4,1)));;
-
-# y = DFT x* = (DFT* x)* ?
-#
-# C IxP = IxP' RC(C) 
-# IxP' = C IxP RC(C)^-1
-
-# C IxP =IxP' C Ix(1,j)
 
 dftproj := function(f)
     f := RulesDFTSymmetry(f);

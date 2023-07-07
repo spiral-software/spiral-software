@@ -644,6 +644,11 @@ Obj  FunBagInfo ( Obj hdCall ) {
     return HdVoid;
 }
 
+/****************************************************************************
+** 
+*F FunBagAddr (<obj>) ...... returns the memory address of the obj passed in
+** 
+*/
 Obj  FunBagAddr ( Obj hdCall ) {
     char * usage = "usage: BagAddr( <obj> )";
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
@@ -772,8 +777,9 @@ Obj  FunBagsOfType ( Obj hdCall ) {
 
 /****************************************************************************
 **
-*F  GetEnv( <name> ) . . . . . . . . . . . . . . get the environment variable
+*F  FunGetEnv( <name> ) . . . . . . . . . . . .  get the environment variable
 **
+**  GetEnv( <name> )
 */
 Bag       FunGetEnv (Bag hdCall)
 {
@@ -1047,7 +1053,7 @@ Obj FunVersion(Obj hdCall) {
 
 /****************************************************************************
 **
-*F  FunBuildInfo()
+*F  FunBuildInfo()  . . . . . .  Return name/value pairs of build information
 **
 ** Prints name:value pairs of build info
 */

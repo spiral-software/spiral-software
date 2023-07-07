@@ -27,7 +27,7 @@
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* Bag, NewBag, T_STRING, .. */
 #include        "objects.h"
-#include		"string4.h"
+#include        "string4.h"
 #include        "integer.h"             /* arbitrary size integers         */
 #include        "eval.h"
 #include	"idents.h"
@@ -813,6 +813,14 @@ Obj  FunChildren ( Obj hdCall ) {
     return children;
 }
 
+/****************************************************************************
+**
+*F  FunChild( <Obj>, <childNum> ) . . . .  returns child at position childNum
+**
+**  Child( <Obj>, <childNum> )
+**
+**  The childNum array list starts at 0.
+*/
 Obj  FunChild ( Obj hdCall ) {
    char * usage = "usage: Child( <Obj>, <childNum> )";
     Obj   hd, hdChildNum;
@@ -842,6 +850,16 @@ Obj  FunChild ( Obj hdCall ) {
 	return hd;
 }
 
+
+/****************************************************************************
+**
+*F  FunSetChild( <Obj>, <childNum>, <newChildObj> ) . . . replace a child obj
+*F  at position <childNum> with the new object <newChildObj>
+**
+**  Child( <Obj>, <childNum>, <newChildObj> )
+**
+**  The childNum must exist in the children array list. 
+*/
 Obj  FunSetChild ( Obj hdCall ) {
     char * usage = "usage: SetChild( <Obj>, <childNum>, <newChildObj> )";
     Obj   hd, hdNewChild, hdChildNum;
@@ -868,6 +886,26 @@ Obj  FunSetChild ( Obj hdCall ) {
     return HdVoid;
 }
 
+
+/*****************************************************************************
+*F  FunNumArgsLocals( <func> ) . . .  given a Function returns how many
+*F  arguments and how many local declared variables are in it.
+** 
+**  NumArgsLocals(<func>);
+** 
+**  returns array with where 1st argument is the number of args and the 2nd
+**  argument is the number of locals declared.
+**
+**  Example:> xFunc := function ( a, b, c )
+**                     local y;
+**                     y := 3;
+**                     return a + b+ c + y;
+**                     end;
+**          > NumArgsLocals(xFunc);
+**           [ 3, 1 ]
+**
+**
+*/
 Obj  FunNumArgsLocals ( Obj hdCall ) {
     char * usage = "usage: NumArgsLocals( <func> )";
     Obj hd;
@@ -881,6 +919,15 @@ Obj  FunNumArgsLocals ( Obj hdCall ) {
     SET_BAG(res, 2,  INT_TO_HD( NUM_LOCALS_FUNC(hd) ) );
     return res;
 }
+
+
+/*****************************************************************************
+*F  FunNumArgs( <func> ) . . .  returns number of arguments a function accepts
+**
+**  NumArgs(<func>);
+**
+**  returns the number of arguments 
+*/
 Obj  FunNumArgs ( Obj hdCall ) {
     char * usage = "usage: NumArgs( <func> )";
     Obj hd;
@@ -890,8 +937,17 @@ Obj  FunNumArgs ( Obj hdCall ) {
     if ( GET_TYPE_BAG(hd) != T_FUNCTION && GET_TYPE_BAG(hd) != T_METHOD ) return Error(usage, 0, 0);
     return INT_TO_HD( NUM_ARGS_FUNC(hd) );
 }
+
+
+/*****************************************************************************
+*F  FunNumLocals( <func> ) . . . .  return number of local variables in <func>
+**
+**  NumLocals(<func>);
+**
+**  returns the number of declared local variables are in the function. 
+*/
 Obj  FunNumLocals ( Obj hdCall ) {
-    char * usage = "usage: NumArgs( <func> )";
+    char * usage = "usage: NumLocals( <func> )";
     Obj hd;
     /* get and check the argument                                          */
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )  return Error(usage, 0,0);
@@ -951,6 +1007,21 @@ int  CanBeFullyEvaluated ( Obj hd ) {
     return res;
 }
 
+
+/*****************************************************************************
+*F  FunCanBeFullyEvaluated( <expr> ) . . . . . returns true/false if a given
+*F  expression can be evaluated
+**
+**  CanBeFullyEvaluated( <expr> )
+**
+**  Example:
+**            > CanBeFullyEvaluated(2+2);
+**            true;
+**            > CanBeFullyEvaluated(y+2+2);
+**            false;
+** 
+**  returns true/false if an expression can be evaluated or not. 
+*/
 Obj  FunCanBeFullyEvaluated ( Obj hdCall ) {
     char * usage = "usage: CanBeFullyEvaluated( <expr> )";
     Obj hd;    /* get and check the argument                                          */
@@ -1063,7 +1134,7 @@ Bag       FunDelayedValueOf (Bag hdCall)
 
 /****************************************************************************
 **
-*F  ConstraintD( <cond> ) . .make sure condition holds if it can be evaluated
+*F  ConstraintD( <cond> )  . make sure condition holds if it can be evaluated
 **
 */
 void ConstraintD(Obj cond) {
@@ -1083,6 +1154,14 @@ void ConstraintD(Obj cond) {
     }
 }
 
+
+/****************************************************************************
+**
+*F  FunConstraintD( <cond> ) . . . . implements internal function ConstraintD
+**
+**  if <cond> is True will return true, otherwise returns an error
+**
+*/
 Bag       FunConstraintD (Bag hdCall)
 {
     char * usage = "usage: ConstraintD( <cond> )";

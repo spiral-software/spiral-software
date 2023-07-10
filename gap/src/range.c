@@ -555,15 +555,23 @@ Int            IsPossRange (Bag hdList)
 **
 **  'PrRange' handles bags of type 'T_RANGE' and 'T_MAKERANGE'.
 */
-void            PrRange (Bag hdRange)
+void            PrRange (STREAM stream, Bag hdRange, int indent)
 {
-    Pr( "%2>[ %2>%d",
-        LOW_RANGE(hdRange), 0 );
+    //**INDENT**Pr( "%2>[ %2>%d",
+        //LOW_RANGE(hdRange), 0 );
+    SyFmtPrint(stream, "[ %d",
+        LOW_RANGE(hdRange));
+
     if ( INC_RANGE(hdRange) != 1 )
-        Pr( "%<,%< %2>%d",
-            LOW_RANGE(hdRange)+INC_RANGE(hdRange), 0 );
-    Pr( "%2< .. %2>%d%4< ]",
-        LOW_RANGE(hdRange)+(LEN_RANGE(hdRange)-1)*INC_RANGE(hdRange),0);
+        //**INDENT**Pr( "%<,%< %2>%d",
+        //    LOW_RANGE(hdRange)+INC_RANGE(hdRange), 0 );
+        SyFmtPrint(stream, ", %d",
+            LOW_RANGE(hdRange) + INC_RANGE(hdRange));
+
+    //**INDENT**Pr( "%2< .. %2>%d%4< ]",
+       // LOW_RANGE(hdRange)+(LEN_RANGE(hdRange)-1)*INC_RANGE(hdRange),0);
+    SyFmtPrint(stream, " .. %d ]",
+        LOW_RANGE(hdRange) + (LEN_RANGE(hdRange) - 1) * INC_RANGE(hdRange));
 }
 
 
@@ -700,18 +708,37 @@ Bag       EvMakeRange (Bag hdMake)
 **  'PrMakeRange' prints the range literal  <hdMake> in the form '[  <low> ..
 **  <high> ]'.
 */
-void            PrMakeRange (Bag hdMake)
+void            PrMakeRange (STREAM stream, Bag hdMake, int indent)
 {
     if ( GET_SIZE_BAG( hdMake ) == 2 * SIZE_HD ) {
-        Pr("%2>[ %2>",0,0);    Print( PTR_BAG(hdMake)[0] );
-        Pr("%2< .. %2>",0,0);  Print( PTR_BAG(hdMake)[1] );
-        Pr(" %4<]",0,0);
+        //**INDENT**Pr("%2>[ %2>",0,0);    
+        //Print( PTR_BAG(hdMake)[0] );
+        //**INDENT**Pr("%2< .. %2>",0,0);  
+        //Print( PTR_BAG(hdMake)[1] );
+        //**INDENT**Pr(" %4<]",0,0);
+
+        SyFmtPrint(stream, "[ ");
+        PrintObj(stream, PTR_BAG(hdMake)[0], 0);
+        SyFmtPrint(stream, " .. ");
+        PrintObj(stream, PTR_BAG(hdMake)[1], 0);
+        SyFmtPrint(stream, " ]");
     }
     else {
-        Pr("%2>[ %2>",0,0);    Print( PTR_BAG(hdMake)[0] );
-        Pr("%<,%< %2>",0,0);   Print( PTR_BAG(hdMake)[1] );
-        Pr("%2< .. %2>",0,0);  Print( PTR_BAG(hdMake)[2] );
-        Pr(" %4<]",0,0);
+        //**INDENT**Pr("%2>[ %2>",0,0);    
+        //Print( PTR_BAG(hdMake)[0] );
+        //**INDENT**Pr("%<,%< %2>",0,0);   
+        //Print( PTR_BAG(hdMake)[1] );
+        //**INDENT**Pr("%2< .. %2>",0,0);  
+        //Print( PTR_BAG(hdMake)[2] );
+        //**INDENT**Pr(" %4<]",0,0);
+
+        SyFmtPrint(stream, "[ ");
+        PrintObj(stream, PTR_BAG(hdMake)[0], 0);
+        SyFmtPrint(stream, ", ");
+        PrintObj(stream, PTR_BAG(hdMake)[1], 0);
+        SyFmtPrint(stream, " .. ");
+        PrintObj(stream, PTR_BAG(hdMake)[2], 0);
+        SyFmtPrint(stream, " ]");
     }
 }
 

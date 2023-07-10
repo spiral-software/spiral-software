@@ -395,15 +395,14 @@ extern  Bag       EvList (
 
 /****************************************************************************
 **
-*F  PrList(<hdList>)  . . . . . . . . . . . . . . . . . . . . .  print a list
+*F  PrList( stream, <hdList>, indent)   . . . . . . . . . . . .  print a list
 **
 **  'PrList' prints the list <hdList>.  It is a generic function that can  be
 **  used for all kinds of lists.
 **
-**  Linebreaks are preferred after the commas.
+**  Linebreaks are preferred after the ','.
 */
-extern  void            PrList (
-            Bag           hdList );
+extern void     PrList ( STREAM stream, Bag hdList, int indent );
 
 
 /****************************************************************************
@@ -791,38 +790,35 @@ extern  Bag       EvAsssListLevel (
 
 /****************************************************************************
 **
-*F  PrElmList(<hdSel>)  . . . . . . . . . . . . . . .  print a list selection
+*F  PrElmList( stream, <hdSel>, indent )  . . . . . .  print a list selection
 **
 **  'PrElmList' prints the list selection <hdSel>.
 **
 **  Linebreaks are preferred after the '['.
 */
-extern  void            PrElmList (
-            Bag           hdSel );
+extern void     PrElmList ( STREAM stream, Bag hdSel, int indent );
 
 
 /****************************************************************************
 **
-*F  PrElmsList(<hdSel>) . . . . . . . . . . . . . . .  print a list selection
+*F  PrElmsList( stream, <hdSel>, indent ) . . . . . .  print a list selection
 **
 **  'PrElmsList' prints the list selection <hdSel>.
 **
 **  Linebreaks are preferred after the '{'.
 */
-extern  void            PrElmsList (
-            Bag           hdSel );
+extern void     PrElmsList ( STREAM stream, Bag hdSel, int indent );
 
 
 /****************************************************************************
 **
-*F  PrAssList(<hdAss>)  . . . . . . . . print an assignment to a list element
+*F  PrAssList( stream, <hdSel>, indent ) . . print an assignment to a list element
 **
 **  'PrAssList' prints the assignment to a list element.
 **
 **  Linebreaks are preferred before the ':='.
 */
-extern  void            PrAssList (
-            Bag           hdAss );
+extern void     PrAssList ( STREAM stream, Bag hdAss, int indent );
 
 
 /****************************************************************************

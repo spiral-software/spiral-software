@@ -60,13 +60,13 @@ int execute(char *input, char *output)
   }
   if (hd) {
     prompt = HD_TO_STRING(hd);
-    if (strlen(prompt)<sizeof(spiralPrompt))
-	strncpy(spiralPrompt, prompt, strlen(prompt)+1);
+    if ( strlen(prompt) < sizeof(spiralPrompt) )
+        strcpy ( spiralPrompt, prompt );                //  strncpy(spiralPrompt, prompt, strlen(prompt)+1);
   }
   /* read prompts from environment */
   prompt = getenv("SPIRAL_PROMPT");
-  if (prompt != NULL && strlen(prompt)<sizeof(spiralPrompt)) {
-     strncpy(spiralPrompt, prompt, strlen(prompt)+1);
+  if ( prompt != NULL && strlen(prompt) < sizeof(spiralPrompt) ) {
+      strcpy ( spiralPrompt, prompt );                  //  strncpy(spiralPrompt, prompt, strlen(prompt)+1);
   }
 	
   /* repeat the read-eval-print cycle until end of input                 */
@@ -97,8 +97,10 @@ int execute(char *input, char *output)
 	    SET_BAG(HdLast, 0,  hd );
 	    if ( ! GAP_SILENT ) {
 	        IsString( hd );
-	        Print( hd );
-	        Pr("\n",0,0);
+	        // Print( hd );
+            PrintObj (  global_stream, hd, 0 );
+	        // Pr( "\n",0,0 );
+            SyFmtPrint (  global_stream, "\n" );
 	    }
       }
     }

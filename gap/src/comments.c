@@ -237,6 +237,10 @@ Int FindDocAndExtractLoc(Bag obj, char* fileName, Int* line) {
 *F  Doc( <func> ) . . . . . . . . . .  print documentation for given function
 **
 **  FunDoc implements internal function 'Doc'.
+** 
+**  Prints documentation string (if found) and the location of the
+**  information ( file & line #)
+** 
 */
 
 Obj  FunDoc( Obj hdCall ) {
@@ -247,15 +251,25 @@ Obj  FunDoc( Obj hdCall ) {
     doc = FindDocString(PTR_BAG(hdCall)[1]);
 
     if(doc != NULL && GET_TYPE_BAG(doc)==T_STRING)
-        Pr("%s", (Int)CSTR_STRING(doc), 0);
+        // Pr("%s", (Int)CSTR_STRING(doc), 0);
+        SyFmtPrint (  global_stream, "%s", CSTR_STRING(doc) );
     else if(doc == NULL)
-        Pr("--no documentation--\n", 0, 0);
+        // Pr("--no documentation--\n", 0, 0);
+        SyFmtPrint (  global_stream, "--no documentation--\n" );
     else
-        Pr("--documentation corrupt (not a string, but %s)--\n", (Int)TNAM_BAG(doc), 0);
+        // Pr( "--documentation corrupt (not a string, but %s)--\n", (Int)TNAM_BAG(doc), 0);
+        SyFmtPrint (  global_stream, "--documentation corrupt (not a string, but %s)--\n", TNAM_BAG(doc) );
 
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  DocLoc( <func> ) . . . .  print documentation location for given function
+**
+**  prints the documentation location as: [ <file>, <line #> ]
+**
+*/
 Bag FunDocLoc(Bag hdCall) {
     char * usage = "usage: DocLoc( <obj> )";
     Obj hd;

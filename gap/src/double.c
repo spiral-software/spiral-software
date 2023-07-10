@@ -95,16 +95,6 @@ long double LongDblAny(Obj hd) {
     }
 }
 
-/****************************************************************************
-**
-*F  FunRatDouble() . . . . . . . . . . . converts double to an exact rational
-**
-**  Implements internal function 'RatDouble'. Note that no precision is lost,
-**  since GAP allows infinite-precision integers in numerator/denominator.
-**
-**  RatDouble(<double>)
-*/
-
 Obj RatDouble ( double d ) {
     union ieee754_double dbl;
     Int mantissa0;
@@ -141,6 +131,16 @@ Obj RatDouble ( double d ) {
     hdResult = ProdRat(hdMantissa, POW(INT_TO_HD(2), hdExponent));
     return hdResult;
 }
+
+/****************************************************************************
+**
+*F  FunRatDouble() . . . . . . . . . . . converts double to an exact rational
+**
+**  Implements internal function 'RatDouble'. Note that no precision is lost,
+**  since GAP allows infinite-precision integers in numerator/denominator.
+**
+**  RatDouble(<double>)
+*/
 
 Obj  FunRatDouble ( Obj hdCall ) {
     char * usage = "usage: RatDouble( <double> )";
@@ -306,7 +306,7 @@ Obj  FunStringDouble ( Obj hdCall ) {
 *F  DblAnyPow(<hdL>,<hdR>)  . . . . . . . power of scalar and double
 **
 *F  EvDbl(<hd>)  . . . . . . . . . . . . . . . . . . evaluate double
-*F  PrDbl(<hd>) . . . . . . . . . . . . . . . . . . . print a double
+*F  PrDbl(stream, <hd>, indent) . . . . . . . . . . . print a double
 **
 */
 Obj  DblSum  (Obj l, Obj r) { return ObjDbl(DBL_OBJ(l) + DBL_OBJ(r)); }
@@ -331,7 +331,8 @@ Obj  EvDbl ( Obj hd ) { return hd; }
 
 
 
-void PrDbl ( Obj hd ) {
+void    PrDbl ( STREAM stream, Obj hd, int indent )
+{
     char buf[30];
     double n = DBL_OBJ(hd);
     double intpart;
@@ -348,14 +349,14 @@ void PrDbl ( Obj hd ) {
         snprintf(buf, sizeof(buf)/sizeof(char), "%.17g.0", DBL_OBJ(hd));
     else
         snprintf(buf, sizeof(buf)/sizeof(char), "%.17g", DBL_OBJ(hd));
-    Pr("%s", (Int)buf, 0);
+    // Pr( "%s", (Int)buf, 0 );
+    SyFmtPrint ( stream, "%s", buf );
 }
 
 /****************************************************************************
 **
 *F  FunDouble() . . . . . . . . . . . . implements internal function Double()
-*F  FunIsDouble() . . . . . . . . . . implements internal function IsDouble()
-**
+** 
 */
 Obj FunDouble ( Obj hdCall ) {
     char * usage = "usage: Double( <rational> )";
@@ -365,6 +366,12 @@ Obj FunDouble ( Obj hdCall ) {
     return ObjDbl( DblAny(hd) );
 }
 
+/****************************************************************************
+**
+*F  IsDouble( <obj> ) . . . . . . . . . . . . tests if object is a double
+**
+**  IsDouble( <obj> ) 
+*/
 Obj FunIsDouble ( Obj hdCall ) {
     char * usage = "usage: IsDouble( <obj> )";
     Obj hd;
@@ -387,6 +394,12 @@ Obj Func1Dbl ( char * name, double (*fPtr)(double), Obj hdCall ) {
     return ObjDbl( fPtr(DblAny(hd)) );
 }
 
+/****************************************************************************
+**
+*F  Func2Dbl(<name>, <fPtr>, <hdCall>) . .  C function with 2 arg wrapper
+**
+**  'Func2Dbl' is a  wrapper for C  math functions  with 2 arguments.
+*/
 Obj Func2Dbl ( char * name, double (*fPtr)(double,double), Obj hdCall ) {
     char * usage = "usage: Func2Dbl( <double>, <double> )";
     Obj  hd1, hd2;

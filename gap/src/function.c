@@ -479,7 +479,12 @@ Bag       EvFunccall (Bag hdCall)
     /* check if the function is to be traced                               */
     if ( nrLoc < 0 ) {
         trace |= 1;  nrLoc = -nrLoc-1;
-        Pr("\n%2>",0,0);  Print( PTR_BAG(hdCall)[0] );  Pr("%<( ",0,0);
+        //**INDENT** Pr( "\n%2>",0,0 );
+        // Print( PTR_BAG(hdCall)[0] );
+        //**INDENT** Pr( "%<( ",0,0 );
+        SyFmtPrint (  global_stream, "\n" );
+        PrintObj (  global_stream, PTR_BAG(hdCall)[0], 0 );
+        SyFmtPrint (  global_stream, "( " );
     }
 
     /* Now create the new execute bag                                      */
@@ -506,9 +511,13 @@ Bag       EvFunccall (Bag hdCall)
         SET_BAG(hdExec, EXEC_ARGS_START+i-1,  hdRes );
         SET_BAG(hdExec, EXEC_ARGS_START + nrArg + nrLoc + i - 1,  hdRes );
         if ( trace & 1 ) {
-            Pr("%>",0,0);  Print( hdRes );
-            if ( i < nrArg )  Pr("%<, ",0,0);
-            else              Pr("%< )",0,0);
+            //**INDENT** Pr(  "%>",0,0  );
+            // Print( hdRes );
+            PrintObj (  global_stream, hdRes, 0 );
+            if ( i < nrArg )  //**INDENT** Pr( "%<, ",0,0 );
+                SyFmtPrint (  global_stream, ", " );
+            else              //**INDENT** Pr( "%< )",0,0 );
+                SyFmtPrint (  global_stream, " )" );
         }
     }
     
@@ -552,9 +561,16 @@ Bag       EvFunccall (Bag hdCall)
     
     /* If the function is traced, print the return value                   */
     if ( trace & 1 ) {
-        Pr("\n%>",0,0); Print( PTR_BAG(hdCall)[0] );  Pr("%< returns ",0,0);
-        if ( hdRes != HdVoid )  Print( hdRes );
-        Pr("%< ",0,0);
+        //**INDENT** Pr( "\n%>",0,0 );
+        // Print( PTR_BAG(hdCall)[0] );
+        //**INDENT** Pr( "%< returns ",0,0 );
+        SyFmtPrint (  global_stream, "\n" );
+        PrintObj (  global_stream, PTR_BAG(hdCall)[0], 0 );
+        SyFmtPrint (  global_stream, " returns " );
+        if ( hdRes != HdVoid )  // Print( hdRes );
+            PrintObj (  global_stream, hdRes, 0 );
+        //**INDENT** Pr( "%< ",0,0 );
+        SyFmtPrint (  global_stream, " " );
     }
 
     return hdRes;
@@ -734,7 +750,7 @@ Bag       FunIsMeth (Bag hdCall)
 
     /* evaluate and check the argument                                     */
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD )
-        return Error("usage: IsFunc( <obj> )",0,0);
+        return Error("usage: IsMeth( <obj> )",0,0);
     hdObj = EVAL( PTR_BAG(hdCall)[1] );
     if ( hdObj == HdVoid )
         return Error("IsMeth: function must return a value",0,0);
@@ -898,18 +914,28 @@ Bag       FunProfile (Bag hdCall)
         for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 )
             total = total + HD_TO_INT( PTR_BAG(HdTimes)[i+3] );
         if ( total == 0 )  total = 1;
-        Pr(" count    time percent time/call child function\n",0,0);
+        // Pr( " count    time percent time/call child function\n",0,0 );
+        SyFmtPrint (  global_stream, " count    time percent time/call child function\n" );
         for ( i = 0; i < GET_SIZE_BAG(HdTimes)/SIZE_HD; i += 5 ) {
-            Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0 );
-            Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ), 0 );
-            Pr("%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i+3]) / total, 0 );
-            Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ) /
-                        HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0 );
-            Pr("%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+4] ), 0 );
-            Print( PTR_BAG(HdTimes)[i+1] );
-            Pr("\n",0,0);
+            // Pr( "%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0  );
+            SyFmtPrint (  global_stream, "%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+2] ) );
+            // Pr( "%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ), 0  );
+            SyFmtPrint (  global_stream, "%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ) );
+            // Pr( "%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i+3]) / total, 0  );
+            SyFmtPrint (  global_stream, "%6d  ", 100 * HD_TO_INT(PTR_BAG(HdTimes)[i+3]) / total );
+            // Pr( "%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ) /
+            //            HD_TO_INT( PTR_BAG(HdTimes)[i+2] ), 0  );
+            SyFmtPrint (  global_stream, "%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+3] ) /
+                        HD_TO_INT( PTR_BAG(HdTimes)[i+2] ) );
+            // Pr( "%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+4] ), 0  );
+            SyFmtPrint (  global_stream, "%6d  ", HD_TO_INT( PTR_BAG(HdTimes)[i+4] ) );
+            // Print( PTR_BAG(HdTimes)[i+1] );
+            PrintObj (  global_stream, PTR_BAG(HdTimes)[i+1], 0 );
+            // Pr( "\n",0,0 );
+            SyFmtPrint (  global_stream, "\n" );
         }
-        Pr("        %6d     100                  TOTAL\n",total-1,0);
+        // Pr( "        %6d     100                  TOTAL\n",total-1,0 );
+        SyFmtPrint (  global_stream, "        %6d     100                  TOTAL\n", total - 1 );
     }
 
     return HdVoid;
@@ -954,24 +980,26 @@ Bag FunApplyFunc (Bag hdCall)
 
 /****************************************************************************
 **
-*F  PrFuncint( <hdFun> )  . . . . . . . . . . . .  print an internal function
+*F  PrFuncint( stream, <hdFun>, indent )  . . . .  print an internal function
 **
 **  'PrFuncint' prints the internal function with the handle  <hdFun> in  the
 **  short form: 'function (...) internal; end'.
 */
 /*ARGSUSED*/
 
-void            PrFuncint (Bag hdFun)
+void    PrFuncint ( STREAM stream, Obj hdFun, int indent )
 {
-    Pr("%2>%s%2<",
-       (Int) ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)), 0);
+    //**INDENT** Pr( "%2>%s%2<",
+    //               (Int) ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)), 0 );
+    SyFmtPrint ( stream, "%s",
+                 ((char*)PTR_BAG(hdFun) + sizeof(PtrIntFunc)) );
 }
 
 
 /****************************************************************************
 **
-*F  PrFunction( <hdFun> ) . . . . . . . . . . . . . . . . .  print a function
-*F  PrMethod( <hdFun> ) . . . . . . . . . . . . . . . . . . .  print a method
+*F  PrFunction( stream, <hdFun>, indent ) . . . . . . . . .  print a function
+*F  PrMethod( stream, <hdFun>, indent ) . . . . . . . . . . .  print a method
 **
 **  'PrFunction' prints the function with the handle <hdFun>  either  in  the
 **  short format:
@@ -989,100 +1017,120 @@ void            PrFuncint (Bag hdFun)
 */
 Int            prFull;
 
-int MaybePrintShortFunc (Bag hdFun, char *shortKeyword)
+int     MaybePrintShortFunc ( STREAM stream, Bag hdFun, char *shortKeyword, int indent )
 {
     /* we can print in short form if the first statment is return ... */
     if(NUM_LOCALS_FUNC(hdFun)==0 && GET_TYPE_BAG(PTR_BAG(hdFun)[0]) == T_RETURN) {
         int i;
         int nrArg;
-        Pr("(%>",0,0);
+        //**INDENT** Pr( "(%>",0,0 );
+        SyFmtPrint ( stream, "(" );
         ACT_NUM_ARGS_FUNC(hdFun, nrArg);
         for ( i = 1; i <= nrArg; ++i ) {
-            Print( PTR_BAG(hdFun)[i] );
-            if ( i != nrArg )  Pr("%<, %>",0,0);
+            // Print( PTR_BAG(hdFun)[i] );
+            PrintObj ( stream, PTR_BAG(hdFun)[i], 0 );
+            if ( i != nrArg )  //**INDENT** Pr( "%<, %>",0,0 );
+                SyFmtPrint ( stream, ", " );
         }
-        Pr("%<) %s %>%g%<", (Int)shortKeyword, (Int)PTR_BAG(PTR_BAG(hdFun)[0])[0]);
+        //**INDENT** Pr( "%<) %s %>%g%<", (Int)shortKeyword, (Int)PTR_BAG(PTR_BAG(hdFun)[0])[0] );
+        SyFmtPrint ( stream, ") %s ", shortKeyword );
+        PrintObj ( stream, PTR_BAG(PTR_BAG(hdFun)[0])[0], 0 );
         return 1;
     }
     else return 0;
 }
 
-void            PrFunc (Bag hdFun, char *keyword, char *shortKeyword)
+void    PrFunc ( STREAM stream, Bag hdFun, char *keyword, char *shortKeyword, int indent )
 {
     short               nrArg,  nrLoc,  i;
 
-    if(MaybePrintShortFunc(hdFun, shortKeyword))
+    if ( MaybePrintShortFunc ( stream, hdFun, shortKeyword, indent ) )
         return;
 
-    Pr("%5>%s%< ( %>",(Int)keyword,0);
+    //**INDENT** Pr( "%5>%s%< ( %>",(Int)keyword,0 );
+    SyFmtPrint ( stream, "%s ( ", keyword );
     ACT_NUM_ARGS_FUNC(hdFun, nrArg);
     for ( i = 1; i <= nrArg; ++i ) {
-        Print( PTR_BAG(hdFun)[i] );
-        if ( i != nrArg )  Pr("%<, %>",0,0);
+        // Print( PTR_BAG(hdFun)[i] );
+        PrintObj ( stream, PTR_BAG(hdFun)[i], 0 );
+        if ( i != nrArg )  //**INDENT** Pr( "%<, %>",0,0 );
+            SyFmtPrint ( stream, ", " );
     }
-    Pr(" %<)",0,0);
+    //**INDENT** Pr( " %<)",0,0 );
+    SyFmtPrint ( stream, " )" );
 
     if ( prFull == 0 ) {
-        Pr(" ...%4< ",0,0);
+        //**INDENT** Pr( " ...%4< ",0,0 );
+        SyFmtPrint ( stream, " ... " );
     }
     else {
-        Pr("\n",0,0);
+        // Pr( "\n",0,0 );
+        SyFmtPrint ( stream, "\n" );
         nrLoc = ((short*)((char*)PTR_BAG(hdFun) + GET_SIZE_BAG(hdFun)))[-1];
         if ( nrLoc < 0 )  nrLoc = -nrLoc-1;
         if ( nrLoc >= 1 ) {
-            Pr("%>local  ",0,0);
+            //**INDENT** Pr( "%>local  ",0,0 );
+            SyFmtPrint ( stream, "local  " );
             for ( i = 1; i <= nrLoc; ++i ) {
-                Print( PTR_BAG(hdFun)[i+nrArg] );
-                if ( i != nrLoc )  Pr("%<, %>",0,0);
+                // Print( PTR_BAG(hdFun)[i+nrArg] );
+                PrintObj ( stream, PTR_BAG(hdFun)[i+nrArg], 0 );
+                if ( i != nrLoc )  //**INDENT** Pr( "%<, %>",0,0 );
+                    SyFmtPrint ( stream, ", " );
             }
-            Pr("%<;\n",0,0);
+            //**INDENT** Pr( "%<;\n",0,0 );
+            SyFmtPrint ( stream, ";\n" );
         }
-        Print( PTR_BAG(hdFun)[0] );
-        Pr(";%4<\n",0,0);
+        // Print( PTR_BAG(hdFun)[0] );
+        PrintObj ( stream, PTR_BAG(hdFun)[0], 0 );
+        //**INDENT** Pr( ";%4<\n",0,0 );
+        SyFmtPrint ( stream, ";\n" );
     }
 
-    Pr("end",0,0);
+    // Pr( "end",0,0 );
+    SyFmtPrint ( stream, "end" );
 }
 
-void            PrFunction (Bag hdFun) {
-    PrFunc(hdFun, "function", "->");
+void    PrFunction ( STREAM stream, Bag hdFun, int indent )
+{
+    PrFunc ( stream, hdFun, "function", "->", indent );
 }
 
-void            PrMethod (Bag hdFun) {
-    PrFunc(hdFun, "meth", ">>");
+void    PrMethod ( STREAM stream, Bag hdFun, int indent )
+{
+    PrFunc ( stream, hdFun, "meth", ">>", indent );
 }
 
 /****************************************************************************
 **
-*F  PrintFunction( <hdFun> )  . . . . . . . print a function in the full form
+*F  PrintFunction( stream, <hdFun>, indent ) . . Print a function (full form)
 **
 **  'PrintFunction' prints the function with the handle <hdFun> in  the  full
 **  form, i.e., with the statement sequence.  It is called from main read-eval
 **  loop.
 */
-void            PrintFunction (Bag hdFun)
+void    PrintFunction ( STREAM stream, Bag hdFun, int indent )
 {
     prFull = NUM_TO_INT(1);
-    PrFunction( hdFun );
+    PrFunction ( stream, hdFun, indent );
     prFull = 0;
 }
 
 /****************************************************************************
 **
-*F  PrintMethod( <hdFun> )  . . . . . . . . . print a method in the full form
+*F  PrintMethod( stream, <hdFun>, indent ) . . . . print a method (full form)
 **
 **  Same as 'PrintFunction' but for a method.
 */
-void            PrintMethod (Bag hdFun)
+void    PrintMethod ( STREAM stream, Bag hdFun, int indent )
 {
 	prFull = NUM_TO_INT(1);
-	PrMethod(hdFun);
+	PrMethod ( stream, hdFun, indent );
 	prFull = 0;
 }
 
 /****************************************************************************
 **
-*F  PrFunccall( <hdCall> )  . . . . . . . . . . . . . . print a function call
+*F  PrFunccall( stream, <hdCall>, indent )  . . . . . . print a function call
 **
 **  'PrFunccall' prints the function call with the  handle  <hdCall>  in  the
 **  usual form:  '<function>( <args> )'.
@@ -1090,40 +1138,51 @@ void            PrintMethod (Bag hdFun)
 **  Linebreaks are preffered after the opening  parenthesis  and  the  commas
 **  between the arguments.
 */
-void            PrFunccall (Bag hdCall)
+void    PrFunccall ( STREAM stream, Bag hdCall, int indent )
 {
     Int                i;
     Int                start = 1;
     if ( GET_FLAG_BAG(hdCall, BF_METHCALL) ) start = 2;
-    Pr("%2>",0,0);  Print( PTR_BAG(hdCall)[0] ); Pr("%<(%>",0,0);
+    //**INDENT** Pr( "%2>",0,0 );
+    // Print( PTR_BAG(hdCall)[0] );
+    PrintObj ( stream, PTR_BAG(hdCall)[0], 0 );
+    //**INDENT** Pr( "%<(%>",0,0 );
+    SyFmtPrint ( stream, "(" );
     for ( i = start; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-        Print( PTR_BAG(hdCall)[i] );
+        // Print( PTR_BAG(hdCall)[i] );
+        PrintObj ( stream, PTR_BAG(hdCall)[i], 0 );
         if ( i != GET_SIZE_BAG(hdCall)/SIZE_HD-1 )
-            Pr("%<, %>",0,0);
+            //**INDENT** Pr( "%<, %>",0,0 );
+            SyFmtPrint ( stream, ", " );
     }
-    Pr("%2<)",0,0);
+    //**INDENT** Pr( "%2<)",0,0 );
+    SyFmtPrint ( stream, ")" );
 }
 
 
 /****************************************************************************
 **
-**  PrReturn( <hdRet> ) . . . . . . . . . . . . . .  print a return statement
+**  PrReturn( stream, <hdRet>, indent ) . . . . . .  print a return statement
 **
 **  'PrReturn' prints the return statement with the  handle  <hdRet>  in  the
 **  usual form 'return;' or 'return <expr>;'.
 */
-void            PrReturn (Bag hdRet)
+void    PrReturn ( STREAM stream, Bag hdRet, int indent )
 {
     if ( PTR_BAG(hdRet)[0] == HdReturn ) {
-        Pr("quit",0,0);
+        // Pr( "quit",0,0 );
+        SyFmtPrint ( stream, "quit" );
     }
     else if ( PTR_BAG(hdRet)[0] == HdVoid ) {
-        Pr("return",0,0);
+        // Pr( "return",0,0 );
+        SyFmtPrint ( stream, "return" );
     }
     else {
-        Pr("%2>return%< %>",0,0);
-        Print( PTR_BAG(hdRet)[0] );
-        Pr("%2<",0,0);
+        //**INDENT** Pr( "%2>return%< %>",0,0 );
+        SyFmtPrint ( stream, "return " );
+        // Print( PTR_BAG(hdRet)[0] );
+        PrintObj ( stream, PTR_BAG(hdRet)[0], 0 );
+        //**INDENT** Pr( "%2<",0,0 );
     }
 }
 

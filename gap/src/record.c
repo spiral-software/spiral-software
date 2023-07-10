@@ -248,7 +248,7 @@ Obj  EvBinaryRecOperator ( Obj hdOperField, char *fldString, Obj hdL, Obj hdR,
 
 /* Evaluate an operator on one record by looking up an entry in .operations.<xxx> */
 Obj  EvUnaryRecOperator ( Obj hdOperField, char *fldString, Obj hdRec,
-                          Obj (*default_op)(Obj) ) {
+                          Obj (*default_op)(STREAM, Obj, int) ) {
     Bag           hdResult;
     Bag           hdOper;
 
@@ -257,7 +257,7 @@ Obj  EvUnaryRecOperator ( Obj hdOperField, char *fldString, Obj hdRec,
         if ( default_op == 0 )
             return Error("Record: operand must have '%g'",(Int)fldString,0);
         else
-            return default_op(hdRec);
+            return default_op ( global_stream, hdRec, 0 );
     }
 
     hdResult = NewBag(T_FUNCCALL, 2*SIZE_HD);
@@ -1043,16 +1043,19 @@ Bag       HdRnPrint;
 Bag       HdStrPrint;
 Bag       HdCallPrint;
 
-Obj DefaultPrRec ( Obj hdRec ) {
+Obj     DefaultPrRec ( STREAM stream, Obj hdRec, int indent )
+{
     UInt i;
     int  is_first_printed = 1;
     int  pr_populated = 0;
     /*N 05-Jun-90 martin 'PrRec' should be capable of ignoring elements    */
     /*N 05-Jun-90 martin 'PrRec' should support '~.<path>'                 */
     if (GET_TYPE_BAG(hdRec) == T_MAKETAB)
-        Pr("%2>tab(",0,0);
+        //**INDENT** Pr("%2>tab(",0,0);
+        SyFmtPrint ( /* global_ */ stream, "tab(" );
     else
-        Pr("%2>rec(",0,0);
+        //**INDENT** Pr("%2>rec(",0,0);
+        SyFmtPrint ( /* global_ */ stream, "rec(" );
     for ( i = 0; i < GET_SIZE_BAG(hdRec)/(2*SIZE_HD); ++i ) {
         /* print an ordinary record name                                   */
         if ( GET_TYPE_BAG( PTR_BAG(hdRec)[2*i] ) == T_RECNAM ) {
@@ -1062,31 +1065,46 @@ Obj DefaultPrRec ( Obj hdRec ) {
                some information in records, when using methods with 'meth' */
             if(name != 0 && name[0]=='_') continue;
 
-            if (! pr_populated++) Pr("\n%2>",0,0);
-            if ( ! is_first_printed ) Pr("%2<,\n%2>",0,0);
+            if (!pr_populated++)
+                //**INDENT** Pr("\n%2>",0,0);
+                SyFmtPrint ( /* global_ */ stream, "\n" );
+            if (!is_first_printed)
+                //**INDENT** Pr("%2<,\n%2>",0,0);
+                SyFmtPrint ( /* global_ */ stream, ",\n" );
             is_first_printed = 0;
 
-            PrVarName(name);
+            PrVarName ( /* global_ */ stream, name );
         }
         /* print an evaluating record name                                 */
         else {
-            if (! pr_populated++) Pr("\n%2>",0,0);
-            Pr(" (",0,0);
-            Print( PTR_BAG(hdRec)[2*i] );
-            Pr(")",0,0);
+            if (! pr_populated++) 
+                //**INDENT**Pr("\n%2>",0,0);
+                SyFmtPrint ( /* global_ */ stream, "\n" );
+            //Pr(" (",0,0);
+            // Print( PTR_BAG(hdRec)[2*i] );
+            //Pr(")",0,0);
+            SyFmtPrint ( /* global_ */ stream, " (" );
+            PrintObj ( /* global_ */ stream, PTR_BAG(hdRec)[2 * i], 0 );
+            SyFmtPrint ( /* global_ */ stream, ")" );
         }
         /* print the component                                             */
-        Pr("%< := %>",0,0);
-        Print( PTR_BAG(hdRec)[2*i+1] );
+        //**INDENT**Pr("%< := %>",0,0);
+        //Print( PTR_BAG(hdRec)[2*i+1] );
+        SyFmtPrint ( /* global_ */ stream, " := " );
+        PrintObj (   /* global_ */ stream, PTR_BAG(hdRec)[2 * i + 1], 0 );
     }
     if (pr_populated)
-    Pr(" %4<)",0,0);
+        //**INDENT** Pr(" %4<)",0,0);
+        SyFmtPrint ( /* global_ */ stream, " )" );
     else
-        Pr("%2<)",0,0);
+        //**INDENT** Pr("%2<)",0,0);
+        SyFmtPrint ( /* global_ */ stream, ")" );
     return HdVoid;
 }
 
-void  PrRec ( Obj hdRec ) {
+void  PrRec (STREAM stream, Obj hdRec, int indent) {
+    //GS4 -- Should stream be seeing global here. Following global from newio
+    //GS4 - this has operations word associated with operation issue. 
     EvUnaryRecOperator(HdRnPrint, "~.operations.Print", hdRec, DefaultPrRec);
 }
 
@@ -1098,23 +1116,34 @@ void  PrRec ( Obj hdRec ) {
 **
 **  '<record> . <name>'
 */
-void            PrRecElm (Bag hdElm)
+void            PrRecElm (STREAM stream, Bag hdElm, int indent)
 {
     /* print the record                                                    */
-    Pr( "%>", 0, 0 );
-    Print( PTR_BAG(hdElm)[0] );
+    //**INDENT** Pr( "%>", 0, 0 );
+    //Print( PTR_BAG(hdElm)[0] );
+
+    PrintObj(stream, PTR_BAG(hdElm)[0], 0);
+
     /* print an ordinary record name                                       */
     if ( GET_TYPE_BAG( PTR_BAG(hdElm)[1] ) == T_RECNAM ) {
         char * name = RECNAM_NAME( PTR_BAG(hdElm)[1] );
-        Pr("%<.%>",0,0);
-        PrVarName(name);
-        Pr("%<",0,0);
+        //**INDENT**Pr("%<.%>",0,0);
+        SyFmtPrint(stream, ".");
+
+        PrVarName(stream, name);
+
+        //**INDENT**Pr("%<",0,0);
+        
     }
     /* print an evaluating record name                                     */
     else {
-        Pr( "%<.%>(", 0, 0 );
-        Print( PTR_BAG(hdElm)[1] );
-        Pr( ")%<", 0, 0 );
+        //**INDENT** Pr( "%<.%>(", 0, 0 );
+        //Print( PTR_BAG(hdElm)[1] );
+        //**INDENT** Pr( ")%<", 0, 0 );
+
+        SyFmtPrint(stream, ".(");
+        PrintObj(stream, PTR_BAG(hdElm)[1], 0);
+        SyFmtPrint(stream, ")");
     }
 }
 
@@ -1127,26 +1156,34 @@ void            PrRecElm (Bag hdElm)
 **
 **  '<record>.<name> := <expr>;'
 */
-void            PrRecAss (Bag hdAss)
+void            PrRecAss (STREAM stream, Bag hdAss, int indent)
 {
-    Pr( "%2>", 0, 0 );
-    Print( PTR_BAG(hdAss)[0] );
-    Pr( "%< %>:= ", 0, 0 );
-    Print( PTR_BAG(hdAss)[1] );
-    Pr( "%2<", 0, 0 );
+    //**INDENT**Pr( "%2>", 0, 0 );
+    // Print( PTR_BAG(hdAss)[0] );
+    //**INDENT**Pr( "%< %>:= ", 0, 0 );
+    // Print( PTR_BAG(hdAss)[1] );
+    //**INDENT**Pr( "%2<", 0, 0 );
+    
+    SyFmtPrint(stream, ">");
+    PrintObj(stream, PTR_BAG(hdAss)[0], 0);
+    SyFmtPrint(stream, " := ");
+    PrintObj(stream, PTR_BAG(hdAss)[1], 0);
+   
 }
 
 
 /****************************************************************************
 **
-*F  PrRecName( <hdName> ) . . . . . . . . . . . . . print a record field name
+*F  PrRecName( stream, <hdName>, indent )   . . . . print a record field name
 **
 */
-void            PrRecName (Bag hdNam)
+void    PrRecName ( STREAM stream, Bag hdNam, int indent )
 {
-    Pr("RecName(\"", 0, 0);
-    PrVarName(RECNAM_NAME(hdNam));
-    Pr("\")", 0, 0);
+    //Pr("RecName(\"", 0, 0);
+    SyFmtPrint ( stream, "RecName(\"" );
+    PrVarName ( stream, RECNAM_NAME(hdNam) );
+    //Pr("\")", 0, 0);
+    SyFmtPrint ( stream, "\")" );
 }
 
 
@@ -1298,10 +1335,10 @@ Bag       FunNumRecFields (Bag hdCall)
 
     /* get and check the arguments                                         */
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: RecFields( <rec> )",0,0);
+        return Error("usage: NumRecFields( <rec> )",0,0);
     hdRec = EVAL( PTR_BAG(hdCall)[1] );
     if ( GET_TYPE_BAG(hdRec) != T_REC )
-        return Error("RecFields: <rec> must be a record",0,0);
+        return Error("NumRecFields: <rec> must be a record",0,0);
 
     return INT_TO_HD( GET_SIZE_BAG(hdRec) / SIZE_HD / 2 );
 }

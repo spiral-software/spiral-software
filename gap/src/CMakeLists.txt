@@ -20,9 +20,9 @@ if (WIN32)
 else()
     ##  Not Windows ... linux or Darwin/Mac
     if (${CMAKE_HOST_APPLE})
-	list (APPEND SYSSRCS_COMPILE_DEFNS SYS_IS_BSD)
+        list (APPEND SYSSRCS_COMPILE_DEFNS SYS_IS_BSD)
     else ()
-	list (APPEND SYSSRCS_COMPILE_DEFNS SYS_IS_USG SYS_HAS_SIG_T=void)
+        list (APPEND SYSSRCS_COMPILE_DEFNS SYS_IS_USG SYS_HAS_SIG_T=void)
     endif ()
 endif()
 
@@ -31,30 +31,32 @@ endif()
 ##  message (STATUS "Processor is 64 bit = ${PROCIS64BIT}")
 ##  Could be 64 bit system but building for 32 bit; test sizeof(void_p) instead
 
+set ( SPIRAL_COMPILE_DEFNS -DBESPOKE_IO=0 )             ## Identify old, now obsolete, I/O code
+
 if (${CMAKE_SIZEOF_VOID_P} EQUAL "8")
-    set(SPIRAL_COMPILE_DEFNS SYS_IS_64_BIT )
+    list ( APPEND SPIRAL_COMPILE_DEFNS SYS_IS_64_BIT )
     if ( WIN32 )
-	list ( APPEND SPIRAL_COMPILE_DEFNS WIN64 )
+        list ( APPEND SPIRAL_COMPILE_DEFNS WIN64 )
     endif ()
-else()
-    set(SPIRAL_COMPILE_DEFNS )
+##  else()
+##      set(SPIRAL_COMPILE_DEFNS )
 endif()
 
 if (WIN32)
-    list(APPEND SPIRAL_COMPILE_DEFNS
-		WIN32 YY_NO_UNISTD_H _USE_MATH_DEFINES _CONSOLE inline=__inline)
+    list ( APPEND SPIRAL_COMPILE_DEFNS
+        WIN32 YY_NO_UNISTD_H _USE_MATH_DEFINES _CONSOLE inline=__inline )
 endif()
 
 if (NOT WIN32)
-	string(COMPARE EQUAL "${CMAKE_BUILD_TYPE}" "Debug" SPIRAL_COMPILE_DEBUG)
-	if (SPIRAL_COMPILE_DEBUG)
-		list(APPEND SPIRAL_COMPILE_DEFNS _DEBUG)
-	else()
-		list(APPEND SPIRAL_COMPILE_DEFNS NDEBUG)
-	endif()
+    string ( COMPARE EQUAL "${CMAKE_BUILD_TYPE}" "Debug" SPIRAL_COMPILE_DEBUG )
+    if ( SPIRAL_COMPILE_DEBUG )
+        list ( APPEND SPIRAL_COMPILE_DEFNS _DEBUG )
+    else()
+        list ( APPEND SPIRAL_COMPILE_DEFNS NDEBUG )
+    endif()
 endif()
 
-set(SPIRAL_COMPILE_FLAGS -w)
+set ( SPIRAL_COMPILE_FLAGS -w )    ##  -Wimplicit-function-declaration
   
 set(PROJECT gap)
 

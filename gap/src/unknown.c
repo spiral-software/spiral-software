@@ -234,9 +234,10 @@ Bag       LtUnknown (Bag hdL, Bag hdR)
 **
 **  'PrUnknown' prints the unknown <hdUnk> in the form 'Unknown(<n>)'.
 */
-void            PrUnknown (Bag hdUnk)
+void            PrUnknown (STREAM stream, Bag hdUnk, int indent)
 {
-    Pr("%>Unknown(%d)%<",((Int*)PTR_BAG(hdUnk))[0], 0);
+    //**INDENT** Pr("%>Unknown(%d)%<",((Int*)PTR_BAG(hdUnk))[0], 0);
+    SyFmtPrint(stream, "Unknown(%d)", ((Int*)PTR_BAG(hdUnk))[0]); //GS4
 }
 
 

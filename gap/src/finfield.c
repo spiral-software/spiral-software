@@ -1205,19 +1205,19 @@ Bag       LtFFE (Bag hdL, Bag hdR)
 
 /****************************************************************************
 **
-*F  PrFFE( <hdFFE> )  . . . . . . . . . . . . .  print a finite field element
+*F  PrFFE( stream, <hdFFE>, indent )  . . . . .  print a finite field element
 **
 **  'PrFFE' prints the finite field element <hdFFE>.
 */
-void            PrFFE (Bag hdFFE)
+void    PrFFE ( STREAM stream, Bag hdFFE, int indent )
 {
-    PrFF( FLD_FFE(hdFFE), VAL_FFE(hdFFE) );
+    PrFF ( stream, FLD_FFE(hdFFE), VAL_FFE(hdFFE), indent );
 }
 
 
 /****************************************************************************
 **
-*F  PrFF( <hdField>, <value> )  . . . . . . . . .  print a finite field value
+*F  PrFF( stream, <hdField>, <value>, indent )  .  print a finite field value
 **
 **  'PrFF' prints the value <value> from the finite field <hdField>.
 **
@@ -1225,7 +1225,7 @@ void            PrFFE (Bag hdFFE)
 **  not call 'PrFFE' because it would have to create  finite  field  elements
 **  to do so and calling 'NewBag' from a printing procedure is forbidden.
 */
-void            PrFF (Bag hdField, unsigned int value)
+void    PrFF ( STREAM stream, Bag hdField, unsigned int value, int indent )
 {
     UInt       o;              /* order of the finite field       */
     UInt       p;              /* characteristic of finite field  */
@@ -1239,7 +1239,8 @@ void            PrFF (Bag hdField, unsigned int value)
 
     /* print the zero                                                      */
     if ( value == 0 ) {
-        Pr("%>0*Z(%>%d%2<)",(Int)p,0);
+        //**INDENT** Pr( "%>0*Z(%>%d%2<)",(Int)p,0 );
+        SyFmtPrint ( stream, "0*Z(%d)", p );
     }
 
     /* print a nonzero element as power of the primitive root              */
@@ -1253,10 +1254,14 @@ void            PrFF (Bag hdField, unsigned int value)
         value = (value-1) / ((o-1)/(m-1)) + 1;
 
         /* print the element                                               */
-        Pr("%>Z(%>%d%<",(Int)p,0);
-        if ( d == 1 )  Pr("%<)",0,0);
-        else  Pr("^%>%d%2<)",(Int)d,0);
-        if ( value != 2 )  Pr("^%>%d%<",(Int)value-1,0);
+        //**INDENT** Pr( "%>Z(%>%d%<",(Int)p,0 );
+        SyFmtPrint ( stream, "Z(%d", p );
+        if ( d == 1 )  //**INDENT** Pr( "%<)",0,0 );
+            SyFmtPrint ( stream, ")" );
+        else  //**INDENT** Pr( "^%>%d%2<)",(Int)d,0 );
+            SyFmtPrint ( stream, "^%d)", d );
+        if ( value != 2 )  //**INDENT** Pr( "^%>%d%<",(Int)value-1,0 );
+            SyFmtPrint ( stream, "^%d", value - 1 );
 
     }
 

@@ -1,3 +1,7 @@
+#include        <stdio.h>
+#include        <stdlib.h>
+#include        <string.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* dynamic storage manager         */
 #include        "function.h"
@@ -136,10 +140,10 @@ Obj  TableAddIdent(Obj hdTable, UInt pos, char * nam) {
     UInt len;
     len = strlen(nam);
     /* name might disappear during garbage collection */
-    strncpy(name, nam, len + 1);
+    strcpy ( name, nam );                       //  strncpy(name, nam, len + 1);
 
     hd = NewBag( T_VAR, SIZE_HD * OFS_IDENT + len + 1);
-    strncpy( VAR_NAME(hd), name, len + 1 );
+    strcpy ( VAR_NAME(hd), name );              //  strncpy( VAR_NAME(hd), name, len + 1 );
     SET_BAG(hdTable, pos,  hd ); 
     SetTableNumEnt(hdTable, TableNumEnt(hdTable)+1);
     /* If the identifer table is overcrowded enlarge it                */
@@ -157,10 +161,10 @@ Obj  TableAddRecnam(Obj hdTable, UInt pos, char * nam) {
     UInt len;
     len = strlen(nam);
     /* name might disappear during garbage collection */
-    strncpy(name, nam, len+1);
+    strcpy ( name, nam );                       //  strncpy(name, nam, len+1);
 
     hd = NewBag( T_RECNAM, SIZE_HD * OFS_RECNAM + len + 1);
-    strncpy( (char*)(PTR_BAG(hd)+OFS_RECNAM), name, len + 1 );
+    strcpy ( (char*)(PTR_BAG(hd)+OFS_RECNAM), name );   //  strncpy( (char*)(PTR_BAG(hd)+OFS_RECNAM), name, len + 1 );
     SET_BAG(hdTable, pos,  hd );
     SetTableNumEnt(hdTable, TableNumEnt(hdTable)+1);
     /* If the identifer table is overcrowded enlarge it                */

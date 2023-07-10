@@ -141,7 +141,7 @@ Obj             EvInt(Obj integer)
 
 /****************************************************************************
 **
-*F  PrInteger( <int> ) . . . . . . . . . . . . . . print an integer constant
+*F  PrInteger( stream, <int>, indent ) . . . . . . print an integer constant
 **
 **  'PrInteger'  prints  the integer  <int>   in the  usual  decimal notation.
 **  'PrInteger' handles objects of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
@@ -219,37 +219,42 @@ Int             IntToPrintBase(Obj op)
 
 }
 
-void            PrInteger(Obj op)
+void    PrInteger ( STREAM stream, Obj op, int indent )
 {
 	Int                 i;           /* loop counter                    */
 
 	/* print a small integer                                               */
 	if (IS_INTOBJ(op)) {
-		Pr("%>%d%<", INT_INTOBJ(op), 0);
+		//**INDENT** Pr( "%>%d%<", INT_INTOBJ(op), 0 );
+        SyFmtPrint ( stream, "%lld", INT_INTOBJ(op) );
 	}
 
 	/* print a large integer                                               */
 	else if (SIZE_INT(op) < 1000) {
 
 		/* start printing, %> means insert '\' before a linebreak          */
-		Pr("%>", 0, 0);
+		//**INDENT** Pr( "%>", 0, 0 );
 
 		if (TNUM_OBJ(op) == T_INTNEG)
-			Pr("-", 0, 0);
+			// Pr( "-", 0, 0 );
+            SyFmtPrint ( stream, "-" );
 
 		/* convert the integer into base PRINT_BASE                        */
 		i = IntToPrintBase(op);
 
 		/* print the base PRINT_BASE digits                                 */
-		Pr("%d", (Int)PrIntD[i], 0);
+		// Pr( "%d", (Int)PrIntD[i], 0 );
+        SyFmtPrint ( stream, "%d", PrIntD[i] );
 		while (i > 0)
-			Pr(PRINT_FORMAT, (Int)PrIntD[--i], 0);
-		Pr("%<", 0, 0);
+			// Pr( PRINT_FORMAT, (Int)PrIntD[--i], 0 );
+            SyFmtPrint ( stream, PRINT_FORMAT, PrIntD[--i] );
+		//**INDENT** Pr("%<", 0, 0);
 
 	}
 
 	else {
-		Pr("<<an integer too large to be printed>>", 0, 0);
+		// Pr( "<<an integer too large to be printed>>", 0, 0 );
+        SyFmtPrint ( stream, "<<an integer too large to be printed>>" );
 	}
 }
 
@@ -496,7 +501,7 @@ Obj             Log2Int(Obj integer)
 **
 *F  StringInt( <self>, <int> ) . . . . . . . . convert an integer to a string
 **
-**  `StringInt' returns an immutable string representing the integer <int>
+**  'StringInt' returns an immutable string representing the integer <int>
 **
 */
 Obj             StringInt(Obj integer)

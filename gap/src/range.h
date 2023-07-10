@@ -301,8 +301,7 @@ extern  Int            IsPossRange (
 **
 **  'PrRange' handles bags of type 'T_RANGE' and 'T_MAKERANGE'.
 */
-extern  void            PrRange (
-            Bag           hdRange );
+extern  void            PrRange (STREAM stream, Bag hdRange, int indent);
 
 
 /****************************************************************************
@@ -350,8 +349,7 @@ extern  Bag       EvMakeRange (
 **  'PrMakeRange' prints the range literal  <hdMake> in the form '[  <low> ..
 **  <high> ]'.
 */
-extern  void            PrMakeRange (
-            Bag           hdMake );
+extern  void            PrMakeRange (STREAM stream, Bag hdMake, int indent);
 
 
 /****************************************************************************

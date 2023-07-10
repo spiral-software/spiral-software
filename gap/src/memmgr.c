@@ -299,9 +299,9 @@ void            CollectGarb (void)
 **  the allocation area.  On the other hand each garbage collection empties the
 **  young bags area.  */
 
-#define MAX_MEMORY_ARENAS  50			/* maximum number of memory arenas */
+#define MAX_MEMORY_ARENAS  50            /* maximum number of memory arenas */
 
-int             actAR = 0;				// active memory arena
+int             actAR = 0;                // active memory arena
 ArenaBag_t      MemArena[MAX_MEMORY_ARENAS];
 
 
@@ -370,7 +370,7 @@ void            Resize ( BagPtr_t hdBag, UInt newSize )
 //  bag lives.  To be valid a bag handle must be located betwen
 //  BagHandleStart and OldBagStart (i.e., the area reserved for master
 //  pointers *in the current memory arena*)
-	 
+
 static ArenaBag_t *GetArenaFromBag( BagPtr_t bag )
 {
     ArenaBag_t *par = &MemArena[0];
@@ -389,9 +389,9 @@ static ArenaBag_t *GetArenaFromBag( BagPtr_t bag )
 
 void            MarkBag_GAP3(BagPtr_t bag)
 {
-    BagPtr_t    *ptr;					/* pointer into the bag            */
-    BagPtr_t     sub;					/* one subbag identifier           */
-    UInt         i;						/* loop variable                   */
+    BagPtr_t    *ptr;                   /* pointer into the bag            */
+    BagPtr_t     sub;                   /* one subbag identifier           */
+    UInt         i;                     /* loop variable                   */
     UInt         iter = NrHandles(GET_TYPE_BAG(bag), GET_SIZE_BAG(bag));
     
     ptr = PTR_BAG( bag );
@@ -417,7 +417,7 @@ void MARK_BAG( BagPtr_t bag )
     ArenaBag_t *par;
 
     if (bag == 0 || ((UInt)bag & (sizeof(BagPtr_t) - 1)) != 0)
-        return;							// not a valid bag handle
+        return;                            // not a valid bag handle
 
     if (!(par = GetArenaFromBag(bag)))            // no arena or invalid 
         return;
@@ -576,9 +576,9 @@ void InitMarkFuncBags ( UInt type, TNumMarkFuncBags mark_func )
 
 void MarkAllSubBagsDefault ( BagPtr_t bag )
 {
-    BagPtr_t   *ptr;					/* pointer into the bag            */
-    BagPtr_t    sub;					/* one subbag identifier           */
-    UInt        i;						/* loop variable                   */
+    BagPtr_t   *ptr;                    /* pointer into the bag            */
+    BagPtr_t    sub;                    /* one subbag identifier           */
+    UInt        i;                      /* loop variable                   */
 
     /* mark everything                                                     */
     ptr = PTR_BAG( bag );
@@ -613,23 +613,24 @@ extern TNumAbortFuncBags   AbortFuncBags;
 
 void    InitGlobalBag ( BagPtr_t *addr, const Char *cookie )
 {
+
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
         (*AbortFuncBags)( "Panic: Gasman cannot handle so many global variables" );
     }
-	
+
 #ifdef DEBUG_GLOBAL_BAGS
     {
-		UInt i;
-		if (cookie != (Char *)0)
-			for (i = 0; i < GlobalBags.nr; i++)
-				if ( 0 == strcmp(GlobalBags.cookie[i], cookie) ) {
-					if (GlobalBags.addr[i] == addr)
-					    //Pr("Duplicate global bag entry %s\n", (Int)cookie, 0);
+        UInt i;
+        if (cookie != (Char *)0)
+            for (i = 0; i < GlobalBags.nr; i++)
+                if ( 0 == strcmp(GlobalBags.cookie[i], cookie) ) {
+                    if (GlobalBags.addr[i] == addr)
+                        //Pr("Duplicate global bag entry %s\n", (Int)cookie, 0);
                         printf("Duplicate global bag entry %s\n", cookie, 0);
-					else
-						//Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0);
+                    else
+                        //Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0);
                         printf("Duplicate global bag cookie %s\n", cookie, 0);
-				}
+                }
     }
 #endif
 
@@ -715,7 +716,7 @@ static int AddMemoryArena ( UInt size )
 
     // find first free arena
     for (arenanr = 0 ; arenanr < MAX_MEMORY_ARENAS; par++, arenanr++) {
-        if (par->ActiveArenaFlag == 0)	// never allocated ... use this one
+        if (par->ActiveArenaFlag == 0)    // never allocated ... use this one
             break;
     }
 
@@ -747,8 +748,8 @@ static int AddMemoryArena ( UInt size )
     }
 
     par->StopBags = par->EndBags;
-	par->SweepNeeded = 0;
-	par->FreeRatio = FreeRatioThreshold;
+    par->SweepNeeded = 0;
+    par->FreeRatio = FreeRatioThreshold;
 
     par->ActiveArenaFlag = 1;
     par->ArenaNumber = arenanr;
@@ -835,9 +836,9 @@ void            InitBags (
 
 BagPtr_t NewBag4 ( UInt type, UInt size )
 {
-    BagPtr_t                 bag;		/* identifier of the new bag       */
-    BagPtr_t *               dst;		/* destination of the new bag      */
-    ArenaBag_t *par = &MemArena[actAR];	// ptr to current (active) memory Arena
+    BagPtr_t                 bag;       /* identifier of the new bag       */
+    BagPtr_t *               dst;       /* destination of the new bag      */
+    ArenaBag_t *par = &MemArena[actAR]; // ptr to current (active) memory Arena
     
     assert(type < T_ILLEGAL);
     /* check that a masterpointer and enough storage are available         */
@@ -859,8 +860,8 @@ BagPtr_t NewBag4 ( UInt type, UInt size )
     InfoBags[type].sizeAll  += size;
 #endif
 
-	/* get the identifier of the bag and set 'FreeHandleChain' to the next    */
-    par = &MemArena[actAR];	// refresh because CollectBags could alloc a new arena
+    /* get the identifier of the bag and set 'FreeHandleChain' to the next    */
+    par = &MemArena[actAR];    // refresh because CollectBags could alloc a new arena
     bag = par->FreeHandleChain;
     if (bag == 0) {
         // no more free bags available ==> out of memory, exit
@@ -918,7 +919,7 @@ BagPtr_t NewBag4 ( UInt type, UInt size )
 
 void            RetypeBag ( BagPtr_t bag, UInt new_type )
 {
-    UInt        size;					/* size of the bag                 */
+    UInt        size;                    /* size of the bag                 */
 
     /* get old type and size of the bag                                    */
     size     = GET_SIZE_BAG(bag);
@@ -1020,12 +1021,12 @@ static UInt nrResizeBags = 0;
 
 UInt ResizeBag ( BagPtr_t bag, UInt new_size )
 {
-    UInt        type;					/* type of the bag                 */
-    UInt        old_size;				/* old size of the bag             */
+    UInt        type;                   /* type of the bag                 */
+    UInt        old_size;               /* old size of the bag             */
     UInt        flags;
-    BagPtr_t   *dst;					/* destination in copying          */
-    BagPtr_t   *src;					/* source in copying               */
-    BagPtr_t   *end;					/* end in copying                  */
+    BagPtr_t   *dst;                    /* destination in copying          */
+    BagPtr_t   *src;                    /* source in copying               */
+    BagPtr_t   *end;                    /* end in copying                  */
 
     /* get type and old size of the bag                                    */
     type     = GET_TYPE_BAG(bag);
@@ -1302,9 +1303,9 @@ static jmp_buf RegsBags;
 
 void GenStackFuncBags (void)
 {
-    BagPtr_t   *top;					/* top of stack                    */
-    BagPtr_t   *p;						/* loop variable                   */
-    UInt        i;						/* loop variable                   */
+    BagPtr_t   *top;                    /* top of stack                    */
+    BagPtr_t   *p;                      /* loop variable                   */
+    UInt        i;                      /* loop variable                   */
 
     top = (BagPtr_t*)&top;
     if ( StackBottomBags < top ) {
@@ -1377,15 +1378,15 @@ static void CheckFreeMptrList ( int arenanr )
     }
 
     BagPtr_t beg, end;
-	beg   = par->BagHandleStart;
-	end   = par->OldBagStart;
+    beg   = par->BagHandleStart;
+    end   = par->OldBagStart;
 
-	char msgb[100];
-	sprintf(msgb, ", and %lu suspect Handle/Bag linkages", nBad);
+    char msgb[100];
+    sprintf(msgb, ", and %lu suspect Handle/Bag linkages", nBad);
     printf("CheckFreeMptrList: Walked Arena #%d, FreeHandleChain: Found links to %lu bags (%s), %lu (%.1f%%) handles free%s\n",
            par->ArenaNumber, nFound, ((nFound == 0)? "GOOD" : "BAD"), nFree, 
            (100.0 * (float)nFree / (float)(((UInt)end - (UInt)beg) / sizeof(BagPtr_t *))),
-		   (nBad > 0) ? msgb : "");
+           (nBad > 0) ? msgb : "");
     return;
 }
 
@@ -1412,8 +1413,8 @@ static void CheckMptrHandles ( int arenanr )
                 nBad++;
                 printf("CheckMptrHandles: Handle/Bag link not valid: handle = %p, bag data ptr = %p\n",
                        start, *start);
-				printf("                  Bag data address = %p, Bag Link Pointer = %p\n",
-					   &ptr->bagData, ptr->bagLinkPtr);
+                printf("                  Bag data address = %p, Bag Link Pointer = %p\n",
+                       &ptr->bagData, ptr->bagLinkPtr);
             }
         }
         else {
@@ -1423,11 +1424,11 @@ static void CheckMptrHandles ( int arenanr )
     }
 
     BagPtr_t beg, end;
-	beg   = par->BagHandleStart;
-	end   = par->OldBagStart;
+    beg   = par->BagHandleStart;
+    end   = par->OldBagStart;
 
-	char msgb[100];
-	sprintf(msgb, ", and %lu suspect Handle/Bag linkages (%s)", nBad, ((nBad == 0)? "GOOD" : "BAD") );
+    char msgb[100];
+    sprintf(msgb, ", and %lu suspect Handle/Bag linkages (%s)", nBad, ((nBad == 0)? "GOOD" : "BAD") );
     printf("CheckMptrHandles: Walked master pointers for Arena #%d: Found links to %lu (%.1f%%) bags%s\n",
            par->ArenaNumber, nFound,
            (100.0 * (float)nFound / (float)(((UInt)end - (UInt)beg) / sizeof(BagPtr_t))),
@@ -1452,8 +1453,8 @@ static void WalkBagPointers ( int arenanr, int clean )
     
     start = par->OldBagStart; end = par->AllocBagStart;
     printf("WalkBagPointers: Arena #%d, BagHandleStart = %p, EndBags = %p\n",
-		   par->ArenaNumber, par->BagHandleStart, par->EndBags);
-	printf("    Walk OldBagStart   = %p to AllocBagStart = %p, used pool = %luk (%luMb)\n", 
+           par->ArenaNumber, par->BagHandleStart, par->EndBags);
+    printf("    Walk OldBagStart   = %p to AllocBagStart = %p, used pool = %luk (%luMb)\n", 
            start, end, ((UInt)end - (UInt)start) / 1024, ((UInt)end - (UInt)start) / (1024 * 1024) );
     printf("         YoungBagStart = %p,   AllocBagStart = %p, free pool = %luk (%luMb)\n",
            par->YoungBagStart, par->AllocBagStart,
@@ -1515,9 +1516,9 @@ static void WalkBagPointers ( int arenanr, int clean )
 
     printf("    Walked the bags, found %lu bags, size = %luk (%luMb)\n",
            nFound, szFound / 1024, szFound / (1024 * 1024));
-	if (nbad > 0)
-		printf("    Found %lu suspect bags, total size = %luk (%luMb)\n",
-			   nbad, szbad / 1024, szbad / (1024 * 1024));
+    if (nbad > 0)
+        printf("    Found %lu suspect bags, total size = %luk (%luMb)\n",
+               nbad, szbad / 1024, szbad / (1024 * 1024));
     if ( clean == 0 )
         printf ( "    Found %lu remnants, total size = %luk (%luMb)\n",
                  nRemnant, szRemnant / 1024, szRemnant / (1024 * 1024));
@@ -1545,15 +1546,15 @@ static void WalkBagPointers ( int arenanr, int clean )
     
     printf("WalkBagPointers:  Total pool = %luMb (%.1f%%)\n",
            (((UInt)par->EndBags - (UInt)par->BagHandleStart) / (1024 * 1024)), 100.0);
-	printf("             Master pointers = %luMb (%.1f%%)\n",
+    printf("             Master pointers = %luMb (%.1f%%)\n",
            (((UInt)par->OldBagStart - (UInt)par->BagHandleStart) / (1024 * 1024)), ptrpc);
-	printf("                   Live Bags = %luMb (%.1f%%)\n",
+    printf("                   Live Bags = %luMb (%.1f%%)\n",
            (((UInt)par->YoungBagStart - (UInt)par->OldBagStart) / (1024 * 1024)), usedpc);
     printf("                   Free pool = %luMb (%.1f%%)\n",
            (((UInt)par->EndBags - (UInt)par->AllocBagStart) / (1024 * 1024)), freepc);
     
-    CheckMptrHandles(par->ArenaNumber);	// Check the used master pointers -- bag handles
-    CheckFreeMptrList(par->ArenaNumber); // Check the free master pointers
+    CheckMptrHandles(par->ArenaNumber);         // Check the used master pointers -- bag handles
+    CheckFreeMptrList(par->ArenaNumber);        // Check the free master pointers
     
     return;
 }
@@ -1566,20 +1567,20 @@ static void WalkBagPointers ( int arenanr, int clean )
  */
 
 typedef struct {
-    Int4    size;	                    /* size of the bag or remnant (size in bytes incl header) */
-    Int4    count;						/* count of bags this size */
-    Int4    nlive;						/* number of live bags */
-    Int4    ndead;						/* number of dead bags */
-    Int4    nremnant;					/* number of remants */
+    Int4    size;                       /* size of the bag or remnant (size in bytes incl header) */
+    Int4    count;                      /* count of bags this size */
+    Int4    nlive;                      /* number of live bags */
+    Int4    ndead;                      /* number of dead bags */
+    Int4    nremnant;                   /* number of remants */
 } BagHistogram_t;
 
 typedef enum {
-    INCREMENT_LIVE,						/* increment the live bags stats */
-    INCREMENT_DEAD,						/* dead */
-    INCREMENT_REMNANT,					/* remnant */
+    INCREMENT_LIVE,                     /* increment the live bags stats */
+    INCREMENT_DEAD,                     /* dead */
+    INCREMENT_REMNANT,                  /* remnant */
 }  countType_t;
 
-#define SIZE_HIST 2000					/* track up to 2000 different sizes */
+#define SIZE_HIST 2000                  /* track up to 2000 different sizes */
 static BagHistogram_t BagSizeCount[SIZE_HIST]; /* index by WORDS_BAG */
 static Int4 countHistOn = 0;    
 
@@ -1661,15 +1662,15 @@ static void DumpBagsHistogram ( void )
 
 static UInt CountFreeChain ( ArenaBag_t *par )
 {
-	UInt count = 0;
-	BagPtr_t  head = par->FreeHandleChain;
+    UInt count = 0;
+    BagPtr_t  head = par->FreeHandleChain;
 
-	while (head != 0) {
-		count++;
-		head = *head;
-	}
-	
-	return count;
+    while (head != 0) {
+        count++;
+        head = *head;
+    }
+    
+    return count;
 }
 
 //  WalkArenaBags() is intended to walk all the allocated bags in the pool area of the
@@ -1678,7 +1679,7 @@ static UInt CountFreeChain ( ArenaBag_t *par )
 
 static void WalkArenaBags ( ArenaBag_t *par )
 {
-    BagPtr_t *      src;				/* source in sweeping              */
+    BagPtr_t *      src;                /* source in sweeping              */
     UInt            isz;
     
     src = par->OldBagStart;             //  Start at the beginning of bags data
@@ -1747,7 +1748,7 @@ static void WalkArenaBags ( ArenaBag_t *par )
 static int  DumpMemArenaData ( int flag )
 {
     ArenaBag_t *par = &MemArena[0];
-	int         nrArenas;
+    int         nrArenas;
 
     printf("\nDumpMemArenaData: Information about allocated memory arenas\n");
     
@@ -1755,34 +1756,34 @@ static int  DumpMemArenaData ( int flag )
         printf("Arena: # %d, Size = %lu (MB), Active = %s, Full = %s, Free ratio threshold = %.2f\n",
                par->ArenaNumber, (par->SizeArena / (1024 * 1024)),
                (par->ActiveArenaFlag ? "True" : "False"),
-			   (par->ArenaFullFlag ? "True" : "False"), par->FreeRatio);
+               (par->ArenaFullFlag ? "True" : "False"), par->FreeRatio);
         printf("BagHandleStart = %p, OldBagStart = %p, YoungBagStart = %p\n",
                par->BagHandleStart, par->OldBagStart, par->YoungBagStart);
         printf(" AllocBagStart = %p,    StopBags = %p,       EndBags = %p\n",
                par->AllocBagStart, par->StopBags, par->EndBags);
-		if (flag) {
-			UInt  nFree = CountFreeChain(par);
-			UInt  nMax = ( (UInt)par->OldBagStart - (UInt)par->BagHandleStart ) / sizeof(UInt);
-			UInt  sizepool = (UInt)par->EndBags - (UInt)par->OldBagStart;
-			UInt  freepool = (UInt)par->EndBags - (UInt)par->AllocBagStart;
-			
+        if (flag) {
+            UInt  nFree = CountFreeChain(par);
+            UInt  nMax = ( (UInt)par->OldBagStart - (UInt)par->BagHandleStart ) / sizeof(UInt);
+            UInt  sizepool = (UInt)par->EndBags - (UInt)par->OldBagStart;
+            UInt  freepool = (UInt)par->EndBags - (UInt)par->AllocBagStart;
+            
             printf("    Free Chain = %p, Entries avail = %lu (of %lu max) = %.1f%% free\n",
-				   par->FreeHandleChain, nFree, nMax, (100.0 * (float)nFree / (float)nMax));
+                   par->FreeHandleChain, nFree, nMax, (100.0 * (float)nFree / (float)nMax));
             printf("Allocated bags = %lu, Size = %lu Kbytes (%lu Mbytes)\n",
-				   (nMax - nFree), ((UInt)par->AllocBagStart - (UInt)par->OldBagStart) / 1024,
-				   (((UInt)par->AllocBagStart - (UInt)par->OldBagStart) / (1024 * 1024)) );
+                   (nMax - nFree), ((UInt)par->AllocBagStart - (UInt)par->OldBagStart) / 1024,
+                   (((UInt)par->AllocBagStart - (UInt)par->OldBagStart) / (1024 * 1024)) );
             printf("Size Free pool = %lu Kbytes (%lu Mbytes), -- %.1f%% free\n",
-				   ((UInt)par->EndBags - (UInt)par->AllocBagStart) / 1024,
-				   (((UInt)par->EndBags - (UInt)par->AllocBagStart) / (1024 * 1024)),
-				   (100.0 * (float)freepool / (float)sizepool) );
+                   ((UInt)par->EndBags - (UInt)par->AllocBagStart) / 1024,
+                   (((UInt)par->EndBags - (UInt)par->AllocBagStart) / (1024 * 1024)),
+                   (100.0 * (float)freepool / (float)sizepool) );
 
             WalkArenaBags ( par );
             WalkBagPointers ( par->ArenaNumber, 0 );
-		}
-		else {
-			printf("    Free Chain = %p, Marked bags = %p, # on Marked chain = %lu\n\n",
+        }
+        else {
+            printf("    Free Chain = %p, Marked bags = %p, # on Marked chain = %lu\n\n",
                    par->FreeHandleChain, par->MarkedBagChain, par->nrMarkedBags);
-		}
+        }
     }
 
     return nrArenas;
@@ -1808,7 +1809,7 @@ static void PrintArenaInfo ( ArenaBag_t *par, int eflg )
                (((UInt)par->AllocBagStart - (UInt)par->YoungBagStart) / (1024 * 1024)));
         printf("    AllocBagStart  = %p, StopBags      = %p, EndBags = %p, Alloc pool area = %luk (%luMb)\n",
                par->AllocBagStart, par->StopBags, par->EndBags,
-			   (   (UInt)par->EndBags - (UInt)par->AllocBagStart) / 1024,
+               (   (UInt)par->EndBags - (UInt)par->AllocBagStart) / 1024,
                ( ( (UInt)par->EndBags - (UInt)par->AllocBagStart) / (1024 * 1024) ) );
         countHistOn = 1;
         fflush(stdout);
@@ -1861,11 +1862,11 @@ again:
         par++;
     }
 
-	//  Marking the bags for an arena may add entries to the chain for a
-	//  different arena (e.g., in the case where entries are added to a list in
-	//  Arena A, but because A is full the new bags must go into the currently
-	//  active arena.  After finishing checking all arenas check if any chain
-	//  has entries... process until all are empty
+    //  Marking the bags for an arena may add entries to the chain for a
+    //  different arena (e.g., in the case where entries are added to a list in
+    //  Arena A, but because A is full the new bags must go into the currently
+    //  active arena.  After finishing checking all arenas check if any chain
+    //  has entries... process until all are empty
     par = &MemArena[0];
     while ( par->ActiveArenaFlag ) {
         if ( par->MarkedBagChain != 0 ) {
@@ -1881,17 +1882,17 @@ again:
 static UInt GetTotalArenaSize ( void )
 {
     ArenaBag_t *par;
-	UInt tsize = 0;
+    UInt tsize = 0;
 
     par = &MemArena[0];
     while ( par->ActiveArenaFlag ) {                    // loop over the active arenas
-		tsize += par->SizeArena;
+        tsize += par->SizeArena;
         par++;
     }
-	return tsize;
+    return tsize;
 }
 
-static int  nrGlobalBagsFound = 0;		// keep tabs on how many global bags we find
+static int  nrGlobalBagsFound = 0;        // keep tabs on how many global bags we find
 
 /****************************************************************************
 **
@@ -1909,7 +1910,7 @@ static int  nrGlobalBagsFound = 0;		// keep tabs on how many global bags we find
 **  #GC Arena:0  2062514 / 120186kb (live)    829 /  60kb (dead)  108621kb / 262144kb (41.4%) free
 */
 
-static char gcMsgBuff[200];				// compose text 
+static char gcMsgBuff[200];             // compose text 
 
 
 //  Find and mark all bags that are referenced, or are children of bags with
@@ -1918,13 +1919,13 @@ static char gcMsgBuff[200];				// compose text
 
 static void MarkAllLiveBags ( ArenaBag_t *par )
 {
-    UInt         i;						// loop variable
-    BagPtr_t     first;					// bag handle from chains
+    UInt         i;                     // loop variable
+    BagPtr_t     first;                 // bag handle from chains
     UInt         nrBags;                // number of live bags found
     UInt         szBags;                // size of live bags
-    int          nrgbags;				// number of global bags found this run
+    int          nrgbags;               // number of global bags found this run
 
-    if (par->MarkedBagChain != 0) {		// sanity check
+    if (par->MarkedBagChain != 0) {     // sanity check
         printf("Collectbags: MarkedBagChain (%p) for Arena #%d is non-zero, claims %ld links\n",
                par->MarkedBagChain, par->ArenaNumber, par->nrMarkedBags);
     }
@@ -1984,7 +1985,7 @@ static void MarkAllLiveBags ( ArenaBag_t *par )
 
     // Information after the mark phase
     SizeLiveBags += szBags;
-	SizeAllArenas = GetTotalArenaSize();
+    SizeAllArenas = GetTotalArenaSize();
     if (SyMsgsFlagBags > 0)
         sprintf((gcMsgBuff + strlen(gcMsgBuff)), "%9lu /%8lukb (live)  ", nrBags, szBags/1024);
 
@@ -2023,9 +2024,9 @@ static void ClearFreePoolArea ( ArenaBag_t *par, BagPtr_t *src )
 
 static void SweepArenaBags ( ArenaBag_t *par )
 {
-    BagPtr_t *      dst;				/* destination in sweeping         */
-    BagPtr_t *      src;				/* source in sweeping              */
-    BagPtr_t *      end;				/* end of a bag in sweeping        */
+    BagPtr_t *      dst;                /* destination in sweeping         */
+    BagPtr_t *      src;                /* source in sweeping              */
+    BagPtr_t *      end;                /* end of a bag in sweeping        */
     UInt            isz;
     
     dst = par->YoungBagStart;
@@ -2098,7 +2099,7 @@ static void SweepArenaBags ( ArenaBag_t *par )
             }
 
             // update identifier, copy flags-type and link fields
-			SET_PTR_BAG( (UNMARKED_ALIVE(GET_LINK_PTR(src))), (BagPtr_t*) DATA_PTR(dst) );
+            SET_PTR_BAG( (UNMARKED_ALIVE(GET_LINK_PTR(src))), (BagPtr_t*) DATA_PTR(dst) );
             end = src + HEADER_SIZE + WORDS_BAG( GET_SIZE_PTR(src) ) ;
 
             COPY_HEADER(dst, src);
@@ -2130,8 +2131,8 @@ static void SweepArenaBags ( ArenaBag_t *par )
         printf("CollectBags: Swept all bags, checked %lu bags\n", nbagsCheck);
 
     ClearFreePoolArea(par, dst);
-    par->SweepNeeded  = 0;				// Arena has been swept
-	par->nrMarkedBags = 0;
+    par->SweepNeeded  = 0;                // Arena has been swept
+    par->nrMarkedBags = 0;
 
     // Since doing full GC have now processed all bags 
     if (SyMemMgrTrace > 0)  {
@@ -2156,7 +2157,7 @@ static void CheckArenaBags ( ArenaBag_t *par )
 {
     // Called after sweeping the arena to consoldidate used and free pool space
     // Start checking..
-    BagPtr_t   *p;						// loop variable
+    BagPtr_t   *p;                        // loop variable
     
     if (SyMemMgrTrace > 0)   {
         printf("Collectbags: Start checking phase ...\n");
@@ -2204,9 +2205,9 @@ static void UnmarkArenaBags( void )
     
     ArenaBag_t *par = &MemArena[0];
 
-    while (par->ActiveArenaFlag) {		// loop over active Arenas
-        if (par->SweepNeeded != 0) {	// Only sweep arena needing it
-            BagPtr_t     handle;		// bag handle (from BagHandleStart to OldBagStart)
+    while (par->ActiveArenaFlag) {      // loop over active Arenas
+        if (par->SweepNeeded != 0) {    // Only sweep arena needing it
+            BagPtr_t     handle;        // bag handle (from BagHandleStart to OldBagStart)
             BagStruct_t *ptr;           // Bag data structure
     
             // Walk the master pointers, ensure all used bag handles are "back referenced" by the link pointer
@@ -2239,30 +2240,30 @@ static void UnmarkArenaBags( void )
 
 static int      ReopenOldArena (char arena_nr)
 {
-	ArenaBag_t *par;
+    ArenaBag_t *par;
 
-	for (par = &MemArena[0]; par->ActiveArenaFlag; par++) {
-		if (par->ArenaFullFlag && par->ArenaNumber != arena_nr) {
-			// test how full the arena is...see if we can use w/o GC first
-			UInt psiz = (char *)par->EndBags - (char *)par->OldBagStart;
-			UInt fsiz = (char *)par->EndBags - (char *)par->AllocBagStart;
+    for (par = &MemArena[0]; par->ActiveArenaFlag; par++) {
+        if (par->ArenaFullFlag && par->ArenaNumber != arena_nr) {
+            // test how full the arena is...see if we can use w/o GC first
+            UInt psiz = (char *)par->EndBags - (char *)par->OldBagStart;
+            UInt fsiz = (char *)par->EndBags - (char *)par->AllocBagStart;
 
-			if ((float)fsiz / (float)psiz < UnlockRatioThreshold) {
-				// Do a GC to get accurate numbers...
-				CollectBags( 0, par->ArenaNumber, "ReopenOldArena()" );
-			}
+            if ((float)fsiz / (float)psiz < UnlockRatioThreshold) {
+                // Do a GC to get accurate numbers...
+                CollectBags( 0, par->ArenaNumber, "ReopenOldArena()" );
+            }
 
-			// re-test how full the arena is...
-			psiz = (char *)par->EndBags - (char *)par->OldBagStart;
-			fsiz = (char *)par->EndBags - (char *)par->AllocBagStart;
-			if ((float)fsiz / (float)psiz >= UnlockRatioThreshold) {
-				par->ArenaFullFlag = 0;
-				actAR = par->ArenaNumber;		 // update 'current' active arena
-				return (int)par->ArenaNumber;
-			}
-		}
-	}
-	return -1;
+            // re-test how full the arena is...
+            psiz = (char *)par->EndBags - (char *)par->OldBagStart;
+            fsiz = (char *)par->EndBags - (char *)par->AllocBagStart;
+            if ((float)fsiz / (float)psiz >= UnlockRatioThreshold) {
+                par->ArenaFullFlag = 0;
+                actAR = par->ArenaNumber;         // update 'current' active arena
+                return (int)par->ArenaNumber;
+            }
+        }
+    }
+    return -1;
 }
 
 //  Gather information about the cumulative time spent performing GC
@@ -2273,12 +2274,12 @@ TimeAnalyze_t    GapRunTime;
 
 UInt CollectBags ( UInt size, int spec_arena, char *caller_id )
 {
-    int             inewa = -1;			// new arena number if required
+    int             inewa = -1;         // new arena number if required
     ArenaBag_t     *par;                // Memory Arena pointer
 
-	GapRunTime.gc_in = SyTime();			// start timing GC run
-	GapRunTime.nrGCRuns++;				// increment number of times run
-	
+    GapRunTime.gc_in = SyTime();        // start timing GC run
+    GapRunTime.nrGCRuns++;              // increment number of times run
+    
     if (SyMemMgrTrace > 0)
         printf("CollectBags: On Entry: GC for %s (%d)\n", (spec_arena < 0) ? "general" : "Arena #", spec_arena);
 
@@ -2298,13 +2299,13 @@ UInt CollectBags ( UInt size, int spec_arena, char *caller_id )
             }
         }
 
-        PrintArenaInfo(par, 1);			// Print arena stats
-        ResetCountInfoStats();			// Clear Information and Bag histogram trackers
+        PrintArenaInfo(par, 1);         // Print arena stats
+        ResetCountInfoStats();          // Clear Information and Bag histogram trackers
 
         // Every collection is a "full" GC, so every bag is considered to be a young bag
         par->YoungBagStart = par->OldBagStart;
         SizeLiveBags = 0;
-		SizeAllArenas = 0;
+        SizeAllArenas = 0;
 
         // information at the beginning of garbage collections
         if (SyMsgsFlagBags > 0)
@@ -2320,18 +2321,18 @@ UInt CollectBags ( UInt size, int spec_arena, char *caller_id )
         /* * * *  check phase  * * * */
     
         /* temporarily store in 'par->StopBags' where this allocation takes us      */
-		if (par->AllocBagStart + HEADER_SIZE + WORDS_BAG(size) > par->EndBags) {
-			if (spec_arena >= 0 ) {
-				// not enough room in arena to resize the bag
-				printf("No free space in Arena %d to ResizeBag(), maybe try larger Arena size...exiting\n",
-					   par->ArenaNumber);
-				exit(1);
-			}
-			else
-				par->StopBags = par->EndBags;
-		}
-		else            
-			par->StopBags = par->AllocBagStart + HEADER_SIZE + WORDS_BAG(size);
+        if (par->AllocBagStart + HEADER_SIZE + WORDS_BAG(size) > par->EndBags) {
+            if (spec_arena >= 0 ) {
+                // not enough room in arena to resize the bag
+                printf("No free space in Arena %d to ResizeBag(), maybe try larger Arena size...exiting\n",
+                       par->ArenaNumber);
+                exit(1);
+            }
+            else
+                par->StopBags = par->EndBags;
+        }
+        else            
+            par->StopBags = par->AllocBagStart + HEADER_SIZE + WORDS_BAG(size);
 
         CheckArenaBags(par);
 
@@ -2342,23 +2343,23 @@ UInt CollectBags ( UInt size, int spec_arena, char *caller_id )
             // (par->EndBags - par->OldBagStart) then we're out of usable
             // memory...allocate another arena.
             if ((par->EndBags - par->StopBags) < ((par->EndBags - par->OldBagStart) * par->FreeRatio)) {
-				if (SyMemMgrTrace > 0) {
-					printf("GAP - CollectBags: After GC and free pool to allocate bags is too small.\n");
+                if (SyMemMgrTrace > 0) {
+                    printf("GAP - CollectBags: After GC and free pool to allocate bags is too small.\n");
                     printf("MemArena[%d]: Pool size = %luk, Used = %luk, Free = %luk\n",
-						   par->ArenaNumber, ((UInt)par->EndBags - (UInt)par->OldBagStart) / 1024,
-						   ((UInt)par->StopBags - (UInt)par->OldBagStart) / 1024,
-						   ((UInt)par->EndBags - (UInt)par->StopBags) / 1024);
-					printf("Allocate another memory arena...\n");
-				}
+                           par->ArenaNumber, ((UInt)par->EndBags - (UInt)par->OldBagStart) / 1024,
+                           ((UInt)par->StopBags - (UInt)par->OldBagStart) / 1024,
+                           ((UInt)par->EndBags - (UInt)par->StopBags) / 1024);
+                    printf("Allocate another memory arena...\n");
+                }
                 // set flag in the current memory arena...
                 par->ArenaFullFlag = 1;
                 // AddMemoryArena adds another pool...
-				// *** Future option: Double SyStorMin each new allocation until say max of 4 GByte
-				// Unmark the bags and do GC on existing full arenas (one might open up)
-				UnmarkArenaBags();
-				if (ReopenOldArena( par->ArenaNumber ) >= 0) {
-					break;							 // existing arena opened up
-				}
+                // *** Future option: Double SyStorMin each new allocation until say max of 4 GByte
+                // Unmark the bags and do GC on existing full arenas (one might open up)
+                UnmarkArenaBags();
+                if (ReopenOldArena( par->ArenaNumber ) >= 0) {
+                    break;                             // existing arena opened up
+                }
                 inewa = AddMemoryArena( SyStorMin ); // add a new arena
                 if (inewa < 0) {
                     printf("Not enough memory to continue...exiting\n");
@@ -2389,9 +2390,9 @@ UInt CollectBags ( UInt size, int spec_arena, char *caller_id )
         //  DumpBagsHistogram();
     }
 
-	GapRunTime.gc_out = SyTime();
-	GapRunTime.gc_cumulative += ( GapRunTime.gc_out - GapRunTime.gc_in );
-	
+    GapRunTime.gc_out = SyTime();
+    GapRunTime.gc_cumulative += ( GapRunTime.gc_out - GapRunTime.gc_in );
+    
     // return success
     return 1;
 }
@@ -2399,24 +2400,24 @@ UInt CollectBags ( UInt size, int spec_arena, char *caller_id )
 
 void    PrintRuntimeStats ( TimeAnalyze_t *ptim)
 {
-	//  print out information about the Memory Arenas allocated and the timing
-	//  information collected
-	DumpMemArenaData( 1 );
-	
-	double dtime, gctime;				// times in seconds
-	dtime  = SyTime() / 1000.0;         // convert milliseconds to seconds
-	gctime = ptim->gc_cumulative / 1000.0;
-	printf("Spiral total run time = %.1f seconds\n", dtime);
-	if (ptim->nrGCRuns > 0) {
-		printf("              GC time = %.1f seconds (avg time per iteration = %.4f)\n",
-			   gctime, gctime / ptim->nrGCRuns);
+    //  print out information about the Memory Arenas allocated and the timing
+    //  information collected
+    DumpMemArenaData( 1 );
+    
+    double dtime, gctime;               // times in seconds
+    dtime  = SyTime() / 1000.0;         // convert milliseconds to seconds
+    gctime = ptim->gc_cumulative / 1000.0;
+    printf("Spiral total run time = %.1f seconds\n", dtime);
+    if (ptim->nrGCRuns > 0) {
+        printf("              GC time = %.1f seconds (avg time per iteration = %.4f)\n",
+               gctime, gctime / ptim->nrGCRuns);
         printf("   GC # of iterations = %ld and consumed %.1f%% of the total time\n",
-			   ptim->nrGCRuns, 100 * gctime / dtime);
-	}
-	else
-		printf("      No GC since last stats init\n");
+               ptim->nrGCRuns, 100 * gctime / dtime);
+    }
+    else
+        printf("      No GC since last stats init\n");
 
-	return;
+    return;
 }
 
 
@@ -2434,119 +2435,119 @@ void    PrintRuntimeStats ( TimeAnalyze_t *ptim)
 
 BagPtr_t        FunGetArenaStats (BagPtr_t hdCall)
 {
-	BagPtr_t    hdRet;					// return value (# of arenas)
-	int         nrArenas;
+    BagPtr_t    hdRet;                    // return value (# of arenas)
+    int         nrArenas;
 
-	nrArenas = DumpMemArenaData( 1 );
-	hdRet = INT_TO_HD (nrArenas);
-	
-	return hdRet;
+    nrArenas = DumpMemArenaData( 1 );
+    hdRet = INT_TO_HD (nrArenas);
+    
+    return hdRet;
 }
 
 BagPtr_t        FunSetArenaSize (BagPtr_t size)
 {
-	// Accepts an argument to specify (in MBytes) the size of future memory arenas
-	
-    BagPtr_t    hdCmd;					// handle of an argument
-	char *usageMessage =
-		"usage: SetArenaSize ( <size> )    # <size> = Arena size in MBytes";
-	int memsiz;
-	
+    // Accepts an argument to specify (in MBytes) the size of future memory arenas
+    
+    BagPtr_t    hdCmd;                    // handle of an argument
+    char *usageMessage =
+        "usage: SetArenaSize ( <size> )    # <size> = Arena size in MBytes";
+    int memsiz;
+    
     // check the argument
     if ( GET_SIZE_BAG(size) == SIZE_HD )
         return Error(usageMessage, 0, 0);
 
-	// evaluate and check the command
-	hdCmd = EVAL( PTR_BAG(size)[1] );
-	if ( ! IS_INTOBJ(hdCmd) )
-		return Error(usageMessage, 0, 0);
+    // evaluate and check the command
+    hdCmd = EVAL( PTR_BAG(size)[1] );
+    if ( ! IS_INTOBJ(hdCmd) )
+        return Error(usageMessage, 0, 0);
 
-	memsiz = HD_TO_INT(hdCmd) * 1024;	// convert to Kbyte
-	SyStorMin = memsiz;
-	
-	return HdVoid;
+    memsiz = HD_TO_INT(hdCmd) * 1024;    // convert to Kbyte
+    SyStorMin = memsiz;
+    
+    return HdVoid;
 }
 
 BagPtr_t        FunGetRuntimeStats (BagPtr_t hdCall)
 {
-	PrintRuntimeStats ( &GapRunTime );
-	
-	return HdVoid;
+    PrintRuntimeStats ( &GapRunTime );
+    
+    return HdVoid;
 }
 
 BagPtr_t        FunResetRuntimeStats (BagPtr_t hdCall)
 {
-	// reset all the time tracking values
-	GapRunTime.gap_start = SyTime();			// start timing GC run
-	GapRunTime.gap_end = 0;
-	GapRunTime.gc_in = GapRunTime.gc_out = GapRunTime.gc_cumulative = 0;
-	GapRunTime.nrGCRuns = 0;
+    // reset all the time tracking values
+    GapRunTime.gap_start = SyTime();            // start timing GC run
+    GapRunTime.gap_end = 0;
+    GapRunTime.gc_in = GapRunTime.gc_out = GapRunTime.gc_cumulative = 0;
+    GapRunTime.nrGCRuns = 0;
 
-	return HdVoid;
+    return HdVoid;
 }
 
 BagPtr_t        FunSetArenaFreeRatio (BagPtr_t ratio)
 {
-    BagPtr_t    hdCmd;					// handle of an argument
-	char *usageMessage =
-		"usage: SetArenaFreeRatio(<ratio>)    # free ratio threshold: 0.1 < ratio < 0.6";
-	double *memsiz;
-	
+    BagPtr_t    hdCmd;                    // handle of an argument
+    char *usageMessage =
+        "usage: SetArenaFreeRatio(<ratio>)    # free ratio threshold: 0.1 < ratio < 0.6";
+    double *memsiz;
+    
     // check the argument
     if ( GET_SIZE_BAG(ratio) == SIZE_HD )
         return Error(usageMessage, 0, 0);
 
-	// evaluate and check the command
-	hdCmd = EVAL( PTR_BAG(ratio)[1] );
-	if ( GET_TYPE_BAG(hdCmd) != T_DOUBLE )
-		return Error(usageMessage, 0, 0);
+    // evaluate and check the command
+    hdCmd = EVAL( PTR_BAG(ratio)[1] );
+    if ( GET_TYPE_BAG(hdCmd) != T_DOUBLE )
+        return Error(usageMessage, 0, 0);
 
-	memsiz = (double *)PTR_BAG(hdCmd);
-	if ( 0.1 <= *memsiz && *memsiz <= 0.6 ) {
-		// acceptable range, set value in FreeRatioThreshold *and* current active arena
-		ArenaBag_t *par = &MemArena[0];
+    memsiz = (double *)PTR_BAG(hdCmd);
+    if ( 0.1 <= *memsiz && *memsiz <= 0.6 ) {
+        // acceptable range, set value in FreeRatioThreshold *and* current active arena
+        ArenaBag_t *par = &MemArena[0];
 
-		while (par->ActiveArenaFlag && par->ArenaFullFlag)
-			par++;						// skip past the full arenas to get to current active one
+        while (par->ActiveArenaFlag && par->ArenaFullFlag)
+            par++;                        // skip past the full arenas to get to current active one
 
-		par->FreeRatio = (float)(*memsiz);
-		FreeRatioThreshold = (float)(*memsiz);
-	}
-	else 
-		return Error(usageMessage, 0, 0);
+        par->FreeRatio = (float)(*memsiz);
+        FreeRatioThreshold = (float)(*memsiz);
+    }
+    else 
+        return Error(usageMessage, 0, 0);
 
-	return HdVoid;
+    return HdVoid;
 }
-			
+            
 BagPtr_t        FunGCAllArenas (BagPtr_t hdCall)
 {
-	// Perform GC on all areans
-	ArenaBag_t *par = &MemArena[0];
-	int         nrArenas;
-	BagPtr_t    hdRet;					// return value (# of arenas)
+    // Perform GC on all areans
+    ArenaBag_t *par = &MemArena[0];
+    int         nrArenas;
+    BagPtr_t    hdRet;                  // return value (# of arenas)
 
     for (par = &MemArena[0], nrArenas = 0; par->ActiveArenaFlag; par++, nrArenas++) {
-		if (par->ArenaFullFlag) {		// not currently active arena
-			CollectBags( 0, par->ArenaNumber, "GCAllArenas()" );
-		}
-	}
-	CollectBags( 0, -1, "GCAllArenas()" ); // General GC -- operates on current active
+        if (par->ArenaFullFlag) {        // not currently active arena
+            CollectBags( 0, par->ArenaNumber, "GCAllArenas()" );
+        }
+    }
+    CollectBags( 0, -1, "GCAllArenas()" ); // General GC -- operates on current active
 
-	hdRet = INT_TO_HD (nrArenas);
-	return hdRet;
+    hdRet = INT_TO_HD (nrArenas);
+    return hdRet;
 }
 
 void InitMemMgrFuncs (void)
 {
-	InstIntFunc ( "GetArenaStats",      FunGetArenaStats      );
-	InstIntFunc ( "SetArenaSize",       FunSetArenaSize       );
-	InstIntFunc ( "GetRuntimeStats",    FunGetRuntimeStats    );
-	InstIntFunc ( "ResetRuntimeStats",  FunResetRuntimeStats  );
-	InstIntFunc ( "SetArenaFreeRatio",  FunSetArenaFreeRatio  );
+    InstIntFunc ( "GetArenaStats",      FunGetArenaStats      );
+    InstIntFunc ( "SetArenaSize",       FunSetArenaSize       );
+    InstIntFunc ( "GetRuntimeStats",    FunGetRuntimeStats    );
+    InstIntFunc ( "ResetRuntimeStats",  FunResetRuntimeStats  );
+    InstIntFunc ( "SetArenaFreeRatio",  FunSetArenaFreeRatio  );
 
-	InstIntFunc ( "GCAllArenas",        FunGCAllArenas  );
+    InstIntFunc ( "GCAllArenas",        FunGCAllArenas  );
 
-	return;
+    return;
 }
 
 
@@ -2584,9 +2585,9 @@ UInt IS_BAG ( BagPtr_t bag )
     BagPtr_t *datap;                    // ptr to data part of bag
 
     if ( bag == 0 || (((UInt)bag & (sizeof(BagPtr_t)-1)) != 0) )
-        return 0;						// not a valid bag handle
+        return 0;                       // not a valid bag handle
     
-    while (par->ActiveArenaFlag) {		// Allocated arenas have Active Flag set
+    while (par->ActiveArenaFlag) {      // Allocated arenas have Active Flag set
         if ( par->BagHandleStart <= bag && bag < par->OldBagStart) {
             // bag is in this arena
             datap = (*(BagPtr_t **)(bag));
@@ -3065,8 +3066,8 @@ int DoFullCopy;
 
 static void _RecursiveClearFlagMutable(Obj hd, int flag, int check_has_flag)
 {
-    UInt       n;						/* number of handles of <hd>       */
-    UInt       i;						/* loop variable                   */
+    UInt       n;                       /* number of handles of <hd>       */
+    UInt       i;                       /* loop variable                   */
     if(hd== 0 || !IS_MUTABLE(hd) || (check_has_flag && !GET_FLAG_BAG(hd, flag)))
         return;
     CLEAR_FLAG_BAG(hd, flag);
@@ -3088,8 +3089,8 @@ void RecursiveClearFlagMutable(Obj hd, int flag)
 
 static void _RecursiveClearFlagFullMutable(Obj hd, int flag, int check_has_flag) 
 {
-    UInt       n;						/* number of handles of <hd>       */
-    UInt       i;						/* loop variable                   */
+    UInt       n;                       /* number of handles of <hd>       */
+    UInt       i;                       /* loop variable                   */
     if(hd== 0 || !IS_FULL_MUTABLE(hd) || (check_has_flag && !GET_FLAG_BAG(hd, flag)))
         return;
     CLEAR_FLAG_BAG(hd, flag);
@@ -3111,8 +3112,8 @@ void RecursiveClearFlagFullMutable(Obj hd, int flag)
 
 void RecursiveClearFlag(Obj hd, int flag) 
 {
-    UInt       n;						/* number of handles of <hd>       */
-    UInt       i;						/* loop variable                   */
+    UInt       n;                       /* number of handles of <hd>       */
+    UInt       i;                       /* loop variable                   */
     if(hd==0 || IS_INTOBJ(hd) || !IS_BAG(hd) || !GET_FLAG_BAG(hd, flag))
     return;
 
@@ -3129,7 +3130,7 @@ void RecursiveClearFlag(Obj hd, int flag)
 
 void RecursiveClearFlagsFullMutable(Obj hd, int howMany, ...) 
 {
-    UInt       i;						/* loop variable                   */
+    UInt       i;                       /* loop variable                   */
     unsigned int        composed_flag = 0;
     va_list ap;
 

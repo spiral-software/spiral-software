@@ -46,6 +46,7 @@ CodeSums := function(sums, opts)
     
         code := opts.codegen(Formula(sums), Y, X, opts);
         code.ruletree := Cond(IsBound(sums.ruletree), sums.ruletree, rec());
+		code.sums := sums;
         return code;
 end;
 
@@ -65,6 +66,7 @@ CodeRuleTree := function(rt, opts)
     local sums, code;
     sums := Cond(IsBound(opts.sumsRuleTree), opts.sumsRuleTree(rt), SumsRuleTree(rt, opts));
     code := Cond(IsBound(opts.codeSums), opts.codeSums(sums), CodeSums(sums, opts));
+	code.sums := sums;
     return code;
 end;
 

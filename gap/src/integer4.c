@@ -1246,7 +1246,7 @@ static Obj prod_intobjs(Obj l, Obj r)
 
 	if (MAX_SMALL_INTEGER / llabs(left) < llabs(right)) {
 		// product of left * right will overflow to large int
-		return result;
+		return (Obj) result;
 	}
 	
 	result = left * right;

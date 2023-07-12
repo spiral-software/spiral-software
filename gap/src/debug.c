@@ -29,7 +29,7 @@ extern Obj  DbgStackExec();
 extern Int  DbgDown();
 extern Int  DbgUp();
 extern Int  inBreakLoop();
-extern void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt printValues );
+extern void PrintBacktraceExec ( STREAM stream, Bag hdExec, UInt execDepth, UInt execStackDepth, UInt printValues );
 extern UInt DbgExecStackDepth();
 
 static char brkField_statement[] = "statement";
@@ -53,9 +53,13 @@ UInt    InBreakpoint = 0;
 
 static Obj (* OrigEvTab[ T_ILLEGAL ]) ( Obj hd );
 
-/* PrTab hooked by FunTop function in order to be able to highlight
-current statement while printing top function */
-static void (* OrigPrTab[ T_ILLEGAL ]) ( Obj hd );
+/*
+ **  PrTab hooked by FunTop function in order to be able to highlight current statement
+ **  while printing top function.  Declaration for OrigPrTab must match the definition of
+ **  PrTab (see eval.[ch]).
+ */
+
+static void (* OrigPrTab[ T_ILLEGAL ]) (STREAM stream, Obj hd, int indent);
 
 static inline UInt isRetTrueFunc(Obj hdFunc) {
     Obj hdStat = PTR_BAG(hdFunc)[0];
@@ -87,13 +91,15 @@ static UInt evalCondition(Obj* recHdCond, Obj hdExec) {
                         SET_ELM_PLIST(hdCall, i, PTR_BAG(hdExec)[EXEC_ARGS_START+i-1] );
                     return EVAL(hdCall)==HdTrue;
                 } else {
-                    Pr("Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i);
+                    // Pr( "Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i );
+                    SyFmtPrint (  global_stream, "Breakpoint condition function has %d arguments when statement function has %d arguments.\n", numArg, i );
                 }
             }
         }
         return 0;
     }
-    Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    // Pr( "Breakpoint condition must have boolean value or must be a function.\n", 0, 0 );
+    SyFmtPrint (  global_stream, "Breakpoint condition must have boolean value or must be a function.\n" );
     return 1;
 }
 
@@ -119,13 +125,15 @@ static UInt evalMemCondition(Obj* recHdCond, Obj hdObj, Obj hdField, Obj hdValue
                 SET_ELM_PLIST(hdCall, 2, hdField );
                 SET_ELM_PLIST(hdCall, 3, hdValue );
             } else {
-                Pr("Breakpoint condition function has unexpected number of arguments.\n", 0, 0);
+                // Pr( "Breakpoint condition function has unexpected number of arguments.\n", 0, 0 );
+                SyFmtPrint (  global_stream, "Breakpoint condition function has unexpected number of arguments.\n" );
                 return 0;
             }
             return EVAL(hdCall)==HdTrue;
         }
     }
-    Pr("Breakpoint condition must have boolean value or must be a function.\n", 0, 0);
+    // Pr( "Breakpoint condition must have boolean value or must be a function.\n", 0, 0 );
+    SyFmtPrint (  global_stream, "Breakpoint condition must have boolean value or must be a function.\n" );
     return 1;
 }
 
@@ -176,29 +184,30 @@ void    CheckBreakpoints(Obj hdE, Obj hdExec) {
             Bag hdBrk = 0;
             Bag	hdLst = VAR_VALUE(HdEvalBreakpoints);
             if (GET_TYPE_BAG(hdLst)==T_LIST) {
-		UInt cnt = LEN_PLIST(hdLst);
-		UInt i = 0;
-		for (i=1; i<=cnt; i++) {
-		    hdBrk = ELM_PLIST(hdLst, i);
-		    if (evalBreakPoint( hdBrk, hdE, hdExec))
-			break;
-		    hdBrk = 0;
-		}
-		if (hdBrk != 0 || (EvalStackBreakLevel>0 
-		    && EvalStackBreakLevel>EvalStackTop
-		    && hdExec == 0 ) ) 
-		{
-		    if (HdExec==0) {
-			// cannot break in the main loop
-		    } else {
-			EvalStackBreakLevel = 0;
-			DbgBreak("GapBreakpoint", 0, 0);
-		    }
-		}
-	    } else {
-		Pr("Breakpoints is not a list", 0, 0);
-	    }
-	    InBreakpoint = 0;
+                UInt cnt = LEN_PLIST(hdLst);
+                UInt i = 0;
+                for (i=1; i<=cnt; i++) {
+                    hdBrk = ELM_PLIST(hdLst, i);
+                    if (evalBreakPoint( hdBrk, hdE, hdExec))
+                        break;
+                    hdBrk = 0;
+                }
+                if (hdBrk != 0 || (EvalStackBreakLevel>0 
+                                   && EvalStackBreakLevel>EvalStackTop
+                                   && hdExec == 0 ) ) 
+                {
+                    if (HdExec==0) {
+                        // cannot break in the main loop
+                    } else {
+                        EvalStackBreakLevel = 0;
+                        DbgBreak("GapBreakpoint", 0, 0);
+                    }
+                }
+            } else {
+                // Pr( "Breakpoints is not a list", 0, 0 );
+                SyFmtPrint (  global_stream, "Breakpoints is not a list" );
+            }
+            InBreakpoint = 0;
         } Catch(e) {
             InBreakpoint = 0;
             Throw(e);
@@ -326,7 +335,8 @@ StepOver() - F10; StepInto() - F11; StepOut() - F8.\n";
 void    EnterDebugMode() {
     int t;
     if (InDebugMode == 0) {
-        Pr(EnteringDbgMode, 0, 0);
+        //Pr(EnteringDbgMode, 0, 0);
+        SyFmtPrint( global_stream, "%s", EnteringDbgMode);
         for(t=0; t<T_ILLEGAL; ++t) {
             OrigEvTab[t] = EvTab[t];
             EvTab[t] = DebugEVAL;
@@ -434,7 +444,9 @@ is matched, even if condition function returns false.\n\
     
     
 Obj FunDebugHelp ( Obj hdCall ) {
-    Pr(HelpText, 0, 0);
+
+    //Pr(HelpText, 0, 0);
+    SyFmtPrint( global_stream, "%s", HelpText);
     return HdVoid;
 }
 
@@ -609,10 +621,11 @@ Int     TopPr_Printing;
 UInt    TopPr_CurDepth;
 UInt    TopPr_MaxDepth;
 
-static void TopPr ( Obj hd ) {
+static void     TopPr ( STREAM stream, Obj hd, int indent )
+{
     UInt hasFlag, highlight = 0; 
     if (hd==0 || IS_INTOBJ(hd)) {
-        (*OrigPrTab[GET_TYPE_BAG(hd)])(hd);
+        ( *OrigPrTab[GET_TYPE_BAG(hd)]) ( stream, hd, indent );
         return;
     }
     hasFlag = GET_FLAG_BAG(hd, BF_ON_EVAL_STACK);
@@ -633,7 +646,7 @@ static void TopPr ( Obj hd ) {
     }
     if (highlight) HooksBrkHighlightStart();
     // call original Pr function
-    (*OrigPrTab[GET_TYPE_BAG(hd)])(hd);
+    ( *OrigPrTab[GET_TYPE_BAG(hd)]) ( stream, hd, indent );
     if (highlight) HooksBrkHighlightEnd();
     if ( hasFlag )
         TopPr_CurDepth--;
@@ -641,28 +654,33 @@ static void TopPr ( Obj hd ) {
 
 static void HookPrTab()
 {
-    int t;
+    int tindx;
     PrTabHooked++;
-    if (PrTabHooked==1) {
-        for(t=0; t<T_ILLEGAL; ++t) {
-	    OrigPrTab[t] = PrTab[t];
-	    PrTab[t] = TopPr;
+    if ( PrTabHooked == 1 ) {
+        for ( tindx = 0; tindx < T_ILLEGAL; ++tindx ) {
+            OrigPrTab[tindx] = PrTab[tindx];
+            PrTab[tindx] = TopPr;
         }
     }
 }
 static void UnhookPrTab()
 {
-    int t;
-    if (PrTabHooked>0) {
+    int tindx;
+    if ( PrTabHooked > 0 ) {
         PrTabHooked--;
-        if (PrTabHooked==0) {
-            for(t=0; t<T_ILLEGAL; ++t) {
-	        PrTab[t] = OrigPrTab[t];
+        if ( PrTabHooked == 0 ) {
+            for ( tindx = 0; tindx < T_ILLEGAL; ++tindx ) {
+                PrTab[tindx] = OrigPrTab[tindx];
             }
         }
     }
 }
-	
+
+/****************************************************************************
+**
+*F  Top() . . . . . . . . . . . . . . . .  print function on top of the stack
+**
+**/
 Obj  FunTop ( Obj hdCall ) {
     char *      usage = "usage (in brk or dbg modes only): Top()";
     Obj         top, doc;
@@ -680,36 +698,57 @@ Obj  FunTop ( Obj hdCall ) {
     top = PTR_BAG(top)[2];
     doc = FindDocString(top);
     if(doc != 0 && GET_TYPE_BAG(doc)==T_STRING)
-        Pr("%s", (Int)CSTR_STRING(doc), 0);
+        // Pr( "%s", (Int)CSTR_STRING(doc), 0 );
+        SyFmtPrint (  global_stream, "%s", CSTR_STRING(doc) );
     else
-        Pr("--no documentation--\n", 0, 0);
+        // Pr( "--no documentation--\n", 0, 0 );
+        SyFmtPrint (  global_stream, "--no documentation--\n" );
     prFull = 1;
     HookPrTab();
     Try {
         // first time figure out what to highlight, this is not precise
         // but better than nothing. Redirect output to /dev/null and traverse
         // bags that will be printed.
+        STREAM nulldev;
+        STREAM save_stream;
+
 #ifdef WIN32
-        OpenOutput("NUL");
+        // OpenOutput("NUL");
+        SET_STREAM_FILE ( nulldev, SyFileOpen ( "NUL", "w" ) );
 #else
-        OpenOutput("/dev/null");
+        // OpenOutput("/dev/null");
+        SET_STREAM_FILE ( nulldev, SyFileOpen ( "/dev/null", "w" ) );
 #endif
+
+        save_stream = global_stream;
+        global_stream = nulldev;
+        
         TopPr_CurDepth = 0; // current tree depth (in marked bags)
         TopPr_MaxDepth = 0; // maximal tree depth (in marked bags)
         Try {
             TopPr_Printing = 0; // we are going to calculate  max depth first
-            Pr("%g\n", (Int)top, 0);
+            // Pr( "%g\n", (Int)top, 0 );
+            PrintObj (  global_stream, top, 0 );
+            SyFmtPrint (  global_stream, "\n" );
             // closing /dev/null and return to previous output
-            CloseOutput();
+            // CloseOutput();
+            global_stream = save_stream;
+            SyFileClose ( streamFile ( nulldev ) );
+            
         } Catch(e) {
-            CloseOutput();
+            // CloseOutput();
+            global_stream = save_stream;
+            SyFileClose ( streamFile ( nulldev ) );
+            
             Throw(e);
         }
         TopPr_Printing = 1; // now we are going to print function
         TopPr_CurDepth = 0; // reset tree depth, all what marked by BF_ON_EVAL_STACK
                             // flag and has TopPr_MaxDepth will be highlighted (with 
                             // children).
-        Pr("%g\n", (Int)top, 0);
+        //Pr ( "%g\n", (Int)top, 0 );
+        PrintObj (  global_stream, top, 0 );
+        SyFmtPrint (  global_stream, "\n" );
     } Catch(e) {
         UnhookPrTab();
         Throw(e);
@@ -732,8 +771,16 @@ Obj  FunEditTopFunc ( Obj hdCall ) {
     if ( GET_SIZE_BAG(hdCall) != 1 * SIZE_HD || !inBreakLoop())  return Error(usage, 0,0);
     
     switch(FindDocAndExtractLoc(PTR_BAG(DbgStackExec())[2], fileName, &line)) {
-        case  0: { Pr("--no documentation--\n", 0, 0); break; }
-        case -1: { Pr("--definition not found--\n", 0, 0); break; }
+        case  0: {
+            // Pr( "--no documentation--\n", 0, 0 );
+            SyFmtPrint (  global_stream, "--no documentation--\n" );
+            break;
+        }
+        case -1: {
+            // Pr( "--definition not found--\n", 0, 0 );
+            SyFmtPrint (  global_stream, "--definition not found--\n" );
+            break;
+        }
         case  1: { HooksEditFile(fileName, line); break; }
     }
     return HdVoid;
@@ -752,6 +799,11 @@ static Int GetLevels( Obj hdCall ) {
     return levels;
 }
 
+/****************************************************************************
+**
+*F  Down() . . . . . . . . . . . . . . . . . . . . .  go one stack frame down
+**
+**/
 Obj  FunDown ( Obj hdCall ) {
     char * usage = "usage  (in brk or dbg modes only): Down( [<levels>] )";
     char * errText = "--initial frame selected (can't go down)--\n";
@@ -760,15 +812,21 @@ Obj  FunDown ( Obj hdCall ) {
         || !inBreakLoop()) return Error(usage, 0,0);
     while (levels-->0) {
         if ( !DbgDown() ) { 
-            Pr(errText, 0, 0);
+            // Pr( errText, 0, 0 );
+            SyFmtPrint (  global_stream, "%s", errText );
             break;
         }
     }
     levels = DbgExecStackDepth();
-    PrintBacktraceExec(HdExec, levels-DbgStackTop, levels, 0);
+    PrintBacktraceExec (  global_stream, HdExec, levels-DbgStackTop, levels, 0 );
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  Up() . . . . . . . . . . . . . . . . . . . . . . .  go one stack frame up
+**
+**/
 Obj  FunUp ( Obj hdCall ) {
     char * usage = "usage (in brk or dbg modes only): Up( [<levels>] )";
     char * errText = "--topmost frame selected (can't go up)--\n";
@@ -777,12 +835,13 @@ Obj  FunUp ( Obj hdCall ) {
         || !inBreakLoop()) return Error(usage, 0,0);
     while (levels-->0) {
         if ( !DbgUp() ) { 
-            Pr(errText, 0, 0);
+            // Pr( errText, 0, 0 );
+            SyFmtPrint (  global_stream, "%s", errText );
             break;
         }
     }
     levels = DbgExecStackDepth();
-    PrintBacktraceExec(HdExec, levels-DbgStackTop, levels, 0);
+    PrintBacktraceExec (  global_stream, HdExec, levels-DbgStackTop, levels, 0);
     return HdVoid;
 }
 
@@ -809,7 +868,8 @@ Bag       FunDbgBreak (Obj hdCall)
 {
 #ifndef _DEBUG
     if (InDebugMode == 0) {
-        Pr("Use Debug(true) to enable debugging\n", 0, 0);
+        // Pr( "Use Debug(true) to enable debugging\n", 0, 0 );
+        SyFmtPrint (  global_stream, "Use Debug(true) to enable debugging\n" );
         return HdVoid;
     }
 #endif

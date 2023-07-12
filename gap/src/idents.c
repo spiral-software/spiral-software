@@ -12,6 +12,9 @@
 **  This file contains the functions for mapping  identifiers  to  variables.
 **
 */
+#include        <stdio.h>
+#include        <stdlib.h>
+#include        <string.h>
 #include        <assert.h>
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* dynamic storage manager         */
@@ -39,7 +42,7 @@ Obj  MakeIdent ( char name [] ) {
     Bag hd = NewBag( T_VAR, SIZE_HD * OFS_IDENT + strlen(name) + 1 );
     for ( i = 0; i < OFS_IDENT; ++i )
         SET_BAG(hd, i,  0 );
-    strncpy( VAR_NAME(hd), name, strlen(name)+1  );
+    strcpy ( VAR_NAME(hd), name );              //  strncpy( VAR_NAME(hd), name, strlen(name)+1  );
     return hd;
 }
 
@@ -54,7 +57,7 @@ Obj  MakeIdentSafe ( Obj hdNam, UInt ofs ) {
     Bag hd = NewBag( T_VAR, SIZE_HD * OFS_IDENT + len + 1 );
     for ( i = 0; i < OFS_IDENT; ++i )
         SET_BAG(hd, i,  0 );
-    strncpy( VAR_NAME(hd), (char*)(PTR_BAG(hdNam)+ofs), len+1  );
+    strcpy ( VAR_NAME(hd), (char*)(PTR_BAG(hdNam)+ofs) );       //  strncpy( VAR_NAME(hd), (char*)(PTR_BAG(hdNam)+ofs), len+1  );
     return hd;
 }
 
@@ -281,9 +284,9 @@ Bag       _FindIdent ( char name [], fi_mode_t mode ) {
         /* for GlobalPackage() */
         else {
             char n[MAX_IDENT_SIZE];  
-            UInt len = strlen(name);
+            //  UInt len = strlen(name);
             /* name might disappear during garbage collection */
-            strncpy(n, name, len+1);
+            strcpy ( n, name );                 //  strncpy(n, name, len+1);
 
             if(Input->package == 0) GlobalPackageSpec(GlobalIdent(Input->name));
     

@@ -15,6 +15,17 @@ Class(RealDFT_Base, TaggedNonTerminal, rec(
         When(self.transposed, mat.transpose(), mat)),
 
     toAMat := self >> self.terminate().toAMat(), 
+    
+    # matElem uses GAP array coordinates (1 based)
+	matElem := (self,r,c) >> let(
+		N := self.params[1], 
+		K := self.params[2], 
+        R := When(self.transposed, c-1, r-1),
+        C := When(self.transposed, r-1, c-1),
+        When(R mod 2 = 0, self.projRe(self.omega(N,K,Int(R/2),C)),
+                          self.projIm(self.omega(N,K,Int(R/2),C)))
+	),
+    
 
     isReal := True,
     SmallRandom := () -> Random([2..16]), 

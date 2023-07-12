@@ -313,7 +313,7 @@ void            SyntaxError ( char * msg );
 void            Match ( UInt symbol, char * msg,
                         TypSymbolSet skipto );
 
-
+#if BESPOKE_IO
 /****************************************************************************
 **
 *F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
@@ -343,7 +343,7 @@ void            Match ( UInt symbol, char * msg,
 **  must pass 0L if you don't make use of an argument to please lint.
 */
 void            Pr ( char * format, Int arg1, Int arg2 );
-
+#endif      // BESPOKE_IO
 
 
 /****************************************************************************
@@ -384,8 +384,8 @@ typedef struct {
     Int        importTop;
     Int        packageTop;
     Int        global;
-
-    Int        file;
+    Int        fid;
+//    FILE       *file;
     char        name [1024];
     char        line [2048];
     char        * ptr;
@@ -396,7 +396,7 @@ extern TypInputFile    InputFiles [SCANNER_INPUTS];
 extern TypInputFile    * Input;
 extern char            * In;
 
-
+#if BESPOKE_IO
 typedef struct {
     Int        file;
     char        *line;
@@ -414,6 +414,7 @@ typedef struct {
 }       TypOutputFile;
 
 extern TypOutputFile   * Output;
+#endif      // BESPOKE_IO
 
 /****************************************************************************
 **
@@ -501,7 +502,7 @@ Int            OpenInput ( char * filename );
 */
 Int            CloseInput ( void );
 
-
+#if BESPOKE_IO
 /****************************************************************************
 **
 *F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
@@ -550,7 +551,7 @@ Int            OpenOutput ( char * filename );
 **  'PrintTo' call or an error will not yield much better results.
 */
 Int            CloseOutput ( void );
-
+#endif      // BESPOKE_IO
 
 /****************************************************************************
 **
@@ -597,14 +598,15 @@ Int            CloseMemory(Obj* hdStr);
 **  '*errout*' to the file with  name <filename>.  The  file is truncated  to
 **  size 0 if it existed, otherwise it is created.
 **
-**  'OpenLog' returns 1 if it could  successfully open <filename> for writing
-**  and 0  to indicate failure.   'OpenLog' will  fail if  you do  not   have
-**  permissions  to create the file or   write to  it.  'OpenOutput' may also
+**  'OpenLog' returns a file handle if it could  successfully open <filename> 
+**  for writing and NULL on failure.  'OpenLog' will fail if you do not  have
+**  permissions  to create the file or   write to  it.  'OpenLog' may also
 **  fail if you have too many files open at once.  It is system dependent how
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-Int            OpenLog ( char * filename );
+
+FILE    *OpenLog ( char * filename );
 
 
 /****************************************************************************
@@ -629,14 +631,15 @@ Int            CloseLog ( void );
 **  '*stdin*' and  '*errin*' to the file  with  name <filename>.  The file is
 **  truncated to size 0 if it existed, otherwise it is created.
 **
-**  'OpenInputLog' returns 1  if it  could successfully open  <filename>  for
-**  writing  and  0 to indicate failure.  'OpenInputLog' will fail  if you do
-**  not have  permissions to create the file  or write to it.  'OpenInputLog'
-**  may also fail  if you  have  too many  files open  at once.  It is system
-**  dependent  how many are too many,  but 16 files  should work  everywhere.
-**  Finally 'OpenInputLog' will fail if there is already a current logfile.
+**  'OpenInputLog' returns a file handle if it could  successfully open <filename> 
+**  for writing and NULL on failure.  'OpenInputLog' will fail if you do not
+**  have permissions to create the file or write to it.  'OpenInputLog' may also
+**  fail if you have too many files open at once.  It is system dependent how
+**  many   are too   many, but  16   files should  work everywhere.   Finally
+**  'OpenInputLog' will fail if there is already a current logfile.
 */
-Int            OpenInputLog ( char* );
+
+FILE    *OpenInputLog ( char* );
 
 
 
@@ -654,6 +657,16 @@ Int            OpenInputLog ( char* );
 Int            CloseInputLog ( void );
 
 
+
+/****************************************************************************
+**
+
+*V  Logfile . . . . . . . . . . . . . . . . file identifier of logfile, global
+**
+**  This is the external(global) so that system can print to log file when SyFmtPrint is called.
+** 
+*/
+extern FILE* Logfile;
 
 /****************************************************************************
 **

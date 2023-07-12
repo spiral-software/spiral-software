@@ -41,7 +41,7 @@ Include(c);
 Include(fp);
 Include(top);
 Include(codegen);
-Include(rollingptr);
+##  Include(rollingptr);
 
 # codegen strategy
 Class(CodegenStrat);

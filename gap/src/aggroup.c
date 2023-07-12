@@ -14,6 +14,9 @@
 **  on GAP level.
 **
 */
+#include               <stdio.h>
+#include               <stdlib.h>
+#include               <string.h>
 
 #include        "system.h"      /** system dependent functions            **/
 #include        "memmgr.h"      /** dynamic storage manager               **/
@@ -597,8 +600,10 @@ Bag       CommAg(Bag hdL, Bag hdR)
         /** Dump the object as longs ***************************************/
         ptr = (Int*) PTR_BAG( hdObj );
         for ( i = GET_SIZE_BAG( hdObj ) - 1; i >= 0; i -= 4 )
-            Pr( "%d ", *ptr++, 0 );
-        Pr( "\n", 0, 0 );
+            // Pr( "%d ", *ptr++, 0 );
+            SyFmtPrint (  global_stream, "%d ", *ptr++ );
+        // Pr( "\n", 0, 0 );
+        SyFmtPrint (  global_stream, "\n" );
         return HdVoid;
     }
 
@@ -761,10 +766,13 @@ Bag       FunSetCollectorAgWord (Bag hdCall)
     /** collector names.                                                  **/
     if ( i > COMBI_COLLECTOR )
     {
-        Pr( "#I  Known collectors: ", 0, 0 );
+        // Pr( "#I  Known collectors: ", 0, 0 );
+        SyFmtPrint (  global_stream, "#I  Known collectors: " );
         for ( i = 0; i < COMBI2_COLLECTOR; i++ )
-            Pr( "%2>%s%<,%< ", (Int) Collectors[ i ].name, 0 );
-        Pr( "%2>%s%<.%<\n", (Int)Collectors[COMBI2_COLLECTOR].name, 0 );
+            //**INDENT** Pr( "%2>%s%<,%< ", (Int) Collectors[ i ].name, 0 );
+            SyFmtPrint (  global_stream, "%s, ", Collectors[ i ].name );
+        //**INDENT** Pr( "%2>%s%<.%<\n", (Int)Collectors[COMBI2_COLLECTOR].name, 0 );
+        SyFmtPrint (  global_stream, "%s.\n", Collectors[COMBI2_COLLECTOR].name );
         return Error( "Collector \"%s\" unkown", (Int) PTR_BAG( hdStr ), 0 );
     }
 
@@ -2359,66 +2367,92 @@ Bag       FunIsCompatibleAgWord (Bag hdCall)
           {
 
              /** User must start profiling first. **************************/
-             Pr( "No ag-profiling information, start profiling", 0, 0 );
-             Pr( " with 'AgProfile( <int> )'\n",                 0, 0 );
+             // Pr( "No ag-profiling information, start profiling", 0, 0 );
+              SyFmtPrint (  global_stream, "No ag-profiling information, start profiling" );
+             // Pr( " with 'AgProfile( <int> )'\n",                 0, 0 );
+              SyFmtPrint (  global_stream, " with 'AgProfile( <int> )'\n" );
              return HdVoid;
           }
 
           /** Show the profile. ********************************************/
-          Pr( "function       calls        time   time/call\n", 0, 0 );
-          Pr( "--------------------------------------------\n", 0, 0 );
+          // Pr( "function       calls        time   time/call\n", 0, 0 );
+          SyFmtPrint (  global_stream, "function       calls        time   time/call\n" );
+          // Pr( "--------------------------------------------\n", 0, 0 );
+          SyFmtPrint (  global_stream, "--------------------------------------------\n" );
           if ( CallsProdAg > 0 )
           {
-            Pr( "ProdAg    %10d  %10d", CallsProdAg, TimeProdAg/RepTimes   );
-            Pr( "  %10d\n", TimeProdAg/RepTimes / CallsProdAg, 0          );
+              // Pr( "ProdAg    %10d  %10d", CallsProdAg, TimeProdAg/RepTimes   );
+              SyFmtPrint (  global_stream, "ProdAg    %10d  %10d", CallsProdAg, TimeProdAg/RepTimes );
+              // Pr( "  %10d\n", TimeProdAg/RepTimes / CallsProdAg, 0          );
+              SyFmtPrint (  global_stream, "  %10d\n", TimeProdAg/RepTimes / CallsProdAg );
           }
           if ( CallsQuoAg > 0 )
           {
-            Pr( "QuoAg     %10d  %10d", CallsQuoAg, TimeQuoAg/RepTimes     );
-            Pr( "  %10d\n", TimeQuoAg/RepTimes / CallsQuoAg, 0            );
+              // Pr( "QuoAg     %10d  %10d", CallsQuoAg, TimeQuoAg/RepTimes     );
+              SyFmtPrint (  global_stream, "QuoAg     %10d  %10d", CallsQuoAg, TimeQuoAg/RepTimes );
+              // Pr( "  %10d\n", TimeQuoAg/RepTimes / CallsQuoAg, 0            );
+              SyFmtPrint (  global_stream, "  %10d\n", TimeQuoAg/RepTimes / CallsQuoAg );
           }
           if ( CallsPowAgI > 0 )
           {
-            Pr( "PowAgI    %10d  %10d", CallsPowAgI, TimePowAgI/RepTimes   );
-            Pr( "  %10d\n", TimePowAgI/RepTimes / CallsPowAgI, 0          );
+              // Pr( "PowAgI    %10d  %10d", CallsPowAgI, TimePowAgI/RepTimes   );
+              SyFmtPrint (  global_stream, "PowAgI    %10d  %10d", CallsPowAgI, TimePowAgI/RepTimes );
+              // Pr( "  %10d\n", TimePowAgI/RepTimes / CallsPowAgI, 0          );
+              SyFmtPrint (  global_stream, "  %10d\n", TimePowAgI/RepTimes / CallsPowAgI );
           }
           if ( CallsPowAgAg > 0 )
           {
-            Pr( "PowAgAg   %10d  %10d", CallsPowAgAg, TimePowAgAg/RepTimes );
-            Pr( "  %10d\n", TimePowAgAg/RepTimes / CallsPowAgAg, 0        );
+              // Pr( "PowAgAg   %10d  %10d", CallsPowAgAg, TimePowAgAg/RepTimes );
+              SyFmtPrint (  global_stream, "PowAgAg   %10d  %10d", CallsPowAgAg, TimePowAgAg/RepTimes );
+              // Pr( "  %10d\n", TimePowAgAg/RepTimes / CallsPowAgAg, 0        );
+              SyFmtPrint (  global_stream, "  %10d\n", TimePowAgAg/RepTimes / CallsPowAgAg );
           }
           if ( CallsModAg > 0 )
           {
-            Pr( "ModAg     %10d  %10d", CallsModAg, TimeModAg/RepTimes     );
-            Pr( "  %10d\n", TimeModAg/RepTimes / CallsModAg, 0            );
+              // Pr( "ModAg     %10d  %10d", CallsModAg, TimeModAg/RepTimes     );
+              SyFmtPrint (  global_stream, "ModAg     %10d  %10d", CallsModAg, TimeModAg/RepTimes );
+              // Pr( "  %10d\n", TimeModAg/RepTimes / CallsModAg, 0            );
+              SyFmtPrint (  global_stream, "  %10d\n", TimeModAg/RepTimes / CallsModAg );
           }
           if ( CallsCommAg > 0 )
           {
-            Pr( "CommAg    %10d  %10d", CallsCommAg, TimeCommAg/RepTimes   );
-            Pr( "  %10d\n", TimeCommAg/RepTimes / CallsCommAg, 0          );
+              // Pr( "CommAg    %10d  %10d", CallsCommAg, TimeCommAg/RepTimes   );
+              SyFmtPrint (  global_stream, "CommAg    %10d  %10d", CallsCommAg, TimeCommAg/RepTimes );
+              // Pr( "  %10d\n", TimeCommAg/RepTimes / CallsCommAg, 0          );
+              SyFmtPrint (  global_stream, "  %10d\n", TimeCommAg/RepTimes / CallsCommAg );
           }
           if ( CallsLtAg > 0 )
           {
-            Pr( "LtAg      %10d  %10d", CallsLtAg, TimeLtAg/RepTimes       );
-            Pr( "  %10d\n", TimeLtAg/RepTimes / CallsLtAg, 0              );
+              // Pr( "LtAg      %10d  %10d", CallsLtAg, TimeLtAg/RepTimes       );
+              SyFmtPrint (  global_stream, "LtAg      %10d  %10d", CallsLtAg, TimeLtAg/RepTimes );
+              // Pr( "  %10d\n", TimeLtAg/RepTimes / CallsLtAg, 0              );
+              SyFmtPrint (  global_stream, "  %10d\n", TimeLtAg/RepTimes / CallsLtAg );
           }
           if ( CallsEqAg > 0 )
           {
-            Pr( "EqAg      %10d  %10d", CallsEqAg, TimeEqAg/RepTimes       );
-            Pr( "  %10d\n", TimeEqAg/RepTimes / CallsEqAg, 0              );
+              // Pr( "EqAg      %10d  %10d", CallsEqAg, TimeEqAg/RepTimes       );
+              SyFmtPrint (  global_stream, "EqAg      %10d  %10d", CallsEqAg, TimeEqAg/RepTimes );
+              // Pr( "  %10d\n", TimeEqAg/RepTimes / CallsEqAg, 0              );
+              SyFmtPrint (  global_stream, "  %10d\n", TimeEqAg/RepTimes / CallsEqAg );
           }
           if ( CallsSumAg > 0 )
           {
-            Pr( "SumAg     %10d  %10d", CallsSumAg, TimeSumAg/RepTimes     );
-            Pr( "  %10d\n", TimeSumAg/RepTimes / CallsSumAg, 0            );
+              // Pr( "SumAg     %10d  %10d", CallsSumAg, TimeSumAg/RepTimes     );
+              SyFmtPrint (  global_stream, "SumAg     %10d  %10d", CallsSumAg, TimeSumAg/RepTimes );
+              // Pr( "  %10d\n", TimeSumAg/RepTimes / CallsSumAg, 0            );
+              SyFmtPrint (  global_stream, "  %10d\n", TimeSumAg/RepTimes / CallsSumAg );
           }
           if ( CallsDiffAg > 0 )
           {
-            Pr( "DiffAg    %10d  %10d", CallsSumAg, TimeDiffAg/RepTimes    );
-            Pr( "  %10d\n", TimeDiffAg/RepTimes / CallsDiffAg, 0          );
+              // Pr( "DiffAg    %10d  %10d", CallsSumAg, TimeDiffAg/RepTimes    );
+              SyFmtPrint (  global_stream, "DiffAg    %10d  %10d", CallsSumAg, TimeDiffAg/RepTimes );
+              // Pr( "  %10d\n", TimeDiffAg/RepTimes / CallsDiffAg, 0          );
+              SyFmtPrint (  global_stream, "  %10d\n", TimeDiffAg/RepTimes / CallsDiffAg );
           }
-          Pr( "--------------------------------------------\n", 0, 0 );
-          Pr( "Evaluator functions repeated %d times.\n", RepTimes, 0 );
+          // Pr( "--------------------------------------------\n", 0, 0 );
+          SyFmtPrint (  global_stream, "--------------------------------------------\n" );
+          // Pr( "Evaluator functions repeated %d times.\n", RepTimes, 0 );
+          SyFmtPrint (  global_stream, "Evaluator functions repeated %d times.\n", RepTimes );
           return HdVoid;
       }
       else
@@ -2512,8 +2546,10 @@ Bag       FunCollectorProfile (Bag hdCall)
 
     if ( GET_SIZE_BAG( hdCall ) == SIZE_HD )
     {
-        Pr( "pnt    calls        time  time/call\n", 0, 0 );
-        Pr( "-----------------------------------\n", 0, 0 );
+        // Pr( "pnt    calls        time  time/call\n", 0, 0 );
+        SyFmtPrint (  global_stream, "pnt    calls        time  time/call\n" );
+        // Pr( "-----------------------------------\n", 0, 0 );
+        SyFmtPrint (  global_stream, "-----------------------------------\n" );
         for ( i = 1;  i <= LEN_LIST( HdCPL );  i++ )
         {
             Int    t,  c;
@@ -2522,11 +2558,15 @@ Bag       FunCollectorProfile (Bag hdCall)
             c = HD_TO_INT( ELM_PLIST( HdCPC, i ) );
             if ( c == 0 )
                 continue;
-            Pr( "%3d:  %6d  ", i, c );
-            Pr( "%10d   %8d\n", t, t/c );
+            // Pr( "%3d:  %6d  ", i, c );
+            SyFmtPrint (  global_stream, "%3d:  %6d  ", i, c );
+            // Pr( "%10d   %8d\n", t, t/c );
+            SyFmtPrint (  global_stream, "%10d   %8d\n", t, t/c );
         }
-        Pr( "\nProfile point %d, profiling %sactive\n", CPN,
-            (Int)( (CPP) ? "" : "in" ) );
+        // Pr( "\nProfile point %d, profiling %sactive\n", CPN,
+        //     (Int)( (CPP) ? "" : "in" ) );
+        SyFmtPrint (  global_stream, "\nProfile point %d, profiling %sactive\n", CPN,
+                     ( (CPP) ? "" : "in" ) );
         return HdVoid;
     }
     else if ( GET_TYPE_BAG( hdA ) == T_INT )
@@ -2595,7 +2635,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 
 /****************************************************************************
 **
-*F  PrAgWord( <hdAgWord> )  . . . . . . . . . . . . . . . . prints a T_AGWORD
+*F  PrAgWord(<stream>, <hdAgWord> , <indent>)  . . . . . . . . . . . . . . . . prints a T_AGWORD
 **
 **  The function 'PrAgWord'  prints  an  agword  in  generator-exponent-form,
 **  if  <PRINT_AG>  is not set.  That is, if the group is generated by  a and
@@ -2606,13 +2646,14 @@ Bag       FunCollectorProfile (Bag hdCall)
 #if ! PRINT_AG
 
     /** Print T_AGWORD in generator-exponent-form. *************************/
-    void        PrAgWord (Bag hdAgWord)
+    void        PrAgWord(STREAM stream, Bag hdAgWord, int indent)
 {
         TypSword        * pt, * ptEnd;
         Bag       hdAgGroup;
 
         if ( ISID_AW( hdAgWord ) )
-            Pr( "IdAgWord", 0, 0 );
+            // Pr( "IdAgWord", 0, 0 );
+            SyFmtPrint ( stream, "IdAgWord" );
         else
         {
                 hdAgGroup = *PTR_BAG( hdAgWord );
@@ -2620,47 +2661,59 @@ Bag       FunCollectorProfile (Bag hdCall)
             ptEnd = pt + 2 * ( LEN_AW( hdAgWord ) - 1 );
             while ( pt < ptEnd )
             {
-                Pr( "%>%s", (Int) NAME_AW( hdAgGroup, *pt++ ), 0 );
+                //**INDENT** Pr( "%>%s", (Int) NAME_AW( hdAgGroup, *pt++ ), 0 );
+                SyFmtPrint ( stream, "%s", NAME_AW( hdAgGroup, *pt++ ) );
                 if ( *pt != 1 )
-                        Pr( "^%d", (Int) *pt, 0 );
-                Pr( "*%<", 0, 0 );
+                    // Pr( "^%d", (Int) *pt, 0 );
+                    SyFmtPrint ( stream, "^%d", *pt );
+                //**INDENT** Pr( "*%<", 0, 0 );
+                SyFmtPrint ( stream, "*" );
                 pt++;
             }
-            Pr( "%>%s", (Int) NAME_AW( hdAgGroup, *pt++ ), 0 );
+            //**INDENT** Pr( "%>%s", (Int) NAME_AW( hdAgGroup, *pt++ ), 0 );
+            SyFmtPrint ( stream, "%s", NAME_AW( hdAgGroup, *pt++ ) );
             if ( *pt != 1 )
-                Pr( "^%d", (Int) *pt, 0 );
-            Pr ("%<", 0, 0 );
+                // Pr( "^%d", (Int) *pt, 0 );
+                SyFmtPrint ( stream, "^%d", *pt );
+            //**INDENT** Pr ("%<", 0, 0 );
         }
     }
 #else
 
     /** Print T_AGWORD in tuple form. **************************************/
-    void    PrAgWord( hdAgWord )
+void    PrAgWord( stream, hdAgWord, indent)
+        STREAM    stream;
         Bag       hdAgWord;
+        int       indent;
     {
         TypSword        * pt, * ptEnd;
 
         /** <hdAgWord> has a group, print the handle  of  this  group ******/
         /** followed by all entries.                                  ******/
-        Pr( "%>agword( %>%d; %<", (Int) *PTR_BAG( hdAgWord ) / NUM_TO_INT(4), 0 );
+        //**INDENT** Pr( "%>agword( %>%d; %<", (Int) *PTR_BAG( hdAgWord ) / NUM_TO_INT(4), 0 );
+        SyFmtPrint ( stream, "agword( %d; ", *PTR_BAG( hdAgWord ) / NUM_TO_INT(4) );
         pt    = PTR_AW( hdAgWord );
         ptEnd = (TypSword*)( (char*) PTR_BAG( hdAgWord ) + GET_SIZE_BAG( hdAgWord ) );
         while ( pt < ptEnd - 1 )
         {
-            Pr( "%>%d, %<", (Int) *pt++, 0 );
-            Pr( "%>%d; %<", (Int) *pt++, 0 );
+            //**INDENT** Pr( "%>%d, %<", (Int) *pt++, 0 );
+            SyFmtPrint ( stream, "%d, ", *pt++ );
+            //**INDENT** Pr( "%>%d; %<", (Int) *pt++, 0 );
+            SyFmtPrint ( stream, "%d; ", *pt++ );
         }
         if ( pt < ptEnd )
-            Pr( "%d )%<", (Int) *pt, 0 );
+            //**INDENT** Pr( "%d )%<", (Int) *pt, 0 );
+            SyFmtPrint ( stream, "%d )", *pt );
         else
-            Pr( ")%<", 0, 0 );
+            //**INDENT** Pr( ")%<", 0, 0 );
+            SyFmtPrint ( stream, ")" );
     }
 #endif
 
 
 /****************************************************************************
 **
-*F  PrAgExp( <hdAgExp> )  . . . . . . . . . . . . . . . . .  prints a T_AGEXP
+*F  PrAgExp(<stream>, <hdAgExp>, <indent>)  . . . . . . . . . . . . . . . . .  prints a T_AGEXP
 **
 **  Print an object of type T_AGEXP. The exponent vector <hdAgExp>  is  print
 **  as tuple "agexp(e_1,...,e_n)". This function is only defined, if the flag
@@ -2668,7 +2721,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 */
 #if PRINT_AG | GROUP_REC
 
-    void        PrAgExp(Bag hdAgExp)
+    void        PrAgExp(STREAM stream, Bag hdAgExp, int indent)
 {
         TypExp          * pt, * ptEnd;
 
@@ -2677,15 +2730,19 @@ Bag       FunCollectorProfile (Bag hdCall)
         if ( GET_SIZE_BAG( hdAgExp ) == 0 )
 
             /** No generator so just print '( )'.  *************************/
-            Pr( "%>agexp( )%<", 0, 0 );
+            //**INDENT** Pr( "%>agexp( )%<", 0, 0 );
+            SyFmtPrint ( stream, "agexp( )" );
         else
         {
 
             /** Print a tuple '(1, 2, ... )'. ******************************/
-            Pr( "%>agexp( %<", 0, 0 );
+            //**INDENT** Pr( "%>agexp( %<", 0, 0 );
+            SyFmtPrint ( stream, "agexp( " );
             while ( pt < ptEnd - 1 )
-                Pr( "%>%d, %<", (Int) (*pt++), 0 );
-            Pr( "%>%d )%<", (Int) *pt, 0 );
+                //**INDENT** Pr( "%>%d, %<", (Int) (*pt++), 0 );
+                SyFmtPrint ( stream, "%d, ", (*pt++) );
+            //**INDENT** Pr( "%>%d )%<", (Int) *pt, 0 );
+            SyFmtPrint ( stream, "%d )", *pt );
         }
     }
 
@@ -2694,7 +2751,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 
 /****************************************************************************
 **
-*F  PrAgList( <hdAgList> )  . . . . . . . . . . . . . . . . prints a T_AGLIST
+*F  PrAgList(<stream>, <hdAgList>, <indent>)  . . . . . . . . . . . . . . . . prints a T_AGLIST
 **
 **  Print an object of type T_AGLIST. The exponent vector <hdAgList> is print
 **  as tuple  "aglist(g_1, e_1; ... ;g_n, e_n)",  where  g_i is the number of
@@ -2703,7 +2760,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 */
 #if PRINT_AG | GROUP_REC
 
-    void        PrAgList(Bag hdAgList)
+    void        PrAgList(STREAM stream, Bag hdAgList, int indent)
 {
         TypSword        * pt, * ptEnd;
         int             toggle;
@@ -2713,22 +2770,27 @@ Bag       FunCollectorProfile (Bag hdCall)
         if ( GET_SIZE_BAG( hdAgList ) == 0 )
 
             /** No generator so just print '( )'. **************************/
-            Pr( "%>aglist( )%<", 0, 0 );
+            //**INDENT** Pr( "%>aglist( )%<", 0, 0 );
+            SyFmtPrint ( stream, "aglist( )" );
         else
         {
 
             /** Print a tuple '(1, 2; ... )'. ******************************/
             toggle = 0;
-            Pr( "%>aglist( %<", 0, 0 );
+            //**INDENT** Pr( "%>aglist( %<", 0, 0 );
+            SyFmtPrint ( stream, "aglist( " );
             while ( pt < ptEnd - 1 )
             {
                 if ( toggle == 0 )
-                    Pr( "%>%d, %<", (Int) (*pt++), 0 );
+                    //**INDENT** Pr( "%>%d, %<", (Int) (*pt++), 0 );
+                    SyFmtPrint ( stream, "%d, ", (*pt++) );
                 else
-                    Pr( "%>%d; %<", (Int) (*pt++), 0 );
+                    //**INDENT** Pr( "%>%d; %<", (Int) (*pt++), 0 );
+                    SyFmtPrint ( stream, "%d; ", (*pt++) );
                 toggle = 1 - toggle;
             }
-            Pr( "%>%d )%<", (Int) *pt, 0 );
+            //**INDENT** Pr( "%>%d )%<", (Int) *pt, 0 );
+            SyFmtPrint ( stream, "%d )", *pt );
         }
     }
 
@@ -2737,7 +2799,7 @@ Bag       FunCollectorProfile (Bag hdCall)
 
 /****************************************************************************
 **
-*F  PrAgen( <hdAgGrp> ) . . . . . . . . . . . . . . . . . . . prints a T_AGEN
+*F  PrAgen(<stream> ,<hdAgGrp>, <indent>) . . . . . . . . . . . . . . . . . . . prints a T_AGEN
 **
 **  'PrAgen' prints a T_AGEN. This function is only installed if <GROUP_REC>
 **  or <PRINT_AG> are defined. It is used in order to print the group record
@@ -2745,10 +2807,11 @@ Bag       FunCollectorProfile (Bag hdCall)
 */
 #if PRINT_AG | GROUP_REC
 
-    void    PrAgen(Bag hdAgen)
+void    PrAgen(STREAM stream, Bag hdAgen, int indent)
 {
-        Pr( "%s", (Int)( PTR_BAG( hdAgen ) + 1 ), 0 );
-    }
+    // Pr( "%s", (Int)( PTR_BAG( hdAgen ) + 1 ), 0 );
+    SyFmtPrint ( stream, "%s", ( PTR_BAG( hdAgen ) + 1 ) );
+}
 
 #endif /* PRINT_AG | GROUP_REC */
 

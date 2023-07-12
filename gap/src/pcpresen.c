@@ -27,6 +27,10 @@
 **
 */
 
+#include		<stdio.h>
+#include		<stdlib.h>
+#include		<string.h>
+
 #include        "system.h"          /** system dependent functions        **/
 #include        "memmgr.h"          /** dynamic storage manager           **/
 #include        "scanner.h"         /** reading of tokens and printing    **/
@@ -2308,11 +2312,14 @@ Bag       FunCommutatorsPcp (Bag hdCall )
 **
 *N  Can the presentation be printed such that it could be read in again?
 */
-void        PrPcPres(Bag hdP)
+void    PrPcPres ( STREAM stream, Bag hdP, int indent )
 {
-    Pr( "<Pcp: %d generators, %s collector>",
-        (Int) NUMBER_OF_GENS( *PTR_BAG( hdP ) ),
-        (Int) Collectors[ COLLECTOR( *PTR_BAG( hdP ) ) ].name );
+    // Pr(  "<Pcp: %d generators, %s collector>",
+    //     (Int) NUMBER_OF_GENS( *PTR_BAG( hdP ) ),
+    //     (Int) Collectors[ COLLECTOR( *PTR_BAG( hdP ) ) ].name  );
+    SyFmtPrint ( stream,  "<Pcp: %d generators, %s collector>",
+                 NUMBER_OF_GENS( *PTR_BAG( hdP ) ),
+                 Collectors[ COLLECTOR( *PTR_BAG( hdP ) ) ].name  );
 }
 
 

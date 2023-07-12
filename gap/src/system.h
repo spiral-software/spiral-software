@@ -16,6 +16,7 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
+#include <stdio.h>
 #include		"system_types.h"
 
 /****************************************************************************
@@ -220,6 +221,14 @@ extern  char            SyInitfiles [16] [256];
 */
 extern  Int            SyFopen ( char * name, char * mode );
 
+// SyFileOpen is an analog of SyFopen that returns a file pointer rather than a
+// file id.
+// SyFileClose is an analog of SyFclose that accepts a file pointer instead of
+// file id.
+
+extern  FILE *SyFileOpen ( char *name, char *mode );
+extern  void SyFileClose ( FILE *file );
+
 
 /****************************************************************************
 **
@@ -298,7 +307,7 @@ extern  char *          SyFgets ( char * line,  Int length,  Int fid );
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
-extern  void            SyFputs ( char * line, Int fid );
+extern  void            SyFputs ( char * line, FILE* file);
 
 
 /****************************************************************************
@@ -659,6 +668,41 @@ typedef void            (*TNumAbortFuncBags) (
     Char* msg);
 
 extern  TNumAbortFuncBags       AbortFuncBags;
+
+
+/***************************************************************************
+**
+**  Conversion of I/O to standard library versus older bespoke system.
+**  I/O will be from/to a stream; a stream may be a file or a memory (strings).
+**
+**  STREAM type contains a type ientifier and a union holding either the FILE
+**  pointer or a pointer to the address on the memory (string).
+*/
+
+#define STREAM_TYPE_FILE	1
+#define STREAM_TYPE_STRING	2
+
+typedef struct stream_struct {
+    int   type;
+    union {
+        FILE* file;
+        char** string_ptr;
+    } U;
+} STREAM;
+
+#define SET_STREAM_FILE(s,f) {(s).type = STREAM_TYPE_FILE; (s).U.file = (f);}
+
+extern STREAM stdout_stream;
+
+extern STREAM stderr_stream;
+
+extern STREAM global_stream;
+
+extern FILE* streamFile(STREAM stream);
+
+extern int SyFmtPrint(STREAM stream, const char* format, ...);
+
+extern int SyChDir ( const char *filename );
 
 #endif // _SYSTEM_H
 

@@ -26,6 +26,7 @@
 #include "memmgr.h" 
 #include "integer.h"
 #include "args.h"
+#include "eval.h"
 
 
 struct gu_msg_utils {
@@ -274,7 +275,7 @@ int sys_rm(const char * name) {
 }
 
 
-char* PathSep()
+char *PathSep()
 {
 #ifdef _WIN32
     return "\\";
@@ -283,9 +284,18 @@ char* PathSep()
 #endif
 }
 
-
+/****************************************************************************
+**
+*F  FunFileExists( <hdCall> ) . . . . .  calls internal function 'sys_exists'
+**
+**  FunFileExists takes in a file name and checks if it exists
+**
+**  'FileExists( <fileName> )'
+**
+**  returns a 1 if found and a 0 if not found
+*/
 Bag FunFileExists(Bag argv) {
-    char* usage = "sys_exists (const char *fname)";
+    char* usage = "FileExists(<filename>)";
     int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
 
     int  _result;
@@ -296,7 +306,7 @@ Bag FunFileExists(Bag argv) {
     }
     
     _arg0 = (char*)HdToString(ELM_ARGLIST(argv, 1),
-            "<fname> must be a String.\nUsage: %s", (Int)usage, 0);
+            "<filename> must be a String.\nUsage: %s", (Int)usage, 0);
 
     _result = (int)sys_exists(_arg0);
 
@@ -304,6 +314,18 @@ Bag FunFileExists(Bag argv) {
 }
 
 
+extern  Bag Error (char *msg, Int arg1, Int arg2);
+
+/****************************************************************************
+**
+*F  FunSysRm( <hdCall> ) . . . . . . . . . . calls internal function 'sys_rm'
+**
+**  FunSysRm takes in a file name and attempts to remove it from file system. 
+**
+**  'sys_rm( <fileName> )' 
+**  
+**  returns a 0 if no error. 
+*/
 Bag FunSysRm(Bag argv) {
     char* usage = "sys_rm (const char *name)";
     int  argc = GET_SIZE_BAG(argv) / SIZE_HD;
@@ -323,7 +345,14 @@ Bag FunSysRm(Bag argv) {
     return INT_TO_HD(_result);
 }
 
-
+/****************************************************************************
+**
+*F  FunPathSep( <hdCall> ) . . . . . . . .  calls internal function 'PathSep'
+**
+**  No argument is required
+** 
+**  returns the path separator for the current system
+*/
 Bag FunPathSep(Bag hdCall) {
     char* sep = PathSep();
 

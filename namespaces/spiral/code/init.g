@@ -104,3 +104,15 @@ ResetCodegen := function()
 end;
 
 
+# ExportCode(code)
+#   print icode in form that can be loaded
+
+ExportCode := function(c)
+    local vars;
+    vars := FoldL(Collect(c, var), (a,b)->When(not b.id in List(a, i->i.id), Concat([b],a), a), []);
+    Print("let(", DoForAll(vars, i->Print(i.id, " := var(\"", i.id, "\", ", i.t, "),\n")), c, ")");
+end;
+
+
+
+

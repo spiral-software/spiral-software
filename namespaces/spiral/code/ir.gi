@@ -1474,6 +1474,7 @@ Class(assign, Command, rec(
    __call__ := (self, loc, exp) >> WithBases(self,
        rec(operations := CmdOps,
        loc := toAssignTarget(loc),
+       t := Cond(IsBound(toAssignTarget(loc).t), toAssignTarget(loc).t, TUnknown),
        exp := toExpArg(exp))),
 
    rChildren := self >> [self.loc, self.exp],

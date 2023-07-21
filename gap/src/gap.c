@@ -669,6 +669,9 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 
     ErrorCount++;
 
+    // make debug and post-error eval output goes to stdout as could be inside a file print action
+    global_stream = stdout_stream;
+
 	if ( ! ERROR_QUIET ) {
 
 		/* open the standard error output file                                */

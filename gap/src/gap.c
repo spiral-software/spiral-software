@@ -669,6 +669,9 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 
     ErrorCount++;
 
+    // make debug and post-error eval output goes to stdout as could be inside a file print action
+    global_stream = stdout_stream;
+
 	if ( ! ERROR_QUIET ) {
 
 		/* open the standard error output file                                */
@@ -1173,61 +1176,12 @@ Bag       FunPrint (Bag hdCall)
     for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
 	Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
-#if NEWFUNC_ADDED
-        type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
-            PrintString (  global_stream, hd, 0 );
-        else if ( type == T_MAKEFUNC )           // PrintFunction(  hd  );
-            PrintFunction(   global_stream, hd, 0  );
-        else if ( type == T_FUNCTION )           // PrintFunction( hd );
-            PrintFunction(  global_stream, hd, 0 );
-        else if ( type == T_MAKEMETH )           // PrintMethod( hd );
-            PrintMethod(  global_stream, hd, 0 );
-        else if ( type == T_METHOD )             // PrintMethod( hd );
-            PrintMethod(  global_stream, hd, 0 );
-        else if ( type != T_VOID )               // Print( hd );
-            PrintObj (  global_stream, hd, 0 );
-        else  /*hd = Error("function must return a value",0,0);*/
-            ;
-#else
         printOneBag ( global_stream, hd );
-#endif          // NEWFUNC_ADDED
     }
 
     return HdVoid;
 }
 
-#if BESPOKE_IO
-
-/****************************************************************************
-**
-*F  Fun_Pr( <hdCall> ) . . . . . . . . . . . . . . . internal function '_Pr'
-**
-**  'Fun_Pr' implements direct interface for Pr() function. It can print
-**  strings only. String passed directly into Pr() without any processing.
-**
-**  _Pr( <string>, <string>, ... )
-*/
-
-Bag       Fun_Pr (Bag hdCall)
-{
-    Bag           hd;
-    Int                i;
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-	Int type;
-        hd = EVAL( PTR_BAG(hdCall)[i] );
-	type = GET_TYPE_BAG( hd );
-    if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // Pr(  CSTR_STRING (hd), 0, 0  );
-        SyFmtPrint (  global_stream, CSTR_STRING (hd) );
-        else  /*hd = Error("function must return a value",0,0);*/;
-    }
-
-    return HdVoid;
-}
-
-#endif          // BESPOKE_IO
 
 /****************************************************************************
 **
@@ -1286,25 +1240,7 @@ Bag       FunPrintTo(Bag hdCall)
     for ( i = 2; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
         Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
-#if NEWFUNC_ADDED
-        type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
-            PrintString ( stream, hd, 0 );
-        else if ( type == T_MAKEFUNC )           // PrintFunction(  hd  );
-            PrintFunction(  stream, hd, 0  );
-        else if ( type == T_FUNCTION )           // PrintFunction( hd );
-            PrintFunction( stream, hd, 0 );
-        else if ( type == T_MAKEMETH )           // PrintMethod( hd );
-            PrintMethod( stream, hd, 0 );
-        else if ( type == T_METHOD )             // PrintMethod( hd );
-            PrintMethod( stream, hd, 0 );
-        else if ( type != T_VOID )               // Print( hd );
-            PrintObj ( stream, hd, 0 );
-        else  /*hd = Error("function must return a value",0,0);*/
-            ;
-#else
         printOneBag ( stream, hd );
-#endif          // NEWFUNC_ADDED
     }
 
     /* close the output file again, and return nothing                     */
@@ -1313,85 +1249,6 @@ Bag       FunPrintTo(Bag hdCall)
 
     return HdVoid;
 }
-
-#if BESPOKE_IO
-
-Int            OpenStringOutput ();
-Bag            ReturnStringOutput ();
-Int            CloseStringOutput (void);
-
-Bag       FunPrntToString (Bag hdCall)
-{
-    Bag           hd, hdList;
-    Int                i;
-
-    /* check the number and type of the arguments, nothing special         */
-    if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
-        return Error("usage: PrintTo( <file>, <obj>, <obj>... )",0,0);
-    //hd = EVAL( PTR_BAG(hdCall)[1] );
-
-    /* try to open the given output file, raise an error if you can not    */
-    if ( OpenStringOutput( ) == 0 )
-        return Error("PrintTo: can not open the file for writing",0,0);
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-        Int type;
-        hd = EVAL( PTR_BAG(hdCall)[i] );
-#if NEWFUNC_ADDED
-        type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
-            PrintString ( stream, hd, 0 );
-        else if ( type == T_MAKEFUNC )           // PrintFunction(  hd  );
-            PrintFunction(  stream, hd, 0  );
-        else if ( type == T_FUNCTION )           // PrintFunction( hd );
-            PrintFunction( stream, hd, 0 );
-        else if ( type == T_MAKEMETH )           // PrintMethod( hd );
-            PrintMethod( stream, hd, 0 );
-        else if ( type == T_METHOD )             // PrintMethod( hd );
-            PrintMethod( stream, hd, 0 );
-        else if ( type != T_VOID )               // Print( hd );
-            PrintObj ( stream, hd, 0 );
-        else  /*hd = Error("function must return a value",0,0);*/
-            ;
-#else
-        printOneBag ( stream, hd );
-#endif          // NEWFUNC_ADDED
-    }
-
-    hdList = ReturnStringOutput();
-
-    /* close the output file again, and return nothing                     */
-    if ( ! CloseStringOutput() )
-        Error("PrintTo: can not close output, this should not happen",0,0);
-    return hdList;
-}
-
-/****************************************************************************
-**
-*F  FunStringPrint( <hdCall> ) . . . . . . . . . .  Prints to a string
-**
-****************************************************************************/
-
-Bag FunStringPrint (Bag hdCall)
-{
-    Obj hdRes = 0;
-    
-    /* try to to redirect output to a memory buffer                        */
-    if ( OpenMemory() == 0 )
-        return Error("StringPrint: can not redirect output to string.",0,0);
-
-    /* Print the stuff */
-    FunPrint(hdCall);
-    
-    /* close the output and return string                                  */
-    if ( ! CloseMemory(&hdRes) )
-        Error("StringPrint: can not close output, this should not happen",0,0);
-
-    return hdRes; 
-}
-
-#endif          // BESPOKE_IO
 
 
 /****************************************************************************
@@ -1440,25 +1297,7 @@ Bag       FunAppendTo (Bag hdCall)
     for ( i = 2; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
         Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
-#if NEWFUNC_ADDED
-        type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
-            PrintString ( stream, hd, 0 );
-        else if ( type == T_MAKEFUNC )           // PrintFunction(  hd  );
-            PrintFunction(  stream, hd, 0  );
-        else if ( type == T_FUNCTION )           // PrintFunction( hd );
-            PrintFunction( stream, hd, 0 );
-        else if ( type == T_MAKEMETH )           // PrintMethod( hd );
-            PrintMethod( stream, hd, 0 );
-        else if ( type == T_METHOD )             // PrintMethod( hd );
-            PrintMethod( stream, hd, 0 );
-        else if ( type != T_VOID )               // Print( hd );
-            PrintObj ( stream, hd, 0 );
-        else  /*hd = Error("function must return a value",0,0);*/
-            ;
-#else
         printOneBag ( stream, hd );
-#endif          // NEWFUNC_ADDED
     }
 
     /* close the output file again, and return nothing                     */
@@ -1503,25 +1342,7 @@ Bag     FunPrintToString ( Bag hdCall )
     {
         Int type;
         hd = EVAL(PTR_BAG(hdCall)[i]);
-#if NEWFUNC_ADDED
-        type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  // PrintString( hd );
-            PrintString ( stream, hd, 0 );
-        else if ( type == T_MAKEFUNC )           // PrintFunction(  hd  );
-            PrintFunction(  stream, hd, 0  );
-        else if ( type == T_FUNCTION )           // PrintFunction( hd );
-            PrintFunction( stream, hd, 0 );
-        else if ( type == T_MAKEMETH )           // PrintMethod( hd );
-            PrintMethod( stream, hd, 0 );
-        else if ( type == T_METHOD )             // PrintMethod( hd );
-            PrintMethod( stream, hd, 0 );
-        else if ( type != T_VOID )               // Print( hd );
-            PrintObj ( stream, hd, 0 );
-        else  /*hd = Error("function must return a value",0,0);*/
-            ;
-#else
         printOneBag ( stream, hd );
-#endif          // NEWFUNC_ADDED
     }
 
     global_stream = save_stream;
@@ -2407,10 +2228,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     InstIntFunc( "Print",      FunPrint      );
     InstIntFunc( "PrintToString",    FunPrintToString     );
     InstIntFunc( "PrintTo",    FunPrintTo     );
-#if BESPOKE_IO
-    InstIntFunc( "_Pr",        Fun_Pr        );
-    InstIntFunc( "StringPrint",FunStringPrint);
-#endif              // BESPOK_IO
     InstIntFunc( "AppendTo",   FunAppendTo   );
     InstIntFunc( "LogTo",      FunLogTo      );
     InstIntFunc( "LogInputTo", FunLogInputTo );

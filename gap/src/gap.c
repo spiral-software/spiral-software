@@ -780,8 +780,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 						FunBacktrace2( (Bag)0 );
 					else {
 						FunBacktrace( (Bag)0 );
-						// Pr( "web:error\n", 0, 0 );
-                        SyFmtPrint ( stderr_stream, "web:error\n" );
 					}
 					DbgErrorLoopStarting();
 				} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }

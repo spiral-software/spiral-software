@@ -13,6 +13,10 @@
 **
 */
 
+#include		<stdio.h>
+#include		<stdlib.h>
+#include		<string.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* dynamic storage manager         */
 #include        "scanner.h"             /* reading of tokens and printing  */
@@ -762,7 +766,7 @@ void       UnprotectVar(Obj hdVar) {
 *F  FunProtectVar( <hdVar> ) . . . . . . . . . internal function ProtectVar()
 **
 **  ProtectVar(var) forbids variable overwriting from GAP session.
-**/
+*/
 Obj        FunProtectVar(Obj hdCall) {
     Obj hdVar;
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error("Usage: ProtectVar(<variable>)", 0, 0);
@@ -773,6 +777,12 @@ Obj        FunProtectVar(Obj hdCall) {
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  FunProtectRec( <record> ) . . . . . . . . . internal function ProtectRec()
+**
+**  ProtectRec(<record>) forbids record overwriting from GAP session.
+*/
 Obj        FunProtectRec(Obj hdCall) {
     Obj hdRec;
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD ) return Error("Usage: ProtectRec(<variable>)", 0, 0);
@@ -783,6 +793,13 @@ Obj        FunProtectRec(Obj hdCall) {
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  FunProtectNamespace( <namespace> ) . . internal function ProtectNamespace()
+**
+**  ProtectNamespace(<namespace>) forbids namespace overwriting from GAP
+**  session.
+*/
 Obj        FunProtectNamespace(Obj hdCall) {
     Obj hdNS;
     UInt size, i;
@@ -809,6 +826,12 @@ Obj        FunProtectNamespace(Obj hdCall) {
     return HdVoid;
 }
 
+/****************************************************************************
+**
+*F  Fun_UnprotectVar( <var> ) . . . . . . . internal function _UnprotectVar()
+**
+**  _UnprotectVar(<var>) allows variable overwriting from GAP session.
+*/
 Obj        Fun_UnprotectVar(Obj hdCall) {
     Obj hdVar = PTR_BAG(hdCall)[1];
     if ( GET_TYPE_BAG(hdVar) != T_VAR && GET_TYPE_BAG(hdVar) != T_VARAUTO )
@@ -1083,14 +1106,16 @@ Obj       LtPtr (Obj hdL, Obj hdR)
 
 /****************************************************************************
 **
-*F  PrBool( <hdBool> )  . . . . . . . . . . . . . . . . print a boolean value
+*F  PrBool( stream, <hdBool>, indent )  . . . . . . . . . . . . . . . . print a boolean value
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-void            PrBool (Obj hd)
+void    PrBool ( STREAM stream, Obj hd, int indent )
 {
-    if ( hd == HdTrue )  Pr("true",0,0);
-    else                 Pr("false",0,0);
+    if ( hd == HdTrue )  // Pr( "true",0,0 );
+        SyFmtPrint ( stream, "true" );
+    else                 // Pr( "false",0,0 );
+        SyFmtPrint ( stream, "false" );
 }
 
 
@@ -1122,7 +1147,6 @@ Obj       FunIsBool (Obj hdCall)
 /****************************************************************************
 **
 *F  ShallowCopy( <hdOld> )  . . . . . . . .  make a shallow copy of an object
-*F  FullShallowCopy( <hdOld> )  . . . . make a full shallow copy of an object
 **
 **  'ShallowCopy' makes a copy of the object  <obj>.  If <obj> is not a  list
 **  or a record, 'ShallowCopy' simply returns <obj>, since those objects  can
@@ -1131,9 +1155,7 @@ Obj       FunIsBool (Obj hdCall)
 **  record 'ShallowCopy' makes a copy of this object,  but does not copy  the
 **  subobjects.
 **
-**  'FullShallowCopy' is identical to ShallowCopy,  except  that  ShallowCopy
-**  does not copy objects with type > T_VARAUTO, while FullShalloCopy does.
-**/
+*/
 Obj       ShallowCopy (Obj hdOld)
 {
     Obj           * ptOld;        /* pointer to the old object       */
@@ -1163,7 +1185,14 @@ Obj       ShallowCopy (Obj hdOld)
 
     return hdNew;
 }
-
+/****************************************************************************
+**
+*F  FullShallowCopy( <hdOld> )  . . . . make a full shallow copy of an object
+* 
+* 
+**  'FullShallowCopy' is identical to ShallowCopy,  except  that  ShallowCopy
+**  does not copy objects with type > T_VARAUTO, while FullShalloCopy does.
+*/
 Obj       FullShallowCopy (Obj hdOld)
 {
     Obj hdResult;
@@ -1325,10 +1354,8 @@ Obj       CopyFunc (Obj hdOld)
 /****************************************************************************
 **
 *F  FunCopy( <hdCall> ) . . . . . . . . . . . . . .  make a copy of an object
-*F  FunCopyFunc( <hdCall> ) . . . . . . . . . . . . make a copy of a function
 **
 **  'FunCopy' implements the internal function 'Copy( <obj> )'.
-**  'FunCopyFunc' implements the internal function 'CopyFunc( <obj> )'.
 **
 **  'Copy' makes a copy of the  object <hdObj>.  If <obj>  is not a list or a
 **  record, 'Copy' simply  returns  <obj>, since those  objects can  never be
@@ -1337,8 +1364,6 @@ Obj       CopyFunc (Obj hdOld)
 **  'Copy' makes a copy of this object,  and calls itself recursively to copy
 **  the subobjects.
 **
-**  'CopyFunc' copies a function, it is necessary when function bags are to be
-**  modified from within the interpreter (using Child/SetChild functions).
 */
 Obj       FunCopy (Obj hdCall)
 {
@@ -1350,6 +1375,16 @@ Obj       FunCopy (Obj hdCall)
     return Copy( EVAL( PTR_BAG(hdCall)[1] ) );
 }
 
+/****************************************************************************
+**
+*F  FunCopyFunc( <hdCall> ) . . . . . . . . . . . . make a copy of a function
+**
+**  'FunCopyFunc' implements the internal function 'CopyFunc( <obj> )'.
+**
+**  'CopyFunc' copies a function, it is necessary when function bags are to be
+**  modified from within the interpreter (using Child/SetChild functions).
+**
+*/
 Obj       FunCopyFunc (Obj hdCall)
 {
     char * usage = "usage: CopyFunc( <func> )";
@@ -1520,19 +1555,58 @@ Obj       FunUnbind (Obj hdCall)
 **  is the main dispatching table that contains for every type a  pointer  to
 **  the function that should be executed if a bag  of  that  type  is  found.
 */
-void            (* PrTab[ T_ILLEGAL ] ) ( Obj hd );
+void    (*PrTab[T_ILLEGAL]) (STREAM stream, Obj hd, int indent);
 
 
 /****************************************************************************
 **
-*F  Print( <hd> ) . . . . . . . . . . . . . . . . . . . . . . print an object
+*F  PrintObj( STREAM stream, Obj <hd>, int indent ) . . . . . print an object
 **
-**  'Print'  prints  the  object  with  handle  <hd>.  It dispatches   to the
+**  'PrintObj' prints the object with handle <hd>.  It dispatches to the
 **  appropriate function stored in 'PrTab[GET_TYPE_BAG(<hd>)]'.
 */
 Obj       HdTildePr;
 
-void            Print (Obj hd)
+static char    *NamePrFunc [] = {
+    "PrintBagType","PrInteger", "PrInteger",    "PrInteger",    "PrRat",        "PrCyc",
+    "PrDbl",    "PrCplx",       "PrUnknown",    "PrFFE",        "PrPermP",      "PrPermQ",
+    "PrWord",   "PrSword",      "PrAgWord",     "PrBool",       "PrChar",       "PrFunction",
+    "PrMethod", "PrFuncint",    "PrList",       "PrSet",        "PrList",       "PrVecFFE",
+    "PrList",   "PrString",     "PrRange",      "PrRec",        "PrintBagType", "PrintBagType",
+    "PrintBagType","PrDelay",   "PrVar",        "PrVar",        "PrVarAss",     "PrVarMap",
+    "PrElmList","PrElmList",    "PrElmsList",   "PrElmsList",   "PrAssList",    "PrAssList",
+    "PrAssList","PrAssList",    "PrRecElm",     "PrRecAss",     "PrVarAss",     "PrBinop",
+    "PrBinop",  "PrBinop",      "PrBinop",      "PrBinop",      "PrBinop",      "PrComm",
+    "PrNot",    "PrBinop",      "PrBinop",      "PrBinop",      "PrBinop",      "PrBinop",
+    "PrBinop",  "PrBinop",      "PrBinop",      "PrBinop",      "PrBinop",      "PrFunccall",
+    "PrintBagType","PrStatseq", "PrIf",         "PrFor",        "PrWhile",      "PrRepeat",
+    "PrReturn", "PrMakeperm",   "PrFunction",   "PrMethod",     "PrMakeList",   "PrString",
+    "PrMakeRange","PrRec",      "PrRec",        "PrMakeLet",    "PrintBagType", "PrintBagType",
+    "PrAgen",   "PrintBagType", "PrPcPres",     "PrAgExp",      "PrAgList",     "PrRecName",
+    "PrNS",     "PrintBagType", "PrBinop",      "PrintBagType", "PrintBagType"
+};
+
+char    *NameEvalFunc [] = {
+    "NoEval",   "EvInt",        "EvInt",        "EvInt",        "EvRat",        "EvCyc",
+    "EvDbl",    "EvCplx",       "EvUnknown",    "EvFFE",        "EvPerm",       "EvPerm",
+    "EvWord",   "EvWord",       "EvAg",         "EvBool",       "EvChar",       "EvFunction",
+    "EvFunction","EvFunction",  "EvList",       "EvList",       "EvList",       "EvList",
+    "EvList",   "EvList",       "EvList",       "EvRec",        "NoEval",       "NoEval",
+    "NoEval",   "EvDelay",      "EvVar",        "EvVarAuto",    "EvVarAss",     "EvVarMap",
+    "EvElmList","EvElmListLevel","EvElmsList",  "EvElmsListLevel","EvAssList",  "EvAssListLevel",
+    "EvAssList","EvAssListLevel","EvRecElm",    "EvRecAss",     "EvMultiAss",   "EvSum",
+    "EvDiff",   "EvProd",       "EvQuo",        "EvMod",        "EvPow",        "NoEval",
+    "EvNot",    "EvAnd",        "EvOr",         "EvEq",         "EvNe",         "EvLt",
+    "EvGe",     "EvLe",         "EvGt",         "EvIn",         "Concat",       "EvFunccall",
+    "NoEval",   "EvStatseq",    "EvIf",         "EvFor",        "EvWhile",      "EvRepeat",
+    "EvReturn", "EvMakeperm",   "EvFunction",   "EvMethod",     "EvMakeList",   "EvMakeString",
+    "EvMakeRange","EvMakeRec",  "EvMakeTab",    "EvMakeLet",    "NoEval",       "NoEval",
+    "NoEval",   "NoEval",       "NoEval",       "NoEval",       "NoEval",       "NoEval",
+    "EvNS",     "NoEval",       "EvIs",         "NoEval",       "NoEval"
+};
+
+
+void    PrintObj ( STREAM stream, Obj hd, int indent )
 {
     UInt       len;            /* hdObj[1..<len>] are a path from */
     Obj           hdObj[256];     /* '~' to <hd>, where hdObj[<i>+1] */
@@ -1540,19 +1614,23 @@ void            Print (Obj hd)
     Obj           cur;            /* current object along that path  */
     UInt       i;              /* loop variable                   */
     exc_type_t          e;
+    int bagtype;
 
     /* check for interrupts                                                */
     if ( SyIsIntr() ) {
-        Pr( "%c", (Int)'\03', 0 );
+        // Pr( "%c", (Int)'\03', 0 );
+        SyFmtPrint ( stream, "%c", '\03' );
         /*N 19-Jun-90 martin do something about the current indent         */
         DbgBreak("user interrupt while printing", 0, 0);
     }
 
     if ( hd == 0 )
-        Pr("_null_", 0, 0);
+        // Pr( "_null_", 0, 0 );
+        SyFmtPrint ( stream, "_null_" );
 
     else if ( ! IS_BAG(hd) && ! IS_INTOBJ(hd) )
-        Pr("_invalid_%d_", (Int)hd, 0);
+        // Pr( "_invalid_%d_", (Int)hd, 0 );
+        SyFmtPrint ( stream, "_invalid_%d_", hd );
 
     /* print new objects                                                   */
     else if ( GET_TYPE_BAG(hd) == T_INT || ! GET_FLAG_BAG(hd, BF_PRINT) ) {
@@ -1567,7 +1645,9 @@ void            Print (Obj hd)
                 SET_FLAG_BAG(hd, BF_PRINT);
 
             /* dispatch to the appropriate method                          */
-            (* PrTab[ GET_TYPE_BAG(hd) ] ) (hd);
+            /* bagtype = GET_TYPE_BAG(hd); */
+            /* fprintf ( stderr, "bag type = %s (%d), print function (%s)\n", NameType[bagtype], bagtype, NamePrFunc[bagtype] ); */
+            ( *PrTab[ GET_TYPE_BAG(hd) ] ) ( stream, hd, indent );
 
             /* unmark object again                                         */
             if ( (T_LIST <= GET_TYPE_BAG(hd) && GET_TYPE_BAG(hd) < T_VAR)
@@ -1625,11 +1705,14 @@ void            Print (Obj hd)
         /* print the path just found                                       */
         for ( i = 0; i <= len; i++ ) {
             if ( GET_TYPE_BAG(hdObj[i]) == T_VAR )
-                Pr("~",0,0);
+                // Pr( "~",0,0 );
+                SyFmtPrint ( stream, "~" );
             else if ( GET_TYPE_BAG(hdObj[i])==T_LIST || GET_TYPE_BAG(hdObj[i])==T_SET )
-                Pr("[%d]",index[i],0);
+                // Pr( "[%d]",index[i],0 );
+                SyFmtPrint ( stream, "[%d]", index[i] );
             else
-                Pr(".%s",(Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i]-1]),0);
+                // Pr( ".%s",(Int)PTR_BAG(PTR_BAG(hdObj[i])[index[i]-1]),0 );
+                SyFmtPrint ( stream, ".%s", PTR_BAG( PTR_BAG(hdObj[i])[index[i]-1] ) );
         }
 
     }
@@ -1650,30 +1733,31 @@ void            CantPrint (Obj hd)
     Error("Panic: can't print bag of type %d",(Int)GET_TYPE_BAG(hd),0);
 }
 
-void            PrintBagType (Obj hd)
+void    PrintBagType ( STREAM stream, Obj hd, int indent )
 {
-    Pr("_bag_%d_", GET_TYPE_BAG(hd), 0);
+    // Pr( "_bag_%d_", GET_TYPE_BAG(hd), 0 );
+    SyFmtPrint ( stream, "_bag_%d_(%s)_\n", GET_TYPE_BAG(hd), NameType[GET_TYPE_BAG(hd)] );
 }
 
 /****************************************************************************
 **
-*F  PrVar( <hdVar> )  . . . . . . . . . . . . . . . . . . .  print a variable
+*F  PrVar( stream, <hdVar>, indent )  . . . . . . . . . . .  print a variable
 **
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
 */
-void            PrVar (Obj hdVar)
+void    PrVar ( STREAM stream, Obj hdVar, int indent )
 {
     char * name = VAR_NAME(hdVar);
-    PrVarName(name);
+    PrVarName ( stream, name );
 }
 
 /****************************************************************************
 **
-*F  PrVarName( <string> )  . . prints identifier, escaping special characters
+*F  PrVarName( stream, <string> )  . . prints identifier, escaping special characters
 **
 */
-void            PrVarName (char *name)
+void    PrVarName ( STREAM stream, char *name )
 {
     if ( !strcmp(name,"and")      || !strcmp(name,"do")
       || !strcmp(name,"elif")     || !strcmp(name,"else")
@@ -1686,33 +1770,39 @@ void            PrVarName (char *name)
       || !strcmp(name,"return")   || !strcmp(name,"then")
       || !strcmp(name,"until")    || !strcmp(name,"while")
       || !strcmp(name,"quit") ) {
-        Pr("\\",0,0);
+        // Pr( "\\",0,0 );
+        SyFmtPrint ( stream, "\\" );
     }
 
     /* print the name                                                      */
     for (   ; *name != '\0'; name++ ) {
         if ( IsAlpha(*name) || IsDigit(*name) || *name == '_' || *name == '@')
-            Pr("%c",(Int)(*name),0);
+            // Pr( "%c",(Int)(*name),0 );
+            SyFmtPrint ( stream, "%c", (*name) );
         else
-            Pr("\\%c",(Int)(*name),0);
+            // Pr( "\\%c",(Int)(*name),0 );
+            SyFmtPrint ( stream, "\\%c", (*name) );
     }
 }
 
 /****************************************************************************
 **
-*F  PrVarAss( <hdAss> ) . . . . . . . . . . . . . . . . . print an assignment
+*F  PrVarAss( stream, <hdAss>, indent ) . . . . . . . . . print an assignment
 **
 **  'PrVarAss' prints an assignment to a variable: '<Var> := <Expr>;'
 **
 **  Linebreaks are preffered before the ':='.
 */
-void            PrVarAss (Obj hdAss)
+void    PrVarAss ( STREAM stream, Obj hdAss, int indent )
 {
-    Pr("%2>",0,0);
-    Print(PTR_BAG(hdAss)[0]);
-    Pr("%< %>:= ",0,0);
-    Print(PTR_BAG(hdAss)[1]);
-    Pr("%2<",0,0);
+    //**INDENT** Pr( "%2>",0,0 );
+    // Print(PTR_BAG(hdAss)[0]);
+    //**INDENT** Pr( "%< %>:= ",0,0 );
+    // Print(PTR_BAG(hdAss)[1]);
+    //**INDENT** Pr( "%2<",0,0 );
+    PrintObj ( stream, PTR_BAG(hdAss)[0], 0 );
+    SyFmtPrint ( stream, " := " );
+    PrintObj ( stream, PTR_BAG(hdAss)[1], 0 );
 }
 
 
@@ -1734,27 +1824,31 @@ Int            prPrec;
 
 /****************************************************************************
 **
-*F  PrNot( <hdNot> )  . . . . . . . . . . . . .  print a boolean not operator
+*F  PrNot( stream, <hdNot>, indent )  . . . . .  print a boolean not operator
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
-void            PrNot (Obj hdNot)
+void    PrNot ( STREAM stream, Obj hdNot, int indent )
 {
     Int                oldPrec;
 
     oldPrec = prPrec;  prPrec = 4;
-    Pr("not%> ",0,0);  Print( PTR_BAG(hdNot)[0] );  Pr("%<",0,0);
+    //**INDENT** Pr( "not%> ",0,0 );
+    // Print( PTR_BAG(hdNot)[0] );
+    //**INDENT** Pr( "%<",0,0 );
+    SyFmtPrint ( stream, "not " );
+    PrintObj ( stream, PTR_BAG(hdNot)[0], 0 );
     prPrec = oldPrec;
 }
 
 
 /****************************************************************************
 **
-*F  PrBinop( <hdOp> ) . . . . . . . . . . . . . . .  prints a binary operator
+*F  PrBinop( stream, <hdOp>, indent ) . . . . . . .  prints a binary operator
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */
-void            PrBinop (Obj hdOp)
+void    PrBinop ( STREAM stream, Obj hdOp, int indent )
 {
     Int                oldPrec;
     char                * op;
@@ -1782,40 +1876,54 @@ void            PrBinop (Obj hdOp)
     default:       op = "<bogus-operator>";   break;
     }
 
-    if ( oldPrec > prPrec )  Pr("%>(%>",0,0);
-    else                     Pr("%2>",0,0);
+    if ( oldPrec > prPrec )  //**INDENT** Pr( "%>(%>",0,0 );
+        SyFmtPrint ( stream, "(" );
+    else                     //**INDENT** Pr( "%2>",0,0 );
+        ;
     if ( GET_TYPE_BAG(hdOp) == T_POW
       && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
         || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG) )
-        Pr("(",0,0);
-    Print( PTR_BAG(hdOp)[0] );
+        // Pr( "(",0,0 );
+        SyFmtPrint ( stream, "(" );
+    // Print( PTR_BAG(hdOp)[0] );
+    PrintObj ( stream, PTR_BAG(hdOp)[0], 0 );
     if ( GET_TYPE_BAG(hdOp) == T_POW
       && ((GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INT && HD_TO_INT(PTR_BAG(hdOp)[0]) < 0)
         || GET_TYPE_BAG(PTR_BAG(hdOp)[0]) == T_INTNEG) )
-        Pr(")",0,0);
-    Pr("%2< %2>%s%> %<",(Int)op,0);
+        // Pr( ")",0,0 );
+        SyFmtPrint ( stream, ")" );
+    //**INDENT** Pr( "%2< %2>%s%> %<",(Int)op,0 );
+    SyFmtPrint ( stream, " %s ", op );
     ++prPrec;
-    Print( PTR_BAG(hdOp)[1] );
+    //  Print( PTR_BAG(hdOp)[1] );
+    PrintObj ( stream, PTR_BAG(hdOp)[1], 0 );
     --prPrec;
-    if ( oldPrec > prPrec )  Pr("%2<)",0,0);
-    else                     Pr("%2<",0,0);
+    if ( oldPrec > prPrec )  //**INDENT** Pr( "%2<)",0,0 );
+        SyFmtPrint ( stream, ")" );
+    else                     //**INDENT** Pr( "%2<",0,0 );
+        ;
     prPrec = oldPrec;
 }
 
 
 /****************************************************************************
 **
-*F  PrComm( <hdComm> )  . . . . . . . . . . . . . . . . .  print a commutator
+*F  PrComm( stream, <hdComm>, indent )  . . . . . . . . . . . . . . . . .  print a commutator
 **
 **  This prints a commutator.
 */
-void            PrComm (Obj hd)
+void    PrComm ( STREAM stream, Obj hd, int indent )
 {
-    Pr("%>Comm(%> ",0,0);
-    Print(PTR_BAG(hd)[0]);
-    Pr("%<,%>",0,0);
-    Print(PTR_BAG(hd)[1]);
-    Pr("%2<)",0,0);
+    //**INDENT** Pr( "%>Comm(%> ",0,0 );
+    // Print(PTR_BAG(hd)[0]);
+    //**INDENT** Pr( "%<,%>",0,0 );
+    // Print(PTR_BAG(hd)[1]);
+    //**INDENT** Pr( "%2<)",0,0 );
+    SyFmtPrint ( stream, "Comm( " );
+    PrintObj ( stream, PTR_BAG(hd)[0], 0 );
+    SyFmtPrint ( stream, " , " );
+    PrintObj ( stream, PTR_BAG(hd)[1], 0 );
+    SyFmtPrint ( stream, ")" );
 }
 
 
@@ -1850,7 +1958,8 @@ void            InstBinOp (Bag  (* table [EV_TAB_SIZE][EV_TAB_SIZE]) (), unsigne
 **
 **  Installs the function <func> as printing function  for  bags  of  <type>.
 */
-void            InstPrFunc (unsigned int type, void (*func) (Bag))
+void    InstPrFunc ( unsigned int type,
+                     void (*func) (STREAM stream, Obj hdOp, int indent) )
 {
     PrTab[ type ] = func;
 }
@@ -2024,29 +2133,40 @@ Obj EvMakeLet( Obj hd ) {
     return res;
 }
 
-void PrMakeLet( Obj hd ) {
+void PrMakeLet( STREAM stream, Obj hd, int indent )
+{
     UInt size = TableNumEnt(hd) - 1, lenres;
     UInt i;
     Obj res;
-    Pr("let(%2>", 0, 0);
+    //**INDENT** Pr( "let(%2>", 0, 0 );
+    SyFmtPrint ( stream, "let(" );
     /* evaluate all variables and set their values */
     for ( i = 0; i < size; ++i ) {
         Obj var = PTR_BAG(hd)[i];
         Obj uneval = PTR_BAG(var)[1];
-        Pr("%g := %2>%g%2<,\n", (Int)var, (Int)uneval);
+        //**INDENT** Pr( "%g := %2>%g%2<,\n", (Int)var, (Int)uneval );
+        PrintObj ( stream, var, 0 );
+        SyFmtPrint ( stream, " := " );
+        PrintObj ( stream, uneval, 0 );
+        SyFmtPrint ( stream, ",\n" );
     }
 
     res = PTR_BAG(PTR_BAG(hd)[size])[1];
     lenres = LEN_PLIST(res);
     /* expressions separated by a comma */
     for(i = 1; i <= lenres-1; ++i) {
-        Pr("%2>%g%2<, ", (Int) PTR_BAG(res)[i], 0);
+        //**INDENT** Pr( "%2>%g%2<, ", (Int) PTR_BAG(res)[i], 0 );
+        PrintObj ( stream, PTR_BAG(res)[i], 0 );
+        SyFmtPrint ( stream, ", " );
     }
     /* and the final expression without trailing comma */
     if (lenres >= 1) {
-        Pr("%2>%g%2< ", (Int) PTR_BAG(res)[lenres], 0);
+        //**INDENT** Pr( "%2>%g%2< ", (Int) PTR_BAG(res)[lenres], 0 );
+        PrintObj ( stream, PTR_BAG(res)[lenres], 0 );
+        SyFmtPrint ( stream, " " );
     }
-    Pr("%2<)\n", 0, 0);
+    //**INDENT** Pr( "%2<)\n", 0, 0 );
+    SyFmtPrint ( stream, ")\n" );
 }
 
 
@@ -2067,6 +2187,7 @@ Obj       FunInherited (Obj hdCall)
     /* find method on the call stack and count how many times Inherited() was called */
     Int     top = EvalStackTop;
     Int     inherited = 0, i = 0;
+
     while (top>0) {
         if (GET_TYPE_BAG(EvalStack[top]) == T_EXEC && GET_TYPE_BAG(PTR_BAG(EvalStack[top])[2]) == T_METHOD) {
             if (GET_FLAG_BAG(PTR_BAG(EvalStack[top])[3], BF_INHERITED_CALL)) {
@@ -2082,6 +2203,7 @@ Obj       FunInherited (Obj hdCall)
     }
     if (top<=0)
         return Error("Inherited: method not found", 0, 0);
+
     if (GET_TYPE_BAG(hdRecElm) != T_RECELM)
         return Error("Inherited: ambiguity, method called in non-standard way.", 0, 0);
 

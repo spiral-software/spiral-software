@@ -714,6 +714,8 @@ Bag       RdFunc (TypSymbolSet follow)
 **  In cases other then (<Expr>) and <Var> leading $'s are silently ignored.
 **  Note that $ has higher precedence then indexing [], function calls (), so
 **  RdVar is also aware of them, in order to make this work.
+**
+**  Note '$' is S_BACKQUOTE
 */
 Obj  ObjDbl(double d);
 double DblString(char *st);

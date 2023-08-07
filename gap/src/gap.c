@@ -17,8 +17,10 @@
 **
 */
 
-#include	<stdio.h>
-#include	<stdlib.h>
+#include        <stdio.h>
+#include        <stdlib.h>
+#include        <string.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* dynamic storage manager         */
 #include        "scanner.h"             /* reading of single tokens        */
@@ -222,57 +224,80 @@ UInt DbgExecStackDepth() {
     return result;
 }
 
-void PrintBacktraceExec(Bag hdExec, UInt execDepth, UInt execStackDepth, UInt printValues )
+void    PrintBacktraceExec ( STREAM stream, Bag hdExec, UInt execDepth, UInt execStackDepth, UInt printValues )
 {
     int         nrArg,  nrLoc,  i;
     Bag   hdDef;
     
     if (execDepth==execStackDepth-DbgStackTop)
-        Pr("* ", 0, 0);
+        // Pr( "* ", 0, 0 );
+        SyFmtPrint ( stream, "* " );
     else
-        Pr("  ", 0, 0);
+        // Pr( "  ", 0, 0 );
+        SyFmtPrint ( stream, "  " );
     /* Print the depth like gdb does                                   */
     execDepth++;
     if(execDepth < 10)
-        Pr("#%d -> ", execDepth, 0);
+        // Pr( "#%d -> ", execDepth, 0 );
+        SyFmtPrint ( stream, "#%d -> ", execDepth );
     else
-        Pr("#%d-> ", execDepth, 0);
+        // Pr( "#%d-> ", execDepth, 0 );
+        SyFmtPrint ( stream, "#%d-> ", execDepth );
     
     if ( hdExec == 0 ) {
-        Pr("main loop\n",0,0);
+        // Pr( "main loop\n",0,0 );
+        SyFmtPrint ( stream, "main loop\n" );
     } else {
-        if ( PTR_BAG(hdExec)[3] == HdCallSum )       Pr("<rec1> + <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallDiff ) Pr("<rec1> - <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallProd ) Pr("<rec1> * <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallQuo )  Pr("<rec1> / <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallMod )  Pr("<rec1> mod <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallPow )  Pr("<rec1> ^ <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallComm ) Pr("Comm(<rec1>,<rec2>)",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallEq )   Pr("<rec1> = <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallLt )   Pr("<rec1> < <rec2>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallIn )   Pr("<elm> in <rec>",0,0);
-        else if ( PTR_BAG(hdExec)[3] == HdCallPrint ) Pr("Print( <rec> )",0,0);
+        if ( PTR_BAG(hdExec)[3] == HdCallSum )       // Pr( "<rec1> + <rec2>",0,0 );
+            SyFmtPrint ( stream, "<rec1> + <rec2>" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallDiff ) // Pr( "<rec1> - <rec2>",0,0 );
+            SyFmtPrint ( stream, "<rec1> - <rec2>" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallProd ) // Pr( "<rec1> * <rec2>",0,0 );
+            SyFmtPrint ( stream, "<rec1> * <rec2>" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallQuo )  // Pr( "<rec1> / <rec2>",0,0 );
+            SyFmtPrint ( stream, "<rec1> / <rec2>" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallMod )  // Pr( "<rec1> mod <rec2>",0,0 );
+            SyFmtPrint ( stream, "<rec1> mod <rec2>" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallPow )  // Pr( "<rec1> ^ <rec2>",0,0 );
+            SyFmtPrint ( stream, "<rec1> ^ <rec2>" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallComm ) // Pr( "Comm(<rec1>,<rec2>)",0,0 );
+            SyFmtPrint ( stream, "Comm(<rec1>,<rec2>)" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallEq )   // Pr( "<rec1> = <rec2>",0,0 );
+            SyFmtPrint ( stream, "<rec1> = <rec2>" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallLt )   // Pr( "<rec1> < <rec2>",0,0 );
+            SyFmtPrint ( stream, "<rec1> < <rec2>" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallIn )   // Pr( "<elm> in <rec>",0,0 );
+            SyFmtPrint ( stream, "<elm> in <rec>" );
+        else if ( PTR_BAG(hdExec)[3] == HdCallPrint ) // Pr( "Print( <rec> )",0,0 );
+            SyFmtPrint ( stream, "Print( <rec> )" );
         else {
             if (printValues) {
-                Print( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
-                Pr("%>( %>",0,0);
+                // Print( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
+                PrintObj ( stream, PTR_BAG( PTR_BAG(hdExec)[3] )[0], 0 );
+                //**INDENT** Pr( "%>( %>",0,0 );
+                SyFmtPrint ( stream, "( " );
                 hdDef = EVAL( PTR_BAG( PTR_BAG(hdExec)[3] )[0] );
                 ACT_NUM_ARGS_FUNC(hdDef, nrArg);
                 ACT_NUM_LOCALS_FUNC(hdDef, nrLoc);
                 for ( i = 1; i <= nrArg; ++i ) {
-                    Print( PTR_BAG(hdExec)[EXEC_ARGS_START+i+nrArg+nrLoc-1] );
-                    if ( i < nrArg )  Pr("%<, %>",0,0);
+                    // Print( PTR_BAG(hdExec)[EXEC_ARGS_START+i+nrArg+nrLoc-1] );
+                    PrintObj ( stream, PTR_BAG(hdExec)[EXEC_ARGS_START+i+nrArg+nrLoc-1], 0 );
+                    if ( i < nrArg )  //**INDENT** Pr( "%<, %>",0,0 );
+                        SyFmtPrint ( stream, ", " );
                 }
-                Pr(" %2<)",0,0);
+                //**INDENT** Pr( " %2<)",0,0 );
+                SyFmtPrint ( stream, " )" );
             } else {
-                Print( PTR_BAG(hdExec)[3] );
+                // Print( PTR_BAG(hdExec)[3] );
+                PrintObj ( stream, PTR_BAG(hdExec)[3], 0 );
             }
         }
-        Pr("\n",0,0);
+        // Pr( "\n",0,0 );
+        SyFmtPrint ( stream, "\n" );
     }
 }
 
-void PrintBacktraceEval(Bag hdExec)
+void    PrintBacktraceEval ( STREAM stream, Bag hdExec)
 {
     int StackPnt = HD_TO_INT(PTR_BAG(hdExec)[EXEC_EVAL_STACK]) + 1;
     int StackStart = StackPnt;
@@ -284,10 +309,15 @@ void PrintBacktraceEval(Bag hdExec)
         StackPnt--;
     while (StackPnt>=StackStart) {
         Obj item = EvalStack[StackPnt];
-        if (GET_TYPE_BAG(item)==T_FUNCCALL)
-            Pr("          %g\n", (Int)PTR_BAG(item)[0], 0);
+        if (GET_TYPE_BAG(item)==T_FUNCCALL) {
+            // Pr( "          %g\n", (Int)PTR_BAG(item)[0], 0 );
+            SyFmtPrint ( stream, "          " );
+            PrintObj ( stream, PTR_BAG(item)[0], 0 );
+            SyFmtPrint ( stream, "\n" );
+        }
         else
-            Pr("          %s\n", (Int)NameType[GET_TYPE_BAG(item)], 0);
+            // Pr( "          %s\n", (Int)NameType[GET_TYPE_BAG(item)], 0 );
+            SyFmtPrint ( stream, "          %s\n", NameType[GET_TYPE_BAG(item)] );
         StackPnt--;
     }
 }
@@ -325,12 +355,12 @@ Bag       FunBacktrace (Bag hdCall)
     for ( hdExec=HdDbgStackRoot; hdExec!=0 && level!=0; hdExec=PTR_BAG(hdExec)[4] ) {
         /* if <level> is positive print only the names of the formal args  */
         if ( 0 < level ) {
-            PrintBacktraceExec(hdExec,  depth, execStackDepth, 0);
+            PrintBacktraceExec (  global_stream, hdExec,  depth, execStackDepth, 0 );
             --level;
         }
         /* if <level> is negative print the values of the arguments        */
         else {
-            PrintBacktraceExec(hdExec,  depth, execStackDepth, 1);
+            PrintBacktraceExec (  global_stream, hdExec,  depth, execStackDepth, 1 );
             ++level;
         }
         --depth;
@@ -338,16 +368,34 @@ Bag       FunBacktrace (Bag hdCall)
 
     /* print the bottom of the function stack                              */
     if ( hdExec == 0 ) {
-        PrintBacktraceExec(0, depth, execStackDepth, 0);
+        PrintBacktraceExec (  global_stream, 0, depth, execStackDepth, 0 );
     }
     else {
-        Pr("...\n",0,0);
+        // Pr( "...\n",0,0 );
+        SyFmtPrint (  global_stream, "...\n" );
     }
     
     return HdVoid;
 }
 
 
+/****************************************************************************
+**
+*F  FunBacktrace2( <hdCall> )  . . . . . . . . internal function 'Backtrace2'
+**
+**  'FunBacktrace2' implements the internal function 'Backtrace2'.
+**
+**  'Backtrace2()' \\
+**  'Backtrace2( <level> )'
+**
+**  'Backtrace2' is identical to 'Backtrace' with the addition it prints the
+**  statements to be evaluated at each nesting level.  'Backtrace2' prints a list
+**  of all active functions, most recent first, up to maximal <level> nestings.
+**  If <level> is positive the names of the formal arguments of the functions
+**  calls are printed, otherwise the values of the actual arguments are printed
+**  instead.  <level>, if not specified, defaults to 5.
+**
+*/
 Bag       FunBacktrace2 (Bag hdCall)
 {
     Int	    level;
@@ -380,14 +428,14 @@ Bag       FunBacktrace2 (Bag hdCall)
     /* for <level> frames                                                  */
     for ( hdExec=HdDbgStackRoot; hdExec!=0 && level!=0; hdExec=PTR_BAG(hdExec)[4] ) {
         /* if <level> is positive print only the names of the formal args  */
-        PrintBacktraceEval(hdExec);
+        PrintBacktraceEval (  global_stream, hdExec );
         if ( 0 < level ) {
-            PrintBacktraceExec(hdExec,  depth, execStackDepth, 0);
+            PrintBacktraceExec (  global_stream, hdExec,  depth, execStackDepth, 0 );
             --level;
         }
         /* if <level> is negative print the values of the arguments        */
         else {
-            PrintBacktraceExec(hdExec,  depth, execStackDepth, 1);
+            PrintBacktraceExec (  global_stream, hdExec,  depth, execStackDepth, 1 );
             ++level;
         }
         --depth;
@@ -395,10 +443,11 @@ Bag       FunBacktrace2 (Bag hdCall)
 
     /* print the bottom of the function stack                              */
     if ( hdExec == 0 ) {
-        PrintBacktraceExec(0, depth, execStackDepth, 0);
+        PrintBacktraceExec (  global_stream, 0, depth, execStackDepth, 0 );
     }
     else {
-        Pr("...\n",0,0);
+        // Pr( "...\n",0,0 );
+        SyFmtPrint (  global_stream, "...\n" );
     }
     
     return HdVoid;
@@ -427,16 +476,17 @@ Bag       FunBacktraceTo (Bag hdCall)
     if ( ! IsString(hdName) ) return Error(usage,0,0);
     if ( GET_TYPE_BAG(hdLevel)!=T_INT) return Error(usage,0,0);
 
+    /* Not doing output files ?? */
     /* try to open the given output file, raise an error if you can not    */
-    if ( OpenOutput( (char*)PTR_BAG(hdName) ) == 0 )
-        return Error("BacktraceTo: can not open '%s' for writing",
-		     (Int)PTR_BAG(hdName), 0);
+    /* if ( OpenOutput( (char*)PTR_BAG(hdName) ) == 0 ) */
+    /*     return Error("BacktraceTo: can not open '%s' for writing", */
+	/* 	     (Int)PTR_BAG(hdName), 0); */
 
     FunBacktrace(hdLevel);
 
     /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() )
-        Error("BacktraceTo: can not close output, this should not happen",0,0);
+    /* if ( ! CloseOutput() ) */
+    /*     Error("BacktraceTo: can not close output, this should not happen",0,0); */
     return HdVoid;
 }
 
@@ -619,6 +669,9 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 
     ErrorCount++;
 
+    // make debug and post-error eval output goes to stdout as could be inside a file print action
+    global_stream = stdout_stream;
+
 	if ( ! ERROR_QUIET ) {
 
 		/* open the standard error output file                                */
@@ -628,23 +681,48 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 		if (strcmp(msg, "GapBreakpointRd")==0) isBreakpoint = 2;
 		if (strcmp(msg, "GapBreakpointWr")==0) isBreakpoint = 3;
 		if ( DbgInBreakLoop==0 ) {
-			ignore = OpenOutput( "*errout*" );
+			// GONE ignore = OpenOutput( "*errout*" );
 			if (!isBreakpoint)
-				Pr("[[ while reading %s:%d ]]\n", (Int)Input->name, (Int)Input->number);
+				// Pr( "[[ while reading %s:%d ]]\n", (Int)Input->name, (Int)Input->number );
+                SyFmtPrint ( stderr_stream, "[[ while reading %s:%d ]]\n", Input->name, Input->number );
 		}
 		if (isBreakpoint) {
 			switch(isBreakpoint) {
-			case 2: { Pr("Read Access Breakpoint",0,0); break; } 
-			case 3: { Pr("Write Access Breakpoint",0,0); break; }
+			case 2: { // Pr( "Read Access Breakpoint",0,0 ); break; }
+                SyFmtPrint ( stderr_stream, "Read Access Breakpoint" );
+                break;
+            }
+			case 3: { // Pr( "Write Access Breakpoint",0,0 ); break; }
+                SyFmtPrint ( stderr_stream, "Write Access Breakpoint" );
+                break;
+            }
 			default:
-				Pr("Breakpoint",0,0); 
+				// Pr( "Breakpoint",0,0 );
+                SyFmtPrint ( stderr_stream, "Breakpoint" );
 			}
 		} else {
 			/* print the error message, special if called from 'FunError'      */
 			if ( strcmp( msg, "FunError" ) != 0 ) {
-				Pr("Error, ",0,0);  Pr( msg, arg1, arg2 );
+				// Pr( "Error, ",0,0 );  Pr( msg, arg1, arg2 );
+                SyFmtPrint ( stderr_stream, "Error, " );
+                char *locn = strstr ( msg, "%g" );
+                if ( locn != NULL ) {
+                    char *copy = malloc ( strlen(msg) + 1);
+                    strcpy ( copy, msg );
+                    locn = copy + (locn - msg);
+                    *locn = 0;
+                    SyFmtPrint ( stderr_stream, copy, arg1, arg2 );
+                    PrintObj ( stderr_stream, (Obj) arg1, 0 );
+                    locn += 2;
+                    SyFmtPrint ( stderr_stream, locn, arg2, 0 );
+                    free ( copy );
+                }
+                else
+                    SyFmtPrint ( stderr_stream,  msg, arg1, arg2  );
 			} else {
-				Pr("Error, ",0,0);  FunPrint( (Bag)arg1 );
+				// Pr( "Error, ",0,0 );  FunPrint( (Bag)arg1 );
+                SyFmtPrint ( stderr_stream, "Error, " );
+                FunPrint( (Bag)arg1 );
 			}
 		}
 
@@ -660,15 +738,20 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			Pr(" in\n",0,0);
 			*/
 			if (DbgEvalStackTop>0 && strcmp( msg, "FunError" ) != 0) {
-				Pr(" at\n", 0, 0 );
-				Print( EvalStack[DbgEvalStackTop] );
-				Pr(" ...",0,0);
+				// Pr( " at\n", 0, 0  );
+				// Print( EvalStack[DbgEvalStackTop] );
+				// Pr( " ...",0,0 );
+                SyFmtPrint ( stderr_stream, " at\n" );
+                PrintObj ( stderr_stream, EvalStack[DbgEvalStackTop], 0 );
+                SyFmtPrint ( stderr_stream, " ..." );
 			}
 
-			Pr(" in\n",0,0);
+			// Pr( " in\n",0,0 );
+            SyFmtPrint ( stderr_stream, " in\n" );
 		}
 		else {
-			Pr("\n",0,0);
+			// Pr( "\n",0,0 );
+            SyFmtPrint ( stderr_stream, "\n" );
 		}
 
 		if ( DbgInBreakLoop == 0 ){
@@ -697,7 +780,8 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 						FunBacktrace2( (Bag)0 );
 					else {
 						FunBacktrace( (Bag)0 );
-						Pr("web:error\n", 0, 0);
+						// Pr( "web:error\n", 0, 0 );
+                        SyFmtPrint ( stderr_stream, "web:error\n" );
 					}
 					DbgErrorLoopStarting();
 				} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }
@@ -724,7 +808,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 							LeaveDbgStack(); 
 							SET_BAG(HdTilde, 0,  hdTilde ); /* restore ~ */
 							ignore = CloseInput();
-							ignore = CloseOutput();
+							// GONE ignore = CloseOutput();
 							/*InError = 0;*/
 							return PTR_BAG(hd)[0];
 						}
@@ -738,8 +822,10 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 							SET_BAG(HdLast, 0,  hd );
 							if ( *In != ';' ) {
 								Try {
-									Print( hd );
-									Pr("\n",0,0);
+									// Print( hd );
+                                    PrintObj ( stderr_stream, hd, 0 );
+									// Pr( "\n",0,0 );
+                                    SyFmtPrint ( stderr_stream, "\n" );
 								} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }
 							}
 						}
@@ -754,7 +840,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 			while ( EvalStackTop > 0 ) EVAL_STACK_POP;
 
 			/* close "*errout*" and return to the main read-eval-print loop        */
-			while ( CloseOutput() ) ;
+			// GONE while ( CloseOutput() ) ;
 			while ( CloseInput() ) ;
 		} else { // if we are already in error loop just cleanup stack
 			while ( HdExec != DbgStackExec() )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
@@ -845,11 +931,13 @@ Bag       FunREAD (Bag hdCall)
 
 	UInt processInclude;
 
+    //  printf ( "\nEnter FunREAD: " );
     /* check the number and type of arguments                              */
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD && GET_SIZE_BAG(hdCall) != 3*SIZE_HD )
         return Error("usage: READ( <filename>, [<pkg>] )",0,0);
     hdName = EVAL( PTR_BAG(hdCall)[1] );
     if ( ! IsString(hdName) ) return Error("usage: READ( <filename> )",0,0);
+    //  printf ( "file = %s", (char*)PTR_BAG(hdName) );
     if ( GET_SIZE_BAG(hdCall) == 3*SIZE_HD ) {
         hdPkg = EVAL(PTR_BAG(hdCall)[2]);
 	hdPkg = StartPackageSpec(hdPkg); /* try it out */
@@ -888,11 +976,22 @@ Bag       FunREAD (Bag hdCall)
     /* close the input file again, and return 'true'                       */
     if ( ! CloseInput() )
         Error("READ: can not close input, this should not happen",0,0);
+    //  printf ( " ... done\n" );
 	
 	return HdTrue;
 }
 
 
+/****************************************************************************
+**
+*F  FunChangeDir( <hdCall> ) . . . . . . . . . . . . . .  internal function 'SyChDir'
+**
+**  'FunChangeDir' implements the internal function 'SyChDir'.
+**
+**  Change dir takes in a path string and attempts to change to that working directory.
+**
+**  'CHANGEDIR( <string> )'
+*/
 Bag     FunChangeDir (Bag hdCall)
 {
     Bag           hd,  hdName,  hdPkg;
@@ -904,13 +1003,21 @@ Bag     FunChangeDir (Bag hdCall)
     hdName = EVAL( PTR_BAG(hdCall)[1] );
     if ( ! IsString(hdName) ) return Error("usage: CHANGEDIR( <filename> )",0,0);
 
-    if ( ! (int)ChDir( (const char*)PTR_BAG(hdName) ) )
+    if ( ! SyChDir ( (const char *)PTR_BAG(hdName) ) )
         return HdFalse;
 
     return HdTrue;
 }
 
 
+/****************************************************************************
+**
+*F  FunReadString( <hdCall> ) . . . . . . . . . . . . . .  internal function 'GReadFile'
+**
+**  'FunReadString' implements the internal function 'GReadFile'.
+**
+**  'READSTR( <filename> );'
+*/
 Bag       FunReadString (Bag hdCall)
 {
     Bag           hdList,  hdName;
@@ -991,6 +1098,45 @@ Bag       FunAUTO (Bag hdCall)
     return HdVoid;
 }
 
+/****************************************************************************
+**
+**  printOneBag( stream, <hd> )   . . . . . . . . . internal function 'Print'
+**
+**  printOneBag encapsulates in a single function code that appeared in several
+**  places, and is used to print a single object to the relevant output stream.
+*/
+
+void printOneBag ( STREAM stream, Bag hd )
+{
+    Int     type;
+
+    IsString ( hd );            // Must call this -- converts packed char lists to strings
+
+    type = GET_TYPE_BAG(hd);
+    switch (type) {
+    case T_MAKEFUNC:
+        PrintFunction ( stream, hd, 0 );
+        break;
+    case T_FUNCTION:
+        PrintFunction ( stream, hd, 0 );
+        break;
+    case  T_MAKEMETH:
+        PrintMethod ( stream, hd, 0 );
+        break;
+    case  T_METHOD:
+        PrintMethod ( stream, hd, 0 );
+        break;
+    case T_VOID:
+        break;
+    case T_STRING:
+        PrintString ( stream, hd, 0 );
+        break;
+    default:
+        PrintObj ( stream, hd, 0 );
+        break;
+    }
+}
+
 
 /****************************************************************************
 **
@@ -1030,51 +1176,18 @@ Bag       FunPrint (Bag hdCall)
     for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
 	Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
-	type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  PrintString( hd );
-        else if ( type == T_MAKEFUNC )           PrintFunction( hd );
-        else if ( type == T_FUNCTION )           PrintFunction( hd );
-        else if ( type == T_MAKEMETH )           PrintMethod( hd );
-        else if ( type == T_METHOD )             PrintMethod( hd );
-        else if ( type != T_VOID )               Print( hd );
-        else  /*hd = Error("function must return a value",0,0);*/;
+        printOneBag ( global_stream, hd );
     }
 
     return HdVoid;
 }
 
-/****************************************************************************
-**
-*F  Fun_Pr( <hdCall> ) . . . . . . . . . . . . . . . internal function '_Pr'
-**
-**  'Fun_Pr' implements direct interface for Pr() function. It can print
-**  strings only. String passed directly into Pr() without any processing.
-**
-**  _Pr( <string>, <string>, ... )
-*/
-
-Bag       Fun_Pr (Bag hdCall)
-{
-    Bag           hd;
-    Int                i;
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-	Int type;
-        hd = EVAL( PTR_BAG(hdCall)[i] );
-	type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  Pr( CSTR_STRING (hd), 0, 0 );
-        else  /*hd = Error("function must return a value",0,0);*/;
-    }
-
-    return HdVoid;
-}
 
 /****************************************************************************
 **
-*F  FunPrntTo( <hdCall> ) . . . . . . . . . . . . internal function 'PrintTo'
+*F  FunPrintTo( <hdCall> ) . . . . . . . . . . . . internal function 'PrintTo'
 **
-**  'FunPrntTo' implements the internal function 'PrintTo'.  The stupid  name
+**  'FunPrintTo' implements the internal function 'PrintTo'.  The stupid  name
 **  is neccessary to avoid a name conflict with 'FunPrint'.
 **
 **  'PrintTo( <filename>, <obj1>, <obj2>... )'
@@ -1097,10 +1210,14 @@ Bag       Fun_Pr (Bag hdCall)
 **
 **  See the note about empty string literals and empty lists in 'Print'.
 */
-Bag       FunPrntTo (Bag hdCall)
+
+Bag       FunPrintTo(Bag hdCall)
 {
-    Bag           hd;
-    Int                i;
+    Bag     hd;
+    Int     i, type;
+    STREAM  stream, save_stream;
+    char   *filename;
+    FILE   *file;
 
     /* check the number and type of the arguments, nothing special         */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
@@ -1110,93 +1227,28 @@ Bag       FunPrntTo (Bag hdCall)
         return Error("usage: PrintTo( <file>, <obj>, <obj>... )",0,0);
 
     /* try to open the given output file, raise an error if you can not    */
-    if ( OpenOutput( (char*)PTR_BAG(hd) ) == 0 )
-        return Error("PrintTo: can not open the file for writing",0,0);
+    filename = (char *)PTR_BAG(hd);
+    file = SyFileOpen ( filename, "w" );
+    if ( file == (FILE *)NULL )
+        return Error ( "PrintTo: can not open the file for writing", 0, 0 );
+
+    SET_STREAM_FILE ( stream, file );
+    save_stream = global_stream;
+    global_stream = stream;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-	Int type;
-        hd = EVAL( PTR_BAG(hdCall)[i] );
-	type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  PrintString( hd );
-        else if ( type == T_MAKEFUNC )           PrintFunction( hd );
-        else if ( type == T_FUNCTION )           PrintFunction( hd );
-        else if ( type == T_MAKEMETH )           PrintMethod( hd );
-        else if ( type == T_METHOD )             PrintMethod( hd );
-	else if ( type != T_VOID )               Print( hd );
-        else                                           Pr("",0,0);
-    }
-
-    /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() )
-        Error("PrintTo: can not close output, this should not happen",0,0);
-    return HdVoid;
-}
-
-Int            OpenStringOutput ();
-Bag            ReturnStringOutput ();
-Int            CloseStringOutput (void);
-
-Bag       FunPrntToString (Bag hdCall)
-{
-    Bag           hd, hdList;
-    Int                i;
-
-    /* check the number and type of the arguments, nothing special         */
-    if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
-        return Error("usage: PrintTo( <file>, <obj>, <obj>... )",0,0);
-    //hd = EVAL( PTR_BAG(hdCall)[1] );
-
-    /* try to open the given output file, raise an error if you can not    */
-    if ( OpenStringOutput( ) == 0 )
-        return Error("PrintTo: can not open the file for writing",0,0);
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
         Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
-        type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  PrintString( hd );
-        else if ( type == T_MAKEFUNC )           PrintFunction( hd );
-        else if ( type == T_FUNCTION )           PrintFunction( hd );
-        else if ( type == T_MAKEMETH )           PrintMethod( hd );
-        else if ( type == T_METHOD )             PrintMethod( hd );
-        else if ( type != T_VOID )               Print( hd );
-        else                                           Pr("",0,0);
+        printOneBag ( stream, hd );
     }
 
-    hdList = ReturnStringOutput();
-
     /* close the output file again, and return nothing                     */
-    if ( ! CloseStringOutput() )
-        Error("PrintTo: can not close output, this should not happen",0,0);
-    return hdList;
+    global_stream = save_stream;
+    SyFileClose ( streamFile(stream) );
+
+    return HdVoid;
 }
-
-/****************************************************************************
-**
-*F  FunStringPrint( <hdCall> ) . . . . . . . . . .  Prints to a string
-**
-****************************************************************************/
-
-Bag FunStringPrint (Bag hdCall)
-{
-    Obj hdRes = 0;
-    
-    /* try to to redirect output to a memory buffer                        */
-    if ( OpenMemory() == 0 )
-        return Error("StringPrint: can not redirect output to string.",0,0);
-
-    /* Print the stuff */
-    FunPrint(hdCall);
-    
-    /* close the output and return string                                  */
-    if ( ! CloseMemory(&hdRes) )
-        Error("StringPrint: can not close output, this should not happen",0,0);
-
-    return hdRes; 
-}
-
 
 
 /****************************************************************************
@@ -1217,8 +1269,12 @@ Bag FunStringPrint (Bag hdCall)
 */
 Bag       FunAppendTo (Bag hdCall)
 {
-    Bag           hd;
-    Int                i;
+    Bag         hd;
+    Int         i, type;
+    STREAM      stream, save_stream;
+    char        *filename;
+    FILE        *file;
+
 
     /* check the number and type of the arguments, nothing special         */
     if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
@@ -1228,26 +1284,92 @@ Bag       FunAppendTo (Bag hdCall)
         return Error("usage: AppendTo( <file>, <obj>, <obj>... )",0,0);
 
     /* try to open the given output file, raise an error if you can not    */
-    if ( OpenAppend( (char*)PTR_BAG(hd) ) == 0 )
-        return Error("AppendTo: can not open the file for appending",0,0);
+    filename = (char *)PTR_BAG(hd);
+    file = SyFileOpen ( filename, "a" );
+    if ( file == (FILE *)NULL )
+        return Error("PrintTo: can not open the file for writing", 0, 0);
+
+    SET_STREAM_FILE ( stream, file );
+    save_stream = global_stream;
+    global_stream = stream;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2; i < GET_SIZE_BAG(hdCall)/SIZE_HD; ++i ) {
-	Int type;
+        Int type;
         hd = EVAL( PTR_BAG(hdCall)[i] );
-	type = GET_TYPE_BAG( hd );
-        if ( IsString( hd ) && GET_TYPE_BAG(hd) == T_STRING )  PrintString( hd );
-        else if ( type == T_MAKEFUNC )           PrintFunction( hd );
-        else if ( type == T_FUNCTION )           PrintFunction( hd );
-	else if ( type == T_MAKEMETH )           PrintMethod( hd );
-        else if ( type == T_METHOD )             PrintMethod( hd );
-        else if ( type != T_VOID )               Print( hd );
-        else                                           Pr("",0,0);
+        printOneBag ( stream, hd );
     }
 
     /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() )
-       Error("AppendTo: can not close output, this should not happen",0,0);
+    global_stream = save_stream;
+    SyFileClose ( streamFile(stream) );
+
+    return HdVoid;
+}
+
+
+/****************************************************************************
+**
+*F  FunPrintToString( <obj>, <obj>... ) . . . internal function PrintToString
+**
+**  'FunPrintToString' implements the internal function 'PrintToString'.
+**
+**  'PrintToString( <obj>, <obj>, <obj>... )'
+** 
+**  Print To String takes in <obj1>, <obj2>, etc. and will combine
+**  them into one <string> element
+** 
+**  See the note about empty string literals and empty lists in 'Print'.
+*/
+Bag     FunPrintToString ( Bag hdCall )
+{
+    Bag     hd;
+    Int     i;
+    STREAM  stream, save_stream;
+    char    *newstr = NULL;
+
+    /* check the number and type of the arguments, nothing special         */
+    if ( GET_SIZE_BAG(hdCall) == SIZE_HD )
+        return Error("usage: PrintToString( <obj>, <obj>, <obj>... )",0,0);
+    //hd = EVAL( PTR_BAG(hdCall)[1] );
+
+    stream.type = STREAM_TYPE_STRING;
+    stream.U.string_ptr = &newstr;
+    save_stream = global_stream;
+    global_stream = stream;
+
+    for (i = 1; i < (GET_SIZE_BAG(hdCall) / SIZE_HD); ++i)
+    {
+        Int type;
+        hd = EVAL(PTR_BAG(hdCall)[i]);
+        printOneBag ( stream, hd );
+    }
+
+    global_stream = save_stream;
+
+    if (newstr != 0) {
+        Bag strBag;
+        int slen;
+
+        slen = strlen(newstr);
+        strBag = NewBag(T_STRING, slen + 1);
+        *((char*)PTR_BAG(strBag)) = '\0';
+        strncpy((char*)PTR_BAG(strBag), newstr, slen);
+        free(newstr);
+
+        /* hd = NewBag ( T_LIST, 1 * SIZE_HD ); */
+        /* slen = PLEN_SIZE_PLIST ( GET_SIZE_BAG ( hd ) ); */
+        /* printf ( "PrintToString: slen = %d\n", slen ); */
+        /* Resize ( hd, SIZE_PLEN_PLIST( slen + 1 ) ); */
+        /* SET_LEN_PLIST ( hd, slen + 1 ); */
+        /* printf ( "PrintToString: list resized to: %d\n", (slen + 1) ); */
+        /* SET_BAG ( hd,  slen + 1, strBag ); */
+        return strBag;              //  hd;
+    }
+    else {
+        printf("New String Null\n");
+    }
+
     return HdVoid;
 }
 
@@ -1324,7 +1446,7 @@ Bag       FunLogInputTo (Bag hdCall)
     else if ( GET_SIZE_BAG(hdCall) == 2 * SIZE_HD ) {
         hdName = EVAL( PTR_BAG(hdCall)[1] );
         if ( ! IsString(hdName) )
-           return Error("usage: LogInputTo() or LogTo( <string> )",0,0);
+           return Error("usage: LogInputTo() or LogInputTo( <string> )",0,0);
         if ( ! OpenInputLog( (char*)PTR_BAG(hdName) ) )
            return Error("LogInputTo: cannot log to %s",(Int)PTR_BAG(hdName),0);
     }
@@ -1347,9 +1469,13 @@ Bag       FunLogInputTo (Bag hdCall)
 */
 Bag       FunHelp (Bag hdCall)
 {
-    Pr("Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n"
-       "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n"
-       "Use ?<func> or Doc(<func>) to learn about a function or a package\n", 0, 0);
+    // Pr("Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n"
+    //    "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n"
+    //    "Use ?<func> or Doc(<func>) to learn about a function or a package\n", 0, 0);
+    char *helpString = "Use Dir(spiral) and Dir(gap) to see a list of SPIRAL and GAP packages\n" 
+        "Use Dir(spiral.<pkg>) and Dir(gap.<pkg>) to see contents of <pkg>\n" 
+        "Use ?<func> or Doc(<func>) to learn about a function or a package\n";
+    SyFmtPrint (  global_stream, "%s", helpString );
     return HdVoid;
 }
 
@@ -1605,14 +1731,14 @@ Bag       FunTYPE (Bag hdCall)
     Bag           hdObj;
 
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: GET_TYPE_BAG( <obj> )",0,0);
+        return Error("usage: TYPE( <obj> )",0,0);
     hdObj  = EVAL( PTR_BAG(hdCall)[1] );
     if ( hdObj == 0 ) {
         hdType = NewBag( T_STRING, 5 );
         strncat( (char*)PTR_BAG(hdType), "null", 4 );
     }
     else {
-		char *objtyp = InfoBags[GET_TYPE_BAG(hdObj)].name;
+		char *objtyp = (char *)InfoBags[GET_TYPE_BAG(hdObj)].name;
         hdType = NewBag( T_STRING, strlen( objtyp ) + 1 );
         strncat( (char*)PTR_BAG(hdType), objtyp,
                    strlen( objtyp ) + 1 );
@@ -1692,7 +1818,7 @@ Bag       FunSIZE (Bag hdCall)
     Bag           hdObj;
 
     if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD )
-        return Error("usage: GET_SIZE_BAG( <obj> )",0,0);
+        return Error("usage: SIZE( <obj> )",0,0);
     hdObj  = EVAL( PTR_BAG(hdCall)[1] );
     MarkObj( hdObj );
     size = SizeObj( hdObj );
@@ -1736,28 +1862,39 @@ Bag       FunGASMAN (Bag hdCall)
             Int sumSizeLive = 0;
             Int sumNrAll = 0;
             Int sumSizeAll = 0;
-            Pr("\t\t    type     alive     size     total     size\n",0,0);
+            // Pr( "\t\t    type     alive     size     total     size\n",0,0 );
+            SyFmtPrint (  global_stream, "\t\t    type     alive     size     total     size\n" );
             for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) {
-                Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
+                // Pr( "%24s  ",   (Int)InfoBags[k].name, 0  );
+                SyFmtPrint (  global_stream, "%24s  ",   (Int)InfoBags[k].name );
                 sumNrLive += InfoBags[k].nrLive;
                 sumSizeLive += InfoBags[k].sizeLive;
-                Pr("%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10,
-                               (Int)InfoBags[k].sizeLive >> 10);
+                // Pr( "%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10,
+                //                (Int)InfoBags[k].sizeLive >> 10 );
+                SyFmtPrint (  global_stream, "%8dk %8dk  ", InfoBags[k].nrLive >> 10,
+                             InfoBags[k].sizeLive >> 10 );
                 sumNrAll += InfoBags[k].nrAll;
                 sumSizeAll += InfoBags[k].sizeAll;
-                Pr("%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10,
-                               (Int)InfoBags[k].sizeAll >> 10);
+                // Pr( "%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10,
+                //                (Int)InfoBags[k].sizeAll >> 10 );
+                SyFmtPrint (  global_stream, "%8dk %8dk\n", InfoBags[k].nrAll >> 10,
+                         InfoBags[k].sizeAll >> 10 );
             }
-            Pr("%24s  ",   (Int)"SUMMARY", 0 );
+            // Pr( "%24s  ",   (Int)"SUMMARY", 0  );
+            SyFmtPrint (  global_stream, "%24s  ", "SUMMARY" );
             if (sumSizeLive<1000000000) {
-                Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
+                // Pr( "%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive );
+                SyFmtPrint (  global_stream, "%9d %9d  ", sumNrLive, sumSizeLive );
             } else {
-                Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
+                // Pr( "%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10 );
+                SyFmtPrint (  global_stream, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10 );
             }
             if (sumSizeAll<1000000000) {
-                Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
+                // Pr( "%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll );
+                SyFmtPrint (  global_stream, "%9d %9d\n", sumNrAll, sumSizeAll );
             } else {
-                Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
+                // Pr( "%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10 );
+                SyFmtPrint (  global_stream, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10 );
             }
         } 
 
@@ -1766,38 +1903,53 @@ Bag       FunGASMAN (Bag hdCall)
             Int sumSizeLive = 0;
             Int sumNrAll = 0;
             Int sumSizeAll = 0;
-            Pr("\t\t    type     alive     size     total     size\n",0,0);
+            // Pr( "\t\t    type     alive     size     total     size\n",0,0 );
+            SyFmtPrint (  global_stream, "\t\t    type     alive     size     total     size\n" );
             for ( k = T_VOID; k < T_ILLEGAL-1; k++ ) {
                     if ( (InfoBags[k].sizeLive>0) && (InfoBags[k].sizeAll>0) ) {
-                        Pr("%24s  ",   (Int)InfoBags[k].name, 0 );
+                        // Pr( "%24s  ",   (Int)InfoBags[k].name, 0  );
+                        SyFmtPrint (  global_stream, "%24s  ", InfoBags[k].name );
                         sumNrLive += InfoBags[k].nrLive;
                         sumSizeLive += InfoBags[k].sizeLive;
                         if (InfoBags[k].sizeLive<1000000000)
-                            Pr("%9d %9d  ",(Int)InfoBags[k].nrLive,
-                               (Int)InfoBags[k].sizeLive);
+                            // Pr( "%9d %9d  ",(Int)InfoBags[k].nrLive,
+                            //    (Int)InfoBags[k].sizeLive );
+                            SyFmtPrint (  global_stream, "%9d %9d  ", InfoBags[k].nrLive,
+                                         InfoBags[k].sizeLive );
                         else 
-                            Pr("%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10,
-                               (Int)InfoBags[k].sizeLive >> 10);
+                            // Pr( "%8dk %8dk  ",(Int)InfoBags[k].nrLive >> 10,
+                            //    (Int)InfoBags[k].sizeLive >> 10 );
+                            SyFmtPrint (  global_stream, "%8dk %8dk  ", InfoBags[k].nrLive >> 10,
+                                         InfoBags[k].sizeLive >> 10 );
                         sumNrAll += InfoBags[k].nrAll;
                         sumSizeAll += InfoBags[k].sizeAll;
                         if (InfoBags[k].sizeAll<1000000000)
-                            Pr("%9d %9d\n",(Int)InfoBags[k].nrAll,
-                               (Int)InfoBags[k].sizeAll);
+                            // Pr( "%9d %9d\n",(Int)InfoBags[k].nrAll,
+                            //     (Int)InfoBags[k].sizeAll );
+                            SyFmtPrint (  global_stream, "%9d %9d\n", InfoBags[k].nrAll,
+                                         InfoBags[k].sizeAll );
                         else
-                            Pr("%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10,
-                               (Int)InfoBags[k].sizeAll >> 10);
+                            // Pr( "%8dk %8dk\n",(Int)InfoBags[k].nrAll >> 10,
+                            //    (Int)InfoBags[k].sizeAll >> 10 );
+                            SyFmtPrint (  global_stream, "%8dk %8dk\n", InfoBags[k].nrAll >> 10,
+                                         InfoBags[k].sizeAll >> 10 );
                 }
             }
-            Pr("%24s  ",   (Int)"SUMMARY", 0 );
+            // Pr( "%24s  ",   (Int)"SUMMARY", 0  );
+            SyFmtPrint (  global_stream, "%24s  ", "SUMMARY" );
             if (sumSizeLive<1000000000) {
-                Pr("%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive);
+                // Pr( "%9d %9d  ",(Int)sumNrLive, (Int)sumSizeLive );
+                SyFmtPrint (  global_stream, "%9d %9d  ", sumNrLive, sumSizeLive );
             } else {
-                Pr("%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10);
+                // Pr( "%8dk %8dk  ",(Int)sumNrLive >> 10, (Int)sumSizeLive >> 10 );
+                SyFmtPrint (  global_stream, "%8dk %8dk  ", sumNrLive >> 10, sumSizeLive >> 10 );
             }
             if (sumSizeAll<1000000000) {
-                Pr("%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll);
+                // Pr( "%9d %9d\n",(Int)sumNrAll, (Int)sumSizeAll );
+                SyFmtPrint (  global_stream, "%9d %9d\n", sumNrAll, sumSizeAll );
             } else {
-                Pr("%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10);
+                // Pr( "%8dk %8dk\n",(Int)sumNrAll >> 10, (Int)sumSizeAll >> 10 );
+                SyFmtPrint (  global_stream, "%8dk %8dk\n", sumNrAll >> 10, sumSizeAll >> 10 );
             }
         }
 
@@ -1815,7 +1967,7 @@ Bag       FunGASMAN (Bag hdCall)
             CollectGarb();
 			usedpc = (float)(100 * SizeLiveBags) / SizeAllArenas;
 			if (SyMsgsFlagBags) {
-				fprintf(stderr, "%dk live bags, %.1f%% of total Memory Arenas (%dk)\n",
+				fprintf(stderr, "%ldk live bags, %.1f%% of total Memory Arenas (%ldk)\n",
 						SizeLiveBags / 1024, usedpc, SizeAllArenas / 1024);
 				fflush(stderr);
 			}
@@ -1997,6 +2149,10 @@ Bag     FunTabToList(Bag hdCall) {
     return TableToList(hd);
 }
 
+STREAM stdout_stream;
+STREAM stderr_stream;
+STREAM global_stream;
+
 
 /****************************************************************************
 **
@@ -2012,6 +2168,13 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     exc_type_t          e;
     char*		prompt;
     /* Initialize all subpackages of GAP.                                  */
+
+    // init STREAM for stdout
+    SET_STREAM_FILE(stdout_stream, stdout);
+    // init STREAM for stderr
+    SET_STREAM_FILE(stderr_stream, stderr);
+
+    global_stream = stdout_stream;
 
 #ifdef DEBUG
 #ifndef WIN32
@@ -2063,10 +2226,8 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     InstIntFunc( "CHANGEDIR",  FunChangeDir  );
     InstIntFunc( "AUTO",       FunAUTO       );
     InstIntFunc( "Print",      FunPrint      );
-    InstIntFunc( "PrintToString",    FunPrntToString     );
-    InstIntFunc( "_Pr",        Fun_Pr        );
-    InstIntFunc( "PrintTo",    FunPrntTo     );
-    InstIntFunc( "StringPrint",FunStringPrint);
+    InstIntFunc( "PrintToString",    FunPrintToString     );
+    InstIntFunc( "PrintTo",    FunPrintTo     );
     InstIntFunc( "AppendTo",   FunAppendTo   );
     InstIntFunc( "LogTo",      FunLogTo      );
     InstIntFunc( "LogInputTo", FunLogInputTo );
@@ -2097,10 +2258,10 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     /* read all init files, stop doing so after quiting from Error         */
     Try {
         for ( i=0; i<sizeof(SyInitfiles)/sizeof(SyInitfiles[0]); ++i ) {
-	    char * file = SyInitfiles[i];
-	    Obj pkg;
+            char * file = SyInitfiles[i];
+            Obj pkg;
             if ( file[0] != '\0' ) {
-		/*Pr("Reading %s...\n", file, 0);*/
+                /*Pr("Reading %s...\n", file, 0);*/
                 if ( OpenInput( file ) ) {
                     while ( Symbol != S_EOF ) {
                         hd = ReadIt();
@@ -2108,12 +2269,12 @@ void            InitGap (int argc, char** argv, int* stackBase) {
                         if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
                             Error("Read: 'return' must not be used",0,0);
                         else if ( hd == HdReturn )
-                             Error("Read: 'quit' must not be used",0,0);
-		    }		    
-		    pkg = Input->package;
+                            Error("Read: 'quit' must not be used",0,0);
+                    }		    
+                    pkg = Input->package;
                     ignore = CloseInput();
-		    if(pkg != 0) /* pkg is 0 if no variables were defined */
-		      PushNamespace(pkg);
+                    if(pkg != 0) /* pkg is 0 if no variables were defined */
+                        PushNamespace(pkg);
                 }
                 else {
                     Error("can't read from \"%s\"",(Int)file,0);
@@ -2121,36 +2282,39 @@ void            InitGap (int argc, char** argv, int* stackBase) {
             }
         }
         /* read prompts from GAPInfo.prompts */
-	hd = GetPromptString(PROMPT_FIELD_DBG);
-	if (hd) {
-	    prompt = HD_TO_STRING(hd);
-	    if (strlen(prompt)<sizeof(DbgPrompt))
-		strncpy(DbgPrompt, prompt, strlen(prompt)+1);
-	}
-	hd = GetPromptString(PROMPT_FIELD_BRK);
-	if (hd) {
-	    prompt = HD_TO_STRING(hd);
-	    if (strlen(prompt)<sizeof(BrkPrompt))
-		strncpy(BrkPrompt, prompt, strlen(prompt)+1);
-	}
+        hd = GetPromptString(PROMPT_FIELD_DBG);
+        if (hd) {
+            prompt = HD_TO_STRING(hd);
+            if ( strlen(prompt) < sizeof(DbgPrompt) )
+                // strncpy ( DbgPrompt, prompt, strlen(prompt)+1); // prompt smaller, just copy
+                strcpy ( DbgPrompt, prompt );       
+        }
+        hd = GetPromptString(PROMPT_FIELD_BRK);
+        if (hd) {
+            prompt = HD_TO_STRING(hd);
+            if ( strlen(prompt) < sizeof(BrkPrompt) )
+                //	strncpy(BrkPrompt, prompt, strlen(prompt)+1);	// prompt smaller, just copy
+                strcpy ( BrkPrompt, prompt );
+        }
         /* read prompts from environment */
-	prompt = getenv("SPIRAL_DBG_PROMPT");
-	if (prompt != NULL && strlen(prompt)<sizeof(DbgPrompt)) {
-	    strncpy(DbgPrompt, prompt, strlen(prompt)+1);
-	}
-	prompt = getenv("SPIRAL_BRK_PROMPT");
-	if (prompt != NULL && strlen(prompt)<sizeof(BrkPrompt)) {
-	    strncpy(BrkPrompt, prompt, strlen(prompt)+1);
-	}
+        prompt = getenv ("SPIRAL_DBG_PROMPT");
+        if ( prompt != NULL && strlen(prompt) < sizeof(DbgPrompt) ) {
+            strcpy ( DbgPrompt, prompt );           // strncpy(DbgPrompt, prompt, strlen(prompt)+1);
+        }
+        prompt = getenv ("SPIRAL_BRK_PROMPT");
+        if ( prompt != NULL && strlen(prompt) < sizeof(BrkPrompt) ) {
+            strcpy ( BrkPrompt, prompt );           // strncpy(BrkPrompt, prompt, strlen(prompt)+1);
+        }
 
     }
+
     Catch(e) {
-      /* exceptions raised using Error() are already printed at this point */
-      if(e!=ERR_GAP) {
-	while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
-	while ( EvalStackTop>0 ) EVAL_STACK_POP;
-	exc_show();
-      }
+        /* exceptions raised using Error() are already printed at this point */
+        if(e!=ERR_GAP) {
+            while ( HdExec != 0 )  ChangeEnv( PTR_BAG(HdExec)[4], CEF_CLEANUP );
+            while ( EvalStackTop>0 ) EVAL_STACK_POP;
+            exc_show();
+        }
     }
 
 }

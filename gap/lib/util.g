@@ -988,11 +988,97 @@ PrintEvalF := function(arg)
     fi;
 end;
 
-# Checks if string ends with substring
+
+# EndsWith(str,suffix)
+#   checks if string ends with substring
 EndsWith := (str,suffix) -> TakeLast(str,Length(suffix)) = suffix;
 
-# Checks if string starts with substring
+
+# StartsWith := (str,prefix)
+#   checks if string starts with substring
 StartsWith := (str,prefix) -> Take(str,Length(prefix)) = prefix;
+
+
+# list of whitespace characters
+_whitespace := [' ', '\t', '\n', '\r'];
+
+
+# IsChar(ch)
+#   checks is ch is a character
+IsChar := (x)->When(BagType(x)=T_CHAR, true, false);
+
+
+# IsWhitespace(ch)
+#   checks if ch is a whitespace characer
+
+IsWhitespace := function(ch)
+    if IsChar(ch) then
+        return ch in _whitespace;
+    elif IsString(ch) and Length(ch) > 0 then
+        return ch[1] in _whitespace;
+    else
+        return false;
+    fi;
+end;
+
+
+# StrStrip(str)
+#   returns a copy of string with whitespace removed from both ends
+
+StrStrip := function(str)
+    local retstr;
+    retstr := str;
+    while IsWhitespace(Take(retstr,1)) do
+        retstr := Drop(retstr,1);
+    od;
+    while IsWhitespace(TakeLast(retstr,1)) do
+        retstr := DropLast(retstr,1);
+    od;
+    return retstr;
+end;
+
+
+# StripOff(str, substr)
+#   returns string with substr removed from end, if it exists
+
+StripOff := function(str, substr)
+    if EndsWith(str, substr) then
+        return Take(str, Length(str) - Length(substr));
+    else
+        return str;
+    fi;
+end;
+
+
+# StrSplit(str, ch)
+#   returns a list of trimmed strings from original string with ch as delimiter
+
+StrSplit := function(instr, sep)
+    local str, s1, strlist, n;
+    if IsString(sep) and Length(sep) > 0 then
+        sep := sep[1];
+    fi;
+    if not IsChar(sep) then
+        return [instr];
+    fi;
+    str := instr;
+    strlist := [];
+    n := FirstPosition(str, sep);
+    while n > 0 do
+        s1 := StrStrip(Take(str, n-1));
+        str := Drop(str,n);
+        if Length(s1) > 0 then
+            Add(strlist,s1);
+        fi;
+        n := FirstPosition(str, sep);
+    od;
+    s1 := StrStrip(str);
+    if Length(s1) > 0 then
+        Add(strlist,s1);
+    fi;
+    return strlist;
+end;
+
 
 # ASCII codes for printable characters
 INT_CHAR := tab(

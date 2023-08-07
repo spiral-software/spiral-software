@@ -6,6 +6,10 @@
 **
 **  A namespace is a table of name->value bindings.
 */
+#include        <stdio.h>
+#include        <stdlib.h>
+#include        <string.h>
+
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"              /* Bag, NewBag, T_STRING, .. */
 #include        "idents.h"
@@ -385,7 +389,7 @@ Obj  FunCurrentDir ( Obj hdCall )
 
     else {
         Int pos;
-		char path_sep = PathSep();
+		char *path_sep = PathSep();
 		Obj hd = StringToHd(file);
 
 		pos = strlen(file);
@@ -477,19 +481,24 @@ Obj FunIsNamespace ( Obj hdCall ) {
 
 Obj  EvNS ( Obj hd ) { return hd; }
 
-void PrNS ( Obj hd ) {
+void    PrNS ( STREAM stream, Obj hd, int indent ) {
     int i, first = 1;
     if ( TableId(hd) != 0 )
-        Pr("%g", (Int)TableId(hd), 0);
+        // Pr("%g", (Int)TableId(hd), 0);
+        PrintObj ( stream, TableId(hd), indent );
     else {
-        Pr("%2>UnnamedNS(",0,0);
+        //**INDENT** Pr( "%2, 0>UnnamedNS(",0,0 );
+        SyFmtPrint ( stream, ", UnnamedNS(" );
         for ( i = 0; i < TableSize(hd); i++ ) {
             if ( PTR_BAG(hd)[i] == 0 || VAR_VALUE(PTR_BAG(hd)[i]) == 0 )  continue;
-            if ( ! first ) Pr(", ", 0, 0);
+            if ( ! first ) // Pr( ", ", 0, 0 );
+                SyFmtPrint ( stream, ", " );
             first = 0;
-            Pr("%g", (Int)PTR_BAG(hd)[i], 0);
+            // Pr("%g", (Int)PTR_BAG(hd)[i], 0);
+            PrintObj ( stream, PTR_BAG(hd)[i], indent );
         }
-        Pr(")%2<",0,0);
+        //**INDENT** Pr( ")%2<",0,0 );
+        SyFmtPrint ( stream, ")" );
     }
 }
 

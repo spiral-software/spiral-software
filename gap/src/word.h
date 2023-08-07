@@ -162,7 +162,7 @@ extern Bag    LtWord ( Bag, Bag );
 **  The function PrWord() prints a word, the empty word is printed as IdWord.
 **  A word is printed as a^-5 * b^10.
 */
-extern void         PrWord ( Bag );
+extern void         PrWord (STREAM stream, Bag hdWrd, int indent);
 
 
 /****************************************************************************

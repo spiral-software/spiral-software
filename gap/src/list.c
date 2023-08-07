@@ -481,14 +481,14 @@ Bag       EvList (Bag hdList)
 
 /****************************************************************************
 **
-*F  PrList(<hdList>)  . . . . . . . . . . . . . . . . . . . . .  print a list
+*F  PrList(<stream, hdList>, indent)  . . . . . . . . . . . . .  print a list
 **
 **  'PrList' prints the list <hdList>.  It is a generic function that can  be
 **  used for all kinds of lists.
 **
 **  Linebreaks are preferred after the commas.
 */
-void            PrList (Bag hdList)
+void    PrList ( STREAM stream, Bag hdList, int indent )
 {
     Int                lenList;        /* logical length of <list>        */
     Bag           hdElm;          /* one element from <list>         */
@@ -498,18 +498,23 @@ void            PrList (Bag hdList)
     lenList = LEN_LIST( hdList );
 
     /* loop over the entries                                               */
-    Pr("%2>[ %2>",0,0);
+    //**INDENT** Pr( "%2>[ %2>",0,0 );
+    SyFmtPrint ( stream, "[ " );
     for ( i = 1;  i <= lenList;  i++ ) {
         hdElm = ELMF_LIST( hdList, i );
         if ( hdElm != 0 ) {
-            if ( 1 < i )  Pr("%<,%< %2>",0,0);
-            Print( hdElm );
+            if ( 1 < i )  //**INDENT** Pr( "%<,%< %2>",0,0 );
+                SyFmtPrint ( stream, ", " );
+            // Print( hdElm );
+            PrintObj ( stream, hdElm, indent );
         }
         else {
-            if ( 1 < i )  Pr("%2<,%2>",0,0);
+            if ( 1 < i )  //**INDENT** Pr( "%2<,%2>",0,0 );
+                SyFmtPrint ( stream, ", " );
         }
     }
-    Pr(" %4<]",0,0);
+    //**INDENT** Pr( " %4<]",0,0 );
+    SyFmtPrint ( stream, " ]" );
 }
 
 
@@ -1756,49 +1761,60 @@ Bag       EvAsssListLevel (Bag hdAss)
 
 /****************************************************************************
 **
-*F  PrElmList(<hdSel>)  . . . . . . . . . . . . . . .  print a list selection
+*F  PrElmList(<stream, hdSel>, indent)  . . . . . . .  print a list selection
 **
 **  'PrElmList' prints the list selection <hdSel>.
 **
 **  Linebreaks are preferred after the '['.
 */
-void            PrElmList (Bag hdSel)
+void    PrElmList ( STREAM stream, Bag hdSel, int indent )
 {
-    Pr("%2>",0,0);  Print( PTR_BAG(hdSel)[0] );
-    Pr("%<[",0,0);  Print( PTR_BAG(hdSel)[1] );
-    Pr("%<]",0,0);
+    //**INDENT** Pr("%2>",0,0);  Print( PTR_BAG(hdSel)[0] );
+    //**INDENT** Pr("%<[",0,0);  Print( PTR_BAG(hdSel)[1] );
+    //**INDENT** Pr("%<]",0,0);
+    PrintObj ( stream, PTR_BAG(hdSel)[0], indent );
+    SyFmtPrint ( stream, "[" );
+    PrintObj ( stream, PTR_BAG(hdSel)[1], indent );
+    SyFmtPrint ( stream, "]" );
 }
 
 
 /****************************************************************************
 **
-*F  PrElmsList(<hdSel>) . . . . . . . . . . . . . . .  print a list selection
+*F  PrElmsList(<stream, hdSel>, indent) . . . . . . .  print a list selection
 **
 **  'PrElmsList' prints the list selection <hdSel>.
 **
 **  Linebreaks are preferred after the '{'.
 */
-void            PrElmsList (Bag hdSel)
+void    PrElmsList ( STREAM stream, Bag hdSel, int indent )
 {
-    Pr("%2>",0,0);  Print( PTR_BAG(hdSel)[0] );
-    Pr("%<{",0,0);  Print( PTR_BAG(hdSel)[1] );
-    Pr("%<}",0,0);
+    //**INDENT** Pr("%2>",0,0);  Print( PTR_BAG(hdSel)[0] );
+    //**INDENT** Pr("%<{",0,0);  Print( PTR_BAG(hdSel)[1] );
+    //**INDENT** Pr("%<}",0,0);
+    PrintObj ( stream, PTR_BAG(hdSel)[0], indent );
+    SyFmtPrint ( stream, "{" );
+    PrintObj ( stream, PTR_BAG(hdSel)[1], indent );
+    SyFmtPrint ( stream, "}" );
 }
 
 
 /****************************************************************************
 **
-*F  PrAssList(<hdAss>)  . . . . . . . . print an assignment to a list element
+*F  PrAssList(<stream, hdAss>, indent)  print an assignment to a list element
 **
 **  'PrAssList' prints the assignment to a list element.
 **
 **  Linebreaks are preferred before the ':='.
 */
-void            PrAssList (Bag hdAss)
+void    PrAssList ( STREAM stream, Bag hdAss, int indent )
 {
-    Pr("%2>",0,0);       Print( PTR_BAG(hdAss)[0] );
-    Pr("%< %>:= ",0,0);  Print( PTR_BAG(hdAss)[1] );
-    Pr("%2<",0,0);
+    //**INDENT** Pr("%2>",0,0);       Print( PTR_BAG(hdAss)[0] );
+    //**INDENT** Pr("%< %>:= ",0,0);  Print( PTR_BAG(hdAss)[1] );
+    //**INDENT** Pr("%2<",0,0);
+    PrintObj ( stream, PTR_BAG(hdAss)[0], indent );
+    SyFmtPrint ( stream, " := " );
+    PrintObj ( stream, PTR_BAG(hdAss)[1], indent );
 }
 
 

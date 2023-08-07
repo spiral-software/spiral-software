@@ -380,15 +380,17 @@ Bag       EvRepeat (Bag hdRep)
 **
 **  A linebreak is forced after each <statement> except the last one.
 */
-void            PrStatseq (Bag hdSSeq)
+void            PrStatseq (STREAM stream, Bag hdSSeq, int indent)
 {
     UInt       k;
 
     /* print the <statements> one after another, separated by linebreaks   */
     for ( k = 0; k < GET_SIZE_BAG(hdSSeq)/SIZE_HD; ++k ) {
-        Print( PTR_BAG(hdSSeq)[k] );
+        //Print( PTR_BAG(hdSSeq)[k] );
+        PrintObj ( stream, PTR_BAG(hdSSeq)[k], 0 );
         if ( k < GET_SIZE_BAG(hdSSeq)/SIZE_HD-1 )
-            Pr(";\n",0,0);
+            //Pr(";\n",0,0);
+            SyFmtPrint(stream,";\n");
     }
 }
 
@@ -402,28 +404,43 @@ void            PrStatseq (Bag hdSSeq)
 **  A Linebreak is forced after the 'then'  and  <statements>.  If  necessary
 **  it is preferred immediately before the 'then'.
 */
-void            PrIf (Bag hdIf)
+void            PrIf (STREAM stream, Bag hdIf, int indent)
 {
     UInt       i;
 
     /* print the 'if' and 'elif' parts                                     */
     for ( i = 0; i < GET_SIZE_BAG(hdIf)/SIZE_HD/2; ++i ) {
-        if ( i == 0 ) Pr("if%4> ",0,0);  else Pr("elif%4> ",0,0);
-        Print( PTR_BAG(hdIf)[2*i] );
-        Pr("%2<  then%2>\n",0,0);
-        Print( PTR_BAG(hdIf)[2*i+1] );
-        Pr(";%4<\n",0,0);
+        if ( i == 0 ) 
+            //**INDENT** Pr("if%4> ",0,0);
+            SyFmtPrint(stream, "if ");
+        else 
+            //**INDENT** Pr("elif%4> ", 0, 0);
+            SyFmtPrint(stream, "elif ");
+        //Print( PTR_BAG(hdIf)[2*i] );
+        //**INDENT** Pr("%2<  then%2>\n",0,0);
+        //Print( PTR_BAG(hdIf)[2*i+1] );
+        //**INDENT** Pr(";%4<\n",0,0);
+
+        PrintObj ( stream, PTR_BAG(hdIf)[2 * i], 0 );
+        SyFmtPrint(stream, "  then\n");
+        PrintObj ( stream, PTR_BAG(hdIf)[2 * i + 1], 0 );
+        SyFmtPrint(stream, ";\n");
     }
 
     /* print the 'else' part if it exists                                  */
     if ( GET_SIZE_BAG(hdIf)/SIZE_HD % 2 != 0 ) {
-        Pr("else%4>\n",0,0);
-        Print( PTR_BAG(hdIf)[ GET_SIZE_BAG(hdIf)/SIZE_HD -1 ] );
-        Pr(";%4<\n",0,0);
+        //**INDENT** Pr("else%4>\n",0,0);
+        //Print( PTR_BAG(hdIf)[ GET_SIZE_BAG(hdIf)/SIZE_HD -1 ] );
+        //**INDENT** Pr(";%4<\n",0,0);
+
+        SyFmtPrint(stream, "else\n");
+        PrintObj ( stream, PTR_BAG(hdIf)[GET_SIZE_BAG(hdIf) / SIZE_HD - 1], 0 );
+        SyFmtPrint(stream, ";\n");
     }
 
     /* print the 'fi'                                                      */
-    Pr("fi",0,0);
+    //Pr("fi",0,0);
+    SyFmtPrint(stream, "fi");
 }
 
 
@@ -436,12 +453,23 @@ void            PrIf (Bag hdIf)
 **  A linebreak is forced after the 'do' and the <statements>.  If  necesarry
 **  it is preferred immediately before the 'in'.
 */
-void            PrFor (Bag hdFor)
+void            PrFor (STREAM stream, Bag hdFor, int indent)
 {
-    Pr("for%4> ",0,0);       Print( PTR_BAG(hdFor)[0] );
-    Pr("%2<  in%2> ",0,0);   Print( PTR_BAG(hdFor)[1] );
-    Pr("%2<  do%2>\n",0,0);  Print( PTR_BAG(hdFor)[2] );
-    Pr(";%4<\nod",0,0);
+    //**INDENT** Pr("for%4> ",0,0);      
+    // Print( PTR_BAG(hdFor)[0] );
+    //**INDENT** Pr("%2<  in%2> ",0,0);  
+    // Print( PTR_BAG(hdFor)[1] );
+    //**INDENT** Pr("%2<  do%2>\n",0,0);  
+    // Print( PTR_BAG(hdFor)[2] );
+    //**INDENT** Pr(";%4<\nod",0,0);
+
+    SyFmtPrint(stream, "for ");
+    PrintObj ( stream, PTR_BAG(hdFor)[0], 0 );
+    SyFmtPrint(stream, "  in ");
+    PrintObj ( stream, PTR_BAG(hdFor)[1], 0 );
+    SyFmtPrint(stream, "  do\n");
+    PrintObj ( stream, PTR_BAG(hdFor)[2], 0 );
+    SyFmtPrint(stream, ";\nod");
 }
 
 
@@ -454,11 +482,19 @@ void            PrFor (Bag hdFor)
 **  A linebreak is forced after the 'do' and the <statements>.  If  necessary
 **  it is preferred immediately before the 'do'.
 */
-void            PrWhile (Bag hdWhile)
+void            PrWhile (STREAM stream, Bag hdWhile, int indent)
 {
-    Pr("while%4> ",0,0);     Print( PTR_BAG(hdWhile)[0] );
-    Pr("%2<  do%2>\n",0,0);  Print( PTR_BAG(hdWhile)[1] );
-    Pr(";%4<\nod",0,0);
+    //**INDENT** Pr("while%4> ",0,0);     
+    //Print( PTR_BAG(hdWhile)[0] );
+    //**INDENT** Pr("%2<  do%2>\n",0,0); 
+    //Print( PTR_BAG(hdWhile)[1] );
+    //**INDENT** Pr(";%4<\nod",0,0);
+
+    SyFmtPrint(stream, "while%4> ");
+    PrintObj ( stream, PTR_BAG(hdWhile)[0], 0 );
+    SyFmtPrint(stream, "  do\n");
+    PrintObj ( stream, PTR_BAG(hdWhile)[1], 0 );
+    SyFmtPrint(stream, ";\nod");
 }
 
 
@@ -470,13 +506,19 @@ void            PrWhile (Bag hdWhile)
 **
 **  A linebreak is forced after the 'repeat' and the <statements>.
 */
-void            PrRepeat (Bag hdRep)
+void            PrRepeat (STREAM stream, Bag hdRep, int indent)
 {
-    Pr("repeat%4>\n",0,0);
-    Print( PTR_BAG(hdRep)[1] );
-    Pr(";%4<\nuntil%2> ",0,0);
-    Print( PTR_BAG(hdRep)[0] );
-    Pr("%2<",0,0);
+    //**INDENT** Pr("repeat%4>\n",0,0);
+    // Print( PTR_BAG(hdRep)[1] );
+    //**INDENT** Pr(";%4<\nuntil%2> ",0,0);
+    // Print( PTR_BAG(hdRep)[0] );
+    //**INDENT**  Pr("%2<",0,0);
+
+    SyFmtPrint(stream, "repeat\n");
+    PrintObj ( stream, PTR_BAG(hdRep)[1], 0 );
+    SyFmtPrint(stream, ";\nuntil ");
+    PrintObj ( stream, PTR_BAG(hdRep)[0], 0 );
+   
 }
 
 

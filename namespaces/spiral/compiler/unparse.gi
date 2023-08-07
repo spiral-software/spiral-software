@@ -584,6 +584,8 @@ Class(CUnparserBase, Unparser, rec(
     tcast := (self, o, i, is) >> Print("((", self.declare(o.args[1], [], i, is), ") ", self(o.args[2],i,is), ")"),
 
     sizeof := (self, o, i, is) >> Print("sizeof(", self.declare(o.args[1], [], i, is), ")"),
+    
+    ckspc := (self, v) >> Cond(IsList(v) and Length(v) > 0, " ", ""),
 
     declare := (self, t, vars, i, is) >> When(
         IsBound(self.(t.name)),
@@ -604,7 +606,7 @@ Class(CUnparserBase, Unparser, rec(
             t.params[1] = 64, "double",
             t.params[1] = 32, "float",
             Error("Type is not supported")
-        )," ",self.infix(vars, ", ",i+is)),
+        ),self.ckspc(vars),self.infix(vars, ", ",i+is)),
 
     T_Int  := (self, t, vars, i, is) >> Print(Cond(
             t.params[1] = 64, "int64_t",
@@ -612,7 +614,7 @@ Class(CUnparserBase, Unparser, rec(
             t.params[1] = 16, "int16_t",
             t.params[1] = 8, "int8_t",
             Error("Type is not supported")
-        ), " ", self.infix(vars, ", ",i+is)),
+        ), self.ckspc(vars), self.infix(vars, ", ",i+is)),
 
     T_UInt  := (self, t, vars, i, is) >> Print(Cond(
             t.params[1] = 64, "uint64_t",
@@ -621,40 +623,41 @@ Class(CUnparserBase, Unparser, rec(
             t.params[1] = 8, "uint8_t",
             t.params[1] = 1, "unsigned __bit",
             Error("Type is not supported")
-        ), " ", self.infix(vars, ", ",i+is)),
+        ), self.ckspc(vars), self.infix(vars, ", ",i+is)),
 
     T_Struct := (self, t, vars, i, is) >> Print(
         t.getName(), " ", self.infix(vars, ", ", i+is)
     ),
 
     TReal  := (self, t, vars, i, is) >> Print(
-        When(IsBound(self.opts.TRealCtype), self.opts.TRealCtype, TReal.ctype), " ",
-        self.infix(vars, ", ",i+is)),
+        When(IsBound(self.opts.TRealCtype), self.opts.TRealCtype, TReal.ctype), 
+        self.ckspc(vars), self.infix(vars, ", ",i+is)),
 
     TInt  := (self, t, vars, i, is) >> Print(
-        When(IsBound(self.opts.TIntCtype), self.opts.TIntCtype, TInt.ctype), " ",
+        When(IsBound(self.opts.TIntCtype), self.opts.TIntCtype, TInt.ctype), self.ckspc(vars),
         self.infix(vars, ", ",i+is)),
 
     TDummy := ~.TInt,
 
     TBool  := (self, t, vars, i, is) >> Print(
-        When(IsBound(self.opts.TIntCtype), self.opts.TIntCtype, TInt.ctype), " ",
+        When(IsBound(self.opts.TIntCtype), self.opts.TIntCtype, TInt.ctype), self.ckspc(vars),
         self.infix(vars, ", ",i+is)),
 
     TUInt  := (self, t, vars, i, is) >> Print(
-        When(IsBound(self.opts.TUIntCtype), self.opts.TUIntCtype, TUInt.ctype), " ",
+        When(IsBound(self.opts.TUIntCtype), self.opts.TUIntCtype, TUInt.ctype), self.ckspc(vars),
         self.infix(vars, ", ",i+is)),
 
     TULongLong  := (self, t, vars, i, is) >> Print(
-        When(IsBound(self.opts.TULongLongCtype), self.opts.TULongLongCtype, TULongLong.ctype), " ",
+        When(IsBound(self.opts.TULongLongCtype), self.opts.TULongLongCtype, TULongLong.ctype),
+        self.ckspc(vars),
         self.infix(vars, ", ",i+is)),
 
     TChar  := (self, t, vars, i, is) >> Print(
-        When(IsBound(self.opts.TCharCtype), self.opts.TCharCtype, TChar.ctype), " ",
+        When(IsBound(self.opts.TCharCtype), self.opts.TCharCtype, TChar.ctype), self.ckspc(vars),
         self.infix(vars, ", ",i+is)),
 
     TUChar  := (self, t, vars, i, is) >> Print(
-        When(IsBound(self.opts.TUCharCtype), self.opts.TUCharCtype, TUChar.ctype), " ",
+        When(IsBound(self.opts.TUCharCtype), self.opts.TUCharCtype, TUChar.ctype), self.ckspc(vars),
         self.infix(vars, ", ",i+is)),
 
     TVoid  := (self, t, vars, i, is) >> Print("void ", self.infix(vars, ", ",i+is)),
@@ -953,6 +956,8 @@ Class(CUnparser, CUnparserBase, rec(
         self.opts := CopyFields(opts, rec(subName := subname));
         oo := self.preprocess(o);
 		self.checkPrintRuleTree(o, opts);
+		self.checkPrintSums(o, opts);
+		self.checkPrintICode(o, opts);
         Print(self.header(subname, oo), Unparse(oo, self, 0, 4), self.footer(subname, oo));
     end,
 
@@ -971,6 +976,22 @@ Class(CUnparser, CUnparserBase, rec(
 		if IsBound(opts.printRuleTree) and opts.printRuleTree and IsBound(o.ruletree) then
 			Print("/* RuleTree:\nrt :=\n");
 			Print(o.ruletree);
+			Print("\n;\n*/\n\n");
+		fi;
+	end,
+	
+	checkPrintSums := meth(self, o, opts)
+		if IsBound(opts.printSums) and opts.printSums and IsBound(o.sums) then
+			Print("/* Sums:\nsums :=\n");
+			Print(o.sums);
+			Print("\n;\n*/\n\n");
+		fi;
+	end,
+	
+	checkPrintICode := meth(self, o, opts)
+		if IsBound(opts.printICode) and opts.printICode then
+			Print("/* ICode:\nicode :=\n");
+			Print(o);
 			Print("\n;\n*/\n\n");
 		fi;
 	end,

@@ -172,42 +172,20 @@ Class(Compile, rec(
         vects := Filtered(code.free(), x -> IsArray(x.t));
 
         IntersectSet(vects, self.decls);
-	SubtractSet(vects, self.free);
-	SubtractSet(vars,  self.free);
+		SubtractSet(vects, self.free);
+		SubtractSet(vars,  self.free);
 	
         if Length(vars) > 0 then code := decl(vars, code); fi;
         if Length(vects) > 0 then code := decl(vects, code); fi;
         return code;
     end,
 
-    # Old and slow scalarizer no longer works, but old scalarizer did not make an 
-    # assumption of "constant geomery code" and the current scalarizer does make that
-    # assumption. It is becoming a limitation for certain applications, so we might need
-    # to redesign our current fast scalarizer to be more like the old one.
-    #
-    #D scalarize := (self, c) >> Scalarize(c, self.decls),
-
-    showTimes := meth(self)
-        local i;
-        Print("times := [\n");
-        for i in [1..Length(self.times)] do
-	    PrintEval("$1,  $2,\n", i, StringDouble("%.3g", self.times[i]));
-	od;
-        Print("];\n");
-    end,
-	    
+    	    
     __call__ := meth(self, c, opts)
         local dims, root, stage, compileStrategy, t, i;
 
         if IsBound(c.dimensions) then dims := c.dimensions; fi;
         if IsBound(c.root) then root := c.root; fi;
-
-        if opts.printWebMeasure then Print("web:measure\n"); fi;
-        self.curcode := [Copy(c)];
-
-        # self.times keeps compilation time information to be used for profiling
-        if not IsBound(self.times) or Length(self.times)<>Length(opts.compileStrategy) then 
-            self.times := Replicate(Length(opts.compileStrategy), 0.0); fi;
 
         for i in [1..Length(opts.compileStrategy)] do
             stage := opts.compileStrategy[i];
@@ -220,11 +198,8 @@ Class(Compile, rec(
             else 
                 [c,t] := UTimedAction(stage(c));
             fi;
-            Add(self.curcode, Copy(c));
-            self.times[i] := self.times[i] + t;
-	    self.timingStatus(i, stage, t); # print timing info
-
-            if opts.printWebMeasure then Print("web:measure\n"); fi;
+            
+			self.timingStatus(i, stage, t); # print timing info
         od;
 
         if IsBound(dims) then c.dimensions := dims; fi;

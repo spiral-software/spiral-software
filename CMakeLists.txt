@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, MinSizeRel")
 
 project(SPIRAL
-        VERSION 8.4.1
+        VERSION 8.5.0
         DESCRIPTION "SPIRAL Project"
         LANGUAGES C CXX)
 

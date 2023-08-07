@@ -304,8 +304,6 @@ Class(TInt, TInt_Base, rec(strId := self >> "i"));
 Class(TUInt, TInt_Base, rec(isSigned := False, strId := self >> "ui"));
 Class(TULongLong, TInt_Base);
 
-IsChar := (x)->When(BagType(x)=T_CHAR, true, false);
-
 Class(TChar, TInt_Base, rec(
     hash := (val, size) -> When(IsChar(val), 1 + (InternalHash(val) mod size), TInt_Base.hash(val, size)),
     bits := 8,

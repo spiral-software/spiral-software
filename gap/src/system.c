@@ -8,8 +8,13 @@
 **
 */
 
+#include		<stdio.h>
 #include		<stdlib.h>
+#include		<string.h>
+#include        <stdarg.h>
+
 #include        "system.h"              /* declaration part of the package */
+#include        "scanner.h"             /* reading of single tokens        */
 #include        "spiral.h"              /* InitLibName() */
 #include        "iface.h"
 #include		"GapUtils.h"
@@ -316,6 +321,57 @@ Int            SyFopen (char * name, char *mode )
 
 /****************************************************************************
 **
+*F  SyFileOpen( <name>, <mode> ) . . . . . . . open the file with name <name>
+**
+**  The function 'SyFileOpen'  is called to open the file called  <name>.
+**  If <mode> is "r" it is opened for reading, in this case  it  must  exist.
+**  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
+**  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
+**
+**  'SyFileOpen' returns a file handle (pointer) 
+**  'SyFileOpen' returns NULL if it cannot open the file.
+**
+**  The following standard files names and file identifiers  are  guaranteed:
+**
+**  'SyFileOpen( "*stdin*", "r")' returns stdin  ==>  standard input file.
+**  'SyFileOpen( "*stdout*","w")' returns stdout ==>  standard outpt file.
+**  'SyFileOpen( "*errin*", "r")' returns stdin  ==>  brk loop input file.
+**  'SyFileOpen( "*errout*","w")' returns stderr ==>  error messages file.
+**
+*/
+
+FILE    *SyFileOpen ( char *name, char *mode )
+{
+    FILE *file;
+
+    /* handle standard files                                               */
+    if(strcmp(name, "*stdin*") == 0) {
+        if (strcmp(mode, "r") != 0)  return (FILE *)NULL;
+        return stdin;
+    }
+    else if (strcmp(name, "*stdout*") == 0) {
+        if (strcmp(mode, "w") != 0)  return (FILE *)NULL;
+        return stdout;
+    }
+    else if (strcmp(name, "*errin*") == 0) {
+        if (strcmp(mode, "r") != 0)  return (FILE *)NULL;
+        return stdin;
+    }
+    else if (strcmp(name, "*errout*") == 0) {
+        if (strcmp(mode, "w") != 0)  return (FILE *)NULL;
+        return stderr;
+    }
+
+    /* open the file: will be either NULL (failure) or valid FILE pointer */
+    file = fopen( name, mode );
+
+    /* return file                                              */
+    return file;
+}
+
+
+/****************************************************************************
+**
 *F  SyFclose( <fid> ) . . . . . . . . . . . . . . . . .  close the file <fid>
 **
 **  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
@@ -346,7 +402,40 @@ void            SyFclose (Int fid )
 	syBuf[fid].buf[0] = '\0';
 }
 
-Int	SyChDir(const char* filename)
+
+/****************************************************************************
+**
+*F  SyFileClose( <file> ) . . . . . . . .  close the file with pointer <file>
+**
+**  'SyFileClose' closes the file using the file pointer identifier
+**  <file> which is obtained from 'SyFileOpen'.
+*/
+
+void    SyFileClose ( FILE *file )
+{
+    /* check file identifier, emit a warning if file == NULL */
+    if ( file == NULL ) {
+        printf ( "SyFileClose: Asked to close file NULL pointer ... ignored\n" );
+        return;
+    }
+
+    /* refuse to close the standard files                                  */
+    if ( fileno ( file ) == 0 || fileno ( file ) == 1 ||
+         fileno ( file ) == 2 || fileno ( file ) == 3 ) {
+        return;
+    }
+
+    /* try to close the file                                               */
+    if ( fclose( file ) == EOF ) {
+        fputs("gap: 'SyFclose' cannot close file, ",stderr);
+        fputs("maybe your file system is full?\n",stderr);
+    }
+
+    return;
+}
+
+
+int	SyChDir(const char* filename)
 {
 	if (!chdir(filename)) {
 		return 1;
@@ -1798,10 +1887,10 @@ void            syEchos ( char *str, Int fid )
 
 static Int my_syNrchar = 0; 
 
-void            SyFputs (char line[], Int fid )
+void            SyFputs (char line[], FILE* file)
 {
     Int                i;
-
+    Int  fid = fileno(file);
 
     /* if outputing to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {
@@ -1816,7 +1905,7 @@ void            SyFputs (char line[], Int fid )
 		if (syNrchar > my_syNrchar) {
 			/* track and optionally report the maximal value */
 			if (SyMsgsFlagBags > 0)
-				printf("SyFputs: High water mark for syNrchar = %d, syPrompt = \"%s\"\n",
+				printf("SyFputs: High water mark for syNrchar = %ld, syPrompt = \"%s\"\n",
 					   syNrchar, syPrompt);
 			my_syNrchar = syNrchar;
 		}
@@ -1828,17 +1917,17 @@ void            SyFputs (char line[], Int fid )
             ;
     }
 
-    write( fileno(syBuf[fid].fp), line, i );
+    write(fid /* fileno(syBuf[fid].fp) */, line, i );
 }
 
 #endif
 
 #if WIN32
 
-void  SyFputs ( char line[], Int fid )
+void  SyFputs ( char line[], FILE* file )
 {
-        fputs( line, syBuf[fid].fp );
-   		fflush( syBuf[fid].fp );		// typically the GAP internal output buffer has just been flushed, so flush file buffer, too
+        fputs( line, file );
+   		fflush( file );		// typically the GAP internal output buffer has just been flushed, so flush file buffer, too
                                         // otherwise piped output gets delayed
 }
 
@@ -2693,7 +2782,7 @@ UInt*** SyAllocBags(Int size)
 void SyAbortBags(
     Char* msg)
 {
-    SyFputs(msg, 3);
+    SyFputs(msg, stderr); 
     abort();
     /*SyExit( 2 );*/
 }
@@ -2822,5 +2911,87 @@ fullusage:
     FPUTS_TO_STDERR("              postfix 'm' = *1024*1024, 'g' = *1024*1024*1024\n");
     FPUTS_TO_STDERR("\n");
     SyExit(1);
+}
+
+#ifdef WIN32
+int vasprintf(char** strp, const char* fmt, va_list ap) {
+    // find required size of buffer and allocate
+    int len = _vscprintf(fmt, ap);
+    if (len == -1) {
+        return -1;
+    }
+    char* str = malloc(len + 1);
+    if (!str) {
+        return -1;
+    }
+
+    // print into new buffer
+    int r = vsprintf(str, fmt, ap);
+    if (r == -1) {
+        free(str);
+        return -1;
+    }
+    *strp = str;
+    return r;
+}
+#endif
+
+
+
+FILE* streamFile(STREAM stream)
+{
+    if (stream.type == STREAM_TYPE_FILE) {
+        return stream.U.file;
+    }
+    else {
+        return 0;
+    }
+}
+
+int SyFmtPrint(STREAM stream, const char* format, ...)
+{
+    int result = 0;
+    va_list arglist;
+    va_start(arglist, format);
+
+    if (stream.type == STREAM_TYPE_FILE)
+    {
+        result = vfprintf(streamFile(stream), format, arglist);
+        fflush(streamFile(stream));
+    }
+    else if (stream.type == STREAM_TYPE_STRING)
+    {
+        char* str1;
+
+        result = vasprintf(&str1, format, arglist);
+
+        if (result >= 0) {
+            if (*stream.U.string_ptr == 0) {
+                *stream.U.string_ptr = str1;
+            }
+            else {
+                char* bigstr;
+                bigstr = malloc(strlen(*stream.U.string_ptr) + strlen(str1) + 1);
+                if (bigstr != 0) {
+                    strcpy(bigstr, *stream.U.string_ptr);
+                    strcat(bigstr, str1);
+                    free(*stream.U.string_ptr);
+                    *stream.U.string_ptr = bigstr;
+                }
+                else {
+                    result = -1;
+                }
+                free(str1);
+            }
+        }
+    }
+
+    if (Logfile != (FILE*)NULL)
+    {
+        vfprintf(Logfile, format, arglist);
+        fflush(Logfile);
+    }
+    va_end(arglist);
+    return result;
 }
 

@@ -46,7 +46,7 @@ Obj  FunComplexFFT ( Obj hdCall ) {
 
     /* get and check the argument                                          */
     if ( GET_SIZE_BAG(hdCall) != 2 * SIZE_HD)
-        return Error("Usage: ComplexFFT ( <compelx_list> )",0,0);
+        return Error("Usage: ComplexFFT ( <complex_list> )",0,0);
 
     hdList = EVAL( PTR_BAG(hdCall)[1] );
 

@@ -316,38 +316,6 @@ void            Match ( UInt symbol, char * msg,
 
 /****************************************************************************
 **
-*F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
-**
-**  'Pr' is the output function. The first argument is a 'printf' like format
-**  string containing   up   to 2  '%'  format   fields,   specifing  how the
-**  corresponding arguments are to be  printed.  The two arguments are passed
-**  as  'long'  integers.   This  is possible  since every  C object  ('int',
-**  'char', pointers) except 'float' or 'double', which are not used  in GAP,
-**  can be converted to a 'long' without loss of information.
-**
-**  The function 'Pr' currently support the following '%' format  fields:
-**  '%c'    the corresponding argument represents a character,  usually it is
-**          its ASCII or EBCDIC code, and this character is printed.
-**  '%s'    the corresponding argument is the address of  a  null  terminated
-**          character string which is printed.
-**  '%d'    the corresponding argument is a signed integer, which is printed.
-**          Between the '%' and the 'd' an integer might be used  to  specify
-**          the width of a field in which the integer is right justified.  If
-**          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%>'    increment the indentation level.
-**  '%<'    decrement the indentation level.
-**  '%%'    can be used to print a single '%' character. No argument is used.
-**
-**  You must always  cast the arguments to  '(long)' to avoid  problems  with
-**  those compilers with a default integer size of 16 instead of 32 bit.  You
-**  must pass 0L if you don't make use of an argument to please lint.
-*/
-void            Pr ( char * format, Int arg1, Int arg2 );
-
-
-
-/****************************************************************************
-**
 *T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
 *V  InputFiles[]  . . . . . . . . . . . . .  stack of open input files, local
 *V  Input . . . . . . . . . . . . . . .  pointer to current input file, local
@@ -384,8 +352,8 @@ typedef struct {
     Int        importTop;
     Int        packageTop;
     Int        global;
-
-    Int        file;
+    Int        fid;
+//    FILE       *file;
     char        name [1024];
     char        line [2048];
     char        * ptr;
@@ -396,24 +364,6 @@ extern TypInputFile    InputFiles [SCANNER_INPUTS];
 extern TypInputFile    * Input;
 extern char            * In;
 
-
-typedef struct {
-    Int        file;
-    char        *line;
-    Int        pos;
-    Int        indent;
-    Int        spos;
-    Int        sindent;
-    char*       mem; /* holds memory buffer if output goes into memory         */
-                     /* first UInt is the buffer size without 2*sizeof(UInt);  */
-                     /* second UInt is the number of characters written        */
-                     /* (without terminating zero);                            */
-                     /* null terminated characters array;                      */
-
-    Bag		hdList;
-}       TypOutputFile;
-
-extern TypOutputFile   * Output;
 
 /****************************************************************************
 **
@@ -504,56 +454,6 @@ Int            CloseInput ( void );
 
 /****************************************************************************
 **
-*F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
-**
-**  'OpenOutput' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  The file is truncated to size 0 if it existed, otherwise it  is  created.
-**  'OpenOutput' does not  close  the  current file, i.e., if  <filename>  is
-**  closed again, output will go again to the current output file.
-**
-**  'OpenOutput'  returns  1 if it  could  successfully  open  <filename> for
-**  writing and 0 to indicate failure.  'OpenOutput' will fail if  you do not
-**  have  permissions to create the  file or write   to it.  'OpenOutput' may
-**  also   fail if you   have  too many files   open  at once.   It is system
-**  dependent how many are too many, but 16 files should work everywhere.
-**
-**  You can open '*stdout*'  to write  to the standard output  file, which is
-**  usually the terminal, or '*errout*' to write  to the standard error file,
-**  which is the terminal  even   if '*stdout*'  is  redirected to   a  file.
-**  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
-**  they are just a convention between the main and the system package.
-**
-**  It is not neccessary to open the initial output file, 'InitScanner' opens
-**  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
-**  closed by 'CloseOutput'.
-*/
-Int            OpenOutput ( char * filename );
-
-
-/****************************************************************************
-**
-*F  CloseOutput() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseOutput' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseOutput' returns 1 to indicate success.
-**
-**  'CloseOutput' will  not  close the  initial output file   '*stdout*', and
-**  returns 0 if such attempt is made.  This  is  used in 'Error' which calls
-**  'CloseOutput' until it returns 0, thereby closing all open output files.
-**
-**  Calling 'CloseOutput' if the corresponding 'OpenOutput' call failed  will
-**  close the current output file, which will lead to very strange behaviour.
-**  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
-**  'PrintTo' call or an error will not yield much better results.
-*/
-Int            CloseOutput ( void );
-
-
-/****************************************************************************
-**
 *F  OpenAppend( <filename> )  . . open a file as current output for appending
 **
 **  'OpenAppend' opens the file  with the name  <filename> as current output.
@@ -597,14 +497,15 @@ Int            CloseMemory(Obj* hdStr);
 **  '*errout*' to the file with  name <filename>.  The  file is truncated  to
 **  size 0 if it existed, otherwise it is created.
 **
-**  'OpenLog' returns 1 if it could  successfully open <filename> for writing
-**  and 0  to indicate failure.   'OpenLog' will  fail if  you do  not   have
-**  permissions  to create the file or   write to  it.  'OpenOutput' may also
+**  'OpenLog' returns a file handle if it could  successfully open <filename> 
+**  for writing and NULL on failure.  'OpenLog' will fail if you do not  have
+**  permissions  to create the file or   write to  it.  'OpenLog' may also
 **  fail if you have too many files open at once.  It is system dependent how
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-Int            OpenLog ( char * filename );
+
+FILE    *OpenLog ( char * filename );
 
 
 /****************************************************************************
@@ -629,14 +530,15 @@ Int            CloseLog ( void );
 **  '*stdin*' and  '*errin*' to the file  with  name <filename>.  The file is
 **  truncated to size 0 if it existed, otherwise it is created.
 **
-**  'OpenInputLog' returns 1  if it  could successfully open  <filename>  for
-**  writing  and  0 to indicate failure.  'OpenInputLog' will fail  if you do
-**  not have  permissions to create the file  or write to it.  'OpenInputLog'
-**  may also fail  if you  have  too many  files open  at once.  It is system
-**  dependent  how many are too many,  but 16 files  should work  everywhere.
-**  Finally 'OpenInputLog' will fail if there is already a current logfile.
+**  'OpenInputLog' returns a file handle if it could  successfully open <filename> 
+**  for writing and NULL on failure.  'OpenInputLog' will fail if you do not
+**  have permissions to create the file or write to it.  'OpenInputLog' may also
+**  fail if you have too many files open at once.  It is system dependent how
+**  many   are too   many, but  16   files should  work everywhere.   Finally
+**  'OpenInputLog' will fail if there is already a current logfile.
 */
-Int            OpenInputLog ( char* );
+
+FILE    *OpenInputLog ( char* );
 
 
 
@@ -654,6 +556,16 @@ Int            OpenInputLog ( char* );
 Int            CloseInputLog ( void );
 
 
+
+/****************************************************************************
+**
+
+*V  Logfile . . . . . . . . . . . . . . . . file identifier of logfile, global
+**
+**  This is the external(global) so that system can print to log file when SyFmtPrint is called.
+** 
+*/
+extern FILE* Logfile;
 
 /****************************************************************************
 **

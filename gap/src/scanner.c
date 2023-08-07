@@ -31,6 +31,7 @@
 #define USE_FLEX
 
 #include        <string.h>
+#include        <stdio.h> 
 #include        <stdlib.h>
 #include        "system.h"              /* system dependent functions      */
 #include        "memmgr.h"
@@ -43,7 +44,7 @@
 #include 	"plist.h"
 #include	"integer.h"
 
-extern void Print(Bag);
+// extern void Print(Bag);
 #ifdef __INTEL_COMPILER
 #pragma warning( disable : 170 )
 #endif
@@ -255,51 +256,10 @@ Int            NrHadSyntaxErrors = 0;
 char            * Prompt;
 
 
-
 TypInputFile    InputFiles [SCANNER_INPUTS];
 TypInputFile    * Input;
 char            * In;
 
-
-/****************************************************************************
-**
-*T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
-*V  OutputFiles . . . . . . . . . . . . . . stack of open output files, local
-*V  Output  . . . . . . . . . . . . . . pointer to current output file, local
-**
-**  'TypOutputFile' describes the information stored for open  output  files:
-**  'file' holds the file identifier which is  received  from  'SyFopen'  and
-**  which is passed to  'SyFputs'  and  'SyFclose'  to  identify  this  file.
-**  'line' is a buffer that holds the current output line.
-**  'pos' is the position of the current character on that line.
-**
-**  'OutputFiles' is the stack of open output files.  It  is  represented  as
-**  an array of structures of type 'TypOutputFile'.
-**
-**  'Output' is a pointer to the current output file.  It points to  the  top
-**  of the stack 'OutputFiles'.
-*/
-
-Int OutputLineLen;
-
-#define SCANNER_OUTPUTS 16
-//typedef struct {
-//    Int        file;
-//    char        *line;
-//    Int        pos;
-//    Int        indent;
-//    Int        spos;
-//    Int        sindent;
-//    char*       mem; /* holds memory buffer if output goes into memory         */
-//                     /* first UInt is the buffer size without 2*sizeof(UInt);  */
-//                     /* second UInt is the number of characters written        */
-//                     /* null terminated characters array;                      */
-//
-//    Bag		hdList;
-//}       TypOutputFile;
-
-TypOutputFile   OutputFiles [SCANNER_OUTPUTS];
-TypOutputFile   * Output;
 
 /* INITIAL_MEM_SIZE - initial memory buffer size for OpenMemory() */
 #define INITIAL_MEM_SIZE    2048
@@ -312,7 +272,7 @@ TypOutputFile   * Output;
 **  -1 the  scanner echoes all  input from the  files '*stdin*' and '*errin*'
 **  and all output to the files '*stdout*' and '*errout*' to this file.
 */
-Int            Logfile = -1;
+FILE* Logfile = (FILE*)NULL;
 
 
 /****************************************************************************
@@ -323,7 +283,7 @@ Int            Logfile = -1;
 **  not -1 the scanner echoes  input from the files  '*stdin*' and  '*errin*'
 **  to this file.
 */
-Int            InputLogfile = -1;
+FILE* InputLogfile = (FILE*)NULL;
 
 
 
@@ -345,12 +305,17 @@ Int            InputLogfile = -1;
 char            GetLine (void)
 {
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
-    if ( Input->file == 0 ) {
-        if ( ! SyQuiet ) Pr( "%s%c", (Int)Prompt, (Int)'\03' );
-        else             Pr( "%c", (Int)'\03', 0 );
+    if ( Input->fid /* file */ == 0 ) {
+        if ( ! SyQuiet ) 
+            //Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+            SyFmtPrint( global_stream, "%s", Prompt); 
+        else            
+            //Pr( "%c", (Int)'\03', 0 );
+            SyFmtPrint( global_stream, "%c", '\03');
     }
-    else if ( Input->file == 2 ) {
-        Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+    else if ( Input->fid /* file */ == 2 ) {
+        //Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+        SyFmtPrint( global_stream, "%s", Prompt);
     }
 
     /* bump the line number                                                */
@@ -363,15 +328,15 @@ char            GetLine (void)
 
  
     /* try to read a line                                        */
-   if ( ! SyFgets( In, sizeof(Input->line), Input->file ) ) {
+    if ( ! SyFgets( In, sizeof(Input->line), Input->fid /* file */ ) ) {
         In[0] = '\377';  In[1] = '\0';
         return *In;
     }
 
     /* if neccessary echo the line to the logfile                          */
-    if ( Logfile != -1 && (Input->file == 0 || Input->file == 2) )
+    if ( Logfile != (FILE*)NULL && (Input->fid == 0))
         SyFputs( In, Logfile );
-    if ( InputLogfile != -1 && (Input->file == 0 || Input->file == 2) )
+    if ( InputLogfile != (FILE*)NULL && (Input->fid == 0))
         SyFputs( In, InputLogfile );
 
         /* return the current character                                        */
@@ -694,26 +659,35 @@ void            SyntaxError (char *msg)
         return;
 
     /* print the message and the filename, unless it is '*stdin*'          */
-    Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
+    //Pr( "Syntax error: %s (symbol: '%s')", (Int)msg, (Int)Value );
+    SyFmtPrint(stderr_stream, "Syntax error: %s (symbol: '%s')", msg, Value);
+
     if ( !isStdIn ) {
-        Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+        //Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+        SyFmtPrint(stderr_stream, " in %s line %d", Input->name, Input->number);
 	if(!launchedEdit) {
 	    launchedEdit = 1;
 	    HooksEditFile(Input->name, (int)Input->number);
 	}
     }
-    Pr( "\n", 0, 0 );
+    //Pr( "\n", 0, 0 );
+    SyFmtPrint(stderr_stream, "\n", 0, 0);
 
     /* print the current line                                              */
-    Pr( "%s", (Int)Input->line, 0 );
+    //Pr( "%s", (Int)Input->line, 0 );
+    SyFmtPrint(stderr_stream, "%s", (Int)Input->line, 0);
 
     /* print a '^' pointing to the current position                        */
     for ( i = 0; i < In - Input->line - 1; i++ ) {
-        if ( Input->line[i] == '\t' )  Pr("\t",0,0);
-        else  Pr(" ",0,0);
+        if ( Input->line[i] == '\t' )  
+            //Pr("\t",0,0);
+            SyFmtPrint(stderr_stream, "\t");
+        else  
+            //Pr(" ", 0, 0);
+            SyFmtPrint(stderr_stream, " ");
     }
-    Pr( "^\n", 0, 0 );
-
+    //Pr( "^\n", 0, 0 );
+    SyFmtPrint(stderr_stream, "^\n");
 }
 
 
@@ -783,375 +757,6 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
 }
 
 
-/****************************************************************************
-**
-*F  PutLine() . . . . . . . . . . . . . . . . . . . . . . print a line, local
-**
-**  'PutLine'  prints the current output line   'Output->line' to the current
-**  output file 'Output->file'.  It  is  called from 'PutChr'.
-**
-**  'PutLine' also compares the output line with the next  line from the test
-**  input file  'TestInput'  if 'TestInput' is  not -1.   If this  input line
-**  starts with '#>' and the rest of  the  line matches  the output line then
-**  the output line is not printed and the input line is discarded.
-**
-**  'PutLine'  also   echoes  the output  line to   the  logfile 'Logfile' if
-**  'Logfile' is not -1 and the output file is '*stdout*' or '*errout*'.
-**
-**  Finally 'PutLine' checks whether the user has hit '<ctr>-C' to  interrupt
-**  the printing.
-*/
-void            PutLine(void)
-{
-	Int 	plen, i, k;
-	Bag	hd;
-	char* str;
-	Int	slen;
-
-	if (Output->file == -5) {
-
-		str = malloc((strlen(Output->line) + 1) * sizeof(char));
-		i = 0;
-		while (Output->line[i++] == ' ');
-		--i;
-		for (k = 0; (i < strlen(Output->line)) && (Output->line[i] != '\n'); ++i, ++k) {
-			str[k] = Output->line[i];
-		}
-		str[k] = '\0';
-
-		slen = strlen(str);
-
-		hd = NewBag(T_STRING, slen + 1);
-
-		*((char*)PTR_BAG(hd)) = '\0';
-		strncpy((char*)PTR_BAG(hd), str, slen);
-
-		plen = PLEN_SIZE_PLIST(GET_SIZE_BAG(Output->hdList));
-		Resize(Output->hdList, SIZE_PLEN_PLIST(plen + 1));
-		SET_LEN_PLIST(Output->hdList, plen + 1);
-		SET_BAG(Output->hdList, plen + 1, hd);
-
-		free(str);
-	}
-	else if (Output->file) {
-		SyFputs(Output->line, Output->file);
-	}
-	else if (Output->mem) {
-		/* write to memory */
-		UInt len = strlen(Output->line);
-		UInt mem_sz = ((UInt*)(Output->mem))[0];
-		UInt mem_chrs = ((UInt*)(Output->mem))[1];
-		if (mem_sz + len + 1 > mem_chrs) {
-			/* no error handling */
-			mem_sz = (mem_sz > len) ? mem_sz * 2 : (mem_sz + len + 1);
-			Output->mem = realloc(Output->mem, 2 * sizeof(UInt) + mem_sz);
-			((UInt*)(Output->mem))[0] = mem_sz;
-		}
-		strncpy(Output->mem + 2 * sizeof(UInt) + mem_chrs, Output->line, len + 1);
-		((UInt*)(Output->mem))[1] = mem_chrs + len;
-	}
-
-
-	/* if neccessary echo it to the logfile                                */
-	if (Logfile != -1 && (Output->file == 1 || Output->file == 3))
-		SyFputs(Output->line, Logfile);
-}
-
-
-/****************************************************************************
-**
-*F  PutChr( <ch> )  . . . . . . . . . . . . . . . print character <ch>, local
-**
-**  'PutChr' prints the single character <ch> to the current output file.
-**
-**  'PutChr' buffers the  output characters until  either <ch> is  <newline>,
-**  <ch> is '\03' (<flush>) or the buffer fills up.
-**
-**  In the later case 'PutChr' has to decide where to  split the output line.
-**  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
-*/
-void            PutChr (char ch)
-{
-    Int                i;
-//    char                str [ 256 ];
-    char s0, s1;
-    int n;
-
-    /* '\01', increment indentation level                                  */
-    if ( ch == '\01' ) {
-
-        /* if this is a better place to split the line remember it         */
-        if ( (Output->file == 1 || Output->file == 3)
-          && Output->indent < Output->pos
-          && SyNrCols-Output->pos  + 16*Output->indent
-          <= SyNrCols-Output->spos + 16*Output->sindent ) {
-            Output->spos     = Output->pos;
-            Output->sindent  = Output->indent;
-        }
-
-        Output->indent++;
-
-    }
-
-    /* '\02', decrement indentation level                                  */
-    else if ( ch == '\02' ) {
-
-        /* if this is a better place to split the line remember it         */
-        if ( (Output->file == 1 || Output->file == 3)
-          && Output->indent < Output->pos
-          && SyNrCols-Output->pos  + 16*Output->indent
-          <= SyNrCols-Output->spos + 16*Output->sindent ) {
-            Output->spos     = Output->pos;
-            Output->sindent  = Output->indent;
-        }
-
-        Output->indent--;
-
-    }
-
-    /* '\03', print line                                                   */
-    else if ( ch == '\03' ) {
-
-        /* print the line                                                  */
-        Output->line[ Output->pos ] = '\0';
-        PutLine();
-
-        /* start the next line                                             */
-        Output->pos      = 0;
-
-        /* first character is a very bad place to split                    */
-        Output->spos     = 0;
-        Output->sindent  = 660;
-
-    }
-
-    /* <newline> or <return>, print line, indent next                      */
-    else if ( ch == '\n' || ch == '\r' ) {
-
-        /* put the character on the line and terminate it                  */
-        Output->line[ Output->pos++ ] = ch;
-        Output->line[ Output->pos   ] = '\0';
-
-        /* print the line                                                  */
-        PutLine();
-
-        /* indent for next line                                            */
-        Output->pos = 0;
-        for ( i = 0;  i < Output->indent; i++ )
-            Output->line[ Output->pos++ ] = ' ';
-
-        /* set up new split positions                                      */
-        Output->spos     = 0;
-        Output->sindent  = 660;
-
-    }
-
-    /* normal character, room on the current line                          */
-    else if ( Output->pos < SyNrCols-2 ) {
-
-        /* put the character on this line                                  */
-        Output->line[ Output->pos++ ] = ch;
-
-    }
-
-    /* if we are going to split at the end of the line, discard blanks     */
-    else if ( Output->spos == Output->pos && ch == ' ' ) {
-        ;
-    }
-
-    /* full line, acceptable split position                                */
-    else if ( Output->spos != 0 ) {
-        /* add character to the line, terminate it                         */
-        Output->line[ Output->pos++ ] = ch;
-        Output->line[ Output->pos++ ] = '\0';
-
-        n = Output->pos - Output->spos;
-
-        /* terminate the line while saving those chars */
-        s0 = Output->line[Output->spos];
-        s1 = Output->line[Output->spos+1];
-        Output->line[ Output->spos ] = '\n';
-        Output->line[ Output->spos+1 ] = '\0';
-        PutLine();
-
-        /* put the chars back */
-        Output->line[Output->spos] = s0;
-        Output->line[Output->spos+1] = s1;
-
-        /* print line up to the best split position                        */
-        /* indent for the rest                                             */
-        assert(Output->sindent + n <= OutputLineLen);
-
-        memmove(Output->line + Output->sindent, Output->line + Output->spos, n);
-
-        Output->pos = 0;
-        for ( i = 0; i < Output->sindent; i++ )
-            Output->line[ Output->pos++ ] = ' ';
-
-        Output->pos += n-1;
-
-        /* set new split position                                          */
-        Output->spos     = 0;
-        Output->sindent  = 660;
-
-    }
-
-    /* full line, no splitt position                                       */
-    else {
-
-        /* append a '\', and print the line                                */
-        if ( Output->file == 1 || Output->file == 3 ) {
-            Output->line[ Output->pos++ ] = '\\';
-            Output->line[ Output->pos++ ] = '\n';
-        }
-        Output->line[ Output->pos   ] = '\0';
-        PutLine();
-
-        /* add the character to the next line                              */
-        Output->pos = 0;
-        Output->line[ Output->pos++ ] = ch;
-
-        /* the first character is a very bad place to split                */
-        Output->spos     = 0;
-        Output->sindent  = 660;
-
-    }
-
-}
-
-
-/****************************************************************************
-**
-*F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
-**
-**  'Pr' is the output function. The first argument is a 'printf' like format
-**  string containing   up   to 2  '%'  format   fields,   specifing  how the
-**  corresponding arguments are to be  printed.  The two arguments are passed
-**  as  'long'  integers.   This  is possible  since every  C object  ('int',
-**  'char', pointers) except 'float' or 'double', which are not used  in GAP,
-**  can be converted to a 'long' without loss of information.
-**
-**  The function 'Pr' currently support the following '%' format  fields:
-**  '%g'    prints GAP object (expected Bag)
-**  '%c'    the corresponding argument represents a character,  usually it is
-**          its ASCII or EBCDIC code, and this character is printed.
-**  '%s'    the corresponding argument is the address of  a  null  terminated
-**          character string which is printed.
-**  '%d'    the corresponding argument is a signed integer, which is printed.
-**          Between the '%' and the 'd' an integer might be used  to  specify
-**          the width of a field in which the integer is right justified.  If
-**          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%>'    increment the indentation level.
-**  '%<'    decrement the indentation level.
-**  '%%'    can be used to print a single '%' character. No argument is used.
-**
-**  You must always  cast the arguments to  '(long)' to avoid  problems  with
-**  those compilers with a default integer size of 16 instead of 32 bit.  You
-**  must pass 0L if you don't make use of an argument to please lint.
-*/
-void            Pr (char *format, Int arg1, Int arg2)
-{
-    char                * p,  * q;
-    Int                prec,  n;
-    char                fill;
-
-    /* loop over the characters of the <format> string                     */
-    for ( p = format; *p != '\0'; p++ ) {
-
-        /* if the character is '%' do something special                    */
-        if ( *p == '%' ) {
-
-            /* first look for a precision field                            */
-            p++;
-            if ( *p == '0' )  fill = '0';  else fill = ' ';
-            for ( prec = 0; IsDigit(*p); p++ )
-                prec = 10 * prec + *p - '0';
-
-            /* '%d' print an integer                                       */
-            if ( *p == 'd' ) {
-                if ( arg1 < 0 ) {
-                    prec--;
-                    for ( n=1; n <= -(arg1/10); n*=10 )
-                        prec--;
-                    while ( --prec > 0 )  PutChr(fill);
-                    PutChr('-');
-                    for ( ; n > 0; n /= 10 )
-                        PutChr( (char)(-((arg1/n)%10) + '0') );
-                    arg1 = arg2;
-                }
-                else {
-                    for ( n=1; n<=arg1/10; n*=10 )
-                        prec--;
-                    while ( --prec > 0 )  PutChr(fill);
-                    for ( ; n > 0; n /= 10 )
-                        PutChr( (char)(((arg1/n)%10) + '0') );
-                    arg1 = arg2;
-                }
-            }
-
-            /* '%s' print a string                                         */
-            else if ( *p == 's' ) {
-                for ( q = (char*)arg1; *q != '\0'; q++ )
-                    prec--;
-                while ( prec-- > 0 )  PutChr(' ');
-                for ( q = (char*)arg1; *q != '\0'; q++ )
-                    PutChr( *q );
-                arg1 = arg2;
-            }
-
-            /* '%g' print a GAP object                                     */
-            else if ( *p == 'g' ) {
-                Print( (Bag)arg1 );
-                arg1 = arg2;
-            }
-
-            /* '%c' print a character                                      */
-            else if ( *p == 'c' ) {
-                PutChr( (char)arg1 );
-                arg1 = arg2;
-            }
-
-            /* '%>' increment the indentation level                        */
-            else if ( *p == '>' ) {
-                PutChr( '\01' );
-                while ( --prec > 0 )
-                    PutChr( '\01' );
-            }
-
-            /* '%<' decrement the indentation level                        */
-            else if ( *p == '<' ) {
-                PutChr( '\02' );
-                while ( --prec > 0 )
-                    PutChr( '\02' );
-            }
-
-            /* '%%' print a '%' character                                  */
-            else if ( *p == '%' ) {
-                PutChr( '%' );
-            }
-
-            /* else raise an error                                         */
-            else {
-                for ( p = "%format error"; *p != '\0'; p++ )
-                    PutChr( *p );
-            }
-
-        }
-
-        /* not a '%' character, simply print it                            */
-        else {
-            PutChr( *p );
-        }
-
-    }
-}
-
-
-Int	ChDir(const char* filename)
-{
-	return (int)SyChDir(filename);
-}
-
 
 /****************************************************************************
 **
@@ -1207,9 +812,11 @@ Int            OpenInput (char *filename)
 
     /* enter the file identifier and the file name                         */
     Input++;
-    Input->file = file;
+    Input->fid = file;
+    //  Input->file = (FILE *)NULL;         // unknown
     Input->name[0] = '\0';
-    strncat( Input->name, filename, sizeof(Input->name) );
+    //  strncat( Input->name, filename, sizeof(Input->name) );
+    strcpy ( Input->name, filename );
 
     /* start with an empty line and no symbol                              */
     In = Input->line;
@@ -1256,7 +863,7 @@ Int            CloseInput (void)
     /**/HookBeforeCloseInput();/**/
 
     /* close the input file                                                */
-    SyFclose( Input->file );
+    SyFclose( Input->fid /* file */ );
 
     /* revert to last file                                                 */
     Input--;
@@ -1272,34 +879,6 @@ Int            CloseInput (void)
 }
 
 
-extern Int            OpenStringOutput ()
-{
-    Int                file;
-
-    /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
-        return 0;
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file    = -5;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-    Output->mem     = 0;
-
-    Output->hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
-
-
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 660;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
 Bag		GReadFile()
 {
 	Bag	hd, hdList;
@@ -1307,7 +886,7 @@ Bag		GReadFile()
 
 	hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
 
-	while(SyFgets(Input->line, 2048, Input->file)) {
+	while(SyFgets(Input->line, 2048, Input->fid /* file */)) {
 		slen = strlen(Input->line);
 		Input->line[slen-1] = '\0';
 		hd = NewBag( T_STRING, slen );
@@ -1328,272 +907,6 @@ Bag		GReadFile()
 
 /****************************************************************************
 **
-*F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
-**
-**  'OpenOutput' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  The file is truncated to size 0 if it existed, otherwise it  is  created.
-**  'OpenOutput' does not  close  the  current file, i.e., if  <filename>  is
-**  closed again, output will go again to the current output file.
-**
-**  'OpenOutput'  returns  1 if it  could  successfully  open  <filename> for
-**  writing and 0 to indicate failure.  'OpenOutput' will fail if  you do not
-**  have  permissions to create the  file or write   to it.  'OpenOutput' may
-**  also   fail if you   have  too many files   open  at once.   It is system
-**  dependent how many are too many, but 16 files should work everywhere.
-**
-**  You can open '*stdout*'  to write  to the standard output  file, which is
-**  usually the terminal, or '*errout*' to write  to the standard error file,
-**  which is the terminal  even   if '*stdout*'  is  redirected to   a  file.
-**  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
-**  they are just a convention between the main and the system package.
-**
-**  It is not neccessary to open the initial output file, 'InitScanner' opens
-**  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
-**  closed by 'CloseOutput'.
-*/
-Int            OpenOutput (char *filename)
-{
-    Int                file;
-
-    /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
-        return 0;
-
-    /* try to open the file                                                */
-    file = SyFopen( filename, "w" );
-    if ( file == -1 )
-        return 0;
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file    = file;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-    Output->mem     = 0;
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 660;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseOutput() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseOutput' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseOutput' returns 1 to indicate success.
-**
-**  'CloseOutput' will  not  close the  initial output file   '*stdout*', and
-**  returns 0 if such attempt is made.  This  is  used in 'Error' which calls
-**  'CloseOutput' until it returns 0, thereby closing all open output files.
-**
-**  Calling 'CloseOutput' if the corresponding 'OpenOutput' call failed  will
-**  close the current output file, which will lead to very strange behaviour.
-**  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
-**  'PrintTo' call or an error will not yield much better results.
-*/
-Int            CloseOutput (void)
-{
-    /* refuse to close the initial output file '*stdout*'                  */
-    if ( Output == OutputFiles )
-        return 0;
-
-
-    /* flush output and close the file                                     */
-    Pr( "%c", (Int)'\03', 0 );
-    SyFclose( Output->file );
-
-    /* revert to previous output file and indicate success                 */
-    Output->file = 0;
-    if (Output->mem) {
-        free(Output->mem);
-        Output->mem = 0;
-    }
-    
-    Output--;
-    return 1;
-}
-
-
-
-extern Bag            ReturnStringOutput ()
-{
-	Bag		hd;
-	Int		plen, i, k, slen;
-	char		*str;
-
-	if (Output->pos > 0) {
-		Output->line[Output->pos] = '\0';
-
-		str = malloc((strlen(Output->line)+1)*sizeof(char));
-		i = 0;
-		while(Output->line[i++] == ' ');
-		--i;
-		for(k = 0; i < strlen(Output->line); ++i, ++k) {
-			str[k] = Output->line[i];
-		}
-		str[k] = '\0';
-
-		slen = strlen(str);
-
-	        hd = NewBag( T_STRING, slen + 1 );
-
-       		*( (char*) PTR_BAG( hd ) ) = '\0';
-	        strncpy( (char*) PTR_BAG( hd ), str, slen );
-
-        	plen = PLEN_SIZE_PLIST( GET_SIZE_BAG(Output->hdList) );
-	        Resize( Output->hdList, SIZE_PLEN_PLIST( plen + 1 ) );
-        	SET_LEN_PLIST( Output->hdList, plen + 1 );
-	        SET_BAG( Output->hdList ,  plen + 1 ,  hd );
-
-		free(str);
-	}
-
-	return Output->hdList;
-
-}
-
-extern Int            CloseStringOutput (void)
-{
-    /* refuse to close the initial output file '*stdout*'                  */
-    if ( Output == OutputFiles )
-        return 0;
-
-
-    /* revert to previous output file and indicate success                 */
-    Output->file = 0;
-    if (Output->mem) {
-        free(Output->mem);
-        Output->mem = 0;
-    }
-    
-    Output--;
-    return 1;
-}
-
-
-
-
-/****************************************************************************
-**
-*F  OpenMemory( )  . . . . . . . . . . . redirecting output into memory block
-**
-**  'OpenMemory' uses memory buffer as current output.
-**  All subsequent output will go to that memory buffer, until either   
-**  it is  closed with 'CloseMemory'/'CloseOutput' or  another  file is  
-**  opened with 'OpenOutput'. The size of memory buffer grows to hold all 
-**  redirected data.
-*/
-
-Int            OpenMemory ()
-{
-    char* mem;
-    /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
-        return 0;
-
-    /* alloc buffer, first UInt there is buffer size without two UInts     */
-    /* second UInt is number of number of characters in the buffer         */
-    mem = malloc(2*sizeof(UInt) + INITIAL_MEM_SIZE);
-
-    if (mem==0)
-        return 0;
-        
-    ((UInt*)mem)[0] = INITIAL_MEM_SIZE;
-    ((UInt*)mem)[1] = 0;
-    *(mem + 2*sizeof(UInt)) = '\0';
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file    = 0;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-    Output->mem     = mem;
-
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 660;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-/****************************************************************************
-**
-*F  CloseMemory( )  . . . . . . . . . . . close current output memory buffer
-**
-**  CloseMemory(Obj* hdStr) closing current output and returns all 
-**  accumulated output as string in hdStr.
-*/
-
-Int            CloseMemory(Obj* hdStr) {
-    if (Output->mem) {
-        Obj hd = 0;
-        UInt mem_chars;
-        /* flush output                                                    */
-        Pr( "%c", (Int)'\03', 0 );
-        mem_chars = ((UInt*)(Output->mem))[1];
-        /* grab memory to string                                           */
-        hd = NewBag( T_STRING, SIZEBAG_STRINGLEN(mem_chars)); 
-        SET_LEN_STRING(hd, mem_chars);
-        strncpy(CHARS_STRING(hd), Output->mem + 2*sizeof(UInt), mem_chars+1 );
-        *hdStr = hd;
-    } else {
-        *hdStr = NewBag( T_STRING, SIZEBAG_STRINGLEN(0)); 
-    }
-    return CloseOutput();
-}
-
-/****************************************************************************
-**
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseAppend' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-Int            OpenAppend (char *filename)
-{
-    Int                file;
-
-    /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
-        return 0;
-
-    /* try to open the file                                                */
-    file = SyFopen( filename, "a" );
-    if ( file == -1 )
-        return 0;
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file    = file;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-    Output->mem     = 0;
-    
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 660;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
 *F  OpenLog( <filename> ) . . . . . . . . . . . . . log interaction to a file
 **
 **  'OpenLog'  instructs  the scanner to   echo  all  input   from  the files
@@ -1601,27 +914,19 @@ Int            OpenAppend (char *filename)
 **  '*errout*' to the file with  name <filename>.  The  file is truncated  to
 **  size 0 if it existed, otherwise it is created.
 **
-**  'OpenLog' returns 1 if it could  successfully open <filename> for writing
-**  and 0  to indicate failure.   'OpenLog' will  fail if  you do  not   have
-**  permissions  to create the file or   write to  it.  'OpenOutput' may also
-**  fail if you have too many files open at once.  It is system dependent how
-**  many   are too   many, but  16   files should  work everywhere.   Finally
-**  'OpenLog' will fail if there is already a current logfile.
+**  'OpenLog' returns the file handle if it successfully opened <filename> for
+**  writing and NULL to indicate failure.  'OpenLog' will fail if you do not
+**  have permissions to create the file or write to  it.  If there is already
+**  a current logfile, then the handle of that file is returned.
 */
-Int            OpenLog (char *filename)
+FILE    *OpenLog (char *filename)
 {
-
-    /* refuse to open a logfile if we already log to one                   */
-    if ( Logfile != -1 )
-        return 0;
+    /* Return the handle of the existing open file is there is one         */
+    if ( Logfile != (FILE *)NULL ) return Logfile;
 
     /* try to open the file                                                */
-    Logfile = SyFopen( filename, "w" );
-    if ( Logfile == -1 )
-        return 0;
-
-    /* otherwise indicate success                                          */
-    return 1;
+    Logfile = SyFileOpen ( filename, "w" );
+    return Logfile;
 }
 
 
@@ -1636,15 +941,15 @@ Int            OpenLog (char *filename)
 **  'CloseLog' will fail if there is no logfile active and will return  0  in
 **  this case.
 */
-Int            CloseLog (void)
+Int     CloseLog ( void )
 {
     /* refuse to close a non existent logfile                              */
-    if ( Logfile == -1 )
+    if ( Logfile == (FILE *)NULL)
         return 0;
 
     /* close the logfile                                                   */
-    SyFclose( Logfile );
-    Logfile = -1;
+    SyFileClose ( Logfile );
+    Logfile = (FILE *)NULL;
 
     /* indicate success                                                    */
     return 1;
@@ -1659,27 +964,20 @@ Int            CloseLog (void)
 **  '*stdin*' and  '*errin*' to the file  with  name <filename>.  The file is
 **  truncated to size 0 if it existed, otherwise it is created.
 **
-**  'OpenInputLog' returns 1  if it  could successfully open  <filename>  for
-**  writing  and  0 to indicate failure.  'OpenInputLog' will fail  if you do
-**  not have  permissions to create the file  or write to it.  'OpenInputLog'
-**  may also fail  if you  have  too many  files open  at once.  It is system
-**  dependent  how many are too many,  but 16 files  should work  everywhere.
-**  Finally 'OpenInputLog' will fail if there is already a current logfile.
+**  'OpenInputLog' returns the handle to <filename> upon success and returns
+**  NULL to indicate failure.  'OpenInputLog' will fail  if you do  not have
+**  permissions to create the file  or write to it.  If there is already a 
+**  current logfile, then its handle is returned.
 */
-Int            OpenInputLog (char *filename)
-{
 
-    /* refuse to open a logfile if we already log to one                   */
-    if ( InputLogfile != -1 )
-        return 0;
+FILE    *OpenInputLog ( char *filename )
+{
+    /* Return the handle of the existing open file is there is one         */
+    if ( InputLogfile != (FILE *)NULL ) return InputLogfile;
 
     /* try to open the file                                                */
-    InputLogfile = SyFopen( filename, "w" );
-    if ( InputLogfile == -1 )
-        return 0;
-
-    /* otherwise indicate success                                          */
-    return 1;
+    InputLogfile = SyFileOpen ( filename, "w" );
+    return InputLogfile;
 }
 
 
@@ -1694,15 +992,15 @@ Int            OpenInputLog (char *filename)
 **  'CloseInputLog' will fail if there is no logfile active and will return 0
 **  in this case.
 */
-Int            CloseInputLog (void)
+Int     CloseInputLog ( void )
 {
     /* refuse to close a non existent logfile                              */
-    if ( InputLogfile == -1 )
+    if ( InputLogfile == (FILE *)NULL )
         return 0;
 
     /* close the logfile                                                   */
-    SyFclose( InputLogfile );
-    InputLogfile = -1;
+    SyFileClose ( InputLogfile );
+    InputLogfile = (FILE *)NULL;
 
     /* indicate success                                                    */
     return 1;
@@ -1721,23 +1019,10 @@ void            InitScanner (void)
 {
     Int                ignore, i;
 
-    OutputLineLen = SyNrCols < 1000 ? 1000 : SyNrCols + 1;
-    for(i = 0; i < SCANNER_OUTPUTS; ++i) {
-        /* OutputFiles[i].line = (char*) xmalloc(sizeof(char)*OutputLineLen); */
-        OutputFiles[i].line = (char*) malloc(sizeof(char)*OutputLineLen);
-        OutputFiles[i].file = 0;
-        OutputFiles[i].indent = 0;
-        OutputFiles[i].pos = 0;
-        OutputFiles[i].sindent = 0;
-        OutputFiles[i].spos = 0;
-        OutputFiles[i].mem = 0;
-    }
-
     Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
-    Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
 
-    Logfile = -1;  
-    InputLogfile = -1;
+    Logfile = (FILE *)NULL;  
+    InputLogfile = (FILE *)NULL;
 }
 
 

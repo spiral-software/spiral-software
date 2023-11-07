@@ -20,6 +20,14 @@ set ( ADDL_COMPILE_FLAGS )
 set ( GPU_COMPILE_DEFNS )
 set ( LIBS_TO_LINK )
 
+set ( PROF_TARGETS ${CMAKE_SOURCE_DIR}/../../targets )
+set ( PROF_COMMON  ${PROF_TARGETS}/common )
+set ( PROF_INCLUDE ${PROF_TARGETS}/include )
+set ( SOURCES      ${PROF_COMMON}/${PROJECT}.${SUFFIX} testcode.${SUFFIX} )
+
+set_source_files_properties ( ${PROF_COMMON}/${PROJECT}.${SUFFIX}
+                              PROPERTIES COMPILE_DEFINITIONS  "MAINOBJ" )
+
 if  ( ${SUFFIX} STREQUAL "cu" )
     project ( ${PROJECT}_CUDA
         VERSION 1.0.1
@@ -30,6 +38,7 @@ elseif ( ${SUFFIX} STREQUAL "cpp" )
         VERSION 1.0.1
         DESCRIPTION "Profile SPIRAL code, matrix/vector/time test"
         LANGUAGES C CXX )
+
     if ( "${CMAKE_CXX_COMPILER}" MATCHES "hipcc$" )
         message ( STATUS "${CMAKE_CXX_COMPILER} matches 'hipcc$' " )
         ##  Setup what we need to build for HIP/ROCm
@@ -51,21 +60,18 @@ elseif ( ${SUFFIX} STREQUAL "cpp" )
         list ( APPEND LIBS_TO_LINK hipfft rocfft )
         list ( APPEND ADDL_COMPILE_FLAGS -DFFTX_HIP )
     endif ()
+
+    ##  Override SUFFIX for main program (CUDA & HIP shares same source file)
+    set ( SOURCES   ${PROF_COMMON}/${PROJECT}.cu testcode.${SUFFIX} )
+    set_source_files_properties ( ${PROF_COMMON}/${PROJECT}.cu
+                                  PROPERTIES COMPILE_DEFINITIONS  "MAINOBJ" )
+
 else ()
     project ( ${PROJECT}
         VERSION 1.0.1
         DESCRIPTION "Profile SPIRAL code, matrix/vector/time test"
         LANGUAGES C CXX )
 endif ()				
-
-
-set ( PROF_TARGETS ${CMAKE_SOURCE_DIR}/../../targets )
-set ( PROF_COMMON  ${PROF_TARGETS}/common )
-set ( PROF_INCLUDE ${PROF_TARGETS}/include )
-set ( SOURCES      ${PROF_COMMON}/${PROJECT}.cu testcode.${SUFFIX} )
-
-set_source_files_properties ( ${PROF_COMMON}/${PROJECT}.cu
-                              PROPERTIES COMPILE_DEFINITIONS  "MAINOBJ" )
 
 include_directories ( ${CMAKE_SOURCE_DIR} ${PROF_TARGETS} ${PROF_COMMON} ${PROF_INCLUDE}  )
 

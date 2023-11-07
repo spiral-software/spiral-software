@@ -16,6 +16,7 @@ set ( CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, Mi
 ##  PROJECT: { matrix | rdtsc_time | papi_time | cvector }
 ##  SUFFIX:  { c | cu | cpp }
 
+##  Define necessary lists (initially empty) -- always append hereafter
 set ( ADDL_COMPILE_FLAGS )
 set ( GPU_COMPILE_DEFNS )
 set ( LIBS_TO_LINK )
@@ -33,6 +34,7 @@ if  ( ${SUFFIX} STREQUAL "cu" )
         VERSION 1.0.1
         DESCRIPTION "Profile SPIRAL/Cuda code, matrix/vector/time test"
         LANGUAGES C CXX CUDA )
+    list ( APPEND ADDL_COMPILE_FLAGS -DFFTX_CUDA )
 elseif ( ${SUFFIX} STREQUAL "cpp" )
     project ( ${PROJECT}_HIP
         VERSION 1.0.1

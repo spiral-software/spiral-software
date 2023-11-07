@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2018-2021, Carnegie Mellon University
+## Copyright (c) 2018-2023, Carnegie Mellon University
 ## All rights reserved.
 ##
 ## See LICENSE file for full information
@@ -14,56 +14,83 @@ set ( CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, Mi
 ##  to cmake and should be one of (time is either rdtsc_time or papi_time
 ##  depending on system architecture):
 ##  PROJECT: { matrix | rdtsc_time | papi_time | cvector }
-##  SUFFIX:  { c | cu }
+##  SUFFIX:  { c | cu | cpp }
 
+set ( ADDL_COMPILE_FLAGS )
+set ( GPU_COMPILE_DEFNS )
+set ( LIBS_TO_LINK )
 
 if  ( ${SUFFIX} STREQUAL "cu" )
-	project ( ${PROJECT}_CUDA
-         VERSION 1.0.1
-                DESCRIPTION "Profile SPIRAL/Cuda code, matrix/vector/time test"
-                LANGUAGES C CXX CUDA )
+    project ( ${PROJECT}_CUDA
+        VERSION 1.0.1
+        DESCRIPTION "Profile SPIRAL/Cuda code, matrix/vector/time test"
+        LANGUAGES C CXX CUDA )
+elseif ( ${SUFFIX} STREQUAL "cpp" )
+    project ( ${PROJECT}_HIP
+        VERSION 1.0.1
+        DESCRIPTION "Profile SPIRAL code, matrix/vector/time test"
+        LANGUAGES C CXX )
+    if ( "${CMAKE_CXX_COMPILER}" MATCHES "hipcc$" )
+        message ( STATUS "${CMAKE_CXX_COMPILER} matches 'hipcc$' " )
+        ##  Setup what we need to build for HIP/ROCm
+        list ( APPEND CMAKE_PREFIX_PATH /opt/rocm/hip /opt/rocm )
+        find_package ( hip REQUIRED )
+        if ( ${hip_FOUND} )
+	    ##  HIP/ROCm support found
+	    message ( STATUS "Found HIP: Version = ${hip_VERSION}" )
+        else ()
+	    message ( SEND_ERROR "HIP NOT FOUND: HIP is required to build")
+        endif ()
+
+        ##  Adjust include and library directories
+        ##  Need to add $ROCM_PATH for includes and libraries
+        if ( DEFINED ENV{ROCM_PATH} )
+	    message ( STATUS "ROCM_PATH is defined: $ENV{ROCM_PATH}" )
+	    include_directories ( $ENV{ROCM_PATH}/include/hipfft $ENV{ROCM_PATH}/include )
+        endif ()
+        list ( APPEND LIBS_TO_LINK hipfft rocfft )
+        list ( APPEND ADDL_COMPILE_FLAGS -DFFTX_HIP )
+    endif ()
 else ()
-	project ( ${PROJECT}
-         VERSION 1.0.1
-                DESCRIPTION "Profile SPIRAL code, matrix/vector/time test"
-                LANGUAGES C CXX )
+    project ( ${PROJECT}
+        VERSION 1.0.1
+        DESCRIPTION "Profile SPIRAL code, matrix/vector/time test"
+        LANGUAGES C CXX )
 endif ()				
-				
-				
+
 
 set ( PROF_TARGETS ${CMAKE_SOURCE_DIR}/../../targets )
 set ( PROF_COMMON  ${PROF_TARGETS}/common )
 set ( PROF_INCLUDE ${PROF_TARGETS}/include )
-set ( SOURCES      ${PROF_COMMON}/${PROJECT}.${SUFFIX} testcode.${SUFFIX} )
+set ( SOURCES      ${PROF_COMMON}/${PROJECT}.cu testcode.${SUFFIX} )
 
-set_source_files_properties ( ${PROF_COMMON}/${PROJECT}.${SUFFIX}
+set_source_files_properties ( ${PROF_COMMON}/${PROJECT}.cu
                               PROPERTIES COMPILE_DEFINITIONS  "MAINOBJ" )
 
 include_directories ( ${CMAKE_SOURCE_DIR} ${PROF_TARGETS} ${PROF_COMMON} ${PROF_INCLUDE}  )
 
 ##  Setup compilation flags
 
-set ( ADDL_COMPILE_FLAGS )
-set ( GPU_COMPILE_DEFNS )
-set ( LIBS_TO_LINK )
 set ( CMAKE_C_STANDARD 11 )
 set ( CMAKE_CXX_STANDARD 11 )
 
 if ( WIN32 )
-    set ( ADDL_COMPILE_FLAGS -DWIN64 )
+    list ( APPEND ADDL_COMPILE_FLAGS -DWIN64 )
     if ( ${SUFFIX} STREQUAL "cu" )
 	list ( APPEND ADDL_COMPILE_FLAGS -rdc=false --pre-include testcode.h )
-	set ( GPU_COMPILE_DEFNS )			##   -Xptxas -v
-	set ( LIBS_TO_LINK cufft )
+	list ( APPEND GPU_COMPILE_DEFNS )			##   -Xptxas -v
+	list ( APPEND LIBS_TO_LINK cufft )
     else ()
 	list ( APPEND ADDL_COMPILE_FLAGS /FItestcode.h /openmp )
     endif ()
 else ()
-    set ( ADDL_COMPILE_FLAGS )
     if ( ${SUFFIX} STREQUAL "cu" )
 	list ( APPEND ADDL_COMPILE_FLAGS -m64 -rdc=false --pre-include testcode.h )
-	set ( GPU_COMPILE_DEFNS )		##   -Xptxas -v
-	set ( LIBS_TO_LINK cufft culibos )
+	list ( APPEND GPU_COMPILE_DEFNS )		##   -Xptxas -v
+	list ( APPEND LIBS_TO_LINK cufft culibos )
+    elseif ( ${SUFFIX} STREQUAL "cpp" )
+        set_source_files_properties ( ${PROF_COMMON}/${PROJECT}.cu PROPERTIES LANGUAGE CXX )
+	list ( APPEND ADDL_COMPILE_FLAGS -include testcode.h )
     else ()
 	list ( APPEND ADDL_COMPILE_FLAGS -include testcode.h )
 	message ( STATUS "ADDL_COMPILE_FLAGS = ${ADDL_COMPILE_FLAGS}" )

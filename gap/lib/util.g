@@ -1112,29 +1112,40 @@ INT_CHAR := tab(
     \{:= 123,   \|:= 124,   \}:= 125,   \~:= 126,
 ); #"
 
-# Convert string to an int (may be useful for hashing)
-IntString := function( s )
-    local res, i, base, ofs, negative;
-    negative := false;
-    if s[1] = '-' then
-      negative := true;
-      s := RemoveList(s, '-');
-    fi;
+##  Convert string to an integer (ala atoi())
+##  Expects a string with optional leading blanks, or leading sign (+ or -)
+##  Stops once the first non-digit (i.e., 0-9) is encountered
 
-    [res, base, ofs] := [0, 10, 48];
-    for i in List(s,c->INT_CHAR.([c])) do
-        if (i < ofs) or (i > ofs + 9) then
-            [base, ofs] := [256, 0];
+IntString := function( str )
+    local result, idx, ch, offset, sign, digit;
+    sign := 1;
+    result := 0;
+    offset := 48;
+    idx := 1;
+    digit := false;
+
+    for ch in List ( str,c->INT_CHAR.([c]) ) do
+        if digit = false and ( str[idx] = '+' or str[idx] = '-' or str[idx] = ' ' ) then
+            if str[idx] = '-' then
+                sign := -1;
+            fi;
+        elif ( str[idx] < '0' or str[idx] > '9' ) then
+            ##  no "break" in GAP, so apply sign & return result
+            result := sign * result;
+            return result;
+        else
+            ##  found a digit, will continue processing until first non-digit
+            digit := true;
+            result := result * 10 + ( ch - offset );
         fi;
-        res := res * base + (i - ofs);
+        idx := idx + 1;
     od;
-    if negative = false then
-        return res;
-    else
-        return (0-res);
-    fi;
 
+    ##  Apply sign and return result
+    result := sign * result;
+    return result;
 end;
+
 
 # Make a string from args using arg[1] as separator (a la perl's join).
 StringJoin := arg -> let(

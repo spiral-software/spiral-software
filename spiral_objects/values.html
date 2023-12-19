@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Values and Types &mdash; SPIRAL  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Transforms and Rule Trees" href="ruletrees.html" />
+    <link rel="prev" title="Packages and Namespaces" href="namespaces.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SPIRAL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gap3/index.html">GAP3 Language</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">SPIRAL Objects and Data Types</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html">Packages and Namespaces</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Values and Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#value-wrapper-and-object">Value Wrapper and Object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scalar-data-types">Scalar Data Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#array-data-types">Array Data Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pointers">Pointers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variables">Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#expressions">Expressions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comparisons">Comparisons</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-handling">Error Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lambda-functions">Lambda Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#definition">Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operations-on-functions">Operations on Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#function-properties-fields">Function Properties/Fields</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ruletrees.html">Transforms and Rule Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spl.html">SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sigma_spl.html">Σ-SPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icode.html">Abstract Code (icode)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="end2end.html">End to End, from Transform to C Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">SPIRAL Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Special Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugger.html">Debugger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiler/index.html">Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gethelp.html">Getting Help with SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing to SPIRAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Further Reading</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SPIRAL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">SPIRAL Objects and Data Types</a></li>
+      <li class="breadcrumb-item active">Values and Types</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/spiral_objects/values.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="values-and-types">
+<span id="values-types"></span><h1>Values and Types<a class="headerlink" href="#values-and-types" title="Link to this heading"></a></h1>
+<section id="value-wrapper-and-object">
+<h2>Value Wrapper and Object<a class="headerlink" href="#value-wrapper-and-object" title="Link to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>V(1);
+v := V(1.1);
+_unwrap(v);
+v.v;
+v.t;
+</pre></div>
+</div>
+</section>
+<section id="scalar-data-types">
+<h2>Scalar Data Types<a class="headerlink" href="#scalar-data-types" title="Link to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Value(TReal, 1.0);
+Value(TDouble, 1.0);
+Value(T_Real(32), 1.0);
+Value(T_Real(64), 1.0);
+Value(TInt, 1);
+Value(T_Int(32), 1);
+Value(TComplex, Cplx(0, 1));
+</pre></div>
+</div>
+</section>
+<section id="array-data-types">
+<h2>Array Data Types<a class="headerlink" href="#array-data-types" title="Link to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>t := TArray(TReal, 4);                  # double[4]
+v := Value(t, [1,2,3,4]);               # double[4] = {1.0,2.0,3.0,4.0}
+mt := TArray(TArray(TReal, 4), 4);
+Value(mt, Replicate(4, v));             # initialize a 4x4 matrix
+</pre></div>
+</div>
+</section>
+<section id="pointers">
+<h2>Pointers<a class="headerlink" href="#pointers" title="Link to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TPtr(TReal);                            # *double
+</pre></div>
+</div>
+</section>
+<section id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Link to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>i := Ind();                             # integer index
+j := Ind(4);                            # index, 0 &lt;= j &lt; 4
+k := var.fresh_t(&quot;j&quot;, TInt);            # create a &quot;fresh&quot; variable
+var.table.(v.id);                       # global variable table
+</pre></div>
+</div>
+</section>
+<section id="expressions">
+<h2>Expressions<a class="headerlink" href="#expressions" title="Link to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>a := var.fresh_t(&quot;a&quot;, TReal);           # a few real variables
+b := var.fresh_t(&quot;b&quot;, TReal);
+c := var.fresh_t(&quot;c&quot;, TReal);
+a + b;                                  # + is overloaded
+add(a, V(2.0));
+a + 2;
+e := add(a, b);                         # use add function
+e.args;                                 # the operands
+e.t;                                    # expressions carry a type
+g := add(a, b, c);                      # not just binary
+h := add(a, mul(b, c));                 # expressions
+k := add(neg(a), mul(b, c, V(1.1)));    # expressions
+mul(V(1.0), V(2.0));                    # evaluates at construction
+sub(V(1), V(2.0)).t;                    # type unification
+</pre></div>
+</div>
+</section>
+<section id="comparisons">
+<h2>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>i := Ind();                             # an integer variable
+j := Ind();                             # an integer variable
+eq(i, V(1));                            # i == 1
+leq(i, j);                              # comparison: &lt;=
+geq(i, j);                              # comparison: &gt;=
+lt(i, j);                               # comparison: &lt;
+gt(i, j);                               # comparison: &gt;
+cond(leq(i, 0), 0, i);                  # C ? : conditional assignment
+min(i, j);                              # minimum
+max(i, j);                              # maximum
+</pre></div>
+</div>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>i := Ind();                             # an integer variable
+errExp(TInt);                           # illegal value of type int
+noneExp(TInt);                          # undefined value, type double
+</pre></div>
+</div>
+</section>
+<section id="lambda-functions">
+<h2>Lambda Functions<a class="headerlink" href="#lambda-functions" title="Link to this heading"></a></h2>
+<section id="definition">
+<h3>Definition<a class="headerlink" href="#definition" title="Link to this heading"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>i := Ind(4);                            # variable with range
+f := Lambda(i, i+1);                    # i -&gt; i+1
+j := Ind(4);                            # variable with range
+g := Lambda([i, j], imod(i*j, 4));      # function in 2 variables
+</pre></div>
+</div>
+</section>
+<section id="operations-on-functions">
+<h3>Operations on Functions<a class="headerlink" href="#operations-on-functions" title="Link to this heading"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>f.at(0);                                # evaluate function
+f.tolist();                             # create table for function
+k := Ind(4);
+Lambda(k, g.at(k, V(1)));               # partially evaluate g(.,1)
+m := Ind(4);
+h := Lambda(m, 2*m);                    # i -&gt; 2*i
+LambdaCompose(f, h);                    # function composition
+</pre></div>
+</div>
+</section>
+<section id="function-properties-fields">
+<h3>Function Properties/Fields<a class="headerlink" href="#function-properties-fields" title="Link to this heading"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>f.domain();
+f.range();
+f.t;
+f.vars;
+f.expr;
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespaces.html" class="btn btn-neutral float-left" title="Packages and Namespaces" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ruletrees.html" class="btn btn-neutral float-right" title="Transforms and Rule Trees" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, SPIRAL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

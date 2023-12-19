@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-2021, Carnegie Mellon University
+ *  Copyright (c) 2018-2023, Carnegie Mellon University
  *  See LICENSE for details
  */
 
@@ -14,10 +14,7 @@
 #include <sys/timeb.h>
 #endif							// WIN64
 
-#include <cufft.h>
-#include <cufftXt.h>
-
-#include <helper_cuda.h>
+#include "common_macros.h"
 
 #ifndef DESTROYFUNC
 #define DESTROYFUNC destroy_sub
@@ -27,7 +24,7 @@
 
 void setup_spiral_test()
 {
-    checkCudaErrors(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared));
+    DEVICE_CHECK_ERROR ( DEVICE_SET_CACHE_CONFIG ( DEVICE_CACHE_PREFER_SHARED ) );
     // printf("Running SPIRAL Hello World CUDA example...\n");
 
     INITFUNC();
@@ -42,15 +39,15 @@ void test_spiral(double* in, double* out)
 {
 
     FUNC(out, in);
-    checkCudaErrors(cudaGetLastError());
+	DEVICE_CHECK_ERROR ( DEVICE_GET_LAST_ERROR () );
 }
 
 
 int main(int argc, char** argv)
 {
-	cufftDoubleReal  *out, *in;
-	cufftDoubleReal  *dev_out, *dev_in;
-	cudaEvent_t      begin, end;
+	DEVICE_FFT_DOUBLEREAL  *out, *in;
+	DEVICE_FFT_DOUBLEREAL  *dev_out, *dev_in;
+	DEVICE_EVENT_T          begin, end;
 
 #ifdef WIN64
     struct timeb     start, finish;
@@ -65,34 +62,34 @@ int main(int argc, char** argv)
 	// buffers.  The *input* buffer should be dimensioned by COLUMNS, while the
 	// *output* buffer should be dimensioned by ROWS
 	
-	cudaEventCreate ( &begin );
-	cudaEventCreate ( &end );
-	in =  (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), COLUMNS );
-	out = (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), ROWS );
-	cudaMalloc      ( &dev_in,  sizeof(cufftDoubleReal) * COLUMNS );
-	cudaMalloc      ( &dev_out, sizeof(cufftDoubleReal) * ROWS );
+	DEVICE_EVENT_CREATE ( &begin );
+	DEVICE_EVENT_CREATE ( &end );
+	in =  (DEVICE_FFT_DOUBLEREAL*) calloc(sizeof(DEVICE_FFT_DOUBLEREAL), COLUMNS );
+	out = (DEVICE_FFT_DOUBLEREAL*) calloc(sizeof(DEVICE_FFT_DOUBLEREAL), ROWS );
+	DEVICE_MALLOC      ( &dev_in,  sizeof(DEVICE_FFT_DOUBLEREAL) * COLUMNS );
+	DEVICE_MALLOC      ( &dev_out, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS );
 
 	for (int i = 0; i < /* ROWS */ COLUMNS; i++)
 		in[i] = i;
 
 	setup_spiral_test();
-	cudaMemcpy ( dev_in, in,   sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
-	checkCudaErrors(cudaGetLastError());
+	DEVICE_MEM_COPY ( dev_in, in,   sizeof(DEVICE_FFT_DOUBLEREAL) * COLUMNS, MEM_COPY_HOST_TO_DEVICE);
+	DEVICE_CHECK_ERROR ( DEVICE_GET_LAST_ERROR () );
 	
-	checkCudaErrors( cudaEventRecord(begin) );
+	DEVICE_CHECK_ERROR ( DEVICE_EVENT_RECORD ( begin ) );
 	int iters = 1 * 100 ;
 	for (int i = 0; i < iters; i++ ) {
 		test_spiral(dev_in, dev_out);
 	}
-	checkCudaErrors( cudaEventRecord(end) );
-	cudaDeviceSynchronize();
-	cudaMemcpy ( out, dev_out, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyDeviceToHost);
-	checkCudaErrors(cudaGetLastError());
+	DEVICE_CHECK_ERROR ( DEVICE_EVENT_RECORD ( end ) );
+	DEVICE_SYNCHRONIZE();
+	DEVICE_MEM_COPY ( out, dev_out, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS, MEM_COPY_DEVICE_TO_HOST);
+	DEVICE_CHECK_ERROR ( DEVICE_GET_LAST_ERROR () );
 
 	teardown_spiral_test();
 
 	float milli = 0.0;
-	checkCudaErrors ( cudaEventElapsedTime ( &milli, begin, end ) );
+	DEVICE_CHECK_ERROR ( DEVICE_EVENT_ELAPSED_TIME ( &milli, begin, end ) );
 	printf("%f;\t\t##  SPIRAL GPU kernel execution [ms], averaged over %d iterations ##PICKME##\n", milli / iters, iters );
 
 #ifdef WIN64
@@ -111,8 +108,8 @@ int main(int argc, char** argv)
 	
 	free  ( in );
 	free  ( out );
-	cudaFree      ( dev_in );
-	cudaFree      ( dev_out );
+	DEVICE_FREE      ( dev_in );
+	DEVICE_FREE      ( dev_out );
 	
 	return EXIT_SUCCESS;
 }

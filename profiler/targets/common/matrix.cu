@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-2021, Carnegie Mellon University
+ *  Copyright (c) 2018-2023, Carnegie Mellon University
  *  See LICENSE for details
  */
 /***************************************************************************
@@ -15,10 +15,7 @@
 #include <assert.h>
 #include <math.h>
 
-#include <cufft.h>
-#include <cufftXt.h>
-
-#include <helper_cuda.h>
+#include "common_macros.h"
 
 #ifndef ROWS
 #error ROWS must be defined
@@ -31,15 +28,15 @@
 #define NZERO (1.0/(double)-INFINITY)
 #endif
 
-cufftDoubleReal  *Input, *Output;
-cufftDoubleReal  *dev_in, *dev_out;
+DEVICE_FFT_DOUBLEREAL  *Input, *Output;
+DEVICE_FFT_DOUBLEREAL  *dev_in, *dev_out;
 
 void initialize(int argc, char **argv) {
-	Input =  (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), COLUMNS );
-	Output = (cufftDoubleReal*) calloc(sizeof(cufftDoubleReal), ROWS );
+	Input =  (DEVICE_FFT_DOUBLEREAL*) calloc(sizeof(DEVICE_FFT_DOUBLEREAL), COLUMNS );
+	Output = (DEVICE_FFT_DOUBLEREAL*) calloc(sizeof(DEVICE_FFT_DOUBLEREAL), ROWS );
 
-	cudaMalloc     ( &dev_in,  sizeof(cufftDoubleReal) * COLUMNS );
-	cudaMalloc     ( &dev_out, sizeof(cufftDoubleReal) * ROWS );
+	DEVICE_MALLOC     ( &dev_in,  sizeof(DEVICE_FFT_DOUBLEREAL) * COLUMNS );
+	DEVICE_MALLOC     ( &dev_out, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS );
 
 	INITFUNC();
 }
@@ -47,11 +44,11 @@ void initialize(int argc, char **argv) {
 void finalize() {
 	free (Output);
 	free (Input);
-	cudaFree     (dev_out);
-	cudaFree     (dev_in);
+	DEVICE_FREE     (dev_out);
+	DEVICE_FREE     (dev_in);
 }
 
-void set_value_in_vector(cufftDoubleReal *arr, int elem)
+void set_value_in_vector(DEVICE_FFT_DOUBLEREAL *arr, int elem)
 {
 	// Zero array and put '1' in the location indicated by element
 	int idx;
@@ -91,15 +88,14 @@ void compute_matrix()
 	printf("[ ");
 	for (x = start_col; x < end_col; x++) {
 		set_value_in_vector(Input, x);
-
-		cudaMemcpy (dev_in, Input, sizeof(cufftDoubleReal) * COLUMNS, cudaMemcpyHostToDevice);
+		DEVICE_MEM_COPY (dev_in, Input, sizeof(DEVICE_FFT_DOUBLEREAL) * COLUMNS, MEM_COPY_HOST_TO_DEVICE);
 		
 		// set dev_out to negative zero to catch holes transform
 		for (indx = 0; indx < ROWS; indx++) {
 			Output[indx] = nzero;
 		}
-		cudaMemcpy(dev_out, Output, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyHostToDevice);
-		checkCudaErrors(cudaGetLastError());
+		DEVICE_MEM_COPY(dev_out, Output, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS, MEM_COPY_HOST_TO_DEVICE);
+		DEVICE_CHECK_ERROR ( DEVICE_GET_LAST_ERROR () );
 		
 		// set Output to -Inf to catch incomplete copies
 		for (indx = 0; indx < ROWS; indx++) {
@@ -107,7 +103,7 @@ void compute_matrix()
 		}
 		
 		FUNC(dev_out, dev_in);
-		cudaMemcpy ( Output, dev_out, sizeof(cufftDoubleReal) * ROWS, cudaMemcpyDeviceToHost);
+		DEVICE_MEM_COPY ( Output, dev_out, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS, MEM_COPY_DEVICE_TO_HOST);
 		
 		if (x != start_col) {
 			printf(",\n  [ ");

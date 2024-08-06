@@ -101,8 +101,9 @@ Class(nth, Loc, rec(
     computeType := self >> Cond(
 	IsPtrT(self.loc.t) or IsArrayT(self.loc.t) or IsListT(self.loc.t), self.loc.t.t,
         ObjId(self.loc.t)=TSym, TSym("Containee"), #used with C++ container objects (EnvList)
-        self.loc.t = TUnknown,  self.loc.t,
-	Error("Unknown types of 1st argument <self.loc> in ", ObjId(self))
+        self.loc.t = TUnknown, 
+            Error("Unknown type of 1st argument <self.loc> in ", ObjId(self)),
+            self.loc.t
     ),
 
     isExpComposite := true

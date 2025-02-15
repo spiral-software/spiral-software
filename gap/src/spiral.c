@@ -1406,6 +1406,7 @@ extern void Init_GAP_Utils();
 extern void Init_types();
 extern void Init_Double();
 extern void Init_Complex();
+extern void Init_Plugins();
 
 void            InitSPIRAL (void) {
     InitSPIRAL_Paths();
@@ -1414,6 +1415,7 @@ void            InitSPIRAL (void) {
     InitSPIRAL_BagList();
     Init_Double();
     Init_Complex();
+    Init_Plugins();
     Init_types();
     Init_GAP_Utils();
     /**/ GlobalPackage2("spiral", "util"); /**/

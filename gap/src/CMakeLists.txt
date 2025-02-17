@@ -199,7 +199,7 @@ set_target_properties(${PROJECT} PROPERTIES OUTPUT_NAME_DEBUG "${PROJECT}d")
 if (WIN32)
     target_link_libraries(${PROJECT} shlwapi.lib)
 else()
-    target_link_libraries(${PROJECT} m)
+    target_link_libraries(${PROJECT} m dl)
 endif()
 
 install(TARGETS ${PROJECT} DESTINATION ${SPIRAL_SOURCE_DIR}/gap/bin)

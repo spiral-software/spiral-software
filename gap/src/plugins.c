@@ -24,16 +24,18 @@
 #include "eval.h"
 
 
-typedef void (*fptr)();
-typedef fptr (*lookup_func)(char *);
+typedef void* (*lookup_func)(char *);
 typedef void (*init_func)(lookup_func);
 
-fptr LookupFunctionPointer(char* name) {
+void* LookupGlobalName(char* name) {
     if (strcmp(name, "InstIntFunc") == 0) {
-        return (fptr)InstIntFunc;
+        return (void*)InstIntFunc;
+    }
+    else if (strcmp(name, "HdVoid") == 0) {
+        return (void*)HdVoid;
     }
     else {
-        return (fptr)0;
+        return (void*)0;
     }
 }
 
@@ -63,9 +65,9 @@ Obj FunLoadPlugin(Obj hdCall) {
         return Error("cannot find function %s in library %s", funcname, libname);
     }
     
-    ((init_func)funcptr)(LookupFunctionPointer);
+    ((init_func)funcptr)(LookupGlobalName);
     
-    return INT_TO_HD(0);
+    return HdVoid;
 }
 
 

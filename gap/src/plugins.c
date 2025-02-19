@@ -25,7 +25,7 @@
 
 
 typedef void* (*lookup_func)(char *);
-typedef void (*init_func)(lookup_func);
+typedef int (*init_func)(lookup_func);
 
 void* LookupGlobalName(char* name) {
     if (strcmp(name, "InstIntFunc") == 0) {
@@ -47,6 +47,7 @@ Obj FunLoadPlugin(Obj hdCall) {
     char* funcname = "init_plugin";
     void *handle;
     void *funcptr;
+    int init_ret;
     
     if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) {
         return Error(usage, 0, 0);
@@ -65,7 +66,10 @@ Obj FunLoadPlugin(Obj hdCall) {
         return Error("cannot find function %s in library %s", funcname, libname);
     }
     
-    ((init_func)funcptr)(LookupGlobalName);
+    init_ret = ((init_func)funcptr)(LookupGlobalName);
+    if (init_ret != 0) {
+        return Error("unable to initialize plugin %s", libname, 0);
+    }
     
     return HdVoid;
 }

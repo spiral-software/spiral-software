@@ -30,7 +30,13 @@ typedef int (*init_func)(lookup_func);
 void* LookupGlobalName(char* name) {
     if (strcmp(name, "InstIntFunc") == 0) {
         return (void*)InstIntFunc;
-    }
+	}
+	else if (strcmp(name, "Error") == 0) {
+		return (void*)Error;
+	}
+	else if (strcmp(name, "HdToString") == 0) {
+		return (void*)HdToString;
+	}
     else if (strcmp(name, "HdVoid") == 0) {
         return (void*)HdVoid;
     }

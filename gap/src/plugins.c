@@ -27,6 +27,14 @@
 typedef void* (*lookup_func)(char *);
 typedef int (*init_func)(lookup_func);
 
+
+UInt GetArgCount(Bag argv)
+{
+    return GET_SIZE_BAG(argv) / SIZE_HD;
+}
+
+
+
 void* LookupGlobalName(char* name) {
     if (strcmp(name, "InstIntFunc") == 0) {
         return (void*)InstIntFunc;
@@ -39,6 +47,9 @@ void* LookupGlobalName(char* name) {
 	}
     else if (strcmp(name, "HdVoid") == 0) {
         return (void*)HdVoid;
+    }
+    else if (strcmp(name, "GetArgCount") == 0) {
+        return (void*)GetArgCount;
     }
     else {
         return (void*)0;

@@ -106,16 +106,21 @@ _WriteStub := function(code, opts)
 		fi;
 	fi;
 	
+    
+    if IsBound(opts.wrapCFuncs) and opts.wrapCFuncs then
 
     ##  add extern function declarations ... required for cuda
-    Print("\nextern void INITFUNC();\n");
-    Print("extern void DESTROYFUNC();\n");
-	
-	if IsBound(testcodeopts.funcArgs) then
-		Print("extern void FUNC( ", testcodeopts.funcArgs," );\n");
-	else
-	    Print("extern void FUNC( ", _DeriveScalarType(opts), " *out, ", _DeriveScalarType(opts), " *in );\n");
-	fi;
+        Print("extern \"C\" {\n");
+        Print("    void INITFUNC();\n");
+        Print("    void DESTROYFUNC();\n");
+        
+        if IsBound(testcodeopts.funcArgs) then
+            Print("    void FUNC( ", testcodeopts.funcArgs," );\n");
+        else
+            Print("    void FUNC( ", _DeriveScalarType(opts), " *out, ", _DeriveScalarType(opts), " *in );\n");
+        fi;
+        Print("}\n");
+    fi;
     
 	#add testvector if specified in opts
 	

@@ -22,6 +22,7 @@
 #include "integer.h"
 #include "args.h"
 #include "eval.h"
+#include "gstring.h"
 
 
 typedef void* (*lookup_func)(char *);
@@ -34,6 +35,14 @@ UInt GetArgCount(Bag argv)
 }
 
 
+Bag GetArg(Bag argv, UInt n)
+{
+    if ((n < 0) || (n >= GetArgCount(argv))) {
+        return HdVoid;
+    }
+    return PTR_BAG(argv)[n];
+}
+
 
 void* LookupGlobalName(char* name) {
     if (strcmp(name, "InstIntFunc") == 0) {
@@ -42,14 +51,26 @@ void* LookupGlobalName(char* name) {
 	else if (strcmp(name, "Error") == 0) {
 		return (void*)Error;
 	}
-	else if (strcmp(name, "HdToString") == 0) {
-		return (void*)HdToString;
-	}
     else if (strcmp(name, "HdVoid") == 0) {
         return (void*)HdVoid;
-    }
+    }	
+    else if (strcmp(name, "EVAL") == 0) {
+        return (void*)EVAL;
+    }	
     else if (strcmp(name, "GetArgCount") == 0) {
         return (void*)GetArgCount;
+    }
+    else if (strcmp(name, "GetArg") == 0) {
+        return (void*)GetArg;
+    }
+	else if (strcmp(name, "IsString") == 0) {
+		return (void*)IsString;
+	}
+	else if (strcmp(name, "GET_TYPE_BAG") == 0) {
+		return (void*)GET_TYPE_BAG;
+	}
+	else if (strcmp(name, "HdToString") == 0) {
+		return (void*)HdToString;
     }
     else {
         return (void*)0;

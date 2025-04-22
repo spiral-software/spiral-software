@@ -37,8 +37,11 @@ void teardown_spiral_test()
 
 void test_spiral(double* in, double* out)
 {
-
+#ifdef RUN_FUNC
+	RUN_FUNC;
+#else
     FUNC(out, in);
+#endif
 	DEVICE_CHECK_ERROR ( DEVICE_GET_LAST_ERROR () );
 }
 

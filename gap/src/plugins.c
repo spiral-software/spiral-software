@@ -72,6 +72,9 @@ void* LookupGlobalName(char* name) {
 	else if (strcmp(name, "HdToString") == 0) {
 		return (void*)HdToString;
     }
+	else if (strcmp(name, "HdToInt") == 0) {
+		return (void*)HdToInt;
+    }
 	else if (strcmp(name, "StringToHd") == 0) {
 		return (void*)StringToHd;
     }

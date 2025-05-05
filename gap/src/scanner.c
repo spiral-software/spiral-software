@@ -326,7 +326,17 @@ char            GetLine (void)
     In = Input->line;  In[0] = '\0';
     NrErrLine = 0;
 
- 
+    if (Input->srcstring != 0) {
+        fprintf(stderr, "GETLINE\n");
+        if (Input->strlines == 0) {
+            strncpy(In, Input->srcstring, sizeof(Input->line));
+            Input->strlines = 1;
+        } else {
+            In[0] = '\377';  
+            In[1] = '\0';
+        }
+    } 
+    else
     /* try to read a line                                        */
     if ( ! SyFgets( In, sizeof(Input->line), Input->fid /* file */ ) ) {
         In[0] = '\377';  In[1] = '\0';
@@ -791,7 +801,7 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
 **  '*stdin*' for  that purpose.  This  file on   the other   hand can not be
 **  closed by 'CloseInput'.
 */
-Int            OpenInput (char *filename)
+Int            OpenInput (char *filename, int fromstring)
 {
     Int                file;
 
@@ -801,10 +811,12 @@ Int            OpenInput (char *filename)
 
     /**/HookBeforeOpenInput();/**/
 
-    /* try to open the input file                                          */
-    file = SyFopen( filename, "r" );
-    if ( file == -1 )
-        return 0;
+    if (fromstring == 0) {
+        /* try to open the input file                                          */
+        file = SyFopen(filename, "r");
+        if (file == -1)
+            return 0;
+    }
 
     /* remember the current position in the current file                   */
     if ( Input != InputFiles-1 )
@@ -812,11 +824,19 @@ Int            OpenInput (char *filename)
 
     /* enter the file identifier and the file name                         */
     Input++;
-    Input->fid = file;
-    //  Input->file = (FILE *)NULL;         // unknown
+    
     Input->name[0] = '\0';
-    //  strncat( Input->name, filename, sizeof(Input->name) );
-    strcpy ( Input->name, filename );
+    if (fromstring == 0) {
+        Input->fid = file;
+        //  Input->file = (FILE *)NULL;         // unknown
+        //  strncat( Input->name, filename, sizeof(Input->name) );
+        strcpy ( Input->name, filename );
+        Input->srcstring = (char *)0;
+    } else {
+        Input->strlines = 0;
+        Input->srcstring = filename;  // filename used as pointer to string
+        strcpy(Input->name, "<string>");
+    }
 
     /* start with an empty line and no symbol                              */
     In = Input->line;
@@ -863,7 +883,9 @@ Int            CloseInput (void)
     /**/HookBeforeCloseInput();/**/
 
     /* close the input file                                                */
-    SyFclose( Input->fid /* file */ );
+    if (Input->srcstring == 0) {
+        SyFclose( Input->fid /* file */ );
+    }
 
     /* revert to last file                                                 */
     Input--;
@@ -1019,7 +1041,7 @@ void            InitScanner (void)
 {
     Int                ignore, i;
 
-    Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
+    Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*", 0  );
 
     Logfile = (FILE *)NULL;  
     InputLogfile = (FILE *)NULL;

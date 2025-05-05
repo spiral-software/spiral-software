@@ -358,6 +358,8 @@ typedef struct {
     char        line [2048];
     char        * ptr;
     Int        number;
+    char        * srcstring;
+    Int         strlines;
 } TypInputFile;
 
 extern TypInputFile    InputFiles [SCANNER_INPUTS];
@@ -431,7 +433,7 @@ Bag		GReadFile ( void );
 **  '*stdin*' for  that purpose.  This  file on   the other   hand can not be
 **  closed by 'CloseInput'.
 */
-Int            OpenInput ( char * filename );
+Int            OpenInput ( char * filename, int fromstring );
 
 
 /****************************************************************************

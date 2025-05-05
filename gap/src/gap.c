@@ -769,7 +769,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
             debugActive = (InDebugMode != 0);
 #endif
 			/* if requested enter a break loop                                     */
-			if ( HdExec != 0 && debugActive && OpenInput( "*errin*" ) ) {
+			if ( HdExec != 0 && debugActive && OpenInput( "*errin*", 0 ) ) {
 
 				if(parent->packages) PushPackages(parent->packages);
 				if(parent->imports) PushNamespaces(parent->imports);
@@ -945,7 +945,7 @@ Bag       FunREAD (Bag hdCall)
 
     parent = Input;
     /* try to open the given file, if the file is not found return 'false' */
-    if ( ! OpenInput( (char*)PTR_BAG(hdName) ) )
+    if ( ! OpenInput( (char*)PTR_BAG(hdName), 0 ) )
         return HdFalse;
 
     if ( hdPkg ) { 
@@ -975,6 +975,46 @@ Bag       FunREAD (Bag hdCall)
     if ( ! CloseInput() )
         Error("READ: can not close input, this should not happen",0,0);
     //  printf ( " ... done\n" );
+	
+	return HdTrue;
+}
+
+Bag       FunEvalString (Bag hdCall)
+{
+    Bag           hd,  hdStr;
+    exc_type_t e;
+    
+    char *usage = "usage: EvalString( <string> )";
+
+    /* check the number and type of arguments                              */
+    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD && GET_SIZE_BAG(hdCall) != 2*SIZE_HD ) {
+        return Error(usage,0,0);
+    }
+    hdStr = EVAL( PTR_BAG(hdCall)[1] );
+    if ( ! IsString(hdStr) ) {
+        return Error(usage,0,0);
+    }
+    
+    OpenInput(HdToString(hdStr, "expected string", 0, 0), 1);
+
+    /* now comes a read-eval-noprint loop, similar to the one in 'main'    */
+	Try {
+        while ( Symbol != S_EOF ) {
+            hd = ReadIt();
+			if ( hd != 0 ) { 
+				hd = EVAL( hd );
+			}				
+			if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
+				return Error("EvalString: 'return' must not be used here",0,0);
+			else if ( hd == HdReturn )
+				return Error("EvalString: 'quit' must not be used here",0,0);
+        }
+    } Catch(e) {
+        Throw(e);
+    }
+    /* close the input file again, and return 'true'                       */
+    if ( ! CloseInput() )
+        Error("EvalString: can not close input, this should not happen",0,0);
 	
 	return HdTrue;
 }
@@ -1029,7 +1069,7 @@ Bag       FunReadString (Bag hdCall)
 
     parent = Input;
     /* try to open the given file, if the file is not found return 'false' */
-    if ( ! OpenInput( (char*)PTR_BAG(hdName) ) )
+    if ( ! OpenInput( (char*)PTR_BAG(hdName), 0 ) )
         return HdFalse;
 
         hdList = GReadFile();
@@ -2220,6 +2260,7 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     InstIntFunc( "BacktraceTo",FunBacktraceTo);
 
     InstIntFunc( "READ",       FunREAD       );
+    InstIntFunc( "EvalString", FunEvalString );
     InstIntFunc( "READSTR",    FunReadString );
     InstIntFunc( "CHANGEDIR",  FunChangeDir  );
     InstIntFunc( "AUTO",       FunAUTO       );
@@ -2260,7 +2301,7 @@ void            InitGap (int argc, char** argv, int* stackBase) {
             Obj pkg;
             if ( file[0] != '\0' ) {
                 /*Pr("Reading %s...\n", file, 0);*/
-                if ( OpenInput( file ) ) {
+                if ( OpenInput( file, 0 ) ) {
                     while ( Symbol != S_EOF ) {
                         hd = ReadIt();
                         if ( hd != 0 )  hd = EVAL( hd );

@@ -1275,7 +1275,7 @@ Bag ReadValFromFile(char* fname)
     /* Read and evaluate test output from temporary file                   */
     isReadValFromFile = 1;
     addEndOfLineOnlyOnce = 1;
-    int res = OpenInput(fname);
+    int res = OpenInput(fname, 0);
     if (res == 0) {
         return HdFalse;
     }

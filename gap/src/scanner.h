@@ -343,6 +343,7 @@ void            Match ( UInt symbol, char * msg,
 */
 
 #define SCANNER_INPUTS      16
+#define SCANNER_LINE_SIZE   2048
 
 typedef struct {
     Obj         package;
@@ -355,7 +356,7 @@ typedef struct {
     Int        fid;
 //    FILE       *file;
     char        name [1024];
-    char        line [2048];
+    char        line [SCANNER_LINE_SIZE];
     char        * ptr;
     Int        number;
     char        * srcstring;

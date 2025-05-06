@@ -329,7 +329,7 @@ char            GetLine (void)
     if (Input->srcstring != 0) {
         fprintf(stderr, "GETLINE\n");
         if (Input->strlines == 0) {
-            strncpy(In, Input->srcstring, sizeof(Input->line));
+            strncpy(In, Input->srcstring, SCANNER_LINE_SIZE);
             Input->strlines = 1;
         } else {
             In[0] = '\377';  
@@ -338,7 +338,7 @@ char            GetLine (void)
     } 
     else
     /* try to read a line                                        */
-    if ( ! SyFgets( In, sizeof(Input->line), Input->fid /* file */ ) ) {
+    if ( ! SyFgets( In, SCANNER_LINE_SIZE, Input->fid /* file */ ) ) {
         In[0] = '\377';  In[1] = '\0';
         return *In;
     }
@@ -908,7 +908,7 @@ Bag		GReadFile()
 
 	hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
 
-	while(SyFgets(Input->line, 2048, Input->fid /* file */)) {
+	while(SyFgets(Input->line, SCANNER_LINE_SIZE, Input->fid /* file */)) {
 		slen = strlen(Input->line);
 		Input->line[slen-1] = '\0';
 		hd = NewBag( T_STRING, slen );

@@ -359,8 +359,8 @@ typedef struct {
     char        line [SCANNER_LINE_SIZE];
     char        * ptr;
     Int        number;
-    char        * srcstring;
-    Int         strlines;
+    char      *srcstring;
+    Int        pos;
 } TypInputFile;
 
 extern TypInputFile    InputFiles [SCANNER_INPUTS];

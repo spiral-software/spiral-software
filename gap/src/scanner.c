@@ -285,8 +285,9 @@ FILE* Logfile = (FILE*)NULL;
 */
 FILE* InputLogfile = (FILE*)NULL;
 
-
-
+#ifndef MIN
+#define MIN( a, b )     ( (a) < (b) ? (a) : (b) )
+#endif
 
 /****************************************************************************
 **
@@ -304,6 +305,8 @@ FILE* InputLogfile = (FILE*)NULL;
 */
 char            GetLine (void)
 {
+    int len;
+    
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     if ( Input->fid /* file */ == 0 ) {
         if ( ! SyQuiet ) 
@@ -327,14 +330,25 @@ char            GetLine (void)
     NrErrLine = 0;
 
     if (Input->srcstring != 0) {
-        fprintf(stderr, "GETLINE\n");
-        if (Input->strlines == 0) {
-            strncpy(In, Input->srcstring, SCANNER_LINE_SIZE);
-            Input->strlines = 1;
+        if (Input->pos < strlen(Input->srcstring)) {
+            len = strcspn(Input->srcstring + Input->pos, "\n");
+            len = MIN(len, SCANNER_LINE_SIZE - 1);
+            if (len > 0) {
+                strncpy(In, Input->srcstring + Input->pos, len);
+                In[len] = '\0';
+                Input->pos += len;
+                if (*(Input->srcstring + Input->pos) == '\n') {
+                    Input->pos += 1;
+                }
+            } else {
+                strcpy(In, "\n");
+                Input->pos += 1;
+            }
         } else {
             In[0] = '\377';  
             In[1] = '\0';
         }
+        //fprintf(stderr, "GETLINE -> \"%s\" (%d)\n", In, strlen(In));
     } 
     else
     /* try to read a line                                        */
@@ -833,7 +847,7 @@ Int            OpenInput (char *filename, int fromstring)
         strcpy ( Input->name, filename );
         Input->srcstring = (char *)0;
     } else {
-        Input->strlines = 0;
+        Input->pos = 0;
         Input->srcstring = filename;  // filename used as pointer to string
         strcpy(Input->name, "<string>");
     }

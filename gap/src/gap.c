@@ -1266,7 +1266,7 @@ Bag       FunPrintTo(Bag hdCall)
 
     /* try to open the given output file, raise an error if you can not    */
     filename = (char *)PTR_BAG(hd);
-    file = SyFileOpen ( filename, "w" );
+    file = fopen ( filename, "w" );
     if ( file == (FILE *)NULL )
         return Error ( "PrintTo: can not open the file for writing", 0, 0 );
 
@@ -1283,7 +1283,7 @@ Bag       FunPrintTo(Bag hdCall)
 
     /* close the output file again, and return nothing                     */
     global_stream = save_stream;
-    SyFileClose ( streamFile(stream) );
+    fclose ( streamFile(stream) );
 
     return HdVoid;
 }
@@ -1323,7 +1323,7 @@ Bag       FunAppendTo (Bag hdCall)
 
     /* try to open the given output file, raise an error if you can not    */
     filename = (char *)PTR_BAG(hd);
-    file = SyFileOpen ( filename, "a" );
+    file = fopen ( filename, "a" );
     if ( file == (FILE *)NULL )
         return Error("PrintTo: can not open the file for writing", 0, 0);
 
@@ -1340,7 +1340,7 @@ Bag       FunAppendTo (Bag hdCall)
 
     /* close the output file again, and return nothing                     */
     global_stream = save_stream;
-    SyFileClose ( streamFile(stream) );
+    fclose ( streamFile(stream) );
 
     return HdVoid;
 }

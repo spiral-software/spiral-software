@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 /****************************************************************************
 **
 *Y  Copyright (C) 2018-2021, Carnegie Mellon University
@@ -2753,7 +2754,6 @@ Int SyStorMin = SY_STOR_MIN;
 
 UInt*** SyAllocBags(Int size)
 {
-    UInt* p;
     UInt*** ret;
 
     size *= 1024;
@@ -2763,13 +2763,13 @@ UInt*** SyAllocBags(Int size)
         return (UInt***)0;
     }
     else {
-        for (p = ret; p < ret + size / sizeof(UInt); p++)
-            *p = 0;
+        // Initialize each entry to NULL (interpreting ret as array of UInt**)
+        for (int i = 0; i < size / sizeof(UInt**); i++) {
+            ret[i] = NULL;
+        }
 
         return ret;
     }
-
-    return 0;
 }
 
 

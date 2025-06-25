@@ -698,11 +698,11 @@ Obj  FunBagBounds ( Obj hdCall ) {
     if ( GET_SIZE_BAG(hdCall) != SIZE_HD )  return Error(usage, 0,0);
 
     nfreebags = 0;
-    fst = MemArena[actAR].FreeHandleChain;
+    fst = (Bag) MemArena[actAR].FreeHandleChain;
     while(fst != 0) { ++nfreebags; fst = *(Bag*)(fst); }
 
     freebags = NewList((int)nfreebags);
-    fst = MemArena[actAR].FreeHandleChain; i = 1;
+    fst = (Bag) MemArena[actAR].FreeHandleChain; i = 1;
     while(fst != 0) {
         addr = PROD(INT_TO_HD(4), INT_TO_HD(((UInt)fst) >> 2));
         SET_BAG(freebags, i,  addr );

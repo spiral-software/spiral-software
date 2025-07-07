@@ -430,8 +430,8 @@ void MARK_BAG( BagPtr_t bag )
         BagStruct_t *pbs = (BagStruct_t *)(ptr - HEADER_SIZE); /* struct pointer */
 
         if ( (BagPtr_t)pbs->bagLinkPtr == bag ) {
-            pbs->bagLinkPtr = par->MarkedBagChain;
-            par->MarkedBagChain = bag;
+            pbs->bagLinkPtr = (BagPtr_t) par->MarkedBagChain;
+            par->MarkedBagChain = (BagPtr_t *) bag;
             par->nrMarkedBags++;
             par->SweepNeeded = 1;
         }
@@ -734,7 +734,7 @@ static int AddMemoryArena ( UInt size )
     
     par->EndBags = par->BagHandleStart + 1024 * (size / sizeof(BagPtr_t*));
     // 1/8th of the storage goes into the masterpointer area
-    par->FreeHandleChain = (BagPtr_t)par->BagHandleStart;
+    par->FreeHandleChain = (BagPtr_t *)par->BagHandleStart;
     par->OldBagStart   = par->BagHandleStart + 1024 * size / 8 / sizeof(BagPtr_t*);
     par->YoungBagStart = par->OldBagStart;
     par->AllocBagStart = par->OldBagStart;
@@ -862,7 +862,7 @@ BagPtr_t NewBag4 ( UInt type, UInt size )
 
     /* get the identifier of the bag and set 'FreeHandleChain' to the next    */
     par = &MemArena[actAR];    // refresh because CollectBags could alloc a new arena
-    bag = par->FreeHandleChain;
+    bag = (BagPtr_t) par->FreeHandleChain;
     if (bag == 0) {
         // no more free bags available ==> out of memory, exit
         // *** here or from CollectBags should allocate a new memory arena if full ***
@@ -872,7 +872,7 @@ BagPtr_t NewBag4 ( UInt type, UInt size )
         // Not a valid bag handle, head of free chain is corrupt, print message & exit
         GuFatalMsgExit(EXIT_MEM, "Newbag4: FreeHandleChain chain head is corrupt ... exiting\n");
     }
-    par->FreeHandleChain = *(BagPtr_t*)bag;
+    par->FreeHandleChain = (BagPtr_t *) *(BagPtr_t*)bag;
 
     /* allocate the storage for the bag                                    */
     dst       = par->AllocBagStart;
@@ -881,7 +881,7 @@ BagPtr_t NewBag4 ( UInt type, UInt size )
     SET_TYPE_PTR(dst,type);
     BLANK_FLAGS_PTR(dst);
     SET_SIZE_PTR(dst, size);
-    SET_LINK_PTR(dst, bag);
+    SET_LINK_PTR((BagPtr_t) dst, bag);
 
     /* set the masterpointer                                               */
     SET_PTR_BAG(bag, dst + HEADER_SIZE);
@@ -892,7 +892,7 @@ BagPtr_t NewBag4 ( UInt type, UInt size )
 #endif
     
 #ifdef DEBUG_POINTERS
-    if (bag != GET_LINK_PTR(dst)) {
+    if (bag != GET_LINK_PTR((BagPtr_t) dst)) {
         // any new bag should always have the bag handle (bag) set as the link pointer value
         BagStruct_t *bs = (BagStruct_t *)dst;
         printf("NewBag4: Created bag (%p) but LINK ptr location (%p) not set to bag handle: bag location (%p), link ptr = %p\n",
@@ -1137,7 +1137,7 @@ UInt ResizeBag ( BagPtr_t bag, UInt new_size )
             *src++  = (BagPtr_t)BEEF_WORD;
         }
 
-        SET_LINK_PTR(dst, bag);
+        SET_LINK_PTR((BagPtr_t) dst, bag);
 
         /* set the masterpointer                                           */
         SET_PTR_BAG(bag, (dst + HEADER_SIZE));
@@ -1145,7 +1145,7 @@ UInt ResizeBag ( BagPtr_t bag, UInt new_size )
     }
 
 #ifdef DEBUG_POINTERS
-    if (bag != GET_LINK_PTR(dst)) {
+    if (bag != GET_LINK_PTR((BagPtr_t) dst)) {
         // resized bag should have the bag handle (bag) set as the link pointer value 
         BagStruct_t *bs = (BagStruct_t *)dst;
         printf("ResizeBag: resized bag (%p) but LINK ptr location (%p) not set to bag handle: bag location (%p), link ptr = %p\n",
@@ -1350,7 +1350,7 @@ static void CheckFreeMptrList ( int arenanr )
     ArenaBag_t *par = &MemArena[arenanr];
     
     // Walk the master pointer area to see if we're clean there
-    start = par->FreeHandleChain;
+    start = (BagPtr_t) par->FreeHandleChain;
 
     while (start) {
         if (*start >= par->OldBagStart && *start < par->AllocBagStart) {
@@ -1374,12 +1374,12 @@ static void CheckFreeMptrList ( int arenanr )
                    start, *start);
             break;
         }
-        start = *start;
+        start = (BagPtr_t) *start;
     }
 
     BagPtr_t beg, end;
-    beg   = par->BagHandleStart;
-    end   = par->OldBagStart;
+    beg   = (BagPtr_t) par->BagHandleStart;
+    end   = (BagPtr_t) par->OldBagStart;
 
     char msgb[100];
     sprintf(msgb, ", and %lu suspect Handle/Bag linkages", nBad);
@@ -1402,7 +1402,7 @@ static void CheckMptrHandles ( int arenanr )
     ArenaBag_t *par = &MemArena[arenanr];
     
     // Walk the master pointer area, to ensure all used handles point to valid bags
-    start = par->BagHandleStart;
+    start = (BagPtr_t) par->BagHandleStart;
     while (start < par->OldBagStart) {
         if (*start >= par->OldBagStart && *start < par->AllocBagStart) {
             // found a link to a bag, count it
@@ -1424,8 +1424,8 @@ static void CheckMptrHandles ( int arenanr )
     }
 
     BagPtr_t beg, end;
-    beg   = par->BagHandleStart;
-    end   = par->OldBagStart;
+    beg   = (BagPtr_t) par->BagHandleStart;
+    end   = (BagPtr_t) par->OldBagStart;
 
     char msgb[100];
     sprintf(msgb, ", and %lu suspect Handle/Bag linkages (%s)", nBad, ((nBad == 0)? "GOOD" : "BAD") );
@@ -1451,7 +1451,7 @@ static void WalkBagPointers ( int arenanr, int clean )
     UInt nFound = 0, szFound = 0, nRemnant = 0, szRemnant = 0, sizeCurr;
     ArenaBag_t *par = &MemArena[arenanr];
     
-    start = par->OldBagStart; end = par->AllocBagStart;
+    start = (BagPtr_t) par->OldBagStart; end = (BagPtr_t) par->AllocBagStart;
     printf("WalkBagPointers: Arena #%d, BagHandleStart = %p, EndBags = %p\n",
            par->ArenaNumber, par->BagHandleStart, par->EndBags);
     printf("    Walk OldBagStart   = %p to AllocBagStart = %p, used pool = %luk (%luMb)\n", 
@@ -1493,7 +1493,7 @@ static void WalkBagPointers ( int arenanr, int clean )
             // link pointer should point to the bag handle, bag handle should
             // point back to the data pointer
             if (ptr->bagLinkPtr && par->BagHandleStart <= ptr->bagLinkPtr && ptr->bagLinkPtr < par->OldBagStart) {
-                BagPtr_t foo = ptr->bagLinkPtr, bar = *ptr->bagLinkPtr;
+                BagPtr_t foo = ptr->bagLinkPtr, bar = (BagPtr_t) *ptr->bagLinkPtr;
                 if (bar != &ptr->bagData) {
                     // we're foobar'd
                     printf("        Suspect misaligned handle/link pointer: link = %p, handle = %p, *handle = %p, data ptr = %p\n",
@@ -1526,7 +1526,7 @@ static void WalkBagPointers ( int arenanr, int clean )
     // Walk the remaining memory, which should be the free pool.  It should all
     // have been initialized to zeros... Things appear to be all messed up if
     // DirtyBags != 0
-    start = par->AllocBagStart; end = par->EndBags; nbad = 0;
+    start = (BagPtr_t) par->AllocBagStart; end = (BagPtr_t) par->EndBags; nbad = 0;
     while (start < end) {
         if (*start)
             nbad++;
@@ -1663,11 +1663,11 @@ static void DumpBagsHistogram ( void )
 static UInt CountFreeChain ( ArenaBag_t *par )
 {
     UInt count = 0;
-    BagPtr_t  head = par->FreeHandleChain;
+    BagPtr_t  head = (BagPtr_t) par->FreeHandleChain;
 
     while (head != 0) {
         count++;
-        head = *head;
+        head = (BagPtr_t) *head;
     }
     
     return count;
@@ -1691,7 +1691,7 @@ static void WalkArenaBags ( ArenaBag_t *par )
     UInt nbagsCheck = 0;
     while ( src < par->AllocBagStart ) {
         nbagsCheck++;
-        if ( GET_TYPE_PTR(src) == T_RESIZE_FREE ) {
+        if ( GET_TYPE_PTR((BagPtr_t) src) == T_RESIZE_FREE ) {
             // leftover remnant of a resize of <n> bytes
             // Move source pointer (dest stays put)
             if ( TEST_FLAG_PTR ( src, BF_COPY ) ) {            // one-word remnant
@@ -1712,12 +1712,12 @@ static void WalkArenaBags ( ArenaBag_t *par )
             }
         }
 
-        else if ( ((UInt)GET_LINK_PTR(src)) % sizeof(BagPtr_t) == 0 ) {
+        else if ( ((UInt)GET_LINK_PTR((BagPtr_t) src)) % sizeof(BagPtr_t) == 0 ) {
             // Active bag (it's in the allocated chain; don't know until next GC if it's alive or dead)
             nLive++; szLive += GET_SIZE_PTR(src) + HEADER_SIZE * sizeof(BagPtr_t *);
 
             // Check the link points correctly back to a handle
-            BagPtr_t nfhead = GET_LINK_PTR(src);
+            BagPtr_t nfhead = GET_LINK_PTR((BagPtr_t) src);
             if (nfhead < par->BagHandleStart || nfhead >= par->OldBagStart) {
                 // link is *NOT* valid
                 printf ( "WalkArenaBags:: Bad link from bag (%p), link (%p) \n", src, nfhead);
@@ -1853,7 +1853,7 @@ again:
     while ( par->ActiveArenaFlag ) {                    // loop over the active arenas
         while ( par->MarkedBagChain != 0 ) {
             first = (BagPtr_t)((UInt)par->MarkedBagChain & ~((UInt)(sizeof(UInt) - 1))); // ensure no mark bits set
-            par->MarkedBagChain = GET_LINK_BAG(first);
+            par->MarkedBagChain = (BagPtr_t *) GET_LINK_BAG(first);
             SET_LINK_BAG(first, MARKED_ALIVE(first));
             (*TabMarkFuncBags[GET_TYPE_BAG(first)])( first );
             *nrBags += 1;
@@ -2041,7 +2041,7 @@ static void SweepArenaBags ( ArenaBag_t *par )
     UInt nbagsCheck = 0;
     while ( src < par->AllocBagStart ) {
         nbagsCheck++;
-        if ( GET_TYPE_PTR(src) == T_RESIZE_FREE ) {
+        if ( GET_TYPE_PTR((BagPtr_t) src) == T_RESIZE_FREE ) {
             // leftover remnant of a resize of <n> bytes
             // Move source pointer (dest stays put)
             if (TEST_FLAG_PTR(src, BF_COPY) ) {            // one-word remant
@@ -2060,7 +2060,7 @@ static void SweepArenaBags ( ArenaBag_t *par )
             }
         }
 
-        else if ( ((UInt)GET_LINK_PTR(src)) % sizeof(BagPtr_t) == 0 ) {
+        else if ( ((UInt)GET_LINK_PTR((BagPtr_t) src)) % sizeof(BagPtr_t) == 0 ) {
             // Dead bag -- no markers (least significant bits) are set
             nDead++; szDead += GET_SIZE_PTR(src) + HEADER_SIZE * sizeof(BagPtr_t *);
             if (countHistOn) {
@@ -2073,11 +2073,11 @@ static void SweepArenaBags ( ArenaBag_t *par )
             InfoBags[GET_TYPE_PTR(src)].sizeLive -= GET_SIZE_PTR(src);
 #endif
             // put the bag on [the head of] the free list
-            BagPtr_t nfhead = GET_LINK_PTR(src);
+            BagPtr_t nfhead = GET_LINK_PTR((BagPtr_t) src);
             if (nfhead >= par->BagHandleStart && nfhead < par->OldBagStart) {
                 // link is valid
-                *nfhead = par->FreeHandleChain;
-                par->FreeHandleChain = nfhead;
+                *nfhead = (UInt *) par->FreeHandleChain;
+                par->FreeHandleChain = (BagPtr_t *) nfhead;
             }
             else {
                 printf("CollectBags: Bad link from dead bag (%p) pushed on Free chain, = %p\n",
@@ -2089,7 +2089,7 @@ static void SweepArenaBags ( ArenaBag_t *par )
             src += HEADER_SIZE + WORDS_BAG( GET_SIZE_PTR(src) ) ; // Advance src
         }
 
-        else if ( ((UInt)(GET_LINK_PTR(src))) % sizeof(BagPtr_t) == 1 )  {
+        else if ( ((UInt)(GET_LINK_PTR((BagPtr_t) src))) % sizeof(BagPtr_t) == 1 )  {
             // live bag -- Link pointer has its least significant bit set
             nLive++; szLive += GET_SIZE_PTR(src) + HEADER_SIZE * sizeof(BagPtr_t *);
 
@@ -2099,11 +2099,11 @@ static void SweepArenaBags ( ArenaBag_t *par )
             }
 
             // update identifier, copy flags-type and link fields
-            SET_PTR_BAG( (UNMARKED_ALIVE(GET_LINK_PTR(src))), (BagPtr_t*) DATA_PTR(dst) );
+            SET_PTR_BAG( (UNMARKED_ALIVE(GET_LINK_PTR((BagPtr_t) src))), (BagPtr_t*) DATA_PTR(dst) );
             end = src + HEADER_SIZE + WORDS_BAG( GET_SIZE_PTR(src) ) ;
 
             COPY_HEADER(dst, src);
-            SET_LINK_PTR(dst, UNMARKED_ALIVE(GET_LINK_PTR(src)));
+            SET_LINK_PTR((BagPtr_t) dst, UNMARKED_ALIVE(GET_LINK_PTR((BagPtr_t) src)));
 
             dst += HEADER_SIZE;
             src += HEADER_SIZE;
@@ -2211,7 +2211,7 @@ static void UnmarkArenaBags( void )
             BagStruct_t *ptr;           // Bag data structure
     
             // Walk the master pointers, ensure all used bag handles are "back referenced" by the link pointer
-            handle = par->BagHandleStart;
+            handle = (BagPtr_t) par->BagHandleStart;
             while (handle < par->OldBagStart) {
                 if (par->OldBagStart <= *handle && *handle < par->AllocBagStart) {
                     ptr = (BagStruct_t *)(*handle - HEADER_SIZE);

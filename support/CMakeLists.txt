@@ -9,30 +9,27 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 ##  Check the code generation ... look for CUDA toolkit
 
-set ( _version "${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" )  ## Actual running cmake version
-set ( _vers_cuda_toolkit "3.17" )              ##  Version when FindCUDAToolkit is available
+find_package ( CUDAToolkit )
+if ( ${CUDAToolkit_FOUND} )
+    message ( STATUS "CUDA Toolkit Found : Version = ${CUDAToolkit_VERSION}" )
+    set ( _codegen GPU )
+    ##  Find the libraries: cufft culibos nvrtc
+    find_library ( CUDALIBS_DIR 
+        NAMES cufft culibos nvrtc
+        HINTS ${CUDAToolkit_LIBRARY_DIR}        ##  Library path from the found CUDAToolkit
+              ${CUDAToolkit_ROOT}/lib64         ##  Fallback
+              /usr/local/cuda                   ##  Another [legacy] fallback
+    )
 
-string ( COMPARE LESS ${_version} ${_vers_cuda_toolkit} _cuda_old )
-if ( ${_cuda_old} )
-    ##  FindCUDAToolkit not available -- cmake too old -- use FindCUDA instead
-    message ( STATUS "Cmake version = ${_version}, using FindCUDA module" )
-    find_package ( CUDA )
-    if ( ${CUDA_FOUND} )
-	message ( STATUS "CUDA Found : Version = ${CUDA_VERSION}" )
-	set ( _codegen GPU )
+    if ( CUDALIBS_DIR )
+        ##  Extract the directory name from the full path
+        get_filename_component ( CUDALINK_DIR ${CUDALIBS_DIR} DIRECTORY )
+        message ( STATUS "CUDA libraries exist in folder: ${CUDALINK_DIR}" )
     else ()
-	set ( _codegen CPU )
+        message ( FATAL_ERROR "CUDA library folder not found!" )
     endif ()
 else ()
-    ##  Cmake is >= version 3.17, FindCUDAToolkit module is available
-    message ( STATUS "Cmake version = ${_version}, using FindCUDAToolkit module" )
-    find_package ( CUDAToolkit )
-    if ( ${CUDAToolkit_FOUND} )
-	message ( STATUS "CUDA Toolkit Found : Version = ${CUDAToolkit_VERSION}" )
-	set ( _codegen GPU )
-    else ()
-	set ( _codegen CPU )
-    endif ()
+    set ( _codegen CPU )
 endif ()
 
 if ( ${_codegen} STREQUAL "GPU" )
@@ -81,7 +78,8 @@ if ( ${_codegen} STREQUAL "GPU" )
     target_compile_definitions ( ${PROJECT} PRIVATE ${GPU_EXTRAS} )
     target_compile_options     ( ${PROJECT} PRIVATE ${CUDA_COMPILE_FLAGS} ${GPU_COMPILE_DEFNS} )
     set_property        ( TARGET ${PROJECT} PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON )
-    target_link_libraries	   ( ${PROJECT} ${LIBS_FOR_CUDA} )
+    target_link_directories    ( ${PROJECT} PRIVATE ${CUDALINK_DIR} )
+    target_link_libraries      ( ${PROJECT} ${LIBS_FOR_CUDA} )
 endif ()
 
 set     ( INSTALL_DIR_LOCATION ${SPIRAL_SOURCE_DIR}/gap/bin )

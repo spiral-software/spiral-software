@@ -63,7 +63,6 @@ if ( ${_codegen} STREQUAL "GPU" )
     target_compile_definitions ( ${PROJECT} PRIVATE ${GPU_EXTRAS} )
     target_compile_options     ( ${PROJECT} PRIVATE ${CUDA_COMPILE_FLAGS} ${GPU_COMPILE_DEFNS} )
     set_property        ( TARGET ${PROJECT} PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON )
-    target_link_directories    ( ${PROJECT} PRIVATE ${CUDALINK_DIR} )
     target_link_libraries      ( ${PROJECT} ${LIBS_FOR_CUDA} )
 endif ()
 

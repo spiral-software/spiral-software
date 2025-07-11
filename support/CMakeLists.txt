@@ -13,21 +13,6 @@ find_package ( CUDAToolkit )
 if ( ${CUDAToolkit_FOUND} )
     message ( STATUS "CUDA Toolkit Found : Version = ${CUDAToolkit_VERSION}" )
     set ( _codegen GPU )
-    ##  Find the libraries: cufft culibos nvrtc
-    find_library ( CUDALIBS_DIR 
-        NAMES cufft culibos nvrtc
-        HINTS ${CUDAToolkit_LIBRARY_DIR}        ##  Library path from the found CUDAToolkit
-              ${CUDAToolkit_ROOT}/lib64         ##  Fallback
-              /usr/local/cuda                   ##  Another [legacy] fallback
-    )
-
-    if ( CUDALIBS_DIR )
-        ##  Extract the directory name from the full path
-        get_filename_component ( CUDALINK_DIR ${CUDALIBS_DIR} DIRECTORY )
-        message ( STATUS "CUDA libraries exist in folder: ${CUDALINK_DIR}" )
-    else ()
-        message ( FATAL_ERROR "CUDA library folder not found!" )
-    endif ()
 else ()
     set ( _codegen CPU )
 endif ()
@@ -55,14 +40,14 @@ if ( ${_codegen} STREQUAL "GPU" )
     if (WIN32)
 	set ( CUDA_COMPILE_FLAGS -rdc=false )
 	set ( GPU_COMPILE_DEFNS )
-	set ( LIBS_FOR_CUDA cufft )
+	##  set ( LIBS_FOR_CUDA cufft )
 	set ( ADDL_COMPILE_FLAGS -DWIN64 )
 	set ( CMAKE_C_STANDARD 11 )
 	set ( CMAKE_CXX_STANDARD 11 )
     else ()
 	set ( CUDA_COMPILE_FLAGS -m64 -rdc=true )
 	set ( GPU_COMPILE_DEFNS -dc )
-	set ( LIBS_FOR_CUDA cufft culibos )
+	##  set ( LIBS_FOR_CUDA cufft culibos )
 	set ( ADDL_COMPILE_FLAGS )
     endif ()
 
@@ -78,7 +63,6 @@ if ( ${_codegen} STREQUAL "GPU" )
     target_compile_definitions ( ${PROJECT} PRIVATE ${GPU_EXTRAS} )
     target_compile_options     ( ${PROJECT} PRIVATE ${CUDA_COMPILE_FLAGS} ${GPU_COMPILE_DEFNS} )
     set_property        ( TARGET ${PROJECT} PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON )
-    target_link_directories    ( ${PROJECT} PRIVATE ${CUDALINK_DIR} )
     target_link_libraries      ( ${PROJECT} ${LIBS_FOR_CUDA} )
 endif ()
 

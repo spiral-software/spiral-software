@@ -81,7 +81,7 @@ Class(F, Sym, rec(
     def := size -> Checked(IsPosInt(size),
     Cond(size = 1, Mat([[1]]),
          size = 2, Mat([[1,1], [1,-1]]),
-         Mat(Global.DFT(size)))),
+         Mat(DiscreteFourierTransform(size)))),
 
     isReal    := self >> self.params[1] <= 2,
     isPermutation := False,

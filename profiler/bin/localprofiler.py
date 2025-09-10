@@ -32,7 +32,7 @@ def cleanup():
 
 import time
 
-def runWithSlurm(command, tempworkdir, account=None, partition=None, walltime="00:05:00"):
+def runWithSlurm(command, tempworkdir, target, account=None, partition=None, walltime="00:02:00"):
     """Submit a Slurm job to run the given executable from tempworkdir."""
     batch_script = os.path.join(tempworkdir, "job.slurm")
     with open(batch_script, "w") as f:
@@ -43,8 +43,18 @@ def runWithSlurm(command, tempworkdir, account=None, partition=None, walltime="0
         if partition:
             f.write(f"#SBATCH --partition={partition}\n")
         f.write(f"#SBATCH --time={walltime}\n")
-        f.write("#SBATCH --ntasks=1\n")
         f.write("#SBATCH --cpus-per-task=1\n")
+        if "cuda" in target.lower():
+            f.write("#SBATCH --partition=GPU-shared\n")
+            f.write("#SBATCH --gres=gpu:1\n")
+            ##  Accept default memory for now
+            ##  f.write("#SBATCH --mem=16G\n")
+            f.write("#SBATCH --ntasks=4\n")
+        else:
+            f.write("#SBATCH --partition=RM-shared\n")
+            f.write("#SBATCH --mem=2G\n")
+            f.write("#SBATCH --ntasks=1\n")
+            
         f.write("#SBATCH --output=slurm.out\n")
         f.write("#SBATCH --error=slurm.err\n")
         f.write(f"{command}\n")
@@ -216,11 +226,14 @@ os.chdir(tempworkdir)
 
 try:
     buildCmd = command + ' build'
-    subret = subprocess.run ( buildCmd, shell=True, capture_output=(sys.platform == 'win32') )
+    subret = subprocess.run ( buildCmd, shell=True, ##  capture_output=(sys.platform == 'win32') )
+                              capture_output=True, text=True)
     res = subret.returncode
-except:
+
+except Exception as e:
+    print("Exception:", str(e))
     cleanup()
-    sys.exit(1)
+    sys.exit('Error: Could not subprocess.run(buildCmd)')
 
 if (res != 0):
     cleanup()
@@ -230,8 +243,8 @@ if (res != 0):
 
 try:
     if slurmAvailable():
-        print("Slurm detected — submitting job to scheduler.")
-        res = runWithSlurm(command, tempworkdir,
+        print("Slurm detected -- submitting job to scheduler.")
+        res = runWithSlurm(command, tempworkdir, target,
                            account=account,      # or None
                            partition=partition,  # or None
                            walltime="00:05:00")

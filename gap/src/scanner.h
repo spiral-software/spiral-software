@@ -343,6 +343,7 @@ void            Match ( UInt symbol, char * msg,
 */
 
 #define SCANNER_INPUTS      16
+#define SCANNER_LINE_SIZE   2048
 
 typedef struct {
     Obj         package;
@@ -355,9 +356,11 @@ typedef struct {
     Int        fid;
 //    FILE       *file;
     char        name [1024];
-    char        line [2048];
+    char        line [SCANNER_LINE_SIZE];
     char        * ptr;
     Int        number;
+    char      *srcstring;
+    Int        pos;
 } TypInputFile;
 
 extern TypInputFile    InputFiles [SCANNER_INPUTS];
@@ -431,7 +434,7 @@ Bag		GReadFile ( void );
 **  '*stdin*' for  that purpose.  This  file on   the other   hand can not be
 **  closed by 'CloseInput'.
 */
-Int            OpenInput ( char * filename );
+Int            OpenInput ( char * filename, int fromstring );
 
 
 /****************************************************************************

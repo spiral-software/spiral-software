@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2018-2021, Carnegie Mellon University
+## Copyright (c) 2018-2025, Carnegie Mellon University
 ## All rights reserved.
 ## 
 ## See LICENSE file for full information
@@ -107,6 +107,7 @@ set(SOURCES
     pcpresen.c
     list.c
     plist.c
+    plugins.c
     set.c
     vector.c
     vecffe.c
@@ -182,6 +183,10 @@ set(SOURCES
     word.h
 )
 
+if (WIN32)
+    list (APPEND SOURCES win_dlfcn.c win_dlfcn.h)
+endif()
+
 add_executable(${PROJECT} ${SOURCES})
 set_property ( TARGET ${PROJECT} PROPERTY CUDA_ARCHITECTURES OFF)
 target_compile_definitions(${PROJECT} PRIVATE ${SPIRAL_COMPILE_DEFNS})
@@ -194,7 +199,7 @@ set_target_properties(${PROJECT} PROPERTIES OUTPUT_NAME_DEBUG "${PROJECT}d")
 if (WIN32)
     target_link_libraries(${PROJECT} shlwapi.lib)
 else()
-    target_link_libraries(${PROJECT} m)
+    target_link_libraries(${PROJECT} m dl)
 endif()
 
 install(TARGETS ${PROJECT} DESTINATION ${SPIRAL_SOURCE_DIR}/gap/bin)

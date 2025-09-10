@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  Copyright (c) 2018-2021, Carnegie Mellon University
+#  Copyright (c) 2018-2025, Carnegie Mellon University
 #  See LICENSE for details
 
 ##  Use cmake to build the project (PROJECT=matrix) for CUDA language (SUFFIX=cu) 

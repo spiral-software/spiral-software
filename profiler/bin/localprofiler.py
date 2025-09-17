@@ -52,7 +52,8 @@ def runWithSlurm(command, tempworkdir, target, account=None, partition=None, wal
             f.write("#SBATCH --ntasks=4\n")
         else:
             f.write("#SBATCH --partition=RM-shared\n")
-            f.write("#SBATCH --mem=2G\n")
+            ##  Accept default memory for now
+            ##  f.write("#SBATCH --mem=1G\n")
             f.write("#SBATCH --ntasks=1\n")
             
         f.write("#SBATCH --output=slurm.out\n")

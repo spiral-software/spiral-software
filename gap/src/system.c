@@ -2323,6 +2323,10 @@ void            InitSystem (int argc, char **argv)
         case 'q': /* '-q', GAP should be quiet                             */
             SyQuiet = ! SyQuiet;
             break;
+            
+        case 'p': // -p <plugin>, handled later
+            ++argv; --argc;
+            break;
 
         case 'x': /* '-x', specify the length of a line                    */
             if ( argc < 3 ) {
@@ -2441,6 +2445,7 @@ void            InitSystem (int argc, char **argv)
     fputs("usage: gap [-l <libname>] [-h <hlpname>] [-m <gap_memory>]\n",stderr);
     fputs("           [-a <premalloc_memory>]\n",stderr);
     fputs("           [-g] [-q] [-b] [-x <nr>]  [-y <nr>]\n",stderr);
+    fputs("           [-p <plugin>]\n",stderr);
     fputs("           <file>...\n",stderr);
     fputs("  run the Groups, Algorithms and Programming system.\n",stderr);
     SyExit( 1 );

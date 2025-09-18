@@ -2356,6 +2356,7 @@ void            InitGap (int argc, char** argv, int* stackBase) {
         }
     }
 
+    LoadOptionalPlugins(argc, argv);
 }
 
 

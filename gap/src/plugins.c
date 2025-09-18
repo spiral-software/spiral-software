@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include		"GapUtils.h"
+
 #ifdef WIN32
     #include "win_dlfcn.h"
 #else
@@ -44,7 +46,7 @@ Bag GetArg(Bag argv, UInt n)
 }
 
 
-void* LookupGlobalName(char* name) {
+void* LookupGlobalName(char *name) {
     if (strcmp(name, "InstIntFunc") == 0) {
         return (void*)InstIntFunc;
 	}
@@ -84,8 +86,8 @@ void* LookupGlobalName(char* name) {
 }
 
 
-Obj LoadPlugin(char* libname) {
-    char* funcname = "init_plugin";
+Obj LoadPlugin(char *libname) {
+    char *funcname = "init_plugin";
     void* handle;
     void* funcptr;
     int init_ret;
@@ -110,9 +112,9 @@ Obj LoadPlugin(char* libname) {
 
 
 Obj FunLoadPlugin(Obj hdCall) {
-    char* usage = "usage: LoadPlugin(<plugin>)";
+    char *usage = "usage: LoadPlugin(<plugin>)";
     Obj  hd1;
-    char* libname;
+    char *libname;
     
     if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) {
         return Error(usage, 0, 0);
@@ -122,6 +124,34 @@ Obj FunLoadPlugin(Obj hdCall) {
     libname = HdToString(hd1, "<plugin> must be a String.\n%s", usage, 0);
     
     return LoadPlugin(libname);
+}
+
+
+void LoadOptionalPlugins(int argc, char **argv) {
+    // assume ill-formed arguments caught already by InitSystem()
+    char *libname;
+    exc_type_t e;
+    while (argc > 1) {
+        if ((argv[1][0] == '-') && (argv[1][1] == 'p')) {
+            argc--;
+            argv++;
+            if (argc > 1) {
+                libname = argv[1];
+                Try {
+                    LoadPlugin(libname);
+                }
+                Catch(e) {
+                    SyExit(1);
+                }
+            } 
+            else {
+                Error("usage: -p <plugin>", 0, 0);
+                SyExit(1);
+            }
+        }
+        argc--;
+        argv++;
+    }
 }
 
 

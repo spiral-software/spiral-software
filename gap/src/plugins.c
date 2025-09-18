@@ -84,21 +84,11 @@ void* LookupGlobalName(char* name) {
 }
 
 
-Obj FunLoadPlugin(Obj hdCall) {
-    char * usage = "usage: LoadPlugin(<plugin>)";
-    Obj  hd1;
-    char* libname;
+Obj LoadPlugin(char* libname) {
     char* funcname = "init_plugin";
-    void *handle;
-    void *funcptr;
+    void* handle;
+    void* funcptr;
     int init_ret;
-    
-    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) {
-        return Error(usage, 0, 0);
-    }
-    hd1 = EVAL(PTR_BAG(hdCall)[1]);
-    
-    libname = HdToString(hd1, "<plugin> must be a String.\n%s", usage, 0);
     
     handle = dlopen(libname, RTLD_LAZY);
     if (handle == 0) {
@@ -116,6 +106,22 @@ Obj FunLoadPlugin(Obj hdCall) {
     }
     
     return HdVoid;
+}
+
+
+Obj FunLoadPlugin(Obj hdCall) {
+    char* usage = "usage: LoadPlugin(<plugin>)";
+    Obj  hd1;
+    char* libname;
+    
+    if (GET_SIZE_BAG(hdCall) != 2 * SIZE_HD) {
+        return Error(usage, 0, 0);
+    }
+    hd1 = EVAL(PTR_BAG(hdCall)[1]);
+    
+    libname = HdToString(hd1, "<plugin> must be a String.\n%s", usage, 0);
+    
+    return LoadPlugin(libname);
 }
 
 

@@ -1042,6 +1042,7 @@ ReadLib("float");
 ReadLib("complex");
 ReadLib("smartcomplete");
 ReadLib("colors");
+ReadLib("rec2json");
 
 CantCopy(Rationals);
 CantCopy(Doubles);

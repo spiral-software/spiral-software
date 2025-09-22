@@ -981,7 +981,7 @@ Bag       FunREAD (Bag hdCall)
 
 Bag       FunEvalString (Bag hdCall)
 {
-    Bag           hd,  hdStr;
+    Bag           hd, lasthd, hdStr;
     exc_type_t e;
     
     char *usage = "usage: EvalString( <string> )";
@@ -997,12 +997,15 @@ Bag       FunEvalString (Bag hdCall)
     
     OpenInput(HdToString(hdStr, "expected string", 0, 0), 1);
 
+    lasthd = 0;
+
     /* now comes a read-eval-noprint loop, similar to the one in 'main'    */
 	Try {
         while ( Symbol != S_EOF ) {
             hd = ReadIt();
 			if ( hd != 0 ) { 
 				hd = EVAL( hd );
+                lasthd = hd;
 			}				
 			if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
 				return Error("EvalString: 'return' must not be used here",0,0);
@@ -1016,7 +1019,7 @@ Bag       FunEvalString (Bag hdCall)
     if ( ! CloseInput() )
         Error("EvalString: can not close input, this should not happen",0,0);
 	
-	return HdTrue;
+	return lasthd;
 }
 
 

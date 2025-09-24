@@ -938,10 +938,12 @@ Bag       FunREAD (Bag hdCall)
     //  printf ( "file = %s", (char*)PTR_BAG(hdName) );
     if ( GET_SIZE_BAG(hdCall) == 3*SIZE_HD ) {
         hdPkg = EVAL(PTR_BAG(hdCall)[2]);
-	hdPkg = StartPackageSpec(hdPkg); /* try it out */
-	EndPackage(); 
+        hdPkg = StartPackageSpec(hdPkg); /* try it out */
+        EndPackage(); 
     } 
-    else hdPkg = 0;
+    else {
+        hdPkg = 0;
+    }
 
     parent = Input;
     /* try to open the given file, if the file is not found return 'false' */
@@ -978,6 +980,7 @@ Bag       FunREAD (Bag hdCall)
 	
 	return HdTrue;
 }
+
 
 Bag       FunEvalString (Bag hdCall)
 {

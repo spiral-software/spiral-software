@@ -303,6 +303,7 @@ FILE* InputLogfile = (FILE*)NULL;
 **  If there is a logfile in use and the input file is '*stdin*' or '*errin*'
 **  'GetLine' echoes the new line to the logfile.
 */
+
 char            GetLine (void)
 {
     int len;
@@ -350,11 +351,12 @@ char            GetLine (void)
         }
         //fprintf(stderr, "GETLINE -> \"%s\" (%d)\n", In, strlen(In));
     } 
-    else
-    /* try to read a line                                        */
-    if ( ! SyFgets( In, SCANNER_LINE_SIZE, Input->fid /* file */ ) ) {
-        In[0] = '\377';  In[1] = '\0';
-        return *In;
+    else {
+        /* try to read a line                                        */
+        if ( ! SyFgets( In, SCANNER_LINE_SIZE, Input->fid /* file */ ) ) {
+            In[0] = '\377';  In[1] = '\0';
+            return *In;
+        }
     }
 
     /* if neccessary echo the line to the logfile                          */
@@ -815,6 +817,10 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
 **  '*stdin*' for  that purpose.  This  file on   the other   hand can not be
 **  closed by 'CloseInput'.
 */
+
+extern void yypush_new_buffer_state();
+extern void yypop_buffer_state();
+
 Int            OpenInput (char *filename, int fromstring)
 {
     Int                file;
@@ -865,6 +871,8 @@ Int            OpenInput (char *filename, int fromstring)
     Input->packageTop = 0;
     Input->data = 0;
     Input->global = 1;
+    
+    yypush_new_buffer_state();
 
     /**/HookAfterOpenInput();/**/
 
@@ -909,6 +917,8 @@ Int            CloseInput (void)
     Symbol = S_ILLEGAL;
 
     /**/HookAfterCloseInput();/**/
+    
+    yypop_buffer_state();
 
     /* indicate success                                                    */
     return 1;

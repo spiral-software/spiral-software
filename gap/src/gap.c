@@ -985,6 +985,7 @@ Bag       FunREAD (Bag hdCall)
 Bag       FunEvalString (Bag hdCall)
 {
     Bag           hd, lasthd, hdStr;
+    TypInputFile *parent;
     exc_type_t e;
     
     char *usage = "usage: EvalString( <string> )";
@@ -998,7 +999,16 @@ Bag       FunEvalString (Bag hdCall)
         return Error(usage,0,0);
     }
     
+    parent = Input;
+    
     OpenInput(HdToString(hdStr, "expected string", 0, 0), 1);
+    
+    if(parent->packages) {
+        PushPackages(parent->packages);
+    }
+    if(parent->imports) {
+        PushNamespaces(parent->imports);
+    }
 
     lasthd = 0;
 

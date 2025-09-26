@@ -982,26 +982,14 @@ Bag       FunREAD (Bag hdCall)
 }
 
 
-Bag       FunEvalString (Bag hdCall)
-{
-    Bag           hd, lasthd, hdStr;
+Bag EvalString(char *str) {
+    Bag  hd, lasthd;
     TypInputFile *parent;
     exc_type_t e;
     
-    char *usage = "usage: EvalString( <string> )";
-
-    /* check the number and type of arguments                              */
-    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD && GET_SIZE_BAG(hdCall) != 2*SIZE_HD ) {
-        return Error(usage,0,0);
-    }
-    hdStr = EVAL( PTR_BAG(hdCall)[1] );
-    if ( ! IsString(hdStr) ) {
-        return Error(usage,0,0);
-    }
-    
     parent = Input;
     
-    OpenInput(HdToString(hdStr, "expected string", 0, 0), 1);
+    OpenInput(str, 1);
     
     if(parent->packages) {
         PushPackages(parent->packages);
@@ -1033,6 +1021,26 @@ Bag       FunEvalString (Bag hdCall)
         Error("EvalString: can not close input, this should not happen",0,0);
 	
 	return lasthd;
+}
+
+
+
+Bag       FunEvalString (Bag hdCall)
+{
+    Bag           hdStr;
+    
+    char *usage = "usage: EvalString( <string> )";
+
+    /* check the number and type of arguments                              */
+    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD ) {
+        return Error(usage,0,0);
+    }
+    hdStr = EVAL( PTR_BAG(hdCall)[1] );
+    if ( ! IsString(hdStr) ) {
+        return Error(usage,0,0);
+    }
+    char *str = HdToString(hdStr, "expected string", 0, 0);
+    return EvalString(str);
 }
 
 

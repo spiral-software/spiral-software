@@ -26,6 +26,7 @@
 #include "eval.h"
 #include "gstring.h"
 
+extern Bag EvalString(char *str);
 
 typedef void* (*lookup_func)(char *);
 typedef int (*init_func)(lookup_func);
@@ -79,6 +80,9 @@ void* LookupGlobalName(char *name) {
     }
 	else if (strcmp(name, "StringToHd") == 0) {
 		return (void*)StringToHd;
+    }
+    else if (strcmp(name, "EvalString") == 0) {
+		return (void*)EvalString;
     }
     else {
         return (void*)0;

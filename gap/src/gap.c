@@ -152,6 +152,9 @@ int             main (int argc, char **argv)
 		                EVAL_STACK_POP;
 		}
     }
+    
+    // load plugins after session start hook
+    LoadOptionalPlugins(argc, argv);
 
     /* Load static history buffer */
     SyLoadHistory();
@@ -2379,8 +2382,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
             exc_show();
         }
     }
-
-    LoadOptionalPlugins(argc, argv);
 }
 
 

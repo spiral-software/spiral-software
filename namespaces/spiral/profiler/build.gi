@@ -10,7 +10,9 @@ Import(paradigms.distributed);
 _DataFormatString := function(datatype)
 	if (datatype in ["int", "BigInt", "__int64", "__int32", "__int16", "__int8"]) or StartsWith(datatype, "unsigned") then
 		return "\"IntString(\\\"%d\\\")\"";
-	else
+	elif (datatype in ["float"]) then
+                return "\"FloatString(\\\"%.8g\\\")\"";
+        else
 		return "\"FloatString(\\\"%.18g\\\")\"";
 	fi;
 end;
@@ -32,6 +34,9 @@ _DeriveScalarType := function(SPLOpts)
 		else 
 			Error("SPLOpts.dataType has invalid value '", SPLOpts.dataType, "'");
 		fi;
+                if IsBound(SPLOpts.TRealCtype) and SPLOpts.TRealCtype = "float" then
+                        SPLOpts.precision := "single";
+                fi;
 		if SPLOpts.precision = "single" then 
 			return Concat("float",suffix);
 		elif SPLOpts.precision = "double" then 

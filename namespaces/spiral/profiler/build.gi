@@ -112,7 +112,10 @@ _WriteStub := function(code, opts)
 	fi;
 	
 
-    ##  add extern function declarations ... required for cuda
+    ##  add extern function declarations ... required for cuda; not for MSVC
+    ##  These need to be surrounded by 'extern "C" { ... }'
+    Print("\n#ifdef __cplusplus\n");
+    Print("extern \"C\" {\n#endif\n");
     Print("\nextern void INITFUNC();\n");
     Print("extern void DESTROYFUNC();\n");
 	
@@ -164,6 +167,10 @@ _WriteStub := function(code, opts)
 	fi;
 	
 	# end of MAINOBJ section
+        ##  Close extern "C" brace (if __cplusplus)
+        Print("\n#ifdef __cplusplus\n");
+        Print("}\n#endif\n");
+
 	Print("#endif\n");
 	Print("\n");
 		

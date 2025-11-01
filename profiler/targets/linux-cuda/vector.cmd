@@ -5,11 +5,8 @@
 
 ##  Use cmake to build the project (PROJECT=matrix) for CUDA language (SUFFIX=cu) 
 
-TEMPDIR=$PWD
-
 if [ "$1" = "build" ]; then
     ##  Build the code
-    cp -f ../../targets/common/CMakeLists.txt $TEMPDIR/CMakeLists.txt
     mv testcode.c testcode.cu
     rm -rf build && mkdir build && cd build
     cmake -DPROJECT:STRING=cvector -DSUFFIX:STRING=cu .. > /dev/null

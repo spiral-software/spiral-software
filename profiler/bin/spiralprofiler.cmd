@@ -6,6 +6,7 @@ REM  See LICENSE for details
 set basepath=%~dp0
 
 REM use the extraargs var to add local config options to the profiler (eg., --keeptemp)
+REM set extraargs=--debug --keeptemp
 set extraargs=
 
 shift

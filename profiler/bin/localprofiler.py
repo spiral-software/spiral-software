@@ -25,8 +25,8 @@ def filesToSend():
     return glob.glob(pattern)
 
 def cleanup():
-    # delete temp directory
-    if not keeptemp:
+    # delete temp directory; don't delete a named/defined builddir
+    if not keeptemp and not builddir:
         os.chdir(workdir)
         shutil.rmtree(tempworkdir, ignore_errors=True)
 
@@ -124,7 +124,8 @@ parser.add_argument('-w', '--workdir', dest='workdir', default=def_workdir, help
 parser.add_argument('-v', '--version', dest='version', help='Show version info', action='store_true')
 parser.add_argument('-a', '--account', dest='account', help='HPC Account name, for submitting Slurm jobs.')
 parser.add_argument('-p', '--partition', dest='partition', help='HPC Partition name, for submitting Slurm jobs.')
-
+parser.add_argument('-b', '--builddir', dest='builddir',
+                    help='Optional persistent build directory. If specified, it will be reused and cleared before each run.')
 
 cmdarglist = sys.argv[1:]
 extraargs = os.getenv('PROFILER_LOCAL_ARGS')
@@ -150,9 +151,11 @@ workdir  = os.path.realpath(args.get('workdir', def_workdir))
 remote   = args.get('remote', None)
 account  = args.get('account', None)
 partition = args.get('partition', None)
+builddir = args.get('builddir', None)
 
 if debug:
     print("Options:")
+    print("  Profiler root:", basedir)
     print("  request:", request)
     print("  target:", target)
     print("  srcdir:", srcdir)
@@ -165,6 +168,8 @@ if debug:
         print("  account:", account)
     if partition:
         print("  partition:", partition)
+    if builddir:
+        print("  Named build directory:", builddir)
 
 # verify source directory exists
 if not os.path.exists(srcdir):
@@ -197,8 +202,23 @@ if not os.path.exists(cmdfile):
 tempdirs = os.path.join(workdir, 'tempdirs')
 os.makedirs(tempdirs, mode=0o777, exist_ok=True)
 
-# create temporary work directory
-tempworkdir = tempfile.mkdtemp(None, prefix, tempdirs)
+# create temporary work directory; use builddir if provided
+if builddir:
+    tempworkdir = os.path.realpath(os.path.expanduser(builddir))
+    os.makedirs(tempworkdir, mode=0o777, exist_ok=True)
+
+    ##  Clear any contents of builddir before reuse
+    for fname in os.listdir(tempworkdir):
+        fpath = os.path.join(tempworkdir, fname)
+        try:
+            if os.path.isfile(fpath) or os.path.islink(fpath):
+                os.unlink(fpath)
+            elif os.path.isdir(fpath):
+                shutil.rmtree(fpath)
+        except Exception as e:
+            print(f"Warning: Could not remove {fpath}: {e}")
+else:
+    tempworkdir = tempfile.mkdtemp(None, prefix, tempdirs)
 
 # copy files from source directory to temporary work directory
 filelist = filesToSend()
@@ -212,6 +232,15 @@ for fname in filelist:
         cleanup()
         sys.exit('Error: Could not copy ' + fname + ' to ' + tempworkdir)
 
+##  Copy the targets/common/CMakeLists.txt to the temporary work directory
+cmakeCommon = os.path.join(basedir, 'targets', 'common', 'CMakeLists.txt')
+try:
+    shutil.copy(cmakeCommon, tempworkdir)
+except Exception as e:
+    print("Error copying CMakeLists.txt:", str(e))
+    cleanup()
+    sys.exit(1)
+    
 command = cmdfile
 if remote:
     command = command + ' -r ' + request + ' -t ' + target
@@ -227,9 +256,14 @@ os.chdir(tempworkdir)
 
 try:
     buildCmd = command + ' build'
-    subret = subprocess.run ( buildCmd, shell=True, ##  capture_output=(sys.platform == 'win32') )
-                              capture_output=True, text=True)
+    env = os.environ.copy()
+    env["SPIRAL_PROFILER_ROOT"] = basedir
+    subret = subprocess.run ( buildCmd, shell=True, capture_output=True, text=True, env=env)
     res = subret.returncode
+
+    if debug:
+        print("stdout:", subret.stdout)
+        print("stderr:", subret.stderr)
 
 except Exception as e:
     print("Exception:", str(e))

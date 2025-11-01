@@ -5,11 +5,8 @@
 
 ##  Use cmake to build the project (PROJECT=matrix) for C language (SUFFIX=c) 
 
-TEMPDIR=$PWD
-
 if [ "$1" = "build" ]; then
     ##  Build the code
-    cp -f ../../targets/common/CMakeLists.txt $TEMPDIR/CMakeLists.txt
     rm -rf build && mkdir build && cd build
     cmake -DPROJECT:STRING=matrix -DSUFFIX:STRING=c -DEXFLAGS:STRING=-march\=native .. > /dev/null
     make install > /dev/null

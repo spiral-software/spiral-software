@@ -260,6 +260,18 @@ _CallProfiler := function(request, code, opts)
 		fullcmd := Concat(fullcmd, " -P ", String(GetPid()), "_");
     fi;
 
+    if IsBound(opts.profile.builddir) then
+        fullcmd := Concat(fullcmd, " -b ", String(opts.profile.builddir));
+    fi;
+    
+    if IsBound(opts.profile.debug) then
+        fullcmd := Concat(fullcmd, " -D ");
+    fi;
+    
+    if IsBound(opts.profile.keeptemp) then
+        fullcmd := Concat(fullcmd, " -k ");
+    fi;
+    
     # Exec the profiler
 	# uncomment following line to hide profiler debug and error messages
 	#fullcmd := Concat(fullcmd, " 2> NUL");

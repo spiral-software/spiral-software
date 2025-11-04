@@ -5,11 +5,8 @@
 
 ##  Use cmake to build the project (PROJECT=rdtsc_time) for C language (SUFFIX=c) 
 
-TEMPDIR=$PWD
-
 if [ "$1" = "build" ]; then
     ##  Build the code
-    cp -f ../../targets/common/CMakeLists.txt $TEMPDIR/CMakeLists.txt
     rm -rf build && mkdir build && cd build
     cmake -DPROJECT:STRING=rdtsc_time -DSUFFIX:STRING=c -DEXFLAGS:STRING=-march\=native .. > /dev/null
     make install > /dev/null

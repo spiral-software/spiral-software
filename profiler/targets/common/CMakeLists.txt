@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2018-2023, Carnegie Mellon University
+## Copyright (c) 2018-2025, Carnegie Mellon University
 ## All rights reserved.
 ##
 ## See LICENSE file for full information
@@ -20,6 +20,9 @@ set ( CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, Mi
 set ( ADDL_COMPILE_FLAGS )
 set ( GPU_COMPILE_DEFNS )
 set ( LIBS_TO_LINK )
+
+##  SPIRAL_PROFILER_ROOT is added to the environment by the Spiral Profiler, it determines
+##  the path from which files are copied
 
 set ( PROF_ROOT    $ENV{SPIRAL_PROFILER_ROOT} )
 file ( TO_CMAKE_PATH "${PROF_ROOT}" PROF_ROOT )

@@ -165,8 +165,8 @@ Declare(fPrecompute);
 # fPrecompute(<func>)
 #
 # Marks functions that should be precomputed by either generating a
-# table (opts.generateInitCode := true) or runtime initialization code
-# (opts.generateInitCode := true).
+# table (opts.generateInitFunc := false) or runtime initialization code
+# (opts.generateInitFunc := true).
 #
 # Actual precomputation is done by Process_fPrecompute. Which uses
 # options record 'opts' to determine the precomputation strategy.

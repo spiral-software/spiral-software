@@ -52,7 +52,7 @@ if ( ${_codegen} STREQUAL "GPU" )
     endif ()
 
     if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-		set(CMAKE_CUDA_ARCHITECTURES all)
+		set(CMAKE_CUDA_ARCHITECTURES 75)
 	endif()
     set ( GPU_EXTRAS _CUDAGEN )
 endif ()

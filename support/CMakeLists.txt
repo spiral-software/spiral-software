@@ -51,8 +51,9 @@ if ( ${_codegen} STREQUAL "GPU" )
 	set ( ADDL_COMPILE_FLAGS )
     endif ()
 
-    ##  set ( CMAKE_CUDA_ARCHITECTURES 60 61 62 70 72 75 )
-    set ( CMAKE_CUDA_ARCHITECTURES 70 )
+    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+		set(CMAKE_CUDA_ARCHITECTURES all)
+	endif()
     set ( GPU_EXTRAS _CUDAGEN )
 endif ()
 

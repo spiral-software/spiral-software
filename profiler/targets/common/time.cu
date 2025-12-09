@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-2023, Carnegie Mellon University
+ *  Copyright (c) 2018-2025, Carnegie Mellon University
  *  See LICENSE for details
  */
 
@@ -35,7 +35,7 @@ void teardown_spiral_test()
     DESTROYFUNC();
 }
 
-void test_spiral(double* in, double* out)
+void test_spiral(DATATYPE* in, DATATYPE* out)
 {
 #ifdef RUN_FUNC
 	RUN_FUNC;
@@ -48,8 +48,8 @@ void test_spiral(double* in, double* out)
 
 int main(int argc, char** argv)
 {
-	DEVICE_FFT_DOUBLEREAL  *out, *in;
-	DEVICE_FFT_DOUBLEREAL  *dev_out, *dev_in;
+	DATATYPE  *out, *in;
+	DATATYPE  *dev_out, *dev_in;
 	DEVICE_EVENT_T          begin, end;
 
 #ifdef WIN64
@@ -67,16 +67,16 @@ int main(int argc, char** argv)
 	
 	DEVICE_EVENT_CREATE ( &begin );
 	DEVICE_EVENT_CREATE ( &end );
-	in =  (DEVICE_FFT_DOUBLEREAL*) calloc(sizeof(DEVICE_FFT_DOUBLEREAL), COLUMNS );
-	out = (DEVICE_FFT_DOUBLEREAL*) calloc(sizeof(DEVICE_FFT_DOUBLEREAL), ROWS );
-	DEVICE_MALLOC      ( &dev_in,  sizeof(DEVICE_FFT_DOUBLEREAL) * COLUMNS );
-	DEVICE_MALLOC      ( &dev_out, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS );
+	in =  (DATATYPE*) calloc(sizeof(DATATYPE), COLUMNS );
+	out = (DATATYPE*) calloc(sizeof(DATATYPE), ROWS );
+	DEVICE_MALLOC      ( &dev_in,  sizeof(DATATYPE) * COLUMNS );
+	DEVICE_MALLOC      ( &dev_out, sizeof(DATATYPE) * ROWS );
 
 	for (int i = 0; i < /* ROWS */ COLUMNS; i++)
 		in[i] = i;
 
 	setup_spiral_test();
-	DEVICE_MEM_COPY ( dev_in, in,   sizeof(DEVICE_FFT_DOUBLEREAL) * COLUMNS, MEM_COPY_HOST_TO_DEVICE);
+	DEVICE_MEM_COPY ( dev_in, in,   sizeof(DATATYPE) * COLUMNS, MEM_COPY_HOST_TO_DEVICE);
 	DEVICE_CHECK_ERROR ( DEVICE_GET_LAST_ERROR () );
 	
 	DEVICE_CHECK_ERROR ( DEVICE_EVENT_RECORD ( begin ) );
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 	}
 	DEVICE_CHECK_ERROR ( DEVICE_EVENT_RECORD ( end ) );
 	DEVICE_SYNCHRONIZE();
-	DEVICE_MEM_COPY ( out, dev_out, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS, MEM_COPY_DEVICE_TO_HOST);
+	DEVICE_MEM_COPY ( out, dev_out, sizeof(DATATYPE) * ROWS, MEM_COPY_DEVICE_TO_HOST);
 	DEVICE_CHECK_ERROR ( DEVICE_GET_LAST_ERROR () );
 
 	teardown_spiral_test();

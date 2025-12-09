@@ -3,7 +3,7 @@ SPIRAL Profiler
 
 SPIRAL calls the profiler to time candidate kernels during a search.
 
-The profiler requires Python 3 (>= 3.3).
+The profiler requires Python 3 (>= 3.6).
 
 
 Configuration
@@ -23,6 +23,12 @@ Use the **--workdir** command line option to specify a location other than the d
 
 With each request the profiler creates a temporary directory under **tempdirs**  to build and run the test.  The default behavior is to delete the temporary directory once the results are returned to SPIRAL.  Use the **--keeptemp** command line option to leave the directories in place for later inspection.
 
+It is also possible to specify a named directory to be used to build and run the test.  This is specified (in Spiral) using the **opts.profile** record, e.g.,
+```
+opts.profile.builddir := "~/work/profile/buildme";
+```
+The directory specified will be created if necessary and will *not* be deleted, regardless of success or failure of the build/test process.  This permits easier access to files during iterative build/debug sessions.
+
 ### The PROFILER_LOCAL_ARGS Environment Variable
 
 The profiler checks for an environment variable called **PROFILER_LOCAL_ARGS** for additional arguments to add to the command line.  Use it to specify any arguments you want to always add to the end of the argument list.
@@ -35,6 +41,13 @@ On windows, add this to **spiral.bat** in SPIRAL's root directory:
 ```
 set PROFILER_LOCAL_ARGS=--debug --keeptemp
 ```
+
+Alternatively, (in Spiral) one can request the **debug** and **keeptemp** options be used with the profiler using the **opts.profile** record, e.g.,
+```
+opts.profile.keeptemp := true;
+opts.profile.debug    := true;
+```
+Any value will work (Spiral simply tests to see if the attributes are bound.
 
 How the Profiler Works
 ----------------------
@@ -49,7 +62,7 @@ Besides the working directory, there is some other key profiler terminology:
 
 After a sanity check on parameters and its operating environment, the profiler:
 
-1. creates a new temporary directory
+1. creates a new temporary directory (or uses a named build directory)
 1. copies code files from the source directory to the temporary directory
 1. from within the temporary directory, calls **&lt;target>/&lt;request>.cmd**
 1. copies **&lt;request>.txt** from the temporary directory to the source directory

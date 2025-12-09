@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2018-2023, Carnegie Mellon University
+## Copyright (c) 2018-2025, Carnegie Mellon University
 ## All rights reserved.
 ##
 ## See LICENSE file for full information
@@ -21,7 +21,13 @@ set ( ADDL_COMPILE_FLAGS )
 set ( GPU_COMPILE_DEFNS )
 set ( LIBS_TO_LINK )
 
-set ( PROF_TARGETS ${CMAKE_SOURCE_DIR}/../../targets )
+##  SPIRAL_PROFILER_ROOT is added to the environment by the Spiral Profiler, it determines
+##  the path from which files are copied
+
+set ( PROF_ROOT    $ENV{SPIRAL_PROFILER_ROOT} )
+file ( TO_CMAKE_PATH "${PROF_ROOT}" PROF_ROOT )
+message ( STATUS "PROF_ROOT = ${PROF_ROOT}" )
+set ( PROF_TARGETS ${PROF_ROOT}/targets )
 set ( PROF_COMMON  ${PROF_TARGETS}/common )
 set ( PROF_INCLUDE ${PROF_TARGETS}/include )
 set ( SOURCES      ${PROF_COMMON}/${PROJECT}.${SUFFIX} testcode.${SUFFIX} )

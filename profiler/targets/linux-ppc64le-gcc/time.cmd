@@ -1,19 +1,22 @@
 #!/bin/sh
 
-#  Copyright (c) 2018-2021, Carnegie Mellon University
+#  Copyright (c) 2018-2025, Carnegie Mellon University
 #  See LICENSE for details
 
 ##  Use cmake to build the project (PROJECT=papi_time) for C language (SUFFIX=c) 
 
-TEMPDIR=$PWD
-cp -f ../../targets/common/CMakeLists.txt $TEMPDIR/CMakeLists.txt
-rm -rf build && mkdir build && cd build
-cmake -DPROJECT:STRING=papi_time -DSUFFIX:STRING=c -DEXLIBS:STRING=papi .. > /dev/null
-make install > /dev/null
-cd ..
-
-if [ -f ./papi_time ]; then
-    ./papi_time > time.txt
+if [ "$1" = "build" ]; then
+    ##  Build the code
+    rm -rf build && mkdir build && cd build
+    cmake -DPROJECT:STRING=papi_time -DSUFFIX:STRING=c -DEXLIBS:STRING=papi .. > /dev/null
+    make install > /dev/null
+    cd ..
 else
-    touch time.txt
+    ##  Run the code
+    if [ -f ./papi_time ]; then
+        ./papi_time > time.txt
+    else
+        touch time.txt
+    fi
 fi
+

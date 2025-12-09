@@ -10,7 +10,9 @@ Import(paradigms.distributed);
 _DataFormatString := function(datatype)
 	if (datatype in ["int", "BigInt", "__int64", "__int32", "__int16", "__int8"]) or StartsWith(datatype, "unsigned") then
 		return "\"IntString(\\\"%d\\\")\"";
-	else
+	elif (datatype in ["float"]) then
+                return "\"FloatString(\\\"%.8g\\\")\"";
+        else
 		return "\"FloatString(\\\"%.18g\\\")\"";
 	fi;
 end;
@@ -32,6 +34,9 @@ _DeriveScalarType := function(SPLOpts)
 		else 
 			Error("SPLOpts.dataType has invalid value '", SPLOpts.dataType, "'");
 		fi;
+                if IsBound(SPLOpts.TRealCtype) and SPLOpts.TRealCtype = "float" then
+                        SPLOpts.precision := "single";
+                fi;
 		if SPLOpts.precision = "single" then 
 			return Concat("float",suffix);
 		elif SPLOpts.precision = "double" then 
@@ -109,7 +114,10 @@ _WriteStub := function(code, opts)
     
     if IsBound(opts.wrapCFuncs) and opts.wrapCFuncs then
 
-    ##  add extern function declarations ... required for cuda
+    ##  add extern function declarations ... required for cuda; not for MSVC
+    ##  These need to be surrounded by 'extern "C" { ... }'
+    Print("\n#ifdef __cplusplus\n");
+    Print("extern \"C\" {\n#endif\n");
         Print("extern \"C\" {\n");
         Print("    void INITFUNC();\n");
         Print("    void DESTROYFUNC();\n");
@@ -164,6 +172,10 @@ _WriteStub := function(code, opts)
 	fi;
 	
 	# end of MAINOBJ section
+        ##  Close extern "C" brace (if __cplusplus)
+        Print("\n#ifdef __cplusplus\n");
+        Print("}\n#endif\n");
+
 	Print("#endif\n");
 	Print("\n");
 		
@@ -253,6 +265,18 @@ _CallProfiler := function(request, code, opts)
 		fullcmd := Concat(fullcmd, " -P ", String(GetPid()), "_");
     fi;
 
+    if IsBound(opts.profile.builddir) then
+        fullcmd := Concat(fullcmd, " -b ", String(opts.profile.builddir));
+    fi;
+    
+    if IsBound(opts.profile.debug) then
+        fullcmd := Concat(fullcmd, " -D ");
+    fi;
+    
+    if IsBound(opts.profile.keeptemp) then
+        fullcmd := Concat(fullcmd, " -k ");
+    fi;
+    
     # Exec the profiler
 	# uncomment following line to hide profiler debug and error messages
 	#fullcmd := Concat(fullcmd, " 2> NUL");

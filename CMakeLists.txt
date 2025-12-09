@@ -1,12 +1,12 @@
 ##
-## Copyright (c) 2018-2021, Carnegie Mellon University
+## Copyright (c) 2018-2025, Carnegie Mellon University
 ## All rights reserved.
 ## 
 ## See LICENSE file for full information
 ##
 
 # specify this only here, lower levels use CMAKE_MINIMUM_REQUIRED_VERSION that this sets
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.17)
 
 set(CMAKE_BUILD_TYPE Release  CACHE STRING "Debug, Release, RelWithDebInfo, MinSizeRel")
 

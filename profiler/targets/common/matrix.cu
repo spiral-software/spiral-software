@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-2023, Carnegie Mellon University
+ *  Copyright (c) 2018-2025, Carnegie Mellon University
  *  See LICENSE for details
  */
 /***************************************************************************
@@ -25,18 +25,18 @@
 #endif
 
 #ifndef NZERO
-#define NZERO (1.0/(double)-INFINITY)
+#define NZERO (1.0/(DATATYPE)-INFINITY)
 #endif
 
-DEVICE_FFT_DOUBLEREAL  *Input, *Output;
-DEVICE_FFT_DOUBLEREAL  *dev_in, *dev_out;
+DATATYPE  *Input, *Output;
+DATATYPE  *dev_in, *dev_out;
 
 void initialize(int argc, char **argv) {
-	Input =  (DEVICE_FFT_DOUBLEREAL*) calloc(sizeof(DEVICE_FFT_DOUBLEREAL), COLUMNS );
-	Output = (DEVICE_FFT_DOUBLEREAL*) calloc(sizeof(DEVICE_FFT_DOUBLEREAL), ROWS );
+	Input =  (DATATYPE*) calloc(sizeof(DATATYPE), COLUMNS );
+	Output = (DATATYPE*) calloc(sizeof(DATATYPE), ROWS );
 
-	DEVICE_MALLOC     ( &dev_in,  sizeof(DEVICE_FFT_DOUBLEREAL) * COLUMNS );
-	DEVICE_MALLOC     ( &dev_out, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS );
+	DEVICE_MALLOC     ( &dev_in,  sizeof(DATATYPE) * COLUMNS );
+	DEVICE_MALLOC     ( &dev_out, sizeof(DATATYPE) * ROWS );
 
 	INITFUNC();
 }
@@ -48,12 +48,12 @@ void finalize() {
 	DEVICE_FREE     (dev_in);
 }
 
-void set_value_in_vector(DEVICE_FFT_DOUBLEREAL *arr, int elem)
+void set_value_in_vector(DATATYPE *arr, int elem)
 {
 	// Zero array and put '1' in the location indicated by element
 	int idx;
 	for (idx = 0; idx < COLUMNS; idx++)
-		arr[idx] = (idx == elem) ? 1.0 : 0.0;
+		arr[idx] = (idx == elem) ? (DATATYPE)1.0 : (DATATYPE)0.0;
 
 	return;
 }
@@ -62,7 +62,7 @@ void compute_matrix()
 {
 	int x, y, indx, counter;
 	int start_col, end_col, start_row, end_row;
-	double nzero = NZERO;
+	DATATYPE nzero = NZERO;
 
 #ifdef CMATRIX_UPPER_ROW
 	start_row = CMATRIX_UPPER_ROW - 1;
@@ -88,22 +88,22 @@ void compute_matrix()
 	printf("[ ");
 	for (x = start_col; x < end_col; x++) {
 		set_value_in_vector(Input, x);
-		DEVICE_MEM_COPY (dev_in, Input, sizeof(DEVICE_FFT_DOUBLEREAL) * COLUMNS, MEM_COPY_HOST_TO_DEVICE);
+		DEVICE_MEM_COPY (dev_in, Input, sizeof(DATATYPE) * COLUMNS, MEM_COPY_HOST_TO_DEVICE);
 		
 		// set dev_out to negative zero to catch holes transform
 		for (indx = 0; indx < ROWS; indx++) {
 			Output[indx] = nzero;
 		}
-		DEVICE_MEM_COPY(dev_out, Output, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS, MEM_COPY_HOST_TO_DEVICE);
+		DEVICE_MEM_COPY(dev_out, Output, sizeof(DATATYPE) * ROWS, MEM_COPY_HOST_TO_DEVICE);
 		DEVICE_CHECK_ERROR ( DEVICE_GET_LAST_ERROR () );
 		
 		// set Output to -Inf to catch incomplete copies
 		for (indx = 0; indx < ROWS; indx++) {
-			Output[indx] = (double)-INFINITY;
+			Output[indx] = (DATATYPE)-INFINITY;
 		}
 		
 		FUNC(dev_out, dev_in);
-		DEVICE_MEM_COPY ( Output, dev_out, sizeof(DEVICE_FFT_DOUBLEREAL) * ROWS, MEM_COPY_DEVICE_TO_HOST);
+		DEVICE_MEM_COPY ( Output, dev_out, sizeof(DATATYPE) * ROWS, MEM_COPY_DEVICE_TO_HOST);
 		
 		if (x != start_col) {
 			printf(",\n  [ ");
@@ -119,7 +119,7 @@ void compute_matrix()
 				}
 				printf(", ");
 			}
-			printf("FloatString(\"%.18g\")", Output[y]);
+			printf(DATAFORMATSTRING, Output[y]);
 			counter++;
 		}
 		printf(" ]");

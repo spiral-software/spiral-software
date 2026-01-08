@@ -97,6 +97,19 @@ Obj LoadPlugin(char *libname) {
     int init_ret;
     
     handle = dlopen(libname, RTLD_LAZY);
+    
+    #ifndef WIN32
+    // try appending ".so" to library name, Windows automatically adds ".dll"
+    if (handle == 0) {
+        int newlen = strlen(libname) + 5;
+        char *libname2 = malloc(newlen);
+        strcpy(libname2, libname);
+        strcat(libname2, ".so");
+        handle = dlopen(libname2, RTLD_LAZY);
+        free(libname2);
+    }
+    #endif
+    
     if (handle == 0) {
         return Error("cannot open plugin %s", libname, 0);
     }

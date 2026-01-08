@@ -151,7 +151,7 @@ install (FILES ${SPIRAL_STARTUP_FILES}
 
 add_subdirectory(gap)
 
-add_subdirectory ( support )
+##add_subdirectory ( support )
 
 ##  Find any subdirectories in namespaces/packages -- these will be the names
 ##  of spiral packages.  Add subdirectory entries for any names found *if* they

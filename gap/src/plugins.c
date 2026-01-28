@@ -100,7 +100,7 @@ Obj LoadPlugin(char *libname) {
     
     #ifndef WIN32
     // try appending ".so" to library name, Windows automatically adds ".dll"
-    if (handle == 0) {
+    if ((handle == 0) && (strstr(libname, ".so") == 0)) {
         int newlen = strlen(libname) + 5;
         char *libname2 = malloc(newlen);
         strcpy(libname2, libname);
@@ -111,7 +111,11 @@ Obj LoadPlugin(char *libname) {
     #endif
     
     if (handle == 0) {
+		#ifdef WIN32
         return Error("cannot open plugin %s", libname, 0);
+		#else
+		return Error("%s", dlerror(), 0);	
+		#endif
     }
     
     funcptr = dlsym(handle, funcname);

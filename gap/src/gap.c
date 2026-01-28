@@ -1013,9 +1013,9 @@ Bag EvalString(char *str) {
                 lasthd = hd;
 			}				
 			if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
-				return Error("EvalString: 'return' must not be used here",0,0);
+				return Error("EvalString: 'return' not allowed",0,0);
 			else if ( hd == HdReturn )
-				return Error("EvalString: 'quit' must not be used here",0,0);
+				return Error("EvalString: 'quit' not allowed",0,0);
         }
     } Catch(e) {
         Throw(e);

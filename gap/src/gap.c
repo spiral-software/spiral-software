@@ -1002,6 +1002,7 @@ Bag EvalString(char *str) {
     }
 
     lasthd = 0;
+    NrError = 0;
 
     /* now comes a read-eval-noprint loop, similar to the one in 'main'    */
 	Try {

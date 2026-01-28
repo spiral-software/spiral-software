@@ -989,6 +989,8 @@ Bag EvalString(char *str) {
     Bag  hd, lasthd;
     TypInputFile *parent;
     exc_type_t e;
+	
+	//fprintf(stderr, "*** EvalString(%s) ***\n", str);
     
     parent = Input;
     
@@ -1012,15 +1014,18 @@ Bag EvalString(char *str) {
 				hd = EVAL( hd );
                 lasthd = hd;
 			}				
-			if ( hd == HdReturn && PTR_BAG(hd)[0] != HdReturn )
-				return Error("EvalString: 'return' not allowed",0,0);
-			else if ( hd == HdReturn )
-				return Error("EvalString: 'quit' not allowed",0,0);
+			if ( hd == HdReturn ) {
+				char *s = (PTR_BAG(hd)[0] != HdReturn) ? "return" : "quit";
+				NrError = 1;
+				lasthd = 0;
+				fprintf(stderr, "EvalString: '%s' not allowed\n", s);
+			}
         }
     } Catch(e) {
-        Throw(e);
+		// CloseInput() called from error handler
+        return 0;
     }
-    /* close the input file again, and return 'true'                       */
+
     if ( ! CloseInput() )
         Error("EvalString: can not close input, this should not happen",0,0);
 	

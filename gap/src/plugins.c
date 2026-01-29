@@ -27,6 +27,7 @@
 #include "gstring.h"
 
 extern Bag EvalString(char *str);
+extern const char* LastEVErrorString();
 
 typedef void* (*lookup_func)(char *);
 typedef int (*init_func)(lookup_func);
@@ -83,6 +84,9 @@ void* LookupGlobalName(char *name) {
     }
     else if (strcmp(name, "EvalString") == 0) {
 		return (void*)EvalString;
+    }     
+    else if (strcmp(name, "LastEVErrorString") == 0) {
+		return (void*)LastEVErrorString;
     }
     else {
         return (void*)0;

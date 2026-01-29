@@ -985,12 +985,20 @@ Bag       FunREAD (Bag hdCall)
 }
 
 
+#define EVERRSTRLEN 127
+char ev_lasterr_str[EVERRSTRLEN+1];
+
+const char* LastEVErrorString() {
+    return ev_lasterr_str;
+}
+
+
 Bag EvalString(char *str) {
     Bag  hd, lasthd;
     TypInputFile *parent;
     exc_type_t e;
-	
-	//fprintf(stderr, "*** EvalString(%s) ***\n", str);
+    
+    ev_lasterr_str[0] = 0;
     
     parent = Input;
     
@@ -1018,14 +1026,30 @@ Bag EvalString(char *str) {
 				char *s = (PTR_BAG(hd)[0] != HdReturn) ? "return" : "quit";
 				NrError = 1;
 				lasthd = 0;
-				fprintf(stderr, "EvalString: '%s' not allowed\n", s);
+				sprintf(ev_lasterr_str, "EvalString: '%s' not allowed", s);
+                if (!ERROR_QUIET) {
+                    fprintf(stderr, "%s\n", ev_lasterr_str);
+                }
 			}
         }
     } Catch(e) {
 		// CloseInput() called from error handler
+        if(e!=ERR_GAP) {
+            strncpy(ev_lasterr_str, exc_err_msg(), EVERRSTRLEN);
+        }
+        else {
+            char *errstr;
+            if (HdLastErrorMsg != 0) {
+                errstr = HdToString(HdLastErrorMsg, "HdLastErrorMsg", 0, 0);
+            }
+            else {
+                errstr = "GAP Error";
+            }
+            strncpy(ev_lasterr_str, errstr, EVERRSTRLEN);
+        }
         return 0;
     }
-
+    
     if ( ! CloseInput() )
         Error("EvalString: can not close input, this should not happen",0,0);
 	
@@ -2246,6 +2270,8 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     SET_STREAM_FILE(stderr_stream, stderr);
 
     global_stream = stdout_stream;
+    
+    ev_lasterr_str[0] = 0;
 
 #ifdef DEBUG
 #ifndef WIN32

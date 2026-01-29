@@ -1034,19 +1034,8 @@ Bag EvalString(char *str) {
         }
     } Catch(e) {
 		// CloseInput() called from error handler
-        if(e!=ERR_GAP) {
-            strncpy(ev_lasterr_str, exc_err_msg(), EVERRSTRLEN);
-        }
-        else {
-            char *errstr;
-            if (HdLastErrorMsg != 0) {
-                errstr = HdToString(HdLastErrorMsg, "HdLastErrorMsg", 0, 0);
-            }
-            else {
-                errstr = "GAP Error";
-            }
-            strncpy(ev_lasterr_str, errstr, EVERRSTRLEN);
-        }
+        char *errstr = "EvalString: GAP Error";
+        strncpy(ev_lasterr_str, errstr, EVERRSTRLEN);
         return 0;
     }
     

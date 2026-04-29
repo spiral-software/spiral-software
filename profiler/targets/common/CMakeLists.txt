@@ -130,7 +130,7 @@ else ()
 endif ()
 
 if ( ${SUFFIX} STREQUAL "cu" )
-    set ( CMAKE_CUDA_ARCHITECTURES 60 61 62 70 72 75 80)
+    set ( CMAKE_CUDA_ARCHITECTURES native) ## WAS 60 61 62 70 72 75 80
 endif ()
 
 add_executable		     ( ${PROJECT} ${SOURCES} )

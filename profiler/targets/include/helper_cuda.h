@@ -122,14 +122,14 @@ static const char *_cudaGetErrorEnum(cufftResult error) {
     case CUFFT_UNALIGNED_DATA:
       return "CUFFT_UNALIGNED_DATA";
 
-    case CUFFT_INCOMPLETE_PARAMETER_LIST:
-      return "CUFFT_INCOMPLETE_PARAMETER_LIST";
+      //    case CUFFT_INCOMPLETE_PARAMETER_LIST:
+      //      return "CUFFT_INCOMPLETE_PARAMETER_LIST";
 
     case CUFFT_INVALID_DEVICE:
       return "CUFFT_INVALID_DEVICE";
 
-    case CUFFT_PARSE_ERROR:
-      return "CUFFT_PARSE_ERROR";
+      //    case CUFFT_PARSE_ERROR:
+      //      return "CUFFT_PARSE_ERROR";
 
     case CUFFT_NO_WORKSPACE:
       return "CUFFT_NO_WORKSPACE";
@@ -137,8 +137,8 @@ static const char *_cudaGetErrorEnum(cufftResult error) {
     case CUFFT_NOT_IMPLEMENTED:
       return "CUFFT_NOT_IMPLEMENTED";
 
-    case CUFFT_LICENSE_ERROR:
-      return "CUFFT_LICENSE_ERROR";
+      //    case CUFFT_LICENSE_ERROR:
+      //      return "CUFFT_LICENSE_ERROR";
 
     case CUFFT_NOT_SUPPORTED:
       return "CUFFT_NOT_SUPPORTED";
@@ -714,7 +714,10 @@ inline int gpuDeviceInit(int devID) {
   cudaDeviceProp deviceProp;
   checkCudaErrors(cudaGetDeviceProperties(&deviceProp, devID));
 
-  if (deviceProp.computeMode == cudaComputeModeProhibited) {
+  int computeMode;
+  cudaDeviceGetAttribute(&computeMode, cudaDevAttrComputeMode, devID);
+  // if (deviceProp.computeMode == cudaComputeModeProhibited)
+  if (computeMode == cudaComputeModeProhibited) {
     fprintf(stderr,
             "Error: device is running in <Compute Mode "
             "Prohibited>, no threads can use cudaSetDevice().\n");
@@ -758,7 +761,10 @@ inline int gpuGetMaxGflopsDeviceId() {
 
     // If this GPU is not running on Compute Mode prohibited,
     // then we can add it to the list
-    if (deviceProp.computeMode != cudaComputeModeProhibited) {
+    int computeModeCurrent;
+    cudaDeviceGetAttribute(&computeModeCurrent, cudaDevAttrComputeMode, current_device);
+    // if (deviceProp.computeMode != cudaComputeModeProhibited)
+    if (computeModeCurrent != cudaComputeModeProhibited) {
       if (deviceProp.major == 9999 && deviceProp.minor == 9999) {
         sm_per_multiproc = 1;
       } else {
@@ -766,8 +772,11 @@ inline int gpuGetMaxGflopsDeviceId() {
             _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
       }
 
+      int clockRate;
+      cudaDeviceGetAttribute(&clockRate, cudaDevAttrClockRate, current_device);
       uint64_t compute_perf = (uint64_t)deviceProp.multiProcessorCount *
-                              sm_per_multiproc * deviceProp.clockRate;
+        // sm_per_multiproc * deviceProp.clockRate;
+        sm_per_multiproc * clockRate;
 
       if (compute_perf > max_compute_perf) {
         max_compute_perf = compute_perf;
@@ -841,8 +850,11 @@ inline int findIntegratedGPU() {
 
     // If GPU is integrated and is not running on Compute Mode prohibited,
     // then cuda can map to GLES resource
+    int computeModeCurrent;
+    cudaDeviceGetAttribute(&computeModeCurrent, cudaDevAttrComputeMode, current_device);
     if (deviceProp.integrated &&
-        (deviceProp.computeMode != cudaComputeModeProhibited)) {
+        // (deviceProp.computeMode != cudaComputeModeProhibited))
+        (computeModeCurrent != cudaComputeModeProhibited)) {
       checkCudaErrors(cudaSetDevice(current_device));
       checkCudaErrors(cudaGetDeviceProperties(&deviceProp, current_device));
       printf("GPU Device %d: \"%s\" with compute capability %d.%d\n\n",

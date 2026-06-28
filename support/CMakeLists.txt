@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2018-2021, Carnegie Mellon University
+## Copyright (c) 2018-2026, Carnegie Mellon University
 ## All rights reserved.
 ## 
 ## See LICENSE file for full information
@@ -7,21 +7,30 @@
 
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
-##  Check the code generation ... look for CUDA toolkit
+##  Check the code generation ... look for CUDA toolkit AND active hardware
+find_package ( CUDAToolkit QUIET )
 
-find_package ( CUDAToolkit )
-if ( ${CUDAToolkit_FOUND} )
-    message ( STATUS "CUDA Toolkit Found : Version = ${CUDAToolkit_VERSION}" )
-    set ( _codegen GPU )
-else ()
-    set ( _codegen CPU )
+set ( _codegen CPU )
+set ( _lang_add "" )
+
+if ( CUDAToolkit_FOUND )
+    ##  Verify if CMake can actually enable the CUDA language on this hardware
+    include ( CheckLanguage )
+    check_language ( CUDA )
+    
+    if ( CMAKE_CUDA_COMPILER )
+        message ( STATUS "CUDA Toolkit and Compiler Found: Enabling GPU mode." )
+        set ( _codegen GPU )
+        set ( _lang_add CUDA )
+    else ()
+        message ( STATUS "CUDA Toolkit present, but CUDA compiler verification failed (No active GPU or driver mismatch). Falling back to CPU mode." )
+    endif ()
 endif ()
 
 if ( ${_codegen} STREQUAL "GPU" )
-    set ( _lang_add CUDA )
     set ( _suffix cu )
 else ()
-    message ( STATUS "CUDA toolkit NOT FOUND: No GPU code / tests will be performed" )
+    message ( STATUS "No functional GPU execution environment found: No GPU code / tests will be performed" )
     set ( _suffix c )
 endif ()
 
@@ -51,8 +60,9 @@ if ( ${_codegen} STREQUAL "GPU" )
 	set ( ADDL_COMPILE_FLAGS )
     endif ()
 
-    ##  set ( CMAKE_CUDA_ARCHITECTURES 60 61 62 70 72 75 )
-    set ( CMAKE_CUDA_ARCHITECTURES 70 )
+    ##  Dynamically determine the CUDA architectures
+    include ( "${SPIRAL_SOURCE_DIR}/config/CMakeIncludes/SpiralCUDAUtils.cmake" )
+    spiral_determine_cuda_architectures ()
     set ( GPU_EXTRAS _CUDAGEN )
 endif ()
 

@@ -2175,7 +2175,7 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     SET_STREAM_FILE(stderr_stream, stderr);
 
     global_stream = stdout_stream;
-
+    
 #ifdef DEBUG
 #ifndef WIN32
 	mtrace();							/* trace memory calls */

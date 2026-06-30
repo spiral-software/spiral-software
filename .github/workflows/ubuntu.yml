@@ -18,6 +18,8 @@ jobs:
         sudo chmod a+x /usr/local/bin/cmake-easyinstall
         export CEI_SUDO="sudo"
     - name: build SPIRAL
+      env:
+        SPIRAL_HOME: ${{ github.workspace }}
       run: |
         mkdir build && cd build
         cmake ..

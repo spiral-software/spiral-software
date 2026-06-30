@@ -17,7 +17,11 @@ ProfilerName        = 'spiralprofiler'
 ProfilerVersion     = '1.0.0'
 
 def slurmAvailable():
-    """Return True if Slurm commands are present and usable."""
+    """Return True if Slurm commands are present and we are NOT inside an active job allocation."""
+    ##  Check SLURM_JOB_ID, if found don't do batching
+    if "SLURM_JOB_ID" in os.environ:
+        return False
+
     return shutil.which("sbatch") is not None and shutil.which("squeue") is not None
 
 def filesToSend():

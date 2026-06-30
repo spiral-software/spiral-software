@@ -10,6 +10,10 @@ comment("");
 ClearBasicProfilerTestResults();
 
 opts := SpiralDefaults;
+
+##  Turn debug on for spiral profiler to debug issues with workflow in github
+opts.profile.debug := true;
+
 transform := DFT(4);
 ruletree := RuleTreeMid(transform, opts);
 icode := CodeRuleTree(ruletree, opts);

@@ -23,5 +23,7 @@ jobs:
         cmake ..
         make -j 2 install
         ##  make test
+        ##  Inject the debug flag so localprofiler.py prints the compiler errors
+        export PROFILER_LOCAL_ARGS="-D"
         ctest -I 5,5 --output-on-failure -V
         

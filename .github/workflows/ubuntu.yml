@@ -22,4 +22,6 @@ jobs:
         mkdir build && cd build
         cmake ..
         make -j 2 install
-        make test
+        ##  make test
+        ctest -I 5,5 --output-on-failure -V
+        

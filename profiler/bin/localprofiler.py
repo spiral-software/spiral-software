@@ -275,7 +275,8 @@ except Exception as e:
     sys.exit('Error: Could not subprocess.run(buildCmd)')
 
 if (res != 0):
-    cleanup()
+    if not keeptemp:
+        cleanup()
     sys.exit(res)
 
 ##  Run phase

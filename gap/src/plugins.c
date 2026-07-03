@@ -30,17 +30,6 @@
 extern Bag EvalString(char *str);
 extern const char* LastEVErrorString();
 
-/* Temporary Linker Stubs to isolate Track B from Track A */
-#ifndef REWRITE_EVALSTRING_DONE
-Bag EvalString(char *str) {
-    printf("STUB: Legacy EvalString called with: %s\n", str);
-    return 0; 
-}
-const char* LastEVErrorString() {
-    return "STUB: LastEVErrorString not implemented yet";
-}
-#endif
-
 typedef void* (*lookup_func)(char *);
 typedef int (*init_func)(lookup_func);
 

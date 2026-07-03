@@ -114,6 +114,7 @@ Int         DbgInBreakLoop = 0;
 
 
 extern void  InitGap(int argc, char** argv, int* stackBase);
+extern void  LoadOptionalPlugins ( int argc, char **argv );
 
 int             main (int argc, char **argv)
 {
@@ -152,6 +153,9 @@ int             main (int argc, char **argv)
 		                EVAL_STACK_POP;
 		}
     }
+    
+    // load plugins after session start hook
+    LoadOptionalPlugins(argc, argv);
 
     /* Load static history buffer */
     SyLoadHistory();
@@ -769,7 +773,7 @@ Bag       Error (char *msg, Int arg1, Int arg2)
             debugActive = (InDebugMode != 0);
 #endif
 			/* if requested enter a break loop                                     */
-			if ( HdExec != 0 && debugActive && OpenInput( "*errin*" ) ) {
+			if ( HdExec != 0 && debugActive && OpenInput( "*errin*", 0 ) ) {
 
 				if(parent->packages) PushPackages(parent->packages);
 				if(parent->imports) PushNamespaces(parent->imports);
@@ -780,8 +784,6 @@ Bag       Error (char *msg, Int arg1, Int arg2)
 						FunBacktrace2( (Bag)0 );
 					else {
 						FunBacktrace( (Bag)0 );
-						// Pr( "web:error\n", 0, 0 );
-                        SyFmtPrint ( stderr_stream, "web:error\n" );
 					}
 					DbgErrorLoopStarting();
 				} Catch(e) { if (e != ERR_GAP) { LeaveDbgStack(); Throw(e); } }
@@ -940,14 +942,16 @@ Bag       FunREAD (Bag hdCall)
     //  printf ( "file = %s", (char*)PTR_BAG(hdName) );
     if ( GET_SIZE_BAG(hdCall) == 3*SIZE_HD ) {
         hdPkg = EVAL(PTR_BAG(hdCall)[2]);
-	hdPkg = StartPackageSpec(hdPkg); /* try it out */
-	EndPackage(); 
+        hdPkg = StartPackageSpec(hdPkg); /* try it out */
+        EndPackage(); 
     } 
-    else hdPkg = 0;
+    else {
+        hdPkg = 0;
+    }
 
     parent = Input;
     /* try to open the given file, if the file is not found return 'false' */
-    if ( ! OpenInput( (char*)PTR_BAG(hdName) ) )
+    if ( ! OpenInput( (char*)PTR_BAG(hdName), 0 ) )
         return HdFalse;
 
     if ( hdPkg ) { 
@@ -979,6 +983,87 @@ Bag       FunREAD (Bag hdCall)
     //  printf ( " ... done\n" );
 	
 	return HdTrue;
+}
+
+
+#define EVERRSTRLEN 127
+char ev_lasterr_str[EVERRSTRLEN+1];
+
+const char* LastEVErrorString() {
+    return ev_lasterr_str;
+}
+
+
+Bag EvalString(char *str) {
+    Bag  hd, lasthd;
+    TypInputFile *parent;
+    exc_type_t e;
+    
+    ev_lasterr_str[0] = 0;
+    
+    parent = Input;
+    
+    OpenInput(str, 1);
+    
+    if(parent->packages) {
+        PushPackages(parent->packages);
+    }
+    if(parent->imports) {
+        PushNamespaces(parent->imports);
+    }
+
+    lasthd = 0;
+    NrError = 0;
+
+    /* now comes a read-eval-noprint loop, similar to the one in 'main'    */
+	Try {
+        while ( Symbol != S_EOF ) {
+            hd = ReadIt();
+			if ( hd != 0 ) { 
+				hd = EVAL( hd );
+                lasthd = hd;
+			}				
+			if ( hd == HdReturn ) {
+				char *s = (PTR_BAG(hd)[0] != HdReturn) ? "return" : "quit";
+				NrError = 1;
+				lasthd = 0;
+				sprintf(ev_lasterr_str, "EvalString: '%s' not allowed", s);
+                if (!ERROR_QUIET) {
+                    fprintf(stderr, "%s\n", ev_lasterr_str);
+                }
+			}
+        }
+    } Catch(e) {
+		// CloseInput() called from error handler
+        char *errstr = "EvalString: GAP Error";
+        strncpy(ev_lasterr_str, errstr, EVERRSTRLEN);
+        return 0;
+    }
+    
+    if ( ! CloseInput() )
+        Error("EvalString: can not close input, this should not happen",0,0);
+	
+	return lasthd;
+}
+
+
+
+Bag       FunEvalString (Bag hdCall)
+{
+    Bag           hdStr;
+    
+    char *usage = "usage: EvalString( <string> )";
+
+    /* check the number and type of arguments                              */
+    if ( GET_SIZE_BAG(hdCall) != 2*SIZE_HD ) {
+        return Error(usage,0,0);
+    }
+    hdStr = EVAL( PTR_BAG(hdCall)[1] );
+    if ( ! IsString(hdStr) ) {
+        return Error(usage,0,0);
+    }
+    char *str = HdToString(hdStr, "expected string", 0, 0);
+    return EvalString(str);
 }
 
 
@@ -1031,7 +1116,7 @@ Bag       FunReadString (Bag hdCall)
 
     parent = Input;
     /* try to open the given file, if the file is not found return 'false' */
-    if ( ! OpenInput( (char*)PTR_BAG(hdName) ) )
+    if ( ! OpenInput( (char*)PTR_BAG(hdName), 0 ) )
         return HdFalse;
 
         hdList = GReadFile();
@@ -2176,6 +2261,8 @@ void            InitGap (int argc, char** argv, int* stackBase) {
 
     global_stream = stdout_stream;
     
+    ev_lasterr_str[0] = 0;
+
 #ifdef DEBUG
 #ifndef WIN32
 	mtrace();							/* trace memory calls */
@@ -2222,6 +2309,7 @@ void            InitGap (int argc, char** argv, int* stackBase) {
     InstIntFunc( "BacktraceTo",FunBacktraceTo);
 
     InstIntFunc( "READ",       FunREAD       );
+    InstIntFunc( "EvalString", FunEvalString );
     InstIntFunc( "READSTR",    FunReadString );
     InstIntFunc( "CHANGEDIR",  FunChangeDir  );
     InstIntFunc( "AUTO",       FunAUTO       );
@@ -2262,7 +2350,7 @@ void            InitGap (int argc, char** argv, int* stackBase) {
             Obj pkg;
             if ( file[0] != '\0' ) {
                 /*Pr("Reading %s...\n", file, 0);*/
-                if ( OpenInput( file ) ) {
+                if ( OpenInput( file, 0 ) ) {
                     while ( Symbol != S_EOF ) {
                         hd = ReadIt();
                         if ( hd != 0 )  hd = EVAL( hd );
@@ -2316,7 +2404,6 @@ void            InitGap (int argc, char** argv, int* stackBase) {
             exc_show();
         }
     }
-
 }
 
 

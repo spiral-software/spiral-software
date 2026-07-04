@@ -1035,11 +1035,20 @@ Bag EvalString(char *str) {
         }
     } Catch(e) {
 		// CloseInput() called from error handler
+        //  Pop package - ptb
+        if(parent->packages) {
+            PopPackage();
+        }
         char *errstr = "EvalString: GAP Error";
         strncpy(ev_lasterr_str, errstr, EVERRSTRLEN);
         return 0;
     }
     
+    //  Pop package - ptb
+    if(parent->packages) {
+        PopPackage();
+    }
+
     if ( ! CloseInput() )
         Error("EvalString: can not close input, this should not happen",0,0);
 	

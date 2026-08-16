@@ -1,3 +1,80 @@
+## Release Notes for Spiral Version 8.6.0
+
+### Introduction
+
+These release notes for Spiral 8.6.0 provide an overview of the release and
+document any known issues.  For details of the changes applied since the last
+release, please see the **Change Summary** below.
+
+### Supported Platforms
+
+Spiral is supported on Windows, Linux, and MacOS.
+
+Spiral is configured using **cmake** and is expected to run on most UNIX-like systems.
+
+See the [**README**](./README.md) file for more information on how to build for
+a specific platform.
+
+### Get Spiral Version 8.6.0
+
+You can download the latest release from:
+
+https://github.com/spiral-software/spiral-software.git
+
+## Change Summary
+
+### New Features
+
+#### Dynamic CUDA Architecture Detection:
+Added `SpiralCUDAUtils.cmake` to automatically detect local GPU compute
+capabilities using `nvidia-smi`. Includes a version-safe fallback strategy
+(targeting Ampere/`sm_80`, Hopper/`sm_90` on CUDA 11.8+, and Blackwell/`sm_120`
+on CUDA 12.8/13.0+) for headless environments such as HPC login nodes or WSL.
+
+#### **GAP Plugin Architecture & C Extensions:**
+ * Introduced native dynamic plugin loading support via `LoadPlugin` in GAP
+   (`plugins.c`), complete with cross-platform handling (`dlopen`/`dlsym` on
+   Unix/Linux, native `win_dlfcn` fallback on Windows). 
+ * Added `EvalString` capability to execute GAP statements directly from string buffers.
+ * Added `rec2json.g` package utility for serializing GAP records and lists to JSON strings.
+
+#### **CMake & Toolchain Updates:**
+ * Enhanced CUDA toolchain validation in `support/CMakeLists.txt` using
+   `check_language(CUDA)` to gracefully fall back to CPU mode if a compiler or
+   active driver is missing or mismatched. 
+ * Replaced deprecated `helper_cuda.h` dependency in GPU detection scripts with standard `<cuda_runtime.h>` calls.
+ * Ensured `SPIRAL_HOME` is dynamically resolved and normalized in CMake profiler target configurations.
+
+#### **Profiler Enhancements:**
+* **Slurm / HPC Job Execution:** Updated `localprofiler.py` to check for active `SLURM_JOB_ID`
+  environments before attempting batch job submission, preventing redundant
+  sub-job launches when already inside an allocated Slurm node. 
+* **Test Runner Improvements:** Added support for `opts.profile.debug` and `opts.profile.keeptemp`
+  in basic profiler tests.  `debug` forces the profiler to behave as if `--debug`
+  (or -D) was passed and enables more verbose logging to `stdout`.  `keeptemp`
+  causes the profiler to keep temporary directories and build files in the event
+  the test fails, allowing easier inspection.
+
+#### General Cleanup
+ * Upgraded GitHub Actions workflow to use current versions (e.g., checkout).
+ * Updated Ubuntu CI workflows (`ubuntu.yml`) to explicitly set `SPIRAL_HOME` and improve test job execution.
+
+### Bug Fixes
+* **Issue [#144](https://github.com/spiral-software/spiral-software/issues/144) Resolved:** Replaced
+  deprecated `<termio.h>` header with `<termios.h>` to resolve build failures on
+  newer Linux distributions (e.g., Ubuntu 26.04 / `ubuntu-resolute`). 
+
+### Known Issues
+
+None at present.
+
+## License
+
+Spiral is open source software licensed under the terms of the Simplified BSD
+License (see the [**LICENSE**](./LICENSE) file for the full text). 
+
+----------------------------------------------------------------------------------------------------
+
 ## Release Notes for Spiral Version 8.5.3
 
 ### Introduction
@@ -17,7 +94,7 @@ a specific platform.
 
 ### Get Spiral Version 8.5.3
 
-You can download the lastest release from:
+You can download the latest release from:
 
 https://github.com/spiral-software/spiral-software.git
 
@@ -115,7 +192,7 @@ a specific platform.
 
 ### Get Spiral Version 8.4.0
 
-You can download the lastest release from:
+You can download the latest release from:
 
 https://github.com/spiral-software/spiral-software.git
 
@@ -174,7 +251,7 @@ See the [**README**](./README.md) file for more information on how to build for 
 
 ### Get Spiral Version 8.3.0
 
-You can download the lastest release from:
+You can download the latest release from:
 
 https://github.com/spiral-software/spiral-software.git
 
@@ -238,7 +315,7 @@ See the [**README**](./README.md) file for more information on how to build for 
 
 ### Get Spiral Version 8.2.0
 
-You can download the lastest release from:
+You can download the latest release from:
 
 https://github.com/spiral-software/spiral-software.git
 
@@ -295,7 +372,7 @@ See the [**README**](./README.md) file for more information on how to build for 
 
 ### Get Spiral Version 8.1.2
 
-You can download the lastest release from:
+You can download the latest release from:
 
 https://github.com/spiral-software/spiral-software.git
 
@@ -337,7 +414,7 @@ See the [**README**](./README.md) file for more information on how to build for 
 
 ### Get Spiral Version 8.1.1
 
-You can download the lastest release from:
+You can download the latest release from:
 
 https://github.com/spiral-software/spiral-software.git
 

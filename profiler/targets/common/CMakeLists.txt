@@ -21,6 +21,18 @@ set ( ADDL_COMPILE_FLAGS )
 set ( GPU_COMPILE_DEFNS )
 set ( LIBS_TO_LINK )
 
+##  Ensure SPIRAL_HOME is defined (if not extract from the environment)
+if ( NOT DEFINED SPIRAL_HOME OR "X${SPIRAL_HOME}" STREQUAL "X" )
+    if ( DEFINED ENV{SPIRAL_HOME} )
+        set ( SPIRAL_HOME "$ENV{SPIRAL_HOME}" )
+        ## Normalize platform-specific slashes to standard CMake forward slashes
+        file ( TO_CMAKE_PATH "${SPIRAL_HOME}" SPIRAL_HOME )
+        message ( STATUS "SPIRAL PROFILER: SPIRAL_HOME = ${SPIRAL_HOME}" )
+    else ()
+        message ( FATAL_ERROR "SPIRAL PROFILER: SPIRAL_HOME is undefined." )
+    endif ()
+endif ()
+
 ##  SPIRAL_PROFILER_ROOT is added to the environment by the Spiral Profiler, it determines
 ##  the path from which files are copied
 
@@ -130,7 +142,9 @@ else ()
 endif ()
 
 if ( ${SUFFIX} STREQUAL "cu" )
-    set ( CMAKE_CUDA_ARCHITECTURES 60 61 62 70 72 75 80)
+    ##  Dynamically determine the CUDA architectures
+    include ( "${SPIRAL_HOME}/config/CMakeIncludes/SpiralCUDAUtils.cmake" )
+    spiral_determine_cuda_architectures ()
 endif ()
 
 add_executable		     ( ${PROJECT} ${SOURCES} )

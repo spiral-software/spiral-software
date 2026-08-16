@@ -343,21 +343,24 @@ void            Match ( UInt symbol, char * msg,
 */
 
 #define SCANNER_INPUTS      16
+#define SCANNER_LINE_SIZE   2048
 
 typedef struct {
     Obj         package;
     Obj         packages;
     Obj         imports;
     Obj         data;
-    Int        importTop;
-    Int        packageTop;
-    Int        global;
-    Int        fid;
+    Int         importTop;
+    Int         packageTop;
+    Int         global;
+    Int         fid;
 //    FILE       *file;
     char        name [1024];
-    char        line [2048];
-    char        * ptr;
-    Int        number;
+    char        line [SCANNER_LINE_SIZE];
+    char        *ptr;
+    Int         number;
+    char        *srcstring;
+    Int         pos;
 } TypInputFile;
 
 extern TypInputFile    InputFiles [SCANNER_INPUTS];
@@ -379,9 +382,9 @@ extern char            * In;
 **  If there is a logfile in use and the input file is '*stdin*' or '*errin*'
 **  'GetLine' echoes the new line to the logfile.
 */
-char            GetLine ();
+char    GetLine ();
 
-Bag		GReadFile ( void );
+Bag     GReadFile ( void );
 
 /****************************************************************************
 **
@@ -431,7 +434,7 @@ Bag		GReadFile ( void );
 **  '*stdin*' for  that purpose.  This  file on   the other   hand can not be
 **  closed by 'CloseInput'.
 */
-Int            OpenInput ( char * filename );
+Int            OpenInput ( char * filename, int fromstring );
 
 
 /****************************************************************************

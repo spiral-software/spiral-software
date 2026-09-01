@@ -145,7 +145,7 @@ a specific platform.
 
 ### Get Spiral Version 8.4.1
 
-You can download the lastest release from:
+You can download the latest release from:
 
 https://github.com/spiral-software/spiral-software.git
 

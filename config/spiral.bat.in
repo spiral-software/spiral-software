@@ -29,7 +29,7 @@ if "x%PROFILER_LOCAL_ARGS%" == "x" (
 set OLDPATH=%PATH%
 set PATH=%PATH%;%SPIRAL_DIR%profiler\bin
 
-"%SPIRAL_DIR%gap\bin\gap.exe" -m %GAP_MEM% -x 1000 -l "%SPIRAL_DIR%gap\lib" "%SPIRAL_DIR%bin\_spiral_win.g"
+"%SPIRAL_DIR%gap\bin\gap.exe" -m %GAP_MEM% -x 1000 -l "%SPIRAL_DIR%gap\lib" %* "%SPIRAL_DIR%bin\_spiral_win.g"
 
 set PATH=%OLDPATH%
 

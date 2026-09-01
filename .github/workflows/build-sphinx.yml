@@ -18,14 +18,14 @@ jobs:
 
     steps:
     - name: Checkout spiral-software
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: spiral-software/spiral-software
         ref: develop
         path: spiral
 
     - name: install dependencies
-      ##  uses: actions/checkout@v2
+      ##  uses: actions/checkout@v4
       run: |
         set -x
         echo "working dir = ${{ github.workspace }}"

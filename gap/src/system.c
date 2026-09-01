@@ -1591,12 +1591,9 @@ void            syEchos ( char *str, Int fid )
 */
 #if SYS_USG
 
-#ifndef SYS_TERMIO_H                    /* terminal control functions      */
-# include       <termio.h>
-# define SYS_TERMIO_H
-#endif
+# include <termios.h>
 
-struct termio   syOld, syNew;           /* old and new terminal state      */
+struct termios   syOld, syNew;           /* old and new terminal state      */
 
 #ifndef SYS_SIGNAL_H                    /* signal handling functions       */
 # include       <signal.h>
@@ -1642,7 +1639,7 @@ SYS_SIG_T       syAnswerTstp ( int signr )
 int             syStartraw ( Int fid )
 {
     /* try to get the terminal attributes, will fail if not terminal       */
-    if ( ioctl( fileno(syBuf[fid].fp), TCGETA, &syOld ) == -1 )   return 0;
+    if ( tcgetattr( fileno(syBuf[fid].fp), &syOld ) == -1 )   return 0;
 
     /* disable interrupt, quit, start and stop output characters           */
     syNew = syOld;
@@ -1656,7 +1653,8 @@ int             syStartraw ( Int fid )
     syNew.c_cc[VMIN]  = 1;
     syNew.c_cc[VTIME] = 0;
     syNew.c_lflag    &= ~(ECHO|ICANON);
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syNew ) == -1 )  return 0;
+
+    if ( tcsetattr( fileno(syBuf[fid].fp), TCSANOW, &syNew ) == -1 )  return 0;
 
 #ifdef SIGTSTP
     /* install signal handler for stop                                     */
@@ -1676,8 +1674,9 @@ void            syStopraw ( Int fid )
 #endif
 
     /* enable input buffering, line editing and echo again                 */
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syOld ) == -1 )
-        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
+    if ( tcsetattr( fileno(syBuf[fid].fp), TCSANOW, &syOld ) == -1 )
+        fputs("gap: 'tcsetattr' could not turn off raw mode!\n", stderr);
+
 }
 
 int             syGetch ( Int fid )
@@ -2323,6 +2322,10 @@ void            InitSystem (int argc, char **argv)
         case 'q': /* '-q', GAP should be quiet                             */
             SyQuiet = ! SyQuiet;
             break;
+            
+        case 'p': // -p <plugin>, handled later
+            ++argv; --argc;
+            break;
 
         case 'x': /* '-x', specify the length of a line                    */
             if ( argc < 3 ) {
@@ -2441,6 +2444,7 @@ void            InitSystem (int argc, char **argv)
     fputs("usage: gap [-l <libname>] [-h <hlpname>] [-m <gap_memory>]\n",stderr);
     fputs("           [-a <premalloc_memory>]\n",stderr);
     fputs("           [-g] [-q] [-b] [-x <nr>]  [-y <nr>]\n",stderr);
+    fputs("           [-p <plugin>]\n",stderr);
     fputs("           <file>...\n",stderr);
     fputs("  run the Groups, Algorithms and Programming system.\n",stderr);
     SyExit( 1 );

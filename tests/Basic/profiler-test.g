@@ -1,5 +1,5 @@
 
-##  Copyright (c) 2018-2021, Carnegie Mellon University
+##  Copyright (c) 2018-2026, Carnegie Mellon University
 ##  See LICENSE for details
 
 comment("");
@@ -10,6 +10,10 @@ comment("");
 ClearBasicProfilerTestResults();
 
 opts := SpiralDefaults;
+
+##  Turn debug on for spiral profiler to debug issues with workflow in github
+opts.profile.debug := true;
+
 transform := DFT(4);
 ruletree := RuleTreeMid(transform, opts);
 icode := CodeRuleTree(ruletree, opts);

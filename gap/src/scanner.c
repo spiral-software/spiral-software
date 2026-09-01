@@ -285,8 +285,9 @@ FILE* Logfile = (FILE*)NULL;
 */
 FILE* InputLogfile = (FILE*)NULL;
 
-
-
+#ifndef MIN
+#define MIN( a, b )     ( (a) < (b) ? (a) : (b) )
+#endif
 
 /****************************************************************************
 **
@@ -302,8 +303,11 @@ FILE* InputLogfile = (FILE*)NULL;
 **  If there is a logfile in use and the input file is '*stdin*' or '*errin*'
 **  'GetLine' echoes the new line to the logfile.
 */
+
 char            GetLine (void)
 {
+    int len;
+    
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     if ( Input->fid /* file */ == 0 ) {
         if ( ! SyQuiet ) 
@@ -326,11 +330,33 @@ char            GetLine (void)
     In = Input->line;  In[0] = '\0';
     NrErrLine = 0;
 
- 
-    /* try to read a line                                        */
-    if ( ! SyFgets( In, sizeof(Input->line), Input->fid /* file */ ) ) {
-        In[0] = '\377';  In[1] = '\0';
-        return *In;
+    if (Input->srcstring != 0) {
+        if (Input->pos < strlen(Input->srcstring)) {
+            len = strcspn(Input->srcstring + Input->pos, "\n");
+            len = MIN(len, SCANNER_LINE_SIZE - 1);
+            if (len > 0) {
+                strncpy(In, Input->srcstring + Input->pos, len);
+                In[len] = '\0';
+                Input->pos += len;
+                if (*(Input->srcstring + Input->pos) == '\n') {
+                    Input->pos += 1;
+                }
+            } else {
+                strcpy(In, "\n");
+                Input->pos += 1;
+            }
+        } else {
+            In[0] = '\377';  
+            In[1] = '\0';
+        }
+        //fprintf(stderr, "GETLINE -> \"%s\" (%d)\n", In, strlen(In));
+    } 
+    else {
+        /* try to read a line                                        */
+        if ( ! SyFgets( In, SCANNER_LINE_SIZE, Input->fid /* file */ ) ) {
+            In[0] = '\377';  In[1] = '\0';
+            return *In;
+        }
     }
 
     /* if neccessary echo the line to the logfile                          */
@@ -791,7 +817,11 @@ void            Match (UInt symbol, char *msg, TypSymbolSet skipto)
 **  '*stdin*' for  that purpose.  This  file on   the other   hand can not be
 **  closed by 'CloseInput'.
 */
-Int            OpenInput (char *filename)
+
+extern void yypush_new_buffer_state();
+extern void yypop_buffer_state();
+
+Int            OpenInput (char *filename, int fromstring)
 {
     Int                file;
 
@@ -801,10 +831,12 @@ Int            OpenInput (char *filename)
 
     /**/HookBeforeOpenInput();/**/
 
-    /* try to open the input file                                          */
-    file = SyFopen( filename, "r" );
-    if ( file == -1 )
-        return 0;
+    if (fromstring == 0) {
+        /* try to open the input file                                          */
+        file = SyFopen(filename, "r");
+        if (file == -1)
+            return 0;
+    }
 
     /* remember the current position in the current file                   */
     if ( Input != InputFiles-1 )
@@ -812,11 +844,19 @@ Int            OpenInput (char *filename)
 
     /* enter the file identifier and the file name                         */
     Input++;
-    Input->fid = file;
-    //  Input->file = (FILE *)NULL;         // unknown
+    
     Input->name[0] = '\0';
-    //  strncat( Input->name, filename, sizeof(Input->name) );
-    strcpy ( Input->name, filename );
+    if (fromstring == 0) {
+        Input->fid = file;
+        //  Input->file = (FILE *)NULL;         // unknown
+        //  strncat( Input->name, filename, sizeof(Input->name) );
+        strcpy ( Input->name, filename );
+        Input->srcstring = (char *)0;
+    } else {
+        Input->pos = 0;
+        Input->srcstring = filename;  // filename used as pointer to string
+        strcpy(Input->name, "<string>");
+    }
 
     /* start with an empty line and no symbol                              */
     In = Input->line;
@@ -831,6 +871,8 @@ Int            OpenInput (char *filename)
     Input->packageTop = 0;
     Input->data = 0;
     Input->global = 1;
+    
+    yypush_new_buffer_state();
 
     /**/HookAfterOpenInput();/**/
 
@@ -863,7 +905,9 @@ Int            CloseInput (void)
     /**/HookBeforeCloseInput();/**/
 
     /* close the input file                                                */
-    SyFclose( Input->fid /* file */ );
+    if (Input->srcstring == 0) {
+        SyFclose( Input->fid /* file */ );
+    }
 
     /* revert to last file                                                 */
     Input--;
@@ -873,6 +917,8 @@ Int            CloseInput (void)
     Symbol = S_ILLEGAL;
 
     /**/HookAfterCloseInput();/**/
+    
+    yypop_buffer_state();
 
     /* indicate success                                                    */
     return 1;
@@ -886,7 +932,7 @@ Bag		GReadFile()
 
 	hdList = NewBag( T_LIST, ( 1 ) * SIZE_HD );
 
-	while(SyFgets(Input->line, 2048, Input->fid /* file */)) {
+	while(SyFgets(Input->line, SCANNER_LINE_SIZE, Input->fid /* file */)) {
 		slen = strlen(Input->line);
 		Input->line[slen-1] = '\0';
 		hd = NewBag( T_STRING, slen );
@@ -1019,7 +1065,7 @@ void            InitScanner (void)
 {
     Int                ignore, i;
 
-    Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
+    Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*", 0  );
 
     Logfile = (FILE *)NULL;  
     InputLogfile = (FILE *)NULL;
